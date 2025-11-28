@@ -1,0 +1,121 @@
+﻿@model IEnumerable<AldaJoyeros.DTOs.CarritoItemDto>
+
+@{
+    ViewData["Title"] = "Carrito de Compras";
+    var total = ViewBag.Total as double? ?? 0;
+}
+
+<h1 class="mb-4"><i class="fas fa-shopping-cart"></i> Carrito de Compras</h1>
+
+@if (Model != null && Model.Any())
+{
+    <div class="row">
+        <div class="col-md-8">
+            @foreach (var item in Model)
+            {
+                <div class="card mb-3 shadow-sm">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-md-2 text-center">
+                                <i class="fas fa-gem fa-3x text-secondary"></i>
+                            </div>
+                            <div class="col-md-4">
+                                <h5 class="mb-1">@item.ProductoNombre</h5>
+                                <p class="text-muted mb-0">Precio: @item.Precio.ToString("C")</p>
+                            </div>
+                            <div class="col-md-3">
+                                <form asp-action="Actualizar" method="post" class="d-flex align-items-center">
+                                    <input type="hidden" name="itemId" value="@item.Id" />
+                                    <label class="me-2">Cantidad:</label>
+                                    <input type="number" name="cantidad" value="@item.Cantidad" min="1" max="10" class="form-control form-control-sm w-50" onchange="this.form.submit()" />
+                                </form>
+                            </div>
+                            <div class="col-md-2 text-end">
+                                <h5 class="text-primary mb-0">@item.Subtotal.ToString("C")</h5>
+                            </div>
+                            <div class="col-md-1 text-end">
+                                <form asp-action="Eliminar" method="post">
+                                    <input type="hidden" name="itemId" value="@item.Id" />
+                                    <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('¿Eliminar este producto?')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <div class="d-flex justify-content-between">
+                <a asp-controller="Productos" asp-action="Index" class="btn btn-outline-primary">
+                    <i class="fas fa-arrow-left"></i> Seguir Comprando
+                </a>
+                <form asp-action="Vaciar" method="post" class="d-inline">
+                    <button type="submit" class="btn btn-outline-danger" onclick="return confirm('¿Vaciar el carrito?')">
+                        <i class="fas fa-trash-alt"></i> Vaciar Carrito
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Resumen del Pedido</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Subtotal:</span>
+                        <strong>@total.ToString("C")</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Envío:</span>
+                        <strong>@(total > 50 ? "GRATIS" : "5,00 €")</strong>
+                    </div>
+                    <hr />
+                    <div class="d-flex justify-content-between mb-3">
+                        <h5>Total:</h5>
+                        <h5 class="text-primary">@((total > 50 ? total : total + 5).ToString("C"))</h5>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <a asp-controller="Pedidos" asp-action="Checkout" class="btn btn-success btn-lg">
+                            <i class="fas fa-credit-card"></i> Proceder al Pago
+                        </a>
+                    </div>
+
+                    @if (total < 50)
+                    {
+                        <div class="alert alert-info mt-3 small mb-0">
+                            <i class="fas fa-info-circle"></i> Añade @((50 - total).ToString("C")) más para envío gratis
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-success mt-3 small mb-0">
+                            <i class="fas fa-check-circle"></i> ¡Tienes envío gratis!
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-body">
+                    <h6><i class="fas fa-shield-alt text-primary"></i> Compra Segura</h6>
+                    <p class="small text-muted mb-0">Tus datos están protegidos</p>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="text-center py-5">
+        <i class="fas fa-shopping-cart fa-5x text-muted mb-4"></i>
+        <h3>Tu carrito está vacío</h3>
+        <p class="text-muted mb-4">Añade productos para empezar tu compra</p>
+        <a asp-controller="Productos" asp-action="Index" class="btn btn-primary">
+            <i class="fas fa-shopping-bag"></i> Ir a la Tienda
+        </a>
+    </div>
+}

@@ -1,0 +1,115 @@
+@model AldaJoyeros.DTOs.CategoriaUpdateDto
+
+@{
+    ViewData["Title"] = "Editar Categoría";
+    var categoriaId = ViewBag.CategoriaId as long?;
+}
+
+<!-- Header -->
+<div class="mb-8">
+    <h1 class="font-display text-4xl font-bold text-gray-900 mb-2">
+        <i class="fas fa-edit text-yellow-600"></i> Editar Categoría
+    </h1>
+    <p class="text-gray-600">Modifica la información de la categoría #@categoriaId</p>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Form -->
+    <div class="lg:col-span-2">
+        <div class="bg-white rounded-3xl shadow-xl p-8">
+            <form asp-action="Editar" method="post" class="space-y-6">
+                <div asp-validation-summary="ModelOnly" class="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg mb-6">
+                    <div class="flex items-center">
+                        <i class="fas fa-exclamation-circle text-red-500 mr-3"></i>
+                        <span class="text-red-800 text-sm"></span>
+                    </div>
+                </div>
+
+                <div>
+                    <label asp-for="Nombre" class="block text-sm font-semibold text-gray-700 mb-2">
+                        <i class="fas fa-tag mr-2 text-gray-500"></i>Nombre de la Categoría
+                    </label>
+                    <input asp-for="Nombre" 
+                           class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-yellow-500 focus:ring focus:ring-yellow-200 transition-all duration-200 text-lg"
+                           placeholder="Ej: Anillos, Collares, Pulseras..." />
+                    <span asp-validation-for="Nombre" class="text-red-500 text-sm mt-1 block"></span>
+                </div>
+
+                <!-- Info Card -->
+                <div class="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl p-6 border-2 border-yellow-200">
+                    <div class="flex items-start">
+                        <i class="fas fa-info-circle text-yellow-600 text-2xl mr-4 mt-1"></i>
+                        <div>
+                            <h3 class="font-semibold text-gray-900 mb-2">Información Importante</h3>
+                            <ul class="text-sm text-gray-700 space-y-1">
+                                <li>• Los cambios afectarán a todos los productos de esta categoría</li>
+                                <li>• El nombre debe ser único en el sistema</li>
+                                <li>• Los productos mantienen su vinculación con la categoría</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <hr />
+
+                <div class="flex flex-col sm:flex-row justify-between gap-4">
+                    <a asp-action="Index" 
+                       class="inline-flex items-center justify-center px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-lg hover:border-yellow-500 hover:text-yellow-600 transition-all duration-200 font-semibold">
+                        <i class="fas fa-times mr-2"></i>
+                        Cancelar
+                    </a>
+                    <button type="submit" 
+                            class="inline-flex items-center justify-center gradient-gold text-gray-900 px-8 py-3 rounded-lg font-bold text-lg hover:shadow-2xl transition-all duration-200 transform hover:scale-105">
+                        <i class="fas fa-save mr-2"></i>
+                        Guardar Cambios
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Info Sidebar -->
+    <div class="lg:col-span-1 space-y-6">
+        <!-- Stats -->
+        <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-6">
+            <h3 class="font-bold text-gray-900 mb-4 flex items-center">
+                <i class="fas fa-chart-bar text-purple-600 mr-2"></i>
+                Estadísticas
+            </h3>
+            <div class="space-y-3">
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-gray-600">Productos:</span>
+                    <span class="font-bold text-gray-900">--</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-gray-600">Creada:</span>
+                    <span class="font-semibold text-gray-900">--</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-gray-600">ID:</span>
+                    <span class="font-semibold text-gray-900">#@categoriaId</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Warning -->
+        <div class="bg-gradient-to-br from-red-50 to-pink-50 rounded-2xl p-6">
+            <h3 class="font-bold text-gray-900 mb-3 flex items-center">
+                <i class="fas fa-exclamation-triangle text-red-600 mr-2"></i>
+                Precaución
+            </h3>
+            <p class="text-sm text-gray-700 mb-4">
+                Si eliminas esta categoría, los productos asociados quedarán sin categoría.
+            </p>
+            <a asp-action="Index" 
+               class="text-red-600 hover:text-red-700 font-semibold text-sm flex items-center group">
+                <i class="fas fa-arrow-left mr-2"></i>
+                Volver sin cambios
+            </a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

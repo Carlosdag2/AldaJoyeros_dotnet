@@ -1,0 +1,56 @@
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace AldaJoyeros.DTOs
+{
+    public class ProductoDto
+    {
+        public long Id { get; set; }
+        public string Nombre { get; set; } = string.Empty;
+        public string? Descripcion { get; set; }
+        public double Precio { get; set; }
+        public long CategoriaId { get; set; }
+        public string CategoriaNombre { get; set; } = string.Empty;
+        
+        // Imágenes del producto (ahora en Base64)
+        public List<ProductoImagenDto> Imagenes { get; set; } = new List<ProductoImagenDto>();
+        
+        // Propiedades de conveniencia para la imagen principal
+        public string? ImagenPrincipal => Imagenes.FirstOrDefault(i => i.EsPrincipal)?.ImagenBase64 
+                                          ?? Imagenes.OrderBy(i => i.Orden).FirstOrDefault()?.ImagenBase64;
+        public bool TieneImagenes => Imagenes.Any();
+    }
+
+    public class ProductoCreateDto
+    {
+        [Required(ErrorMessage = "El nombre es obligatorio")]
+        [StringLength(200, ErrorMessage = "El nombre no puede superar los 200 caracteres")]
+        public string Nombre { get; set; } = string.Empty;
+
+        [StringLength(1000, ErrorMessage = "La descripción no puede superar los 1000 caracteres")]
+        public string? Descripcion { get; set; }
+
+        [Required(ErrorMessage = "El precio es obligatorio")]
+        [Range(0.01, double.MaxValue, ErrorMessage = "El precio debe ser mayor a 0")]
+        public double Precio { get; set; }
+
+        [Required(ErrorMessage = "La categoría es obligatoria")]
+        public long CategoriaId { get; set; }
+    }
+
+    public class ProductoUpdateDto
+    {
+        [Required(ErrorMessage = "El nombre es obligatorio")]
+        [StringLength(200, ErrorMessage = "El nombre no puede superar los 200 caracteres")]
+        public string Nombre { get; set; } = string.Empty;
+
+        [StringLength(1000, ErrorMessage = "La descripción no puede superar los 1000 caracteres")]
+        public string? Descripcion { get; set; }
+
+        [Required(ErrorMessage = "El precio es obligatorio")]
+        [Range(0.01, double.MaxValue, ErrorMessage = "El precio debe ser mayor a 0")]
+        public double Precio { get; set; }
+
+        [Required(ErrorMessage = "La categoría es obligatoria")]
+        public long CategoriaId { get; set; }
+    }
+}

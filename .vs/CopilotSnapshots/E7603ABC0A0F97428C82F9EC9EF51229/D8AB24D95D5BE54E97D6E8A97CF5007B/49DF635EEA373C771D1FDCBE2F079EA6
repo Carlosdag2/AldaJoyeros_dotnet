@@ -1,0 +1,269 @@
+﻿# Script PowerShell para migrar datos de MySQL a PostgreSQL
+# AldaJoyeros - Migración de Base de Datos
+
+param(
+    [string]$MySqlServer = "localhost",
+    [string]$MySqlUser = "root",
+    [string]$MySqlPassword = "curso",
+    [string]$MySqlDatabase = "tfg_carlosdealda",
+    [string]$PgServer = "localhost",
+    [string]$PgPort = "5432",
+    [string]$PgUser = "postgres",
+    [string]$PgPassword = "postgres",
+    [string]$PgDatabase = "aldajoyeros"
+)
+
+Write-Host "============================================" -ForegroundColor Cyan
+Write-Host "  MIGRACIÓN MySQL → PostgreSQL" -ForegroundColor Cyan
+Write-Host "  AldaJoyeros Database Migration" -ForegroundColor Cyan
+Write-Host "============================================" -ForegroundColor Cyan
+Write-Host ""
+
+# Configurar variables de entorno para PostgreSQL
+$env:PGPASSWORD = $PgPassword
+
+Write-Host "PASO 1: Verificar conexiones y herramientas" -ForegroundColor Cyan
+Write-Host "─────────────────────────────────────────────" -ForegroundColor Cyan
+
+# Verificar mysql
+Write-Host "🔍 Verificando MySQL..." -ForegroundColor Yellow
+$mysqlPath = Get-Command mysql -ErrorAction SilentlyContinue
+if (!$mysqlPath) {
+    Write-Host "   ❌ MySQL CLI no encontrado en PATH" -ForegroundColor Red
+    Write-Host "   Añade MySQL al PATH: C:\Program Files\MySQL\MySQL Server X.X\bin" -ForegroundColor Yellow
+    exit 1
+}
+Write-Host "   ✅ MySQL CLI encontrado: $($mysqlPath.Source)" -ForegroundColor Green
+
+# Verificar psql
+Write-Host "🔍 Verificando PostgreSQL..." -ForegroundColor Yellow
+$psqlPath = Get-Command psql -ErrorAction SilentlyContinue
+if (!$psqlPath) {
+    Write-Host "   ❌ PostgreSQL CLI no encontrado en PATH" -ForegroundColor Red
+    Write-Host "   Añade PostgreSQL al PATH: C:\Program Files\PostgreSQL\XX\bin" -ForegroundColor Yellow
+    exit 1
+}
+Write-Host "   ✅ PostgreSQL CLI encontrado: $($psqlPath.Source)" -ForegroundColor Green
+
+Write-Host ""
+Write-Host "PASO 2: Verificar conectividad" -ForegroundColor Cyan
+Write-Host "─────────────────────────────────" -ForegroundColor Cyan
+
+# Test MySQL
+Write-Host "🔌 Probando conexión a MySQL..." -ForegroundColor Yellow
+$mysqlTest = mysql -h $MySqlServer -u $MySqlUser -p$MySqlPassword -e "SELECT 1" 2>&1
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "   ❌ No se puede conectar a MySQL" -ForegroundColor Red
+    Write-Host "   Verifica: servidor=$MySqlServer, usuario=$MySqlUser" -ForegroundColor Yellow
+    Write-Host "   Error: $mysqlTest" -ForegroundColor Red
+    exit 1
+}
+Write-Host "   ✅ Conexión a MySQL exitosa" -ForegroundColor Green
+
+# Test PostgreSQL
+Write-Host "🔌 Probando conexión a PostgreSQL..." -ForegroundColor Yellow
+$pgTest = psql -h $PgServer -p $PgPort -U $PgUser -d postgres -c "SELECT 1" 2>&1
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "   ❌ No se puede conectar a PostgreSQL" -ForegroundColor Red
+    Write-Host "   Verifica: servidor=$PgServer, puerto=$PgPort, usuario=$PgUser" -ForegroundColor Yellow
+    Write-Host "   Error: $pgTest" -ForegroundColor Red
+    exit 1
+}
+Write-Host "   ✅ Conexión a PostgreSQL exitosa" -ForegroundColor Green
+
+Write-Host ""
+Write-Host "PASO 3: Verificar base de datos MySQL" -ForegroundColor Cyan
+Write-Host "────────────────────────────────────────" -ForegroundColor Cyan
+
+$dbCheck = mysql -h $MySqlServer -u $MySqlUser -p$MySqlPassword -e "USE $MySqlDatabase; SELECT 1" 2>&1
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "   ❌ Base de datos MySQL '$MySqlDatabase' no existe" -ForegroundColor Red
+    exit 1
+}
+Write-Host "   ✅ Base de datos MySQL encontrada" -ForegroundColor Green
+
+Write-Host ""
+Write-Host "PASO 4: Crear/Recrear base de datos PostgreSQL" -ForegroundColor Cyan
+Write-Host "──────────────────────────────────────────────" -ForegroundColor Cyan
+
+# Verificar si existe el script SQL
+if (!(Test-Path "database_init_postgresql.sql")) {
+    Write-Host "   ❌ No se encuentra database_init_postgresql.sql" -ForegroundColor Red
+    exit 1
+}
+
+Write-Host "🗄️  Eliminando base de datos existente (si existe)..." -ForegroundColor Yellow
+psql -h $PgServer -p $PgPort -U $PgUser -d postgres -c "DROP DATABASE IF EXISTS $PgDatabase;" 2>&1 | Out-Null
+
+Write-Host "🗄️  Creando base de datos '$PgDatabase'..." -ForegroundColor Yellow
+psql -h $PgServer -p $PgPort -U $PgUser -d postgres -c "CREATE DATABASE $PgDatabase WITH ENCODING='UTF8';" 2>&1 | Out-Null
+
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "   ❌ Error creando base de datos" -ForegroundColor Red
+    exit 1
+}
+
+Write-Host "📋 Ejecutando script de inicialización..." -ForegroundColor Yellow
+psql -h $PgServer -p $PgPort -U $PgUser -d $PgDatabase -f database_init_postgresql.sql 2>&1 | Out-Null
+
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "   ❌ Error ejecutando script de inicialización" -ForegroundColor Red
+    exit 1
+}
+Write-Host "   ✅ Base de datos PostgreSQL creada e inicializada" -ForegroundColor Green
+
+Write-Host ""
+Write-Host "PASO 5: Exportar datos de MySQL" -ForegroundColor Cyan
+Write-Host "─────────────────────────────────" -ForegroundColor Cyan
+
+$tempDir = ".\migration_temp"
+if (Test-Path $tempDir) {
+    Remove-Item -Path $tempDir -Recurse -Force
+}
+New-Item -ItemType Directory -Path $tempDir | Out-Null
+
+$tables = @("usuario", "categoria", "producto", "direccion", "carrito_item", "pedido", "linea_pedido")
+$exportedTables = @()
+
+foreach ($table in $tables) {
+    Write-Host "📤 Exportando tabla: $table" -ForegroundColor Yellow
+    
+    $csvFile = Join-Path $tempDir "$table.csv"
+    
+    # Exportar con mysqldump en formato CSV
+    $query = "SELECT * FROM $table"
+    
+    try {
+        # Exportar con headers
+        mysql -h $MySqlServer -u $MySqlUser -p$MySqlPassword $MySqlDatabase `
+            --batch --skip-column-names `
+            -e "$query" | Out-File -FilePath $csvFile -Encoding UTF8
+        
+        $lineCount = (Get-Content $csvFile | Measure-Object -Line).Lines
+        
+        if ($lineCount -eq 0) {
+            Write-Host "   ⚠️  Tabla vacía: $table" -ForegroundColor Yellow
+        } else {
+            Write-Host "   ✅ Exportado: $table ($lineCount registros)" -ForegroundColor Green
+            $exportedTables += $table
+        }
+    }
+    catch {
+        Write-Host "   ❌ Error exportando $table : $_" -ForegroundColor Red
+    }
+}
+
+if ($exportedTables.Count -eq 0) {
+    Write-Host ""
+    Write-Host "⚠️  No hay datos para migrar" -ForegroundColor Yellow
+    Write-Host "La base de datos PostgreSQL está lista pero vacía" -ForegroundColor Yellow
+    Remove-Item -Path $tempDir -Recurse -Force
+    exit 0
+}
+
+Write-Host ""
+Write-Host "PASO 6: Importar datos a PostgreSQL" -ForegroundColor Cyan
+Write-Host "───────────────────────────────────" -ForegroundColor Cyan
+
+# Orden correcto respetando FK
+$importOrder = @("usuario", "categoria", "producto", "direccion", "carrito_item", "pedido", "linea_pedido")
+
+foreach ($table in $importOrder) {
+    $csvFile = Join-Path $tempDir "$table.csv"
+    
+    if (!(Test-Path $csvFile) -or ((Get-Content $csvFile | Measure-Object -Line).Lines -eq 0)) {
+        Write-Host "⏭️  Saltando tabla vacía: $table" -ForegroundColor Gray
+        continue
+    }
+    
+    Write-Host "📥 Importando a PostgreSQL: $table" -ForegroundColor Yellow
+    
+    try {
+        # Obtener columnas de la tabla
+        $columnsQuery = "SELECT column_name FROM information_schema.columns WHERE table_name='$table' ORDER BY ordinal_position"
+        $columns = psql -h $PgServer -p $PgPort -U $PgUser -d $PgDatabase -t -c $columnsQuery
+        $columnList = ($columns -split "`n" | ForEach-Object { $_.Trim() } | Where-Object { $_ -ne "" }) -join ","
+        
+        # Importar con COPY
+        $copyCmd = "\COPY $table($columnList) FROM '$csvFile' WITH (FORMAT text, DELIMITER E'\t', NULL 'NULL')"
+        psql -h $PgServer -p $PgPort -U $PgUser -d $PgDatabase -c $copyCmd 2>&1 | Out-Null
+        
+        if ($LASTEXITCODE -eq 0) {
+            # Contar registros importados
+            $count = psql -h $PgServer -p $PgPort -U $PgUser -d $PgDatabase -t -c "SELECT COUNT(*) FROM $table"
+            Write-Host "   ✅ Importado: $table ($($count.Trim()) registros)" -ForegroundColor Green
+        } else {
+            Write-Host "   ⚠️  Importación parcial de $table" -ForegroundColor Yellow
+        }
+    }
+    catch {
+        Write-Host "   ❌ Error importando $table : $_" -ForegroundColor Red
+    }
+}
+
+Write-Host ""
+Write-Host "PASO 7: Actualizar secuencias" -ForegroundColor Cyan
+Write-Host "────────────────────────────────" -ForegroundColor Cyan
+
+foreach ($table in $tables) {
+    Write-Host "🔄 Actualizando secuencia: $table" -ForegroundColor Yellow
+    $seqQuery = "SELECT setval(pg_get_serial_sequence('$table', 'id'), COALESCE((SELECT MAX(id) FROM $table), 1), true);"
+    psql -h $PgServer -p $PgPort -U $PgUser -d $PgDatabase -c $seqQuery 2>&1 | Out-Null
+}
+Write-Host "   ✅ Secuencias actualizadas" -ForegroundColor Green
+
+Write-Host ""
+Write-Host "PASO 8: Verificar migración" -ForegroundColor Cyan
+Write-Host "──────────────────────────────" -ForegroundColor Cyan
+
+Write-Host ""
+Write-Host "📊 Comparación MySQL vs PostgreSQL:" -ForegroundColor Yellow
+Write-Host ""
+
+$comparisonTable = @()
+
+foreach ($table in $tables) {
+    # Contar en MySQL
+    $mysqlCount = mysql -h $MySqlServer -u $MySqlUser -p$MySqlPassword $MySqlDatabase `
+        -sN -e "SELECT COUNT(*) FROM $table" 2>$null
+    
+    # Contar en PostgreSQL
+    $pgCount = psql -h $PgServer -p $PgPort -U $PgUser -d $PgDatabase -t `
+        -c "SELECT COUNT(*) FROM $table" 2>$null
+    
+    $mysqlCount = if ($mysqlCount) { $mysqlCount.Trim() } else { "0" }
+    $pgCount = if ($pgCount) { $pgCount.Trim() } else { "0" }
+    
+    $status = if ($mysqlCount -eq $pgCount) { "✅" } else { "⚠️" }
+    
+    $comparisonTable += [PSCustomObject]@{
+        Tabla = $table
+        MySQL = $mysqlCount
+        PostgreSQL = $pgCount
+        Estado = $status
+    }
+}
+
+$comparisonTable | Format-Table -AutoSize
+
+Write-Host ""
+Write-Host "PASO 9: Limpiar archivos temporales" -ForegroundColor Cyan
+Write-Host "───────────────────────────────────" -ForegroundColor Cyan
+
+Write-Host "🧹 Eliminando archivos temporales..." -ForegroundColor Yellow
+Remove-Item -Path $tempDir -Recurse -Force
+Write-Host "   ✅ Archivos temporales eliminados" -ForegroundColor Green
+
+Write-Host ""
+Write-Host "============================================" -ForegroundColor Green
+Write-Host "  ✅ MIGRACIÓN COMPLETADA" -ForegroundColor Green
+Write-Host "============================================" -ForegroundColor Green
+Write-Host ""
+Write-Host "📝 Próximos pasos:" -ForegroundColor Cyan
+Write-Host "   1. Verifica que appsettings.json usa PostgreSQL" -ForegroundColor White
+Write-Host "   2. Ejecuta: dotnet build" -ForegroundColor White
+Write-Host "   3. Ejecuta: dotnet run" -ForegroundColor White
+Write-Host "   4. Prueba la aplicación en: https://localhost:5001" -ForegroundColor White
+Write-Host ""
+Write-Host "💾 Las imágenes siguen en MongoDB (sin cambios)" -ForegroundColor Cyan
+Write-Host ""

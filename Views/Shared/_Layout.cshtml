@@ -1,0 +1,286 @@
+﻿<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Alda Joyeros</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1e293b',
+                        secondary: '#64748b',
+                        accent: '#d97706',
+                        'accent-dark': '#b45309',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .font-display {
+            font-family: 'Playfair Display', serif;
+        }
+        .gradient-gold {
+            background: linear-gradient(135deg, #d4af37 0%, #f4e4c1 50%, #d4af37 100%);
+        }
+        .text-gradient {
+            background: linear-gradient(135deg, #d4af37 0%, #c9a962 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+    
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body class="h-full flex flex-col bg-gray-50">
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 shadow-lg sticky top-0 z-50">
+        <nav class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <!-- Logo -->
+                <a href="/" class="flex items-center space-x-3 group">
+                    <i class="fas fa-gem text-3xl text-yellow-500 group-hover:text-yellow-400 transition-colors"></i>
+                    <span class="font-display text-2xl font-bold text-white group-hover:text-yellow-400 transition-colors">Alda Joyeros</span>
+                </a>
+
+                <!-- Mobile menu button -->
+                <button id="mobile-menu-btn" class="lg:hidden text-white hover:text-yellow-400 transition-colors">
+                    <i class="fas fa-bars text-2xl"></i>
+                </button>
+
+                <!-- Desktop Navigation -->
+                <div class="hidden lg:flex items-center space-x-8">
+                    <a asp-controller="Home" asp-action="Index" class="text-gray-300 hover:text-yellow-400 transition-colors font-medium">
+                        <i class="fas fa-home mr-2"></i>Inicio
+                    </a>
+                    <a asp-controller="Productos" asp-action="Index" class="text-gray-300 hover:text-yellow-400 transition-colors font-medium">
+                        <i class="fas fa-gem mr-2"></i>Productos
+                    </a>
+                    
+                    @if (ViewBag.IsAdmin == true)
+                    {
+                        <div class="relative group">
+                            <button class="text-gray-300 hover:text-yellow-400 transition-colors font-medium flex items-center">
+                                <i class="fas fa-cog mr-2"></i>Administración
+                                <i class="fas fa-chevron-down ml-2 text-sm"></i>
+                            </button>
+                            <div class="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform group-hover:translate-y-0 translate-y-2">
+                                <div class="py-2">
+                                    <a asp-controller="Admin" asp-action="Index" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors">
+                                        <i class="fas fa-tachometer-alt mr-2 text-blue-500"></i>Panel Admin
+                                    </a>
+                                    <hr class="my-2">
+                                    <a asp-controller="AdminCategorias" asp-action="Index" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors">
+                                        <i class="fas fa-tags mr-2 text-purple-500"></i>Categorías
+                                    </a>
+                                    <a asp-controller="AdminProductos" asp-action="Index" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors">
+                                        <i class="fas fa-gem mr-2 text-green-500"></i>Productos
+                                    </a>
+                                    <a asp-controller="AdminPedidos" asp-action="Index" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors">
+                                        <i class="fas fa-box mr-2 text-orange-500"></i>Pedidos
+                                    </a>
+                                    <a asp-controller="AdminUsuarios" asp-action="Index" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors">
+                                        <i class="fas fa-users mr-2 text-indigo-500"></i>Usuarios
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <!-- User Menu -->
+                <div class="hidden lg:flex items-center space-x-4">
+                    @if (ViewBag.IsAuthenticated == true)
+                    {
+                        <a asp-controller="Carrito" asp-action="Index" class="relative text-gray-300 hover:text-yellow-400 transition-colors">
+                            <i class="fas fa-shopping-cart text-xl"></i>
+                            <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">0</span>
+                        </a>
+                        <a asp-controller="Pedidos" asp-action="Index" class="text-gray-300 hover:text-yellow-400 transition-colors">
+                            <i class="fas fa-box text-xl"></i>
+                        </a>
+                        <div class="relative group">
+                            <button class="flex items-center space-x-2 text-gray-300 hover:text-yellow-400 transition-colors">
+                                <i class="fas fa-user-circle text-2xl"></i>
+                                <span class="text-sm font-medium">@ViewBag.CurrentUser?.Email</span>
+                            </button>
+                            <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                                <a asp-controller="Auth" asp-action="Logout" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
+                                    <i class="fas fa-sign-out-alt mr-2 text-red-500"></i>Cerrar Sesión
+                                </a>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <a asp-controller="Auth" asp-action="Login" class="text-gray-300 hover:text-yellow-400 transition-colors font-medium">
+                            <i class="fas fa-sign-in-alt mr-2"></i>Iniciar Sesión
+                        </a>
+                        <a asp-controller="Auth" asp-action="Register" class="gradient-gold text-gray-900 px-6 py-2 rounded-full font-semibold hover:shadow-lg transition-all duration-200 transform hover:scale-105">
+                            Registrarse
+                        </a>
+                    }
+                </div>
+            </div>
+
+            <!-- Mobile Navigation -->
+            <div id="mobile-menu" class="hidden lg:hidden mt-4 pb-4">
+                <div class="flex flex-col space-y-3">
+                    <a asp-controller="Home" asp-action="Index" class="text-gray-300 hover:text-yellow-400 transition-colors py-2">
+                        <i class="fas fa-home mr-2"></i>Inicio
+                    </a>
+                    <a asp-controller="Productos" asp-action="Index" class="text-gray-300 hover:text-yellow-400 transition-colors py-2">
+                        <i class="fas fa-gem mr-2"></i>Productos
+                    </a>
+                    @if (ViewBag.IsAuthenticated == true)
+                    {
+                        <a asp-controller="Carrito" asp-action="Index" class="text-gray-300 hover:text-yellow-400 transition-colors py-2">
+                            <i class="fas fa-shopping-cart mr-2"></i>Carrito
+                        </a>
+                        <a asp-controller="Pedidos" asp-action="Index" class="text-gray-300 hover:text-yellow-400 transition-colors py-2">
+                            <i class="fas fa-box mr-2"></i>Mis Pedidos
+                        </a>
+                        <a asp-controller="Auth" asp-action="Logout" class="text-gray-300 hover:text-yellow-400 transition-colors py-2">
+                            <i class="fas fa-sign-out-alt mr-2"></i>Cerrar Sesión
+                        </a>
+                    }
+                    else
+                    {
+                        <a asp-controller="Auth" asp-action="Login" class="text-gray-300 hover:text-yellow-400 transition-colors py-2">
+                            <i class="fas fa-sign-in-alt mr-2"></i>Iniciar Sesión
+                        </a>
+                        <a asp-controller="Auth" asp-action="Register" class="text-gray-300 hover:text-yellow-400 transition-colors py-2">
+                            <i class="fas fa-user-plus mr-2"></i>Registrarse
+                        </a>
+                    }
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Alerts -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="container mx-auto px-4 mt-4">
+            <div class="bg-green-50 border-l-4 border-green-500 p-4 rounded-r-lg shadow-md flex items-center justify-between animate-fade-in">
+                <div class="flex items-center">
+                    <i class="fas fa-check-circle text-green-500 text-2xl mr-3"></i>
+                    <span class="text-green-800 font-medium">@TempData["Success"]</span>
+                </div>
+                <button onclick="this.parentElement.parentElement.remove()" class="text-green-500 hover:text-green-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="container mx-auto px-4 mt-4">
+            <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg shadow-md flex items-center justify-between animate-fade-in">
+                <div class="flex items-center">
+                    <i class="fas fa-exclamation-circle text-red-500 text-2xl mr-3"></i>
+                    <span class="text-red-800 font-medium">@TempData["Error"]</span>
+                </div>
+                <button onclick="this.parentElement.parentElement.remove()" class="text-red-500 hover:text-red-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+    }
+
+    <!-- Main Content -->
+    <main class="flex-1 container mx-auto px-4 py-8">
+        @RenderBody()
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-white mt-auto">
+        <div class="container mx-auto px-4 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- About -->
+                <div>
+                    <div class="flex items-center space-x-3 mb-4">
+                        <i class="fas fa-gem text-3xl text-yellow-500"></i>
+                        <h3 class="font-display text-2xl font-bold">Alda Joyeros</h3>
+                    </div>
+                    <p class="text-gray-400">Las mejores joyas para momentos especiales. Calidad, elegancia y tradición desde 1990.</p>
+                </div>
+
+                <!-- Links -->
+                <div>
+                    <h4 class="font-display text-lg font-semibold mb-4">Enlaces Rápidos</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-yellow-400 transition-colors">Sobre Nosotros</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-yellow-400 transition-colors">Contacto</a></li>
+                        <li><a asp-controller="Home" asp-action="Privacy" class="text-gray-400 hover:text-yellow-400 transition-colors">Privacidad</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-yellow-400 transition-colors">Términos y Condiciones</a></li>
+                    </ul>
+                </div>
+
+                <!-- Social -->
+                <div>
+                    <h4 class="font-display text-lg font-semibold mb-4">Síguenos</h4>
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center hover:bg-yellow-500 transition-all duration-200 transform hover:scale-110">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center hover:bg-yellow-500 transition-all duration-200 transform hover:scale-110">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center hover:bg-yellow-500 transition-all duration-200 transform hover:scale-110">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center hover:bg-yellow-500 transition-all duration-200 transform hover:scale-110">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="my-8 border-gray-700" />
+
+            <div class="text-center text-gray-400">
+                <p>&copy; 2025 Alda Joyeros - Todos los derechos reservados</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script>
+        // Mobile menu toggle
+        document.getElementById('mobile-menu-btn')?.addEventListener('click', function() {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        });
+
+        // Auto-hide alerts after 5 seconds
+        setTimeout(() => {
+            document.querySelectorAll('.animate-fade-in').forEach(el => {
+                el.style.transition = 'opacity 0.5s';
+                el.style.opacity = '0';
+                setTimeout(() => el.remove(), 500);
+            });
+        }, 5000);
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

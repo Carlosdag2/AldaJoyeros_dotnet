@@ -1,0 +1,80 @@
+using Microsoft.EntityFrameworkCore;
+using AldaJoyeros.Data;
+using AldaJoyeros.Entities;
+using AldaJoyeros.Repositories.Interfaces;
+
+namespace AldaJoyeros.Repositories.Implementations
+{
+    public class ProductoRepository : IProductoRepository
+    {
+        private readonly AldaJoyerosContext _context;
+
+        public ProductoRepository(AldaJoyerosContext context)
+        {
+            _context = context;
+        }
+
+        public async Task<IEnumerable<Producto>> GetAllAsync()
+        {
+            return await _context.Productos
+                .Include(p => p.Categoria)
+                // Imagenes ahora se cargan desde MongoDB en el servicio
+                .ToListAsync();
+        }
+
+        public async Task<Producto?> GetByIdAsync(long id)
+        {
+            return await _context.Productos
+                .Include(p => p.Categoria)
+                // Imagenes ahora se cargan desde MongoDB en el servicio
+                .FirstOrDefaultAsync(p => p.Id == id);
+        }
+
+        public async Task<IEnumerable<Producto>> GetByCategoriaAsync(long categoriaId)
+        {
+            return await _context.Productos
+                .Include(p => p.Categoria)
+                // Imagenes ahora se cargan desde MongoDB en el servicio
+                .Where(p => p.CategoriaId == categoriaId)
+                .ToListAsync();
+        }
+
+        public async Task<Producto> CreateAsync(Producto producto)
+        {
+            _context.Productos.Add(producto);
+            await _context.SaveChangesAsync();
+            
+            // Recargar con relaciones
+            return (await GetByIdAsync(producto.Id))!;
+        }
+
+        public async Task<Producto> UpdateAsync(Producto producto)
+        {
+            _context.Entry(producto).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+            
+            // Recargar con relaciones
+            return (await GetByIdAsync(producto.Id))!;
+        }
+
+        public async Task DeleteAsync(long id)
+        {
+            var producto = await _context.Productos.FindAsync(id);
+            if (producto != null)
+            {
+                _context.Productos.Remove(producto);
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        public async Task<bool> ExistsAsync(long id)
+        {
+            return await _context.Productos.AnyAsync(p => p.Id == id);
+        }
+
+        public async Task<bool> NombreExistsAsync(string nombre)
+        {
+            return await _context.Productos.AnyAsync(p => p.Nombre == nombre);
+        }
+    }
+}

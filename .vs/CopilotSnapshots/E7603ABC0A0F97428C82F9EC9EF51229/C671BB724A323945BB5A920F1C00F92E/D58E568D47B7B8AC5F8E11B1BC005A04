@@ -1,0 +1,89 @@
+﻿@model AldaJoyeros.DTOs.LoginDto
+
+@{
+    ViewData["Title"] = "Iniciar Sesión";
+}
+
+<div class="max-w-md mx-auto">
+    <div class="bg-white rounded-3xl shadow-2xl overflow-hidden">
+        <!-- Header -->
+        <div class="gradient-gold p-8 text-center">
+            <i class="fas fa-gem text-5xl text-gray-900 mb-4"></i>
+            <h2 class="font-display text-3xl font-bold text-gray-900">Iniciar Sesión</h2>
+            <p class="text-gray-700 mt-2">Accede a tu cuenta de Alda Joyeros</p>
+        </div>
+
+        <!-- Form -->
+        <div class="p-8">
+            <form asp-action="Login" method="post" class="space-y-6">
+                <div asp-validation-summary="ModelOnly" class="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg">
+                    <div class="flex items-center">
+                        <i class="fas fa-exclamation-circle text-red-500 mr-3"></i>
+                        <span class="text-red-800 text-sm"></span>
+                    </div>
+                </div>
+
+                <div>
+                    <label asp-for="Email" class="block text-sm font-semibold text-gray-700 mb-2">
+                        <i class="fas fa-envelope mr-2 text-gray-500"></i>Correo Electrónico
+                    </label>
+                    <input asp-for="Email" 
+                           type="email"
+                           class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-yellow-500 focus:ring focus:ring-yellow-200 transition-all duration-200"
+                           placeholder="correo@ejemplo.com" />
+                    <span asp-validation-for="Email" class="text-red-500 text-sm mt-1 block"></span>
+                </div>
+
+                <div>
+                    <label asp-for="Password" class="block text-sm font-semibold text-gray-700 mb-2">
+                        <i class="fas fa-lock mr-2 text-gray-500"></i>Contraseña
+                    </label>
+                    <input asp-for="Password" 
+                           type="password"
+                           class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-yellow-500 focus:ring focus:ring-yellow-200 transition-all duration-200"
+                           placeholder="••••••••" />
+                    <span asp-validation-for="Password" class="text-red-500 text-sm mt-1 block"></span>
+                </div>
+
+                <button type="submit" 
+                        class="w-full gradient-gold text-gray-900 py-4 rounded-lg font-bold text-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105">
+                    <i class="fas fa-sign-in-alt mr-2"></i>
+                    Iniciar Sesión
+                </button>
+            </form>
+
+            <div class="mt-6 text-center">
+                <div class="relative">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full border-t border-gray-300"></div>
+                    </div>
+                    <div class="relative flex justify-center text-sm">
+                        <span class="px-4 bg-white text-gray-500">¿No tienes cuenta?</span>
+                    </div>
+                </div>
+                
+                <a asp-action="Register" 
+                   class="mt-4 inline-flex items-center text-yellow-600 hover:text-yellow-700 font-semibold group">
+                    Regístrate aquí
+                    <i class="fas fa-arrow-right ml-2 group-hover:translate-x-2 transition-transform"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Info Cards -->
+    <div class="grid grid-cols-2 gap-4 mt-8">
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 text-center">
+            <i class="fas fa-shield-alt text-3xl text-blue-600 mb-2"></i>
+            <p class="text-sm text-gray-700 font-medium">100% Seguro</p>
+        </div>
+        <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-4 text-center">
+            <i class="fas fa-lock text-3xl text-green-600 mb-2"></i>
+            <p class="text-sm text-gray-700 font-medium">Datos Protegidos</p>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

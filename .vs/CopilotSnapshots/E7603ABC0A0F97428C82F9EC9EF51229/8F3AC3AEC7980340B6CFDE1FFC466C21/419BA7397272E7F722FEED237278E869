@@ -1,0 +1,40 @@
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace AldaJoyeros.Entities
+{
+    [Table("linea_pedido")]
+    public class LineaPedido
+    {
+        [Key]
+        [Column("id")]
+        public long Id { get; set; }
+
+        [Required]
+        [Column("pedido_id")]
+        public long PedidoId { get; set; }
+
+        [Required]
+        [Column("producto_id")]
+        public long ProductoId { get; set; }
+
+        [Required]
+        [Column("cantidad")]
+        public int Cantidad { get; set; }
+
+        [Required]
+        [Column("precio_unitario")]
+        public double PrecioUnitario { get; set; }
+
+        [Required]
+        [Column("subtotal")]
+        public double Subtotal { get; set; }
+
+        // Relaciones
+        [ForeignKey("PedidoId")]
+        public virtual Pedido? Pedido { get; set; }
+
+        [ForeignKey("ProductoId")]
+        public virtual Producto? Producto { get; set; }
+    }
+}

@@ -1,0 +1,102 @@
+using Microsoft.EntityFrameworkCore;
+using AldaJoyeros.Entities;
+
+namespace AldaJoyeros.Data
+{
+    public class AldaJoyerosContext : DbContext
+    {
+        public AldaJoyerosContext(DbContextOptions<AldaJoyerosContext> options) : base(options)
+        {
+        }
+
+        public DbSet<Usuario> Usuarios { get; set; }
+        public DbSet<Categoria> Categorias { get; set; }
+        public DbSet<Producto> Productos { get; set; }
+        public DbSet<CarritoItem> CarritoItems { get; set; }
+        public DbSet<Direccion> Direcciones { get; set; }
+        public DbSet<Pedido> Pedidos { get; set; }
+        public DbSet<LineaPedido> LineasPedido { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            // Configuración Usuario
+            modelBuilder.Entity<Usuario>(entity =>
+            {
+                entity.HasIndex(e => e.Email).IsUnique();
+                entity.Property(e => e.Rol).HasMaxLength(20);
+            });
+
+            // Configuración Categoria
+            modelBuilder.Entity<Categoria>(entity =>
+            {
+                entity.HasIndex(e => e.Nombre).IsUnique();
+            });
+
+            // Configuración Producto
+            modelBuilder.Entity<Producto>(entity =>
+            {
+                entity.HasOne(p => p.Categoria)
+                    .WithMany(c => c.Productos)
+                    .HasForeignKey(p => p.CategoriaId)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            // Configuración CarritoItem
+            modelBuilder.Entity<CarritoItem>(entity =>
+            {
+                entity.HasOne(ci => ci.Usuario)
+                    .WithMany(u => u.CarritoItems)
+                    .HasForeignKey(ci => ci.UsuarioId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(ci => ci.Producto)
+                    .WithMany(p => p.CarritoItems)
+                    .HasForeignKey(ci => ci.ProductoId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            // Configuración Direccion
+            modelBuilder.Entity<Direccion>(entity =>
+            {
+                entity.HasOne(d => d.Usuario)
+                    .WithMany(u => u.Direcciones)
+                    .HasForeignKey(d => d.UsuarioId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            // Configuración Pedido
+            modelBuilder.Entity<Pedido>(entity =>
+            {
+                entity.HasOne(p => p.Usuario)
+                    .WithMany(u => u.Pedidos)
+                    .HasForeignKey(p => p.UsuarioId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(p => p.Direccion)
+                    .WithMany()
+                    .HasForeignKey(p => p.DireccionId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.Property(p => p.Estado)
+                    .HasConversion<string>()
+                    .HasMaxLength(50);
+            });
+
+            // Configuración LineaPedido
+            modelBuilder.Entity<LineaPedido>(entity =>
+            {
+                entity.HasOne(lp => lp.Pedido)
+                    .WithMany(p => p.LineasPedido)
+                    .HasForeignKey(lp => lp.PedidoId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(lp => lp.Producto)
+                    .WithMany(p => p.LineasPedido)
+                    .HasForeignKey(lp => lp.ProductoId)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+        }
+    }
+}

@@ -1,0 +1,85 @@
+﻿@model IEnumerable<AldaJoyeros.DTOs.PedidoDto>
+
+@{
+    ViewData["Title"] = "Gestión de Pedidos";
+}
+
+<h1 class="mb-4"><i class="fas fa-box"></i> Gestión de Pedidos</h1>
+
+@if (Model != null && Model.Any())
+{
+    <div class="card shadow">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Fecha</th>
+                            <th>Cliente</th>
+                            <th>Estado</th>
+                            <th>Total</th>
+                            <th class="text-end">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var pedido in Model)
+                        {
+                            <tr>
+                                <td><strong>#@pedido.Id</strong></td>
+                                <td>@pedido.Fecha?.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>@pedido.UsuarioEmail</td>
+                                <td>
+                                    @switch (pedido.Estado)
+                                    {
+                                        case "PENDIENTE":
+                                            <span class="badge bg-warning">⏳ Pendiente</span>
+                                            break;
+                                        case "EN_PROCESO":
+                                            <span class="badge bg-info">🔄 En Proceso</span>
+                                            break;
+                                        case "ENVIADO":
+                                            <span class="badge bg-primary">📦 Enviado</span>
+                                            break;
+                                        case "ENTREGADO":
+                                            <span class="badge bg-success">✅ Entregado</span>
+                                            break;
+                                        case "CANCELADO":
+                                            <span class="badge bg-danger">❌ Cancelado</span>
+                                            break;
+                                    }
+                                </td>
+                                <td><strong class="text-primary">@pedido.Total.ToString("C")</strong></td>
+                                <td class="text-end">
+                                    <a asp-action="Detalle" asp-route-id="@pedido.Id" class="btn btn-sm btn-info">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a asp-action="EditarEstado" asp-route-id="@pedido.Id" class="btn btn-sm btn-warning">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form asp-action="Eliminar" asp-route-id="@pedido.Id" method="post" class="d-inline" onsubmit="return confirm('¿Eliminar este pedido?')">
+                                        <button type="submit" class="btn btn-sm btn-danger">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle"></i> No hay pedidos registrados.
+    </div>
+}
+
+<div class="mt-3">
+    <a asp-controller="Admin" asp-action="Index" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left"></i> Volver al Panel
+    </a>
+</div>

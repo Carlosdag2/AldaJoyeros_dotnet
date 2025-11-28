@@ -1,0 +1,151 @@
+is_global = true
+build_property.TargetFramework = net10.0
+build_property.TargetFramework = net10.0
+build_property.TargetPlatformMinVersion = 
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.ProjectTypeGuids = 
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.TargetFrameworkIdentifier = .NETCoreApp
+build_property.TargetFrameworkVersion = v10.0
+build_property.RootNamespace = AldaJoyeros
+build_property.RootNamespace = AldaJoyeros
+build_property.ProjectDir = C:\Users\CampusFP\Desktop\CARLOS\DWES\Primer_trimestre\NET\AldaJoyeros\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.RazorLangVersion = 9.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = C:\Users\CampusFP\Desktop\CARLOS\DWES\Primer_trimestre\NET\AldaJoyeros
+build_property._RazorSourceGeneratorDebug = 
+build_property.EffectiveAnalysisLevelStyle = 10.0
+build_property.EnableCodeStyleSeverity = 
+
+[C:/Users/CampusFP/Desktop/CARLOS/DWES/Primer_trimestre/NET/AldaJoyeros/Views/AdminCategorias/Crear.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5DYXRlZ29yaWFzXENyZWFyLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/CampusFP/Desktop/CARLOS/DWES/Primer_trimestre/NET/AldaJoyeros/Views/AdminCategorias/Editar.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5DYXRlZ29yaWFzXEVkaXRhci5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/CampusFP/Desktop/CARLOS/DWES/Primer_trimestre/NET/AldaJoyeros/Views/AdminCategorias/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5DYXRlZ29yaWFzXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/CampusFP/Desktop/CARLOS/DWES/Primer_trimestre/NET/AldaJoyeros/Views/AdminImagenes/Gestionar.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5JbWFnZW5lc1xHZXN0aW9uYXIuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/CampusFP/Desktop/CARLOS/DWES/Primer_trimestre/NET/AldaJoyeros/Views/AdminPedidos/Detalle.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5QZWRpZG9zXERldGFsbGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/CampusFP/Desktop/CARLOS/DWES/Primer_trimestre/NET/AldaJoyeros/Views/AdminPedidos/EditarEstado.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5QZWRpZG9zXEVkaXRhckVzdGFkby5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/CampusFP/Desktop/CARLOS/DWES/Primer_trimestre/NET/AldaJoyeros/Views/AdminPedidos/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5QZWRpZG9zXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/CampusFP/Desktop/CARLOS/DWES/Primer_trimestre/NET/AldaJoyeros/Views/AdminProductos/Crear.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5Qcm9kdWN0b3NcQ3JlYXIuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/CampusFP/Desktop/CARLOS/DWES/Primer_trimestre/NET/AldaJoyeros/Views/AdminProductos/Editar.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5Qcm9kdWN0b3NcRWRpdGFyLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/CampusFP/Desktop/CARLOS/DWES/Primer_trimestre/NET/AldaJoyeros/Views/AdminProductos/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5Qcm9kdWN0b3NcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/CampusFP/Desktop/CARLOS/DWES/Primer_trimestre/NET/AldaJoyeros/Views/AdminUsuarios/Crear.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5Vc3Vhcmlvc1xDcmVhci5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/CampusFP/Desktop/CARLOS/DWES/Primer_trimestre/NET/AldaJoyeros/Views/AdminUsuarios/Editar.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5Vc3Vhcmlvc1xFZGl0YXIuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/CampusFP/Desktop/CARLOS/DWES/Primer_trimestre/NET/AldaJoyeros/Views/AdminUsuarios/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5Vc3Vhcmlvc1xJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/CampusFP/Desktop/CARLOS/DWES/Primer_trimestre/NET/AldaJoyeros/Views/AdminUtilities/Migration.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5VdGlsaXRpZXNcTWlncmF0aW9uLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/CampusFP/Desktop/CARLOS/DWES/Primer_trimestre/NET/AldaJoyeros/Views/Admin/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/CampusFP/Desktop/CARLOS/DWES/Primer_trimestre/NET/AldaJoyeros/Views/Auth/Login.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXV0aFxMb2dpbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/CampusFP/Desktop/CARLOS/DWES/Primer_trimestre/NET/AldaJoyeros/Views/Auth/Register.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXV0aFxSZWdpc3Rlci5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/CampusFP/Desktop/CARLOS/DWES/Primer_trimestre/NET/AldaJoyeros/Views/Carrito/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2Fycml0b1xJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/CampusFP/Desktop/CARLOS/DWES/Primer_trimestre/NET/AldaJoyeros/Views/Home/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/CampusFP/Desktop/CARLOS/DWES/Primer_trimestre/NET/AldaJoyeros/Views/Home/Privacy.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/CampusFP/Desktop/CARLOS/DWES/Primer_trimestre/NET/AldaJoyeros/Views/Pedidos/Checkout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGVkaWRvc1xDaGVja291dC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/CampusFP/Desktop/CARLOS/DWES/Primer_trimestre/NET/AldaJoyeros/Views/Pedidos/Detalle.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGVkaWRvc1xEZXRhbGxlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/CampusFP/Desktop/CARLOS/DWES/Primer_trimestre/NET/AldaJoyeros/Views/Pedidos/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGVkaWRvc1xJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/CampusFP/Desktop/CARLOS/DWES/Primer_trimestre/NET/AldaJoyeros/Views/Productos/Detalle.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvZHVjdG9zXERldGFsbGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/CampusFP/Desktop/CARLOS/DWES/Primer_trimestre/NET/AldaJoyeros/Views/Productos/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvZHVjdG9zXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/CampusFP/Desktop/CARLOS/DWES/Primer_trimestre/NET/AldaJoyeros/Views/Shared/Error.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/CampusFP/Desktop/CARLOS/DWES/Primer_trimestre/NET/AldaJoyeros/Views/Shared/_ValidationScriptsPartial.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/CampusFP/Desktop/CARLOS/DWES/Primer_trimestre/NET/AldaJoyeros/Views/_ViewImports.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/CampusFP/Desktop/CARLOS/DWES/Primer_trimestre/NET/AldaJoyeros/Views/_ViewStart.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/CampusFP/Desktop/CARLOS/DWES/Primer_trimestre/NET/AldaJoyeros/Views/Shared/_Layout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = b-jt1ozgl2x4

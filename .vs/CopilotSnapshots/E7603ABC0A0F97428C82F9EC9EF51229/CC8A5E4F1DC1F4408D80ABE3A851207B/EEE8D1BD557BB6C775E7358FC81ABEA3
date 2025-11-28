@@ -1,0 +1,134 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using AldaJoyeros.Services.Interfaces;
+using AldaJoyeros.DTOs;
+
+namespace AldaJoyeros.Controllers
+{
+    public class AdminUsuariosController : BaseController
+    {
+        private readonly IUsuarioService _usuarioService;
+
+        public AdminUsuariosController(IUsuarioService usuarioService)
+        {
+            _usuarioService = usuarioService;
+        }
+
+        public async Task<IActionResult> Index()
+        {
+            if (!IsAuthenticated || !IsAdmin)
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
+            var usuarios = await _usuarioService.GetAllAsync();
+            return View(usuarios);
+        }
+
+        [HttpGet]
+        public IActionResult Crear()
+        {
+            if (!IsAuthenticated || !IsAdmin)
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Crear(UsuarioCreateDto usuarioDto)
+        {
+            if (!IsAuthenticated || !IsAdmin)
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(usuarioDto);
+            }
+
+            try
+            {
+                await _usuarioService.CreateAsync(usuarioDto);
+                TempData["Success"] = "Usuario creado exitosamente";
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                return View(usuarioDto);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Editar(long id)
+        {
+            if (!IsAuthenticated || !IsAdmin)
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
+            var usuario = await _usuarioService.GetByIdAsync(id);
+            if (usuario == null)
+            {
+                return NotFound();
+            }
+
+            var updateDto = new UsuarioUpdateDto
+            {
+                Email = usuario.Email,
+                Rol = usuario.Rol
+            };
+
+            return View(updateDto);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Editar(long id, UsuarioUpdateDto usuarioDto)
+        {
+            if (!IsAuthenticated || !IsAdmin)
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(usuarioDto);
+            }
+
+            try
+            {
+                await _usuarioService.UpdateAsync(id, usuarioDto);
+                TempData["Success"] = "Usuario actualizado exitosamente";
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                return View(usuarioDto);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Eliminar(long id)
+        {
+            if (!IsAuthenticated || !IsAdmin)
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
+            try
+            {
+                await _usuarioService.DeleteAsync(id);
+                TempData["Success"] = "Usuario eliminado exitosamente";
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+            }
+
+            return RedirectToAction("Index");
+        }
+    }
+}

@@ -1,0 +1,131 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using AldaJoyeros.Services.Interfaces;
+using AldaJoyeros.DTOs;
+using AldaJoyeros.Helpers;
+
+namespace AldaJoyeros.Controllers
+{
+    public class PedidosController : BaseController
+    {
+        private readonly IPedidoService _pedidoService;
+        private readonly ICarritoService _carritoService;
+        private readonly IDireccionService _direccionService;
+        private readonly IProductoImagenService _imagenService;
+
+        public PedidosController(
+            IPedidoService pedidoService,
+            ICarritoService carritoService,
+            IDireccionService direccionService,
+            IProductoImagenService imagenService)
+        {
+            _pedidoService = pedidoService;
+            _carritoService = carritoService;
+            _direccionService = direccionService;
+            _imagenService = imagenService;
+        }
+
+        public async Task<IActionResult> Index()
+        {
+            if (!IsAuthenticated || CurrentUser == null)
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
+            var pedidos = await _pedidoService.GetByUsuarioIdAsync(CurrentUser.Id);
+            
+            // Cargar imágenes para cada producto en todos los pedidos
+            foreach (var pedido in pedidos)
+            {
+                foreach (var linea in pedido.LineasPedido)
+                {
+                    if (linea.Producto != null && linea.ProductoId.HasValue)
+                    {
+                        var imagenes = await _imagenService.GetByProductoIdAsync(linea.ProductoId.Value);
+                        linea.Producto.Imagenes = imagenes.ToList();
+                    }
+                }
+            }
+            
+            return View(pedidos);
+        }
+
+        public async Task<IActionResult> Detalle(long id)
+        {
+            if (!IsAuthenticated || CurrentUser == null)
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
+            var pedido = await _pedidoService.GetByIdAsync(id);
+            if (pedido == null || pedido.UsuarioId != CurrentUser.Id)
+            {
+                return NotFound();
+            }
+
+            // Cargar imágenes de MongoDB para cada producto en las líneas del pedido
+            foreach (var linea in pedido.LineasPedido)
+            {
+                if (linea.Producto != null && linea.ProductoId.HasValue)
+                {
+                    var imagenes = await _imagenService.GetByProductoIdAsync(linea.ProductoId.Value);
+                    linea.Producto.Imagenes = imagenes.ToList();
+                }
+            }
+
+            return View(pedido);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Checkout()
+        {
+            if (!IsAuthenticated || CurrentUser == null)
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
+            var carritoItems = await _carritoService.GetByUsuarioIdAsync(CurrentUser.Id);
+            if (!carritoItems.Any())
+            {
+                TempData["Error"] = "Tu carrito está vacío";
+                return RedirectToAction("Index", "Carrito");
+            }
+
+            var direcciones = await _direccionService.GetByUsuarioIdAsync(CurrentUser.Id);
+            ViewBag.Direcciones = direcciones;
+
+            return View(carritoItems);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Checkout(PedidoCreateDto pedidoDto)
+        {
+            if (!IsAuthenticated || CurrentUser == null)
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                var direcciones = await _direccionService.GetByUsuarioIdAsync(CurrentUser.Id);
+                ViewBag.Direcciones = direcciones;
+                var carritoItems = await _carritoService.GetByUsuarioIdAsync(CurrentUser.Id);
+                return View(carritoItems);
+            }
+
+            try
+            {
+                var pedido = await _pedidoService.CreateFromCarritoAsync(CurrentUser.Id, pedidoDto);
+                TempData["Success"] = "Pedido realizado exitosamente";
+                return RedirectToAction("Detalle", new { id = pedido.Id });
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                var direcciones = await _direccionService.GetByUsuarioIdAsync(CurrentUser.Id);
+                ViewBag.Direcciones = direcciones;
+                var carritoItems = await _carritoService.GetByUsuarioIdAsync(CurrentUser.Id);
+                return View(carritoItems);
+            }
+        }
+    }
+}

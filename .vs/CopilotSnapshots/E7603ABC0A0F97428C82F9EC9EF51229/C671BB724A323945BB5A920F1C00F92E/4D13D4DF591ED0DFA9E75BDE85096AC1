@@ -1,0 +1,113 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using AldaJoyeros.Services.Interfaces;
+using AldaJoyeros.DTOs;
+using AldaJoyeros.Entities;
+
+namespace AldaJoyeros.Controllers
+{
+    public class AdminPedidosController : BaseController
+    {
+        private readonly IPedidoService _pedidoService;
+
+        public AdminPedidosController(IPedidoService pedidoService)
+        {
+            _pedidoService = pedidoService;
+        }
+
+        public async Task<IActionResult> Index()
+        {
+            if (!IsAuthenticated || !IsAdmin)
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
+            var pedidos = await _pedidoService.GetAllAsync();
+            return View(pedidos);
+        }
+
+        public async Task<IActionResult> Detalle(long id)
+        {
+            if (!IsAuthenticated || !IsAdmin)
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
+            var pedido = await _pedidoService.GetByIdAsync(id);
+            if (pedido == null)
+            {
+                return NotFound();
+            }
+
+            return View(pedido);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditarEstado(long id)
+        {
+            if (!IsAuthenticated || !IsAdmin)
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
+            var pedido = await _pedidoService.GetByIdAsync(id);
+            if (pedido == null)
+            {
+                return NotFound();
+            }
+
+            ViewBag.Pedido = pedido;
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditarEstado(long id, PedidoUpdateEstadoDto updateDto)
+        {
+            if (!IsAuthenticated || !IsAdmin)
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                var pedido = await _pedidoService.GetByIdAsync(id);
+                ViewBag.Pedido = pedido;
+                return View(updateDto);
+            }
+
+            try
+            {
+                await _pedidoService.UpdateEstadoAsync(id, updateDto);
+                TempData["Success"] = "Estado del pedido actualizado exitosamente";
+                return RedirectToAction("Detalle", new { id });
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                var pedido = await _pedidoService.GetByIdAsync(id);
+                ViewBag.Pedido = pedido;
+                return View(updateDto);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Eliminar(long id)
+        {
+            if (!IsAuthenticated || !IsAdmin)
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
+            try
+            {
+                await _pedidoService.DeleteAsync(id);
+                TempData["Success"] = "Pedido eliminado exitosamente";
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+            }
+
+            return RedirectToAction("Index");
+        }
+    }
+}

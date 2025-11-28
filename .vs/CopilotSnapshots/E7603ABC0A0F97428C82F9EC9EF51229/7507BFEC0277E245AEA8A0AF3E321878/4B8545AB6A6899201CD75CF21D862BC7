@@ -1,0 +1,508 @@
+﻿@{
+    ViewData["Title"] = "Migración de Imágenes";
+}
+
+<!-- Header -->
+<div class="mb-8">
+    <h1 class="font-display text-4xl font-bold text-gray-900 mb-2">
+        <i class="fas fa-exchange-alt text-blue-600"></i> Migración MySQL → MongoDB
+    </h1>
+    <p class="text-gray-600">Herramienta para migrar imágenes de MySQL a MongoDB</p>
+</div>
+
+<!-- Alert Area -->
+<div id="alertArea"></div>
+
+<!-- Status Card -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+    <!-- MongoDB Status -->
+    <div class="bg-white rounded-2xl shadow-lg p-8">
+        <h2 class="font-display text-2xl font-bold text-gray-900 mb-6 flex items-center">
+            <i class="fas fa-database text-green-600 mr-3"></i>
+            Estado MongoDB
+        </h2>
+        
+        <div id="mongoStatus" class="mb-6">
+            <div class="flex items-center justify-center py-8">
+                <i class="fas fa-spinner fa-spin text-4xl text-gray-400"></i>
+            </div>
+        </div>
+
+        <button onclick="testMongoConnection()" 
+                class="w-full flex items-center justify-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all duration-200 font-semibold">
+            <i class="fas fa-plug mr-2"></i>
+            Probar Conexión
+        </button>
+    </div>
+
+    <!-- MySQL Status -->
+    <div class="bg-white rounded-2xl shadow-lg p-8">
+        <h2 class="font-display text-2xl font-bold text-gray-900 mb-6 flex items-center">
+            <i class="fas fa-database text-blue-600 mr-3"></i>
+            Estado MySQL
+        </h2>
+        
+        <div id="mysqlStatus" class="mb-6">
+            <div class="flex items-center justify-center py-8">
+                <i class="fas fa-spinner fa-spin text-4xl text-gray-400"></i>
+            </div>
+        </div>
+
+        <button onclick="checkMySqlStatus()" 
+                class="w-full flex items-center justify-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 font-semibold">
+            <i class="fas fa-sync mr-2"></i>
+            Actualizar Estado
+        </button>
+    </div>
+</div>
+
+<!-- Migration Section -->
+<div class="bg-white rounded-3xl shadow-xl p-8 mb-8">
+    <h2 class="font-display text-3xl font-bold text-gray-900 mb-6 flex items-center">
+        <i class="fas fa-sync-alt text-purple-600 mr-3"></i>
+        Proceso de Migración
+    </h2>
+
+    <!-- Warning -->
+    <div class="bg-yellow-50 border-l-4 border-yellow-500 p-6 rounded-r-lg mb-8">
+        <div class="flex items-start">
+            <i class="fas fa-exclamation-triangle text-yellow-600 text-2xl mr-4 mt-1"></i>
+            <div>
+                <h3 class="font-bold text-gray-900 mb-2">⚠️ Importante - Lee antes de continuar</h3>
+                <ul class="text-sm text-gray-700 space-y-1">
+                    <li>• Esta operación copiará las imágenes de MySQL a MongoDB</li>
+                    <li>• Las imágenes NO se eliminarán de MySQL automáticamente</li>
+                    <li>• Si marcas "Limpiar MongoDB", se eliminarán las imágenes existentes primero</li>
+                    <li>• El proceso puede tardar varios minutos si hay muchas imágenes</li>
+                    <li>• Asegúrate de tener MongoDB iniciado: <code class="bg-gray-200 px-2 py-1 rounded">net start MongoDB</code></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Migration Options -->
+    <div class="mb-6">
+        <label class="flex items-center cursor-pointer">
+            <input type="checkbox" 
+                   id="clearExisting" 
+                   class="w-5 h-5 text-purple-600 focus:ring-purple-500 border-gray-300 rounded mr-3">
+            <div>
+                <span class="font-semibold text-gray-900">Limpiar MongoDB antes de migrar</span>
+                <p class="text-sm text-gray-600">Elimina todas las imágenes existentes en MongoDB</p>
+            </div>
+        </label>
+    </div>
+
+    <!-- Migration Progress -->
+    <div id="migrationProgress" class="hidden mb-6">
+        <div class="bg-purple-50 rounded-lg p-6">
+            <div class="flex items-center justify-center mb-4">
+                <i class="fas fa-spinner fa-spin text-4xl text-purple-600"></i>
+            </div>
+            <p class="text-center text-gray-700 font-semibold">Migrando imágenes...</p>
+            <p class="text-center text-sm text-gray-600">Por favor espera, esto puede tardar varios minutos</p>
+        </div>
+    </div>
+
+    <!-- Migration Result -->
+    <div id="migrationResult" class="hidden mb-6"></div>
+
+    <!-- Action Buttons -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <button onclick="startMigration()" 
+                id="btnMigrate"
+                class="flex items-center justify-center px-8 py-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg hover:from-purple-700 hover:to-indigo-700 transition-all duration-200 font-bold text-lg shadow-lg">
+            <i class="fas fa-play mr-3"></i>
+            Iniciar Migración
+        </button>
+
+        <button onclick="clearMongoImages()" 
+                id="btnClear"
+                class="flex items-center justify-center px-8 py-4 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all duration-200 font-semibold">
+            <i class="fas fa-trash mr-3"></i>
+            Limpiar MongoDB
+        </button>
+    </div>
+</div>
+
+<!-- Instructions -->
+<div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-8">
+    <h3 class="font-bold text-gray-900 mb-4 flex items-center">
+        <i class="fas fa-info-circle text-blue-600 mr-2"></i>
+        Instrucciones
+    </h3>
+    
+    <div class="space-y-4 text-sm text-gray-700">
+        <div class="flex items-start">
+            <span class="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center mr-3 flex-shrink-0">1</span>
+            <div>
+                <strong>Verificar MongoDB</strong>
+                <p>Asegúrate de que MongoDB está iniciado. Click en "Probar Conexión".</p>
+            </div>
+        </div>
+
+        <div class="flex items-start">
+            <span class="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center mr-3 flex-shrink-0">2</span>
+            <div>
+                <strong>Configurar Opciones</strong>
+                <p>Marca "Limpiar MongoDB" si quieres empezar de cero (elimina imágenes existentes).</p>
+            </div>
+        </div>
+
+        <div class="flex items-start">
+            <span class="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center mr-3 flex-shrink-0">3</span>
+            <div>
+                <strong>Iniciar Migración</strong>
+                <p>Click en "Iniciar Migración" y espera a que termine el proceso.</p>
+            </div>
+        </div>
+
+        <div class="flex items-start">
+            <span class="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center mr-3 flex-shrink-0">4</span>
+            <div>
+                <strong>Verificar Resultado</strong>
+                <p>Una vez completado, verifica en MongoDB Compass que las imágenes se migraron correctamente.</p>
+            </div>
+        </div>
+
+        <div class="flex items-start">
+            <span class="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center mr-3 flex-shrink-0">5</span>
+            <div>
+                <strong>Eliminar de MySQL (Opcional)</strong>
+                <p>Si todo está correcto, puedes ejecutar el script SQL para eliminar la tabla de MySQL.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Back Button -->
+<div class="mt-8">
+    <a asp-controller="Admin" asp-action="Index" 
+       class="inline-flex items-center text-gray-600 hover:text-gray-900 font-medium group">
+        <i class="fas fa-arrow-left mr-2 group-hover:-translate-x-2 transition-transform"></i>
+        Volver al Panel Admin
+    </a>
+</div>
+
+@section Scripts {
+    <script>
+        function showAlert(type, message) {
+            const alertArea = document.getElementById('alertArea');
+            const alertClass = type === 'success' ? 'bg-green-50 border-green-500 text-green-800' : 
+                              type === 'error' ? 'bg-red-50 border-red-500 text-red-800' : 
+                              'bg-blue-50 border-blue-500 text-blue-800';
+            
+            const icon = type === 'success' ? 'fa-check-circle text-green-600' : 
+                        type === 'error' ? 'fa-times-circle text-red-600' : 
+                        'fa-info-circle text-blue-600';
+            
+            alertArea.innerHTML = `
+                <div class="${alertClass} border-l-4 p-4 rounded-r-lg mb-6 animate-fade-in">
+                    <div class="flex items-center">
+                        <i class="fas ${icon} text-xl mr-3"></i>
+                        <span class="font-medium">${message}</span>
+                    </div>
+                </div>
+            `;
+            
+            setTimeout(() => {
+                alertArea.innerHTML = '';
+            }, 5000);
+        }
+
+        async function checkMySqlStatus() {
+            const statusDiv = document.getElementById('mysqlStatus');
+            statusDiv.innerHTML = '<div class="flex items-center justify-center py-8"><i class="fas fa-spinner fa-spin text-4xl text-gray-400"></i></div>';
+            
+            try {
+                const response = await fetch('/AdminUtilities/GetMySqlStats', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.success && result.tableExists) {
+                    statusDiv.innerHTML = `
+                        <div class="space-y-4">
+                            <div class="bg-blue-50 rounded-lg p-4">
+                                <div class="text-sm text-gray-600 mb-1">Servidor:</div>
+                                <div class="font-semibold text-gray-900">localhost:3306</div>
+                            </div>
+                            <div class="bg-blue-50 rounded-lg p-4">
+                                <div class="text-sm text-gray-600 mb-1">Base de Datos:</div>
+                                <div class="font-semibold text-gray-900">tfg_carlosdealda</div>
+                            </div>
+                            <div class="bg-blue-50 rounded-lg p-4">
+                                <div class="text-sm text-gray-600 mb-1">Tabla:</div>
+                                <div class="font-semibold text-gray-900">producto_imagen ✅</div>
+                            </div>
+                            <div class="bg-green-50 rounded-lg p-4">
+                                <div class="text-sm text-gray-600 mb-1">Total Imágenes:</div>
+                                <div class="font-semibold text-green-700 text-2xl">${result.totalImages}</div>
+                            </div>
+                            <div class="bg-purple-50 rounded-lg p-4">
+                                <div class="text-sm text-gray-600 mb-1">Tamaño Total:</div>
+                                <div class="font-semibold text-purple-700">${result.totalSizeMB} MB</div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    if (result.totalImages === 0) {
+                        showAlert('info', 'No hay imágenes en MySQL para migrar');
+                    } else {
+                        showAlert('success', `Encontradas ${result.totalImages} imágenes en MySQL`);
+                    }
+                } else if (result.success && !result.tableExists) {
+                    statusDiv.innerHTML = `
+                        <div class="bg-yellow-50 rounded-lg p-6 text-center">
+                            <i class="fas fa-exclamation-triangle text-6xl text-yellow-600 mb-4"></i>
+                            <p class="font-bold text-yellow-800">Tabla no encontrada</p>
+                            <p class="text-sm text-gray-600 mt-2">La tabla producto_imagen no existe en MySQL</p>
+                            <p class="text-xs text-gray-500 mt-4">Esto es normal si ya migraste o no tenías imágenes en MySQL</p>
+                        </div>
+                    `;
+                    showAlert('info', 'La tabla producto_imagen no existe en MySQL');
+                } else {
+                    statusDiv.innerHTML = `
+                        <div class="bg-red-50 rounded-lg p-6 text-center">
+                            <i class="fas fa-times-circle text-6xl text-red-600 mb-4"></i>
+                            <p class="font-bold text-red-800">Error conectando a MySQL</p>
+                            <p class="text-sm text-gray-600 mt-2">${result.message}</p>
+                        </div>
+                    `;
+                    showAlert('error', result.message);
+                }
+            } catch (error) {
+                statusDiv.innerHTML = `
+                    <div class="bg-red-50 rounded-lg p-6 text-center">
+                        <i class="fas fa-times-circle text-6xl text-red-600 mb-4"></i>
+                        <p class="font-bold text-red-800">Error</p>
+                        <p class="text-sm text-gray-600 mt-2">${error.message}</p>
+                    </div>
+                `;
+                showAlert('error', 'Error: ' + error.message);
+            }
+        }
+
+        async function testMongoConnection() {
+            const statusDiv = document.getElementById('mongoStatus');
+            statusDiv.innerHTML = '<div class="flex items-center justify-center py-8"><i class="fas fa-spinner fa-spin text-4xl text-gray-400"></i></div>';
+            
+            try {
+                const response = await fetch('/AdminUtilities/TestMongoConnection', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    statusDiv.innerHTML = `
+                        <div class="bg-green-50 rounded-lg p-6 text-center">
+                            <i class="fas fa-check-circle text-6xl text-green-600 mb-4"></i>
+                            <p class="font-bold text-green-800">${result.message}</p>
+                            <p class="text-sm text-gray-600 mt-2">MongoDB está listo para recibir imágenes</p>
+                        </div>
+                    `;
+                    showAlert('success', result.message);
+                } else {
+                    statusDiv.innerHTML = `
+                        <div class="bg-red-50 rounded-lg p-6 text-center">
+                            <i class="fas fa-times-circle text-6xl text-red-600 mb-4"></i>
+                            <p class="font-bold text-red-800">${result.message}</p>
+                            <p class="text-sm text-gray-600 mt-2">Verifica que MongoDB esté iniciado</p>
+                            <code class="block mt-3 bg-gray-800 text-white p-2 rounded text-xs">net start MongoDB</code>
+                        </div>
+                    `;
+                    showAlert('error', result.message);
+                }
+            } catch (error) {
+                statusDiv.innerHTML = `
+                    <div class="bg-red-50 rounded-lg p-6 text-center">
+                        <i class="fas fa-times-circle text-6xl text-red-600 mb-4"></i>
+                        <p class="font-bold text-red-800">Error de conexión</p>
+                        <p class="text-sm text-gray-600 mt-2">${error.message}</p>
+                    </div>
+                `;
+                showAlert('error', 'Error: ' + error.message);
+            }
+        }
+
+        async function startMigration() {
+            const clearExisting = document.getElementById('clearExisting').checked;
+            const btnMigrate = document.getElementById('btnMigrate');
+            const btnClear = document.getElementById('btnClear');
+            const progressDiv = document.getElementById('migrationProgress');
+            const resultDiv = document.getElementById('migrationResult');
+            
+            // Deshabilitar botones
+            btnMigrate.disabled = true;
+            btnClear.disabled = true;
+            
+            // Mostrar progreso
+            progressDiv.classList.remove('hidden');
+            resultDiv.classList.add('hidden');
+            
+            try {
+                const formData = new FormData();
+                formData.append('clearExisting', clearExisting);
+                
+                const response = await fetch('/AdminUtilities/MigrateImages', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                // Ocultar progreso
+                progressDiv.classList.add('hidden');
+                
+                // Mostrar resultado
+                if (result.success) {
+                    if (result.totalProcessed === 0) {
+                        resultDiv.innerHTML = `
+                            <div class="bg-yellow-50 rounded-lg p-6">
+                                <div class="flex items-center mb-4">
+                                    <i class="fas fa-info-circle text-4xl text-yellow-600 mr-4"></i>
+                                    <div>
+                                        <h3 class="font-bold text-yellow-800 text-xl">ℹ️ Sin Imágenes</h3>
+                                        <p class="text-gray-700">${result.message}</p>
+                                    </div>
+                                </div>
+                                <p class="text-sm text-gray-600 mt-4">
+                                    No hay imágenes en MySQL para migrar. Esto es normal si:
+                                </p>
+                                <ul class="list-disc list-inside text-sm text-gray-600 mt-2 space-y-1">
+                                    <li>Ya migraste anteriormente las imágenes</li>
+                                    <li>La tabla producto_imagen no existe</li>
+                                    <li>No has subido ninguna imagen todavía</li>
+                                </ul>
+                                <div class="mt-4 p-3 bg-blue-50 rounded-lg">
+                                    <p class="text-sm text-blue-800">
+                                        💡 <strong>Sugerencia:</strong> Puedes subir imágenes directamente a MongoDB desde el panel de administración de productos.
+                                    </p>
+                                </div>
+                            </div>
+                        `;
+                        showAlert('info', 'No hay imágenes para migrar');
+                    } else {
+                        resultDiv.innerHTML = `
+                            <div class="bg-green-50 rounded-lg p-6">
+                                <div class="flex items-center mb-4">
+                                    <i class="fas fa-check-circle text-4xl text-green-600 mr-4"></i>
+                                    <div>
+                                        <h3 class="font-bold text-green-800 text-xl">✅ Migración Exitosa</h3>
+                                        <p class="text-gray-700">${result.message}</p>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-3 gap-4 mt-4">
+                                    <div class="bg-white rounded-lg p-3 text-center">
+                                        <div class="text-2xl font-bold text-gray-900">${result.totalProcessed}</div>
+                                        <div class="text-xs text-gray-600">Total Procesadas</div>
+                                    </div>
+                                    <div class="bg-white rounded-lg p-3 text-center">
+                                        <div class="text-2xl font-bold text-green-600">${result.successCount}</div>
+                                        <div class="text-xs text-gray-600">Exitosas</div>
+                                    </div>
+                                    <div class="bg-white rounded-lg p-3 text-center">
+                                        <div class="text-2xl font-bold text-red-600">${result.errorCount}</div>
+                                        <div class="text-xs text-gray-600">Errores</div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        showAlert('success', result.message);
+                    }
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="bg-red-50 rounded-lg p-6">
+                            <div class="flex items-center">
+                                <i class="fas fa-times-circle text-4xl text-red-600 mr-4"></i>
+                                <div>
+                                    <h3 class="font-bold text-red-800 text-xl">❌ Error en Migración</h3>
+                                    <p class="text-gray-700">${result.message}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    showAlert('error', result.message);
+                }
+                
+                resultDiv.classList.remove('hidden');
+                
+            } catch (error) {
+                progressDiv.classList.add('hidden');
+                resultDiv.innerHTML = `
+                    <div class="bg-red-50 rounded-lg p-6">
+                        <div class="flex items-center">
+                            <i class="fas fa-times-circle text-4xl text-red-600 mr-4"></i>
+                            <div>
+                                <h3 class="font-bold text-red-800 text-xl">❌ Error</h3>
+                                <p class="text-gray-700">${error.message}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                resultDiv.classList.remove('hidden');
+                showAlert('error', 'Error: ' + error.message);
+            } finally {
+                // Rehabilitar botones
+                btnMigrate.disabled = false;
+                btnClear.disabled = false;
+            }
+        }
+
+        async function clearMongoImages() {
+            if (!confirm('¿Estás seguro de eliminar TODAS las imágenes de MongoDB? Esta acción no se puede deshacer.')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch('/AdminUtilities/ClearMongoImages', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert('success', result.message);
+                } else {
+                    showAlert('error', result.message);
+                }
+            } catch (error) {
+                showAlert('error', 'Error: ' + error.message);
+            }
+        }
+
+        // Cargar estados al cargar la página
+        window.addEventListener('load', () => {
+            testMongoConnection();
+            checkMySqlStatus();
+        });
+    </script>
+
+    <style>
+        @@keyframes fade-in {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate-fade-in {
+            animation: fade-in 0.3s ease-out;
+        }
+    </style>
+}

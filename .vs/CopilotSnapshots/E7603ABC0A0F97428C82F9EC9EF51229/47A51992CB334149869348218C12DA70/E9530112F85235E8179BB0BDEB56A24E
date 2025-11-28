@@ -1,0 +1,27 @@
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace AldaJoyeros.DTOs
+{
+    public class ProductoImagenDto
+    {
+        public long Id { get; set; }
+        public long ProductoId { get; set; }
+        public string RutaImagen { get; set; } = string.Empty;
+        public int Orden { get; set; }
+        public bool EsPrincipal { get; set; }
+        public DateTime? FechaCreacion { get; set; }
+    }
+
+    public class ProductoImagenCreateDto
+    {
+        [Required(ErrorMessage = "El ID del producto es obligatorio")]
+        public long ProductoId { get; set; }
+
+        [Required(ErrorMessage = "La ruta de la imagen es obligatoria")]
+        [StringLength(255, ErrorMessage = "La ruta no puede superar los 255 caracteres")]
+        public string RutaImagen { get; set; } = string.Empty;
+
+        public int Orden { get; set; } = 0;
+        public bool EsPrincipal { get; set; } = false;
+    }
+}

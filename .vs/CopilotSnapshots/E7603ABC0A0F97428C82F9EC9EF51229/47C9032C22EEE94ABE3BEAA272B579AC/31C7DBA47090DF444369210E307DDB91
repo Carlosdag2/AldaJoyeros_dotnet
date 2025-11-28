@@ -1,0 +1,185 @@
+﻿@model AldaJoyeros.DTOs.ProductoUpdateDto
+
+@{
+    ViewData["Title"] = "Editar Producto";
+    var categorias = ViewBag.Categorias as IEnumerable<AldaJoyeros.DTOs.CategoriaDto>;
+    var productoId = ViewContext.RouteData.Values["id"];
+}
+
+<!-- Header -->
+<div class="mb-8">
+    <h1 class="font-display text-4xl font-bold text-gray-900 mb-2">
+        <i class="fas fa-edit text-yellow-600"></i> Editar Producto
+    </h1>
+    <p class="text-gray-600">Modifica la información del producto #@productoId</p>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Form -->
+    <div class="lg:col-span-2">
+        <div class="bg-white rounded-3xl shadow-xl p-8">
+            <form asp-action="Editar" method="post" class="space-y-6">
+                <div asp-validation-summary="ModelOnly" class="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg mb-6">
+                    <div class="flex items-center">
+                        <i class="fas fa-exclamation-circle text-red-500 mr-3"></i>
+                        <span class="text-red-800 text-sm"></span>
+                    </div>
+                </div>
+
+                <!-- Nombre -->
+                <div>
+                    <label asp-for="Nombre" class="block text-sm font-semibold text-gray-700 mb-2">
+                        <i class="fas fa-gem mr-2 text-gray-500"></i>Nombre del Producto
+                    </label>
+                    <input asp-for="Nombre" 
+                           class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-yellow-500 focus:ring focus:ring-yellow-200 transition-all duration-200 text-lg"
+                           placeholder="Ej: Anillo de Diamantes Solitario" />
+                    <span asp-validation-for="Nombre" class="text-red-500 text-sm mt-1 block"></span>
+                </div>
+
+                <!-- Descripción -->
+                <div>
+                    <label asp-for="Descripcion" class="block text-sm font-semibold text-gray-700 mb-2">
+                        <i class="fas fa-align-left mr-2 text-gray-500"></i>Descripción
+                    </label>
+                    <textarea asp-for="Descripcion" 
+                              rows="4"
+                              class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-yellow-500 focus:ring focus:ring-yellow-200 transition-all duration-200"
+                              placeholder="Describe las características, materiales y detalles del producto..."></textarea>
+                    <span asp-validation-for="Descripcion" class="text-red-500 text-sm mt-1 block"></span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Precio -->
+                    <div>
+                        <label asp-for="Precio" class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-euro-sign mr-2 text-gray-500"></i>Precio (€)
+                        </label>
+                        <input asp-for="Precio" 
+                               type="number" 
+                               step="0.01"
+                               class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-yellow-500 focus:ring focus:ring-yellow-200 transition-all duration-200 text-lg font-semibold"
+                               placeholder="99.99" />
+                        <span asp-validation-for="Precio" class="text-red-500 text-sm mt-1 block"></span>
+                    </div>
+
+                    <!-- Categoría -->
+                    <div>
+                        <label asp-for="CategoriaId" class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-tags mr-2 text-gray-500"></i>Categoría
+                        </label>
+                        <select asp-for="CategoriaId" 
+                                class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-yellow-500 focus:ring focus:ring-yellow-200 transition-all duration-200 text-lg">
+                            <option value="">Selecciona una categoría</option>
+                            @if (categorias != null)
+                            {
+                                @foreach (var categoria in categorias)
+                                {
+                                    <option value="@categoria.Id">@categoria.Nombre</option>
+                                }
+                            }
+                        </select>
+                        <span asp-validation-for="CategoriaId" class="text-red-500 text-sm mt-1 block"></span>
+                    </div>
+                </div>
+
+                <!-- Info Card -->
+                <div class="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl p-6 border-2 border-yellow-200">
+                    <div class="flex items-start">
+                        <i class="fas fa-info-circle text-yellow-600 text-2xl mr-4 mt-1"></i>
+                        <div>
+                            <h3 class="font-semibold text-gray-900 mb-2">Información de Edición</h3>
+                            <ul class="text-sm text-gray-700 space-y-1">
+                                <li>• Los cambios se reflejarán inmediatamente en el catálogo</li>
+                                <li>• Los pedidos existentes mantienen el precio original</li>
+                                <li>• Asegúrate de que la información sea precisa</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <hr />
+
+                <div class="flex flex-col sm:flex-row justify-between gap-4">
+                    <a asp-action="Index" 
+                       class="inline-flex items-center justify-center px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-lg hover:border-yellow-500 hover:text-yellow-600 transition-all duration-200 font-semibold">
+                        <i class="fas fa-times mr-2"></i>
+                        Cancelar
+                    </a>
+                    <button type="submit" 
+                            class="inline-flex items-center justify-center gradient-gold text-gray-900 px-8 py-3 rounded-lg font-bold text-lg hover:shadow-2xl transition-all duration-200 transform hover:scale-105">
+                        <i class="fas fa-save mr-2"></i>
+                        Guardar Cambios
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Info Sidebar -->
+    <div class="lg:col-span-1 space-y-6">
+        <!-- Stats -->
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6">
+            <h3 class="font-bold text-gray-900 mb-4 flex items-center">
+                <i class="fas fa-chart-bar text-blue-600 mr-2"></i>
+                Información
+            </h3>
+            <div class="space-y-3">
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-gray-600">ID Producto:</span>
+                    <span class="font-bold text-gray-900">#@productoId</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-gray-600">Estado:</span>
+                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">
+                        <i class="fas fa-check-circle mr-1"></i>Activo
+                    </span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-gray-600">Ventas:</span>
+                    <span class="font-semibold text-gray-900">-- pedidos</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="bg-white rounded-2xl p-6 shadow-lg">
+            <h3 class="font-bold text-gray-900 mb-4 flex items-center">
+                <i class="fas fa-bolt text-yellow-600 mr-2"></i>
+                Acciones Rápidas
+            </h3>
+            <div class="space-y-2">
+                <a asp-controller="Productos" asp-action="Detalle" asp-route-id="@productoId" target="_blank"
+                   class="w-full flex items-center justify-center px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-all duration-200 font-medium">
+                    <i class="fas fa-external-link-alt mr-2"></i>Ver en Tienda
+                </a>
+                <button onclick="return confirm('¿Duplicar este producto?')"
+                        class="w-full flex items-center justify-center px-4 py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-all duration-200 font-medium">
+                    <i class="fas fa-copy mr-2"></i>Duplicar Producto
+                </button>
+            </div>
+        </div>
+
+        <!-- Warning -->
+        <div class="bg-gradient-to-br from-red-50 to-pink-50 rounded-2xl p-6">
+            <h3 class="font-bold text-gray-900 mb-3 flex items-center">
+                <i class="fas fa-exclamation-triangle text-red-600 mr-2"></i>
+                Zona de Peligro
+            </h3>
+            <p class="text-sm text-gray-700 mb-4">
+                Eliminar este producto es permanente y no se puede deshacer.
+            </p>
+            <form asp-action="Eliminar" asp-route-id="@productoId" method="post"
+                  onsubmit="return confirm('¿Estás SEGURO de eliminar este producto? Esta acción NO se puede deshacer.')">
+                <button type="submit"
+                        class="w-full flex items-center justify-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all duration-200 font-semibold">
+                    <i class="fas fa-trash mr-2"></i>Eliminar Producto
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

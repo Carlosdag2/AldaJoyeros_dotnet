@@ -1,0 +1,97 @@
+﻿@model AldaJoyeros.DTOs.ProductoDto
+
+@{
+    ViewData["Title"] = Model.Nombre;
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Inicio</a></li>
+        <li class="breadcrumb-item"><a asp-action="Index">Productos</a></li>
+        <li class="breadcrumb-item active">@Model.Nombre</li>
+    </ol>
+</nav>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-body text-center p-5" style="min-height: 400px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);">
+                <i class="fas fa-gem fa-10x text-white"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <h1 class="mb-3">@Model.Nombre</h1>
+        
+        <div class="mb-3">
+            <span class="badge bg-secondary fs-6">@Model.CategoriaNombre</span>
+        </div>
+
+        <h2 class="text-primary mb-4">@Model.Precio.ToString("C")</h2>
+
+        <div class="card bg-light mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Descripción</h5>
+                <p class="card-text">@Model.Descripcion</p>
+            </div>
+        </div>
+
+        <form asp-controller="Carrito" asp-action="Agregar" method="post">
+            <input type="hidden" name="productoId" value="@Model.Id" />
+            
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <label class="form-label">Cantidad</label>
+                    <input type="number" name="cantidad" value="1" min="1" max="10" class="form-control" />
+                </div>
+            </div>
+
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="fas fa-cart-plus"></i> Agregar al Carrito
+                </button>
+                <a asp-action="Index" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Volver al Catálogo
+                </a>
+            </div>
+        </form>
+
+        <hr class="my-4" />
+
+        <div class="row text-center">
+            <div class="col-4">
+                <i class="fas fa-shipping-fast fa-2x text-primary mb-2"></i>
+                <p class="small mb-0">Envío rápido</p>
+            </div>
+            <div class="col-4">
+                <i class="fas fa-undo fa-2x text-primary mb-2"></i>
+                <p class="small mb-0">30 días devolución</p>
+            </div>
+            <div class="col-4">
+                <i class="fas fa-certificate fa-2x text-primary mb-2"></i>
+                <p class="small mb-0">Garantía oficial</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-5">
+    <h3 class="mb-4">Características</h3>
+    <div class="row">
+        <div class="col-md-6">
+            <ul class="list-group">
+                <li class="list-group-item"><i class="fas fa-check text-success"></i> Material de alta calidad</li>
+                <li class="list-group-item"><i class="fas fa-check text-success"></i> Acabado profesional</li>
+                <li class="list-group-item"><i class="fas fa-check text-success"></i> Diseño exclusivo</li>
+            </ul>
+        </div>
+        <div class="col-md-6">
+            <ul class="list-group">
+                <li class="list-group-item"><i class="fas fa-check text-success"></i> Certificado de autenticidad</li>
+                <li class="list-group-item"><i class="fas fa-check text-success"></i> Caja de regalo incluida</li>
+                <li class="list-group-item"><i class="fas fa-check text-success"></i> Garantía de por vida</li>
+            </ul>
+        </div>
+    </div>
+</div>

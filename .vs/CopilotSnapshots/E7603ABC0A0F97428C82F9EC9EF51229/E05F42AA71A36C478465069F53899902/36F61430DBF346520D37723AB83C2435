@@ -1,0 +1,155 @@
+﻿using AutoMapper;
+using AldaJoyeros.Data;
+using AldaJoyeros.DTOs;
+using AldaJoyeros.Entities;
+using AldaJoyeros.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
+
+namespace AldaJoyeros.Services.Implementations
+{
+    public class ProductoImagenService : IProductoImagenService
+    {
+        private readonly AldaJoyerosContext _context;
+        private readonly IMapper _mapper;
+
+        public ProductoImagenService(AldaJoyerosContext context, IMapper mapper)
+        {
+            _context = context;
+            _mapper = mapper;
+        }
+
+        public async Task<IEnumerable<ProductoImagenDto>> GetByProductoIdAsync(long productoId)
+        {
+            var imagenes = await _context.ProductoImagenes
+                .Where(i => i.ProductoId == productoId)
+                .OrderBy(i => i.Orden)
+                .ToListAsync();
+
+            return _mapper.Map<IEnumerable<ProductoImagenDto>>(imagenes);
+        }
+
+        public async Task<ProductoImagenDto?> GetByIdAsync(long id)
+        {
+            var imagen = await _context.ProductoImagenes.FindAsync(id);
+            return imagen == null ? null : _mapper.Map<ProductoImagenDto>(imagen);
+        }
+
+        public async Task<ProductoImagenDto> CreateAsync(ProductoImagenCreateDto imagenDto)
+        {
+            var imagen = _mapper.Map<ProductoImagen>(imagenDto);
+            
+            // Si es la primera imagen, marcarla como principal
+            var existentes = await _context.ProductoImagenes
+                .Where(i => i.ProductoId == imagenDto.ProductoId)
+                .CountAsync();
+
+            if (existentes == 0)
+            {
+                imagen.EsPrincipal = true;
+                imagen.Orden = 0;
+            }
+            else if (imagen.EsPrincipal)
+            {
+                // Quitar principal de las demás
+                await QuitarPrincipalAsync(imagenDto.ProductoId);
+            }
+
+            _context.ProductoImagenes.Add(imagen);
+            await _context.SaveChangesAsync();
+
+            return _mapper.Map<ProductoImagenDto>(imagen);
+        }
+
+        public async Task<ProductoImagenDto> CreateFromFileAsync(ProductoImagenUploadDto uploadDto)
+        {
+            using var memoryStream = new MemoryStream();
+            await uploadDto.Archivo.CopyToAsync(memoryStream);
+
+            var imagenData = memoryStream.ToArray();
+            var tipoMime = uploadDto.Archivo.ContentType;
+
+            // Validar tipo de imagen
+            if (!tipoMime.StartsWith("image/"))
+            {
+                throw new InvalidOperationException("El archivo debe ser una imagen");
+            }
+
+            // Validar tamaño (máximo 5MB)
+            if (imagenData.Length > 5 * 1024 * 1024)
+            {
+                throw new InvalidOperationException("La imagen no puede superar los 5MB");
+            }
+
+            var createDto = new ProductoImagenCreateDto
+            {
+                ProductoId = uploadDto.ProductoId,
+                ImagenData = imagenData,
+                TipoMime = tipoMime,
+                Orden = uploadDto.Orden,
+                EsPrincipal = uploadDto.EsPrincipal
+            };
+
+            return await CreateAsync(createDto);
+        }
+
+        public async Task DeleteAsync(long id)
+        {
+            var imagen = await _context.ProductoImagenes.FindAsync(id);
+            if (imagen == null)
+            {
+                throw new KeyNotFoundException("Imagen no encontrada");
+            }
+
+            var productoId = imagen.ProductoId;
+            var eraPrincipal = imagen.EsPrincipal;
+
+            _context.ProductoImagenes.Remove(imagen);
+            await _context.SaveChangesAsync();
+
+            // Si era la principal, marcar otra como principal
+            if (eraPrincipal)
+            {
+                var siguiente = await _context.ProductoImagenes
+                    .Where(i => i.ProductoId == productoId)
+                    .OrderBy(i => i.Orden)
+                    .FirstOrDefaultAsync();
+
+                if (siguiente != null)
+                {
+                    siguiente.EsPrincipal = true;
+                    await _context.SaveChangesAsync();
+                }
+            }
+        }
+
+        public async Task SetAsPrincipalAsync(long id)
+        {
+            var imagen = await _context.ProductoImagenes.FindAsync(id);
+            if (imagen == null)
+            {
+                throw new KeyNotFoundException("Imagen no encontrada");
+            }
+
+            // Quitar principal de las demás
+            await QuitarPrincipalAsync(imagen.ProductoId);
+
+            // Marcar como principal
+            imagen.EsPrincipal = true;
+            await _context.SaveChangesAsync();
+        }
+
+        private async Task QuitarPrincipalAsync(long productoId)
+        {
+            var imagenes = await _context.ProductoImagenes
+                .Where(i => i.ProductoId == productoId && i.EsPrincipal)
+                .ToListAsync();
+
+            foreach (var img in imagenes)
+            {
+                img.EsPrincipal = false;
+            }
+
+            await _context.SaveChangesAsync();
+        }
+    }
+}

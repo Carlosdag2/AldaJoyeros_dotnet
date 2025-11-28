@@ -1,0 +1,54 @@
+﻿using Microsoft.EntityFrameworkCore;
+using AldaJoyeros.Entities;
+
+namespace AldaJoyeros.Data
+{
+    public class AldaJoyerosContext : DbContext
+    {
+        public AldaJoyerosContext(DbContextOptions<AldaJoyerosContext> options) : base(options)
+        {
+        }
+
+        public DbSet<Usuario> Usuarios { get; set; }
+        public DbSet<Categoria> Categorias { get; set; }
+        public DbSet<Producto> Productos { get; set; }
+        public DbSet<CarritoItem> CarritoItems { get; set; }
+        public DbSet<Direccion> Direcciones { get; set; }
+        public DbSet<Pedido> Pedidos { get; set; }
+        public DbSet<LineaPedido> LineasPedido { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            // Configurar la conversión del enum EstadoPedido a string
+            modelBuilder.Entity<Pedido>()
+                .Property(p => p.Estado)
+                .HasConversion<string>();
+
+            // Configurar índices únicos
+            modelBuilder.Entity<Usuario>()
+                .HasIndex(u => u.Email)
+                .IsUnique();
+
+            modelBuilder.Entity<Categoria>()
+                .HasIndex(c => c.Nombre)
+                .IsUnique();
+
+            modelBuilder.Entity<Producto>()
+                .HasIndex(p => p.Nombre)
+                .IsUnique();
+
+            // Configurar relaciones
+            modelBuilder.Entity<Direccion>()
+                .HasOne(d => d.Usuario)
+                .WithOne(u => u.Direccion)
+                .HasForeignKey<Direccion>(d => d.UsuarioId);
+
+            modelBuilder.Entity<Pedido>()
+                .HasOne(p => p.Direccion)
+                .WithOne(d => d.Pedido)
+                .HasForeignKey<Pedido>(p => p.DireccionId);
+        }
+    }
+}

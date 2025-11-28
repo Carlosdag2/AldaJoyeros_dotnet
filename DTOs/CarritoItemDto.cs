@@ -1,0 +1,34 @@
+using System.ComponentModel.DataAnnotations;
+
+namespace AldaJoyeros.DTOs
+{
+    public class CarritoItemDto
+    {
+        public long Id { get; set; }
+        public int Cantidad { get; set; }
+        public double Precio { get; set; }
+        public long ProductoId { get; set; }
+        public string ProductoNombre { get; set; } = string.Empty;
+        public double Subtotal { get; set; }
+        
+        // Producto completo con imágenes
+        public ProductoDto? Producto { get; set; }
+    }
+
+    public class CarritoItemCreateDto
+    {
+        [Required(ErrorMessage = "El producto es obligatorio")]
+        public long ProductoId { get; set; }
+
+        [Required(ErrorMessage = "La cantidad es obligatoria")]
+        [Range(1, int.MaxValue, ErrorMessage = "La cantidad debe ser al menos 1")]
+        public int Cantidad { get; set; }
+    }
+
+    public class CarritoItemUpdateDto
+    {
+        [Required(ErrorMessage = "La cantidad es obligatoria")]
+        [Range(1, int.MaxValue, ErrorMessage = "La cantidad debe ser al menos 1")]
+        public int Cantidad { get; set; }
+    }
+}

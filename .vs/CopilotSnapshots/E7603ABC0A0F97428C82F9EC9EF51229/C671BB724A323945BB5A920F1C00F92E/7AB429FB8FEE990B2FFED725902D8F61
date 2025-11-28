@@ -1,0 +1,106 @@
+﻿@model AldaJoyeros.DTOs.UsuarioCreateDto
+
+@{
+    ViewData["Title"] = "Registrarse";
+}
+
+<div class="max-w-md mx-auto">
+    <div class="bg-white rounded-3xl shadow-2xl overflow-hidden">
+        <!-- Header -->
+        <div class="gradient-gold p-8 text-center">
+            <i class="fas fa-user-plus text-5xl text-gray-900 mb-4"></i>
+            <h2 class="font-display text-3xl font-bold text-gray-900">Crear Cuenta</h2>
+            <p class="text-gray-700 mt-2">Únete a la familia Alda Joyeros</p>
+        </div>
+
+        <!-- Form -->
+        <div class="p-8">
+            <form asp-action="Register" method="post" class="space-y-6">
+                <div asp-validation-summary="ModelOnly" class="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg">
+                    <div class="flex items-center">
+                        <i class="fas fa-exclamation-circle text-red-500 mr-3"></i>
+                        <span class="text-red-800 text-sm"></span>
+                    </div>
+                </div>
+
+                <div>
+                    <label asp-for="Email" class="block text-sm font-semibold text-gray-700 mb-2">
+                        <i class="fas fa-envelope mr-2 text-gray-500"></i>Correo Electrónico
+                    </label>
+                    <input asp-for="Email" 
+                           type="email"
+                           class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-yellow-500 focus:ring focus:ring-yellow-200 transition-all duration-200"
+                           placeholder="correo@ejemplo.com" />
+                    <span asp-validation-for="Email" class="text-red-500 text-sm mt-1 block"></span>
+                </div>
+
+                <div>
+                    <label asp-for="Password" class="block text-sm font-semibold text-gray-700 mb-2">
+                        <i class="fas fa-lock mr-2 text-gray-500"></i>Contraseña
+                    </label>
+                    <input asp-for="Password" 
+                           type="password"
+                           class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-yellow-500 focus:ring focus:ring-yellow-200 transition-all duration-200"
+                           placeholder="Mínimo 6 caracteres" />
+                    <span asp-validation-for="Password" class="text-red-500 text-sm mt-1 block"></span>
+                    <p class="text-gray-500 text-xs mt-1">
+                        <i class="fas fa-info-circle mr-1"></i>Mínimo 6 caracteres
+                    </p>
+                </div>
+
+                <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4">
+                    <div class="flex items-start">
+                        <i class="fas fa-shield-alt text-blue-600 mt-1 mr-3"></i>
+                        <div>
+                            <h4 class="font-semibold text-gray-900 text-sm mb-1">Seguridad Garantizada</h4>
+                            <p class="text-gray-600 text-xs">Tu información está protegida con encriptación de nivel bancario</p>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" 
+                        class="w-full gradient-gold text-gray-900 py-4 rounded-lg font-bold text-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105">
+                    <i class="fas fa-user-plus mr-2"></i>
+                    Crear Cuenta
+                </button>
+            </form>
+
+            <div class="mt-6 text-center">
+                <div class="relative">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full border-t border-gray-300"></div>
+                    </div>
+                    <div class="relative flex justify-center text-sm">
+                        <span class="px-4 bg-white text-gray-500">¿Ya tienes cuenta?</span>
+                    </div>
+                </div>
+                
+                <a asp-action="Login" 
+                   class="mt-4 inline-flex items-center text-yellow-600 hover:text-yellow-700 font-semibold group">
+                    Inicia sesión aquí
+                    <i class="fas fa-arrow-right ml-2 group-hover:translate-x-2 transition-transform"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Benefits -->
+    <div class="mt-8 grid grid-cols-3 gap-4">
+        <div class="bg-white rounded-xl p-4 text-center shadow-md">
+            <i class="fas fa-gift text-3xl text-purple-600 mb-2"></i>
+            <p class="text-xs text-gray-700 font-medium">Ofertas Exclusivas</p>
+        </div>
+        <div class="bg-white rounded-xl p-4 text-center shadow-md">
+            <i class="fas fa-truck text-3xl text-green-600 mb-2"></i>
+            <p class="text-xs text-gray-700 font-medium">Envío Gratis +50€</p>
+        </div>
+        <div class="bg-white rounded-xl p-4 text-center shadow-md">
+            <i class="fas fa-star text-3xl text-yellow-600 mb-2"></i>
+            <p class="text-xs text-gray-700 font-medium">Puntos Reward</p>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,203 @@
+﻿@model AldaJoyeros.DTOs.ProductoDto
+
+@{
+    ViewData["Title"] = Model.Nombre;
+}
+
+<!-- Breadcrumb -->
+<nav class="mb-8">
+    <ol class="flex items-center space-x-2 text-sm text-gray-600">
+        <li><a asp-controller="Home" asp-action="Index" class="hover:text-yellow-600 transition-colors">Inicio</a></li>
+        <li><i class="fas fa-chevron-right text-xs"></i></li>
+        <li><a asp-controller="Productos" asp-action="Index" class="hover:text-yellow-600 transition-colors">Productos</a></li>
+        <li><i class="fas fa-chevron-right text-xs"></i></li>
+        <li><a asp-controller="Productos" asp-action="Index" asp-route-categoriaId="@Model.CategoriaId" class="hover:text-yellow-600 transition-colors">@Model.CategoriaNombre</a></li>
+        <li><i class="fas fa-chevron-right text-xs"></i></li>
+        <li class="text-gray-900 font-semibold">@Model.Nombre</li>
+    </ol>
+</nav>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+    <!-- Galería de Imágenes -->
+    <div>
+        <!-- Imagen Principal -->
+        <div class="bg-gradient-to-br from-amber-50 to-orange-50 rounded-3xl overflow-hidden shadow-2xl mb-4">
+            @if (Model.TieneImagenes)
+            {
+                <img id="mainImage" 
+                     src="@Model.ImagenPrincipal" 
+                     alt="@Model.Nombre" 
+                     class="w-full h-96 object-cover"
+                     onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'w-full h-96 flex items-center justify-center\'><i class=\'fas fa-gem text-9xl text-yellow-600 opacity-20\'></i></div>';" />
+            }
+            else
+            {
+                <div class="w-full h-96 flex items-center justify-center">
+                    <i class="fas fa-gem text-9xl text-yellow-600 opacity-20"></i>
+                </div>
+            }
+        </div>
+
+        <!-- Miniaturas -->
+        @if (Model.Imagenes.Count > 1)
+        {
+            <div class="grid grid-cols-4 gap-3">
+                @foreach (var imagen in Model.Imagenes.OrderBy(i => i.Orden))
+                {
+                    <button type="button" 
+                            onclick="cambiarImagen('@imagen.ImagenBase64', this)"
+                            class="thumbnail-btn bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-200 border-2 @(imagen.EsPrincipal ? "border-yellow-500" : "border-transparent hover:border-yellow-300")">
+                        <img src="@imagen.ImagenBase64" 
+                             alt="@Model.Nombre - Imagen @(imagen.Orden + 1)" 
+                             class="w-full h-20 object-cover"
+                             onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'w-full h-20 flex items-center justify-center\'><i class=\'fas fa-gem text-2xl text-yellow-600 opacity-20\'></i></div>';" />
+                    </button>
+                }
+            </div>
+        }
+        else if (Model.TieneImagenes)
+        {
+            <div class="text-center text-sm text-gray-500 italic">
+                <i class="fas fa-image mr-2"></i>Vista única disponible
+            </div>
+        }
+    </div>
+
+    <!-- Información del Producto -->
+    <div>
+        <!-- Categoría Badge -->
+        <div class="mb-4">
+            <a asp-action="Index" asp-route-categoriaId="@Model.CategoriaId" 
+               class="inline-flex items-center px-4 py-2 bg-purple-100 text-purple-800 rounded-full text-sm font-semibold hover:bg-purple-200 transition-colors">
+                <i class="fas fa-tag mr-2"></i>
+                @Model.CategoriaNombre
+            </a>
+        </div>
+
+        <!-- Nombre -->
+        <h1 class="font-display text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            @Model.Nombre
+        </h1>
+
+        <!-- Precio -->
+        <div class="flex items-baseline gap-4 mb-8">
+            <div class="text-5xl font-bold text-gradient">
+                @Model.Precio.ToString("C")
+            </div>
+            <div class="text-sm text-gray-500">
+                IVA incluido
+            </div>
+        </div>
+
+        <!-- Descripción -->
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 mb-8">
+            <h2 class="font-display text-2xl font-bold text-gray-900 mb-3 flex items-center">
+                <i class="fas fa-info-circle text-blue-600 mr-3"></i>
+                Descripción
+            </h2>
+            <p class="text-gray-700 leading-relaxed">
+                @Model.Descripcion
+            </p>
+        </div>
+
+        <!-- Características -->
+        <div class="grid grid-cols-2 gap-4 mb-8">
+            <div class="bg-white rounded-xl p-4 shadow-md">
+                <div class="flex items-center mb-2">
+                    <i class="fas fa-shield-alt text-green-600 text-xl mr-3"></i>
+                    <span class="font-semibold text-gray-900">Garantía</span>
+                </div>
+                <p class="text-sm text-gray-600">2 años de garantía</p>
+            </div>
+
+            <div class="bg-white rounded-xl p-4 shadow-md">
+                <div class="flex items-center mb-2">
+                    <i class="fas fa-truck text-blue-600 text-xl mr-3"></i>
+                    <span class="font-semibold text-gray-900">Envío</span>
+                </div>
+                <p class="text-sm text-gray-600">Gratis en 24-48h</p>
+            </div>
+
+            <div class="bg-white rounded-xl p-4 shadow-md">
+                <div class="flex items-center mb-2">
+                    <i class="fas fa-certificate text-yellow-600 text-xl mr-3"></i>
+                    <span class="font-semibold text-gray-900">Autenticidad</span>
+                </div>
+                <p class="text-sm text-gray-600">100% certificada</p>
+            </div>
+
+            <div class="bg-white rounded-xl p-4 shadow-md">
+                <div class="flex items-center mb-2">
+                    <i class="fas fa-undo text-purple-600 text-xl mr-3"></i>
+                    <span class="font-semibold text-gray-900">Devolución</span>
+                </div>
+                <p class="text-sm text-gray-600">30 días gratis</p>
+            </div>
+        </div>
+
+        <!-- Acciones -->
+        <form asp-controller="Carrito" asp-action="Agregar" method="post" class="space-y-4">
+            <input type="hidden" name="productoId" value="@Model.Id" />
+            
+            <button type="submit" 
+                    class="w-full flex items-center justify-center gradient-gold text-gray-900 px-8 py-4 rounded-xl font-bold text-lg hover:shadow-2xl transition-all duration-200 transform hover:scale-105">
+                <i class="fas fa-cart-plus mr-3 text-xl"></i>
+                Añadir al Carrito
+            </button>
+
+            <a asp-controller="Productos" asp-action="Index" 
+               class="w-full flex items-center justify-center border-2 border-gray-300 text-gray-700 px-8 py-4 rounded-xl font-semibold hover:border-yellow-500 hover:text-yellow-600 transition-all duration-200">
+                <i class="fas fa-arrow-left mr-3"></i>
+                Seguir Comprando
+            </a>
+        </form>
+
+        <!-- Trust Badges -->
+        <div class="mt-8 pt-8 border-t border-gray-200">
+            <div class="grid grid-cols-3 gap-4 text-center">
+                <div>
+                    <i class="fas fa-lock text-3xl text-gray-400 mb-2"></i>
+                    <p class="text-xs text-gray-600">Pago<br/>Seguro</p>
+                </div>
+                <div>
+                    <i class="fas fa-star text-3xl text-yellow-500 mb-2"></i>
+                    <p class="text-xs text-gray-600">Calidad<br/>Premium</p>
+                </div>
+                <div>
+                    <i class="fas fa-headset text-3xl text-gray-400 mb-2"></i>
+                    <p class="text-xs text-gray-600">Soporte<br/>24/7</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Información Adicional -->
+<div class="mt-16">
+    <div class="bg-gradient-to-r from-gray-900 to-gray-800 rounded-3xl p-12 text-white text-center">
+        <i class="fas fa-gem text-6xl text-yellow-500 mb-6"></i>
+        <h2 class="font-display text-3xl font-bold mb-4">Joyería de Calidad Excepcional</h2>
+        <p class="text-gray-300 text-lg max-w-3xl mx-auto">
+            Cada pieza es seleccionada cuidadosamente para garantizar la máxima calidad y elegancia. 
+            Certificamos la autenticidad de todos nuestros productos.
+        </p>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function cambiarImagen(rutaImagen, elemento) {
+            // Cambiar imagen principal
+            document.getElementById('mainImage').src = rutaImagen;
+            
+            // Actualizar bordes de miniaturas
+            document.querySelectorAll('.thumbnail-btn').forEach(btn => {
+                btn.classList.remove('border-yellow-500');
+                btn.classList.add('border-transparent');
+            });
+            
+            elemento.classList.remove('border-transparent');
+            elemento.classList.add('border-yellow-500');
+        }
+    </script>
+}

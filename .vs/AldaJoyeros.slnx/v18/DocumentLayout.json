@@ -1,0 +1,1744 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\aldajoyeros.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:aldajoyeros.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\controllers\\pedidoscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:controllers\\pedidoscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\controllers\\carritocontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:controllers\\carritocontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\views\\carrito\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:views\\carrito\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\views\\pedidos\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:views\\pedidos\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\views\\pedidos\\detalle.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:views\\pedidos\\detalle.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\views\\pedidos\\checkout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:views\\pedidos\\checkout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\services\\implementations\\pedidoservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:services\\implementations\\pedidoservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\services\\implementations\\direccionservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:services\\implementations\\direccionservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\entities\\direccion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:entities\\direccion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\repositories\\implementations\\direccionrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:repositories\\implementations\\direccionrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\repositories\\interfaces\\idireccionrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:repositories\\interfaces\\idireccionrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\repositories\\interfaces\\ipedidorepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:repositories\\interfaces\\ipedidorepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\repositories\\implementations\\pedidorepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:repositories\\implementations\\pedidorepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\repositories\\implementations\\categoriarepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:repositories\\implementations\\categoriarepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\repositories\\implementations\\carritorepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:repositories\\implementations\\carritorepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\dtos\\carritoitemdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:dtos\\carritoitemdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\entities\\carritoitem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:entities\\carritoitem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\dtos\\pedidodto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:dtos\\pedidodto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\entities\\pedido.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:entities\\pedido.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\configuration\\mongodbsettings.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:configuration\\mongodbsettings.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\dtos\\checkoutviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:dtos\\checkoutviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\controllers\\adminpedidoscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:controllers\\adminpedidoscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\views\\adminpedidos\\detalle.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:views\\adminpedidos\\detalle.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\views\\home\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:views\\home\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\views\\productos\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:views\\productos\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\views\\productos\\detalle.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:views\\productos\\detalle.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\views\\adminimagenes\\gestionar.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:views\\adminimagenes\\gestionar.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\controllers\\adminutilitiescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:controllers\\adminutilitiescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\utilities\\imagemigrationutility.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:utilities\\imagemigrationutility.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\views\\adminutilities\\migration.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:views\\adminutilities\\migration.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\migrate_mysql_to_mongo.ps1||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:migrate_mysql_to_mongo.ps1||{3B902123-F8A7-4915-9F01-361F908088D0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\migrate_images_mysql_to_mongo.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:migrate_images_mysql_to_mongo.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\entities\\producto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:entities\\producto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\data\\aldajoyeroscontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:data\\aldajoyeroscontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\data\\mongodbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:data\\mongodbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\controllers\\adminimagenescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:controllers\\adminimagenescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\migrate_images_to_blob.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:migrate_images_to_blob.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\import_images_to_database.ps1||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:import_images_to_database.ps1||{3B902123-F8A7-4915-9F01-361F908088D0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\services\\interfaces\\iproductoimagenservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:services\\interfaces\\iproductoimagenservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\services\\implementations\\usuarioservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:services\\implementations\\usuarioservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\entities\\productoimagen.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:entities\\productoimagen.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\dtos\\productoimagendto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:dtos\\productoimagendto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\dtos\\usuariodto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:dtos\\usuariodto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\helpers\\pagedresult.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:helpers\\pagedresult.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\views\\auth\\register.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:views\\auth\\register.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\database_init.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:database_init.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\wwwroot\\css\\site.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:wwwroot\\css\\site.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\controllers\\productoscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:controllers\\productoscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\views\\adminusuarios\\editar.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:views\\adminusuarios\\editar.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\controllers\\admincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:controllers\\admincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\controllers\\admincategoriascontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:controllers\\admincategoriascontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\views\\adminusuarios\\crear.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:views\\adminusuarios\\crear.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\controllers\\basecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:controllers\\basecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\views\\adminusuarios\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:views\\adminusuarios\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\views\\adminpedidos\\editarestado.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:views\\adminpedidos\\editarestado.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\views\\adminpedidos\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:views\\adminpedidos\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\views\\adminproductos\\editar.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:views\\adminproductos\\editar.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\views\\adminproductos\\crear.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:views\\adminproductos\\crear.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\views\\adminproductos\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:views\\adminproductos\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\views\\admincategorias\\editar.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:views\\admincategorias\\editar.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\views\\admincategorias\\crear.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:views\\admincategorias\\crear.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\views\\admincategorias\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:views\\admincategorias\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\views\\admin\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:views\\admin\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\views\\auth\\login.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:views\\auth\\login.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\dtos\\productodto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:dtos\\productodto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\controllers\\adminusuarioscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:controllers\\adminusuarioscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\controllers\\adminproductoscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:controllers\\adminproductoscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\controllers\\homecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:controllers\\homecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\helpers\\sessionextensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:helpers\\sessionextensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\services\\implementations\\categoriaservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:services\\implementations\\categoriaservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\mappings\\mappingprofile.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:mappings\\mappingprofile.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\services\\implementations\\carritoservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:services\\implementations\\carritoservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\services\\implementations\\productoservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:services\\implementations\\productoservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\entities\\categoria.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:entities\\categoria.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\services\\interfaces\\ipedidoservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:services\\interfaces\\ipedidoservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\services\\interfaces\\idireccionservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:services\\interfaces\\idireccionservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\services\\interfaces\\icarritoservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:services\\interfaces\\icarritoservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\services\\interfaces\\iproductoservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:services\\interfaces\\iproductoservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\services\\interfaces\\icategoriaservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:services\\interfaces\\icategoriaservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\services\\interfaces\\iusuarioservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:services\\interfaces\\iusuarioservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\repositories\\implementations\\productorepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:repositories\\implementations\\productorepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\repositories\\implementations\\usuariorepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:repositories\\implementations\\usuariorepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\repositories\\interfaces\\icarritorepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:repositories\\interfaces\\icarritorepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\repositories\\interfaces\\iproductorepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:repositories\\interfaces\\iproductorepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\repositories\\interfaces\\icategoriarepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:repositories\\interfaces\\icategoriarepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\repositories\\interfaces\\iusuariorepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:repositories\\interfaces\\iusuariorepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\dtos\\lineapedidodto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:dtos\\lineapedidodto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\dtos\\direcciondto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:dtos\\direcciondto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\dtos\\categoriadto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:dtos\\categoriadto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\entities\\lineapedido.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:entities\\lineapedido.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\entities\\usuario.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:entities\\usuario.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\models\\mongodb\\productoimagenmongo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:models\\mongodb\\productoimagenmongo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\repositories\\interfaces\\iproductoimagenmongorepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:repositories\\interfaces\\iproductoimagenmongorepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\repositories\\implementations\\productoimagenmongorepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:repositories\\implementations\\productoimagenmongorepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\services\\implementations\\productoimagenmongoservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:services\\implementations\\productoimagenmongoservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\migrate_images_mysql_to_mongo.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}|CodeFrame",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:migrate_images_mysql_to_mongo.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}|CodeFrame"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\mejoras_imagenes.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:mejoras_imagenes.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\imagenes_sin_bordes.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:imagenes_sin_bordes.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\imagenes_en_pedidos.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:imagenes_en_pedidos.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\carrito_checkout_corregido.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:carrito_checkout_corregido.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|c:\\users\\campusfp\\desktop\\carlos\\dwes\\primer_trimestre\\net\\aldajoyeros\\solucion_final_carrito_checkout.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}",
+      "RelativeMoniker": "D:0:0:{5D7F37C5-B7E5-E69E-22F8-A4F3C6B8FAAD}|AldaJoyeros.csproj|solutionrelative:solucion_final_carrito_checkout.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 5,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 104,
+              "Title": "SOLUCION_FINAL_CARRITO_CHECKOUT.md",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\SOLUCION_FINAL_CARRITO_CHECKOUT.md",
+              "RelativeDocumentMoniker": "SOLUCION_FINAL_CARRITO_CHECKOUT.md",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\SOLUCION_FINAL_CARRITO_CHECKOUT.md",
+              "RelativeToolTip": "SOLUCION_FINAL_CARRITO_CHECKOUT.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAANUBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2025-11-28T12:52:51.238Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 103,
+              "Title": "CARRITO_CHECKOUT_CORREGIDO.md",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\CARRITO_CHECKOUT_CORREGIDO.md",
+              "RelativeDocumentMoniker": "CARRITO_CHECKOUT_CORREGIDO.md",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\CARRITO_CHECKOUT_CORREGIDO.md",
+              "RelativeToolTip": "CARRITO_CHECKOUT_CORREGIDO.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAKEBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2025-11-28T12:47:16.016Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "CarritoController.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Controllers\\CarritoController.cs",
+              "RelativeDocumentMoniker": "Controllers\\CarritoController.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Controllers\\CarritoController.cs",
+              "RelativeToolTip": "Controllers\\CarritoController.cs",
+              "ViewState": "AgIAAGwAAAAAAAAAAAAQwC4AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T11:27:53.48Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "PedidosController.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Controllers\\PedidosController.cs",
+              "RelativeDocumentMoniker": "Controllers\\PedidosController.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Controllers\\PedidosController.cs",
+              "RelativeToolTip": "Controllers\\PedidosController.cs",
+              "ViewState": "AgIAAHQAAAAAAAAAAAAcwKsAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T11:28:02.667Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "AldaJoyeros.csproj",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\AldaJoyeros.csproj",
+              "RelativeDocumentMoniker": "AldaJoyeros.csproj",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\AldaJoyeros.csproj",
+              "RelativeToolTip": "AldaJoyeros.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2025-11-27T11:21:48.171Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Views\\Carrito\\Index.cshtml",
+              "RelativeDocumentMoniker": "Views\\Carrito\\Index.cshtml",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Views\\Carrito\\Index.cshtml",
+              "RelativeToolTip": "Views\\Carrito\\Index.cshtml",
+              "ViewState": "AgIAALgAAAAAAAAAAAAAAM0AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-11-27T11:32:38.616Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Views\\Pedidos\\Index.cshtml",
+              "RelativeDocumentMoniker": "Views\\Pedidos\\Index.cshtml",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Views\\Pedidos\\Index.cshtml",
+              "RelativeToolTip": "Views\\Pedidos\\Index.cshtml",
+              "ViewState": "AgIAAIAAAAAAAAAAAAAAAKQAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-11-27T11:33:08.232Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Detalle.cshtml",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Views\\Pedidos\\Detalle.cshtml",
+              "RelativeDocumentMoniker": "Views\\Pedidos\\Detalle.cshtml",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Views\\Pedidos\\Detalle.cshtml",
+              "RelativeToolTip": "Views\\Pedidos\\Detalle.cshtml",
+              "ViewState": "AgIAAKQAAAAAAAAAAAAAAPIAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-11-27T11:33:25.652Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "Checkout.cshtml",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Views\\Pedidos\\Checkout.cshtml",
+              "RelativeDocumentMoniker": "Views\\Pedidos\\Checkout.cshtml",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Views\\Pedidos\\Checkout.cshtml",
+              "RelativeToolTip": "Views\\Pedidos\\Checkout.cshtml",
+              "ViewState": "AgIAAC0BAAAAAAAAAAAcwEEBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-11-27T11:32:53.958Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "PedidoService.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Services\\Implementations\\PedidoService.cs",
+              "RelativeDocumentMoniker": "Services\\Implementations\\PedidoService.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Services\\Implementations\\PedidoService.cs",
+              "RelativeToolTip": "Services\\Implementations\\PedidoService.cs",
+              "ViewState": "AgIAAFwAAAAAAAAAAAAAAGwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T11:26:27.899Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "DireccionService.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Services\\Implementations\\DireccionService.cs",
+              "RelativeDocumentMoniker": "Services\\Implementations\\DireccionService.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Services\\Implementations\\DireccionService.cs",
+              "RelativeToolTip": "Services\\Implementations\\DireccionService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAAzAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T11:26:15.409Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "Direccion.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Entities\\Direccion.cs",
+              "RelativeDocumentMoniker": "Entities\\Direccion.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Entities\\Direccion.cs",
+              "RelativeToolTip": "Entities\\Direccion.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAADEAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T11:22:21.724Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "DireccionRepository.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Repositories\\Implementations\\DireccionRepository.cs",
+              "RelativeDocumentMoniker": "Repositories\\Implementations\\DireccionRepository.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Repositories\\Implementations\\DireccionRepository.cs",
+              "RelativeToolTip": "Repositories\\Implementations\\DireccionRepository.cs",
+              "ViewState": "AgIAAAsAAAAAAAAAAAAQwBcAAAA8AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T11:24:36.727Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "IDireccionRepository.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Repositories\\Interfaces\\IDireccionRepository.cs",
+              "RelativeDocumentMoniker": "Repositories\\Interfaces\\IDireccionRepository.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Repositories\\Interfaces\\IDireccionRepository.cs",
+              "RelativeToolTip": "Repositories\\Interfaces\\IDireccionRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T11:23:50.853Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "IPedidoRepository.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Repositories\\Interfaces\\IPedidoRepository.cs",
+              "RelativeDocumentMoniker": "Repositories\\Interfaces\\IPedidoRepository.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Repositories\\Interfaces\\IPedidoRepository.cs",
+              "RelativeToolTip": "Repositories\\Interfaces\\IPedidoRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T11:23:55.798Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "PedidoRepository.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Repositories\\Implementations\\PedidoRepository.cs",
+              "RelativeDocumentMoniker": "Repositories\\Implementations\\PedidoRepository.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Repositories\\Implementations\\PedidoRepository.cs",
+              "RelativeToolTip": "Repositories\\Implementations\\PedidoRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABwAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T11:24:44.947Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "CategoriaRepository.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Repositories\\Implementations\\CategoriaRepository.cs",
+              "RelativeDocumentMoniker": "Repositories\\Implementations\\CategoriaRepository.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Repositories\\Implementations\\CategoriaRepository.cs",
+              "RelativeToolTip": "Repositories\\Implementations\\CategoriaRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAD8AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T11:24:11.22Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "CarritoRepository.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Repositories\\Implementations\\CarritoRepository.cs",
+              "RelativeDocumentMoniker": "Repositories\\Implementations\\CarritoRepository.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Repositories\\Implementations\\CarritoRepository.cs",
+              "RelativeToolTip": "Repositories\\Implementations\\CarritoRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABsAAAAuAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T11:24:29.487Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "CarritoItemDto.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\DTOs\\CarritoItemDto.cs",
+              "RelativeDocumentMoniker": "DTOs\\CarritoItemDto.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\DTOs\\CarritoItemDto.cs",
+              "RelativeToolTip": "DTOs\\CarritoItemDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T11:23:04.626Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "CarritoItem.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Entities\\CarritoItem.cs",
+              "RelativeDocumentMoniker": "Entities\\CarritoItem.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Entities\\CarritoItem.cs",
+              "RelativeToolTip": "Entities\\CarritoItem.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T11:22:15.567Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "PedidoDto.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\DTOs\\PedidoDto.cs",
+              "RelativeDocumentMoniker": "DTOs\\PedidoDto.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\DTOs\\PedidoDto.cs",
+              "RelativeToolTip": "DTOs\\PedidoDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACEAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T11:23:21.415Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "Pedido.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Entities\\Pedido.cs",
+              "RelativeDocumentMoniker": "Entities\\Pedido.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Entities\\Pedido.cs",
+              "RelativeToolTip": "Entities\\Pedido.cs",
+              "ViewState": "AgIAABYAAAAAAAAAAAAuwDEAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T11:22:27.782Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
+              "Title": "MongoDbSettings.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Configuration\\MongoDbSettings.cs",
+              "RelativeDocumentMoniker": "Configuration\\MongoDbSettings.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Configuration\\MongoDbSettings.cs",
+              "RelativeToolTip": "Configuration\\MongoDbSettings.cs",
+              "ViewState": "AgIAAAUAAAAAAAAAAAAxwBcAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-28T11:24:17.129Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 21,
+              "Title": "CheckoutViewModel.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\DTOs\\CheckoutViewModel.cs",
+              "RelativeDocumentMoniker": "DTOs\\CheckoutViewModel.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\DTOs\\CheckoutViewModel.cs",
+              "RelativeToolTip": "DTOs\\CheckoutViewModel.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-28T12:33:00.17Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 102,
+              "Title": "IMAGENES_EN_PEDIDOS.md",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\IMAGENES_EN_PEDIDOS.md",
+              "RelativeDocumentMoniker": "IMAGENES_EN_PEDIDOS.md",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\IMAGENES_EN_PEDIDOS.md",
+              "RelativeToolTip": "IMAGENES_EN_PEDIDOS.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAGgBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2025-11-28T12:30:25.748Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 23,
+              "Title": "Detalle.cshtml",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Views\\AdminPedidos\\Detalle.cshtml",
+              "RelativeDocumentMoniker": "Views\\AdminPedidos\\Detalle.cshtml",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Views\\AdminPedidos\\Detalle.cshtml",
+              "RelativeToolTip": "Views\\AdminPedidos\\Detalle.cshtml",
+              "ViewState": "AgIAAIgAAAAAAAAAAAAAACsBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-11-27T11:35:13.258Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 24,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Views\\Home\\Index.cshtml",
+              "RelativeDocumentMoniker": "Views\\Home\\Index.cshtml",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Views\\Home\\Index.cshtml",
+              "RelativeToolTip": "Views\\Home\\Index.cshtml",
+              "ViewState": "AgIAADUAAAAAAAAAAAAAALUAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-11-27T11:31:44.657Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 101,
+              "Title": "IMAGENES_SIN_BORDES.md",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\IMAGENES_SIN_BORDES.md",
+              "RelativeDocumentMoniker": "IMAGENES_SIN_BORDES.md",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\IMAGENES_SIN_BORDES.md",
+              "RelativeToolTip": "IMAGENES_SIN_BORDES.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAANgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2025-11-28T12:17:06.488Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 22,
+              "Title": "AdminPedidosController.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Controllers\\AdminPedidosController.cs",
+              "RelativeDocumentMoniker": "Controllers\\AdminPedidosController.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Controllers\\AdminPedidosController.cs",
+              "RelativeToolTip": "Controllers\\AdminPedidosController.cs",
+              "ViewState": "AgIAAI0AAAAAAAAAAAAAAFoAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T11:28:38.963Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 26,
+              "Title": "Detalle.cshtml",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Views\\Productos\\Detalle.cshtml",
+              "RelativeDocumentMoniker": "Views\\Productos\\Detalle.cshtml",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Views\\Productos\\Detalle.cshtml",
+              "RelativeToolTip": "Views\\Productos\\Detalle.cshtml",
+              "ViewState": "AgIAAKcAAAAAAAAAAAAowMwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-11-27T11:32:19.006Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 27,
+              "Title": "Gestionar.cshtml",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Views\\AdminImagenes\\Gestionar.cshtml",
+              "RelativeDocumentMoniker": "Views\\AdminImagenes\\Gestionar.cshtml",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Views\\AdminImagenes\\Gestionar.cshtml",
+              "RelativeToolTip": "Views\\AdminImagenes\\Gestionar.cshtml",
+              "ViewState": "AgIAADIBAAAAAAAAAAAowE4BAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-11-27T13:35:23.125Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 100,
+              "Title": "MEJORAS_IMAGENES.md",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\MEJORAS_IMAGENES.md",
+              "RelativeDocumentMoniker": "MEJORAS_IMAGENES.md",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\MEJORAS_IMAGENES.md",
+              "RelativeToolTip": "MEJORAS_IMAGENES.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAFEBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2025-11-28T12:13:33.077Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 28,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Program.cs",
+              "RelativeDocumentMoniker": "Program.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Program.cs",
+              "RelativeToolTip": "Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAGEAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T11:26:46.603Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 25,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Views\\Productos\\Index.cshtml",
+              "RelativeDocumentMoniker": "Views\\Productos\\Index.cshtml",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Views\\Productos\\Index.cshtml",
+              "RelativeToolTip": "Views\\Productos\\Index.cshtml",
+              "ViewState": "AgIAACwBAAAAAAAAAAAowEcBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-11-27T11:32:03.67Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 29,
+              "Title": "AdminUtilitiesController.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Controllers\\AdminUtilitiesController.cs",
+              "RelativeDocumentMoniker": "Controllers\\AdminUtilitiesController.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Controllers\\AdminUtilitiesController.cs",
+              "RelativeToolTip": "Controllers\\AdminUtilitiesController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAKMAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-28T11:38:11.457Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 30,
+              "Title": "ImageMigrationUtility.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Utilities\\ImageMigrationUtility.cs",
+              "RelativeDocumentMoniker": "Utilities\\ImageMigrationUtility.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Utilities\\ImageMigrationUtility.cs",
+              "RelativeToolTip": "Utilities\\ImageMigrationUtility.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-28T11:37:54.678Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 31,
+              "Title": "Migration.cshtml",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Views\\AdminUtilities\\Migration.cshtml",
+              "RelativeDocumentMoniker": "Views\\AdminUtilities\\Migration.cshtml",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Views\\AdminUtilities\\Migration.cshtml",
+              "RelativeToolTip": "Views\\AdminUtilities\\Migration.cshtml",
+              "ViewState": "AgIAAOkBAAAAAAAAAAAowPwBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-11-28T11:39:09.872Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 32,
+              "Title": "migrate_mysql_to_mongo.ps1",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\migrate_mysql_to_mongo.ps1",
+              "RelativeDocumentMoniker": "migrate_mysql_to_mongo.ps1",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\migrate_mysql_to_mongo.ps1",
+              "RelativeToolTip": "migrate_mysql_to_mongo.ps1",
+              "ViewState": "AgIAACsAAAAAAAAAAAAswFIAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2025-11-28T11:28:23.614Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 33,
+              "Title": "migrate_images_mysql_to_mongo.sql ",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\migrate_images_mysql_to_mongo.sql",
+              "RelativeDocumentMoniker": "migrate_images_mysql_to_mongo.sql",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\migrate_images_mysql_to_mongo.sql",
+              "RelativeToolTip": "migrate_images_mysql_to_mongo.sql",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
+              "WhenOpened": "2025-11-28T11:28:00.919Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 34,
+              "Title": "Producto.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Entities\\Producto.cs",
+              "RelativeDocumentMoniker": "Entities\\Producto.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Entities\\Producto.cs",
+              "RelativeToolTip": "Entities\\Producto.cs",
+              "ViewState": "AgIAABIAAAAAAAAAAAAAACQAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T11:22:10.906Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 35,
+              "Title": "AldaJoyerosContext.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Data\\AldaJoyerosContext.cs",
+              "RelativeDocumentMoniker": "Data\\AldaJoyerosContext.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Data\\AldaJoyerosContext.cs",
+              "RelativeToolTip": "Data\\AldaJoyerosContext.cs",
+              "ViewState": "AgIAAGYAAAAAAAAAAAAAAGYAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T11:22:40.354Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 36,
+              "Title": "MongoDbContext.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Data\\MongoDbContext.cs",
+              "RelativeDocumentMoniker": "Data\\MongoDbContext.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Data\\MongoDbContext.cs",
+              "RelativeToolTip": "Data\\MongoDbContext.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAFIAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-28T11:24:33.066Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 98,
+              "Title": "ProductoImagenMongoService.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Services\\Implementations\\ProductoImagenMongoService.cs",
+              "RelativeDocumentMoniker": "Services\\Implementations\\ProductoImagenMongoService.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Services\\Implementations\\ProductoImagenMongoService.cs",
+              "RelativeToolTip": "Services\\Implementations\\ProductoImagenMongoService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAMUAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-28T11:25:55.604Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 96,
+              "Title": "IProductoImagenMongoRepository.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Repositories\\Interfaces\\IProductoImagenMongoRepository.cs",
+              "RelativeDocumentMoniker": "Repositories\\Interfaces\\IProductoImagenMongoRepository.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Repositories\\Interfaces\\IProductoImagenMongoRepository.cs",
+              "RelativeToolTip": "Repositories\\Interfaces\\IProductoImagenMongoRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAADwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-28T11:25:06.116Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 97,
+              "Title": "ProductoImagenMongoRepository.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Repositories\\Implementations\\ProductoImagenMongoRepository.cs",
+              "RelativeDocumentMoniker": "Repositories\\Implementations\\ProductoImagenMongoRepository.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Repositories\\Implementations\\ProductoImagenMongoRepository.cs",
+              "RelativeToolTip": "Repositories\\Implementations\\ProductoImagenMongoRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAHQAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-28T11:25:20.35Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 95,
+              "Title": "ProductoImagenMongo.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Models\\MongoDB\\ProductoImagenMongo.cs",
+              "RelativeDocumentMoniker": "Models\\MongoDB\\ProductoImagenMongo.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Models\\MongoDB\\ProductoImagenMongo.cs",
+              "RelativeToolTip": "Models\\MongoDB\\ProductoImagenMongo.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAEgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-28T11:23:58.062Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 37,
+              "Title": "AdminImagenesController.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Controllers\\AdminImagenesController.cs",
+              "RelativeDocumentMoniker": "Controllers\\AdminImagenesController.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Controllers\\AdminImagenesController.cs",
+              "RelativeToolTip": "Controllers\\AdminImagenesController.cs",
+              "ViewState": "AgIAAJQAAAAAAAAAAEBVwJgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T13:34:31.271Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 38,
+              "Title": "migrate_images_to_blob.sql",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\migrate_images_to_blob.sql",
+              "RelativeDocumentMoniker": "migrate_images_to_blob.sql",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\migrate_images_to_blob.sql",
+              "RelativeToolTip": "migrate_images_to_blob.sql",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
+              "WhenOpened": "2025-11-27T13:14:18.119Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 39,
+              "Title": "import_images_to_database.ps1",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\import_images_to_database.ps1",
+              "RelativeDocumentMoniker": "import_images_to_database.ps1",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\import_images_to_database.ps1",
+              "RelativeToolTip": "import_images_to_database.ps1",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAKoAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2025-11-27T13:16:49.317Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 40,
+              "Title": "IProductoImagenService.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Services\\Interfaces\\IProductoImagenService.cs",
+              "RelativeDocumentMoniker": "Services\\Interfaces\\IProductoImagenService.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Services\\Interfaces\\IProductoImagenService.cs",
+              "RelativeToolTip": "Services\\Interfaces\\IProductoImagenService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T13:15:40.975Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 41,
+              "Title": "UsuarioService.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Services\\Implementations\\UsuarioService.cs",
+              "RelativeDocumentMoniker": "Services\\Implementations\\UsuarioService.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Services\\Implementations\\UsuarioService.cs",
+              "RelativeToolTip": "Services\\Implementations\\UsuarioService.cs",
+              "ViewState": "AgIAAGAAAAAAAAAAAAAAAGAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T11:25:34.816Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 42,
+              "Title": "ProductoImagen.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Entities\\ProductoImagen.cs",
+              "RelativeDocumentMoniker": "Entities\\ProductoImagen.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Entities\\ProductoImagen.cs",
+              "RelativeToolTip": "Entities\\ProductoImagen.cs",
+              "ViewState": "AgIAAC8AAAAAAAAAAABRwDIAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T12:47:45.355Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 43,
+              "Title": "ProductoImagenDto.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\DTOs\\ProductoImagenDto.cs",
+              "RelativeDocumentMoniker": "DTOs\\ProductoImagenDto.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\DTOs\\ProductoImagenDto.cs",
+              "RelativeToolTip": "DTOs\\ProductoImagenDto.cs",
+              "ViewState": "AgIAACwAAAAAAAAAAEBUwC8AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T12:48:25.506Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 44,
+              "Title": "UsuarioDto.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\DTOs\\UsuarioDto.cs",
+              "RelativeDocumentMoniker": "DTOs\\UsuarioDto.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\DTOs\\UsuarioDto.cs",
+              "RelativeToolTip": "DTOs\\UsuarioDto.cs",
+              "ViewState": "AgIAABMAAAAAAAAAAAAAAC4AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T11:22:46.846Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 45,
+              "Title": "_Layout.cshtml",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Views\\Shared\\_Layout.cshtml",
+              "RelativeDocumentMoniker": "Views\\Shared\\_Layout.cshtml",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Views\\Shared\\_Layout.cshtml",
+              "RelativeToolTip": "Views\\Shared\\_Layout.cshtml",
+              "ViewState": "AgIAAJsAAAAAAAAAAAAAALcAAAAvAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-11-27T11:30:50.264Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 46,
+              "Title": "PagedResult.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Helpers\\PagedResult.cs",
+              "RelativeDocumentMoniker": "Helpers\\PagedResult.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Helpers\\PagedResult.cs",
+              "RelativeToolTip": "Helpers\\PagedResult.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB0AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T11:48:50.204Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 47,
+              "Title": "AuthController.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Controllers\\AuthController.cs",
+              "RelativeDocumentMoniker": "Controllers\\AuthController.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Controllers\\AuthController.cs",
+              "RelativeToolTip": "Controllers\\AuthController.cs",
+              "ViewState": "AgIAAEwAAAAAAAAAAAAcwGsAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T11:27:34.783Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 48,
+              "Title": "Register.cshtml",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Views\\Auth\\Register.cshtml",
+              "RelativeDocumentMoniker": "Views\\Auth\\Register.cshtml",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Views\\Auth\\Register.cshtml",
+              "RelativeToolTip": "Views\\Auth\\Register.cshtml",
+              "ViewState": "AgIAAFMAAAAAAAAAAAAIwGoAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-11-27T11:31:21.792Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 49,
+              "Title": "database_init.sql",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\database_init.sql",
+              "RelativeDocumentMoniker": "database_init.sql",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\database_init.sql",
+              "RelativeToolTip": "database_init.sql",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
+              "WhenOpened": "2025-11-27T11:38:25.111Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 50,
+              "Title": "site.css",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\wwwroot\\css\\site.css",
+              "RelativeDocumentMoniker": "wwwroot\\css\\site.css",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\wwwroot\\css\\site.css",
+              "RelativeToolTip": "wwwroot\\css\\site.css",
+              "ViewState": "AgIAAL0AAAAAAAAAAIBJwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2025-11-27T11:36:25.835Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 51,
+              "Title": "ProductosController.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Controllers\\ProductosController.cs",
+              "RelativeDocumentMoniker": "Controllers\\ProductosController.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Controllers\\ProductosController.cs",
+              "RelativeToolTip": "Controllers\\ProductosController.cs",
+              "ViewState": "AgIAACUAAAAAAAAAAAAwwDgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T11:27:42.202Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 52,
+              "Title": "Editar.cshtml",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Views\\AdminUsuarios\\Editar.cshtml",
+              "RelativeDocumentMoniker": "Views\\AdminUsuarios\\Editar.cshtml",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Views\\AdminUsuarios\\Editar.cshtml",
+              "RelativeToolTip": "Views\\AdminUsuarios\\Editar.cshtml",
+              "ViewState": "AgIAANUAAAAAAAAAAIBJwNcAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-11-27T11:36:02.379Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 53,
+              "Title": "AdminController.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Controllers\\AdminController.cs",
+              "RelativeDocumentMoniker": "Controllers\\AdminController.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Controllers\\AdminController.cs",
+              "RelativeToolTip": "Controllers\\AdminController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T11:28:07.59Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 54,
+              "Title": "AdminCategoriasController.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Controllers\\AdminCategoriasController.cs",
+              "RelativeDocumentMoniker": "Controllers\\AdminCategoriasController.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Controllers\\AdminCategoriasController.cs",
+              "RelativeToolTip": "Controllers\\AdminCategoriasController.cs",
+              "ViewState": "AgIAABsAAAAAAAAAAAAowIUAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T11:28:17.27Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 55,
+              "Title": "Crear.cshtml",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Views\\AdminUsuarios\\Crear.cshtml",
+              "RelativeDocumentMoniker": "Views\\AdminUsuarios\\Crear.cshtml",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Views\\AdminUsuarios\\Crear.cshtml",
+              "RelativeToolTip": "Views\\AdminUsuarios\\Crear.cshtml",
+              "ViewState": "AgIAANcAAAAAAAAAAIBJwNkAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-11-27T11:35:51.372Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 56,
+              "Title": "BaseController.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Controllers\\BaseController.cs",
+              "RelativeDocumentMoniker": "Controllers\\BaseController.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Controllers\\BaseController.cs",
+              "RelativeToolTip": "Controllers\\BaseController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T11:27:16.607Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 57,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Views\\AdminUsuarios\\Index.cshtml",
+              "RelativeDocumentMoniker": "Views\\AdminUsuarios\\Index.cshtml",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Views\\AdminUsuarios\\Index.cshtml",
+              "RelativeToolTip": "Views\\AdminUsuarios\\Index.cshtml",
+              "ViewState": "AgIAANwAAAAAAAAAAIBJwN4AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-11-27T11:35:39.811Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 58,
+              "Title": "EditarEstado.cshtml",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Views\\AdminPedidos\\EditarEstado.cshtml",
+              "RelativeDocumentMoniker": "Views\\AdminPedidos\\EditarEstado.cshtml",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Views\\AdminPedidos\\EditarEstado.cshtml",
+              "RelativeToolTip": "Views\\AdminPedidos\\EditarEstado.cshtml",
+              "ViewState": "AgIAAPIAAAAAAAAAAIBJwPQAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-11-27T11:35:28.273Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 59,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Views\\AdminPedidos\\Index.cshtml",
+              "RelativeDocumentMoniker": "Views\\AdminPedidos\\Index.cshtml",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Views\\AdminPedidos\\Index.cshtml",
+              "RelativeToolTip": "Views\\AdminPedidos\\Index.cshtml",
+              "ViewState": "AgIAAAYBAAAAAAAAAIBJwAgBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-11-27T11:34:55.169Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 60,
+              "Title": "Editar.cshtml",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Views\\AdminProductos\\Editar.cshtml",
+              "RelativeDocumentMoniker": "Views\\AdminProductos\\Editar.cshtml",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Views\\AdminProductos\\Editar.cshtml",
+              "RelativeToolTip": "Views\\AdminProductos\\Editar.cshtml",
+              "ViewState": "AgIAALsAAAAAAAAAAIBJwL0AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-11-27T11:34:42.668Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 61,
+              "Title": "Crear.cshtml",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Views\\AdminProductos\\Crear.cshtml",
+              "RelativeDocumentMoniker": "Views\\AdminProductos\\Crear.cshtml",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Views\\AdminProductos\\Crear.cshtml",
+              "RelativeToolTip": "Views\\AdminProductos\\Crear.cshtml",
+              "ViewState": "AgIAAPMAAAAAAAAAAIBJwPUAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-11-27T11:34:31.296Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 62,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Views\\AdminProductos\\Index.cshtml",
+              "RelativeDocumentMoniker": "Views\\AdminProductos\\Index.cshtml",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Views\\AdminProductos\\Index.cshtml",
+              "RelativeToolTip": "Views\\AdminProductos\\Index.cshtml",
+              "ViewState": "AgIAAE0BAAAAAAAAAIBJwE8BAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-11-27T11:34:18.156Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 63,
+              "Title": "Editar.cshtml",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Views\\AdminCategorias\\Editar.cshtml",
+              "RelativeDocumentMoniker": "Views\\AdminCategorias\\Editar.cshtml",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Views\\AdminCategorias\\Editar.cshtml",
+              "RelativeToolTip": "Views\\AdminCategorias\\Editar.cshtml",
+              "ViewState": "AgIAAHEAAAAAAAAAAIBJwHMAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-11-27T11:34:07.739Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 64,
+              "Title": "Crear.cshtml",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Views\\AdminCategorias\\Crear.cshtml",
+              "RelativeDocumentMoniker": "Views\\AdminCategorias\\Crear.cshtml",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Views\\AdminCategorias\\Crear.cshtml",
+              "RelativeToolTip": "Views\\AdminCategorias\\Crear.cshtml",
+              "ViewState": "AgIAAIwAAAAAAAAAAIBJwI4AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-11-27T11:34:00.212Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 65,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Views\\AdminCategorias\\Index.cshtml",
+              "RelativeDocumentMoniker": "Views\\AdminCategorias\\Index.cshtml",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Views\\AdminCategorias\\Index.cshtml",
+              "RelativeToolTip": "Views\\AdminCategorias\\Index.cshtml",
+              "ViewState": "AgIAAIQAAAAAAAAAAIBJwIYAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-11-27T11:33:52.452Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 66,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Views\\Admin\\Index.cshtml",
+              "RelativeDocumentMoniker": "Views\\Admin\\Index.cshtml",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Views\\Admin\\Index.cshtml",
+              "RelativeToolTip": "Views\\Admin\\Index.cshtml",
+              "ViewState": "AgIAAOQAAAAAAAAAAIBJwOYAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-11-27T11:33:42.454Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 67,
+              "Title": "Login.cshtml",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Views\\Auth\\Login.cshtml",
+              "RelativeDocumentMoniker": "Views\\Auth\\Login.cshtml",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Views\\Auth\\Login.cshtml",
+              "RelativeToolTip": "Views\\Auth\\Login.cshtml",
+              "ViewState": "AgIAAD4AAAAAAAAAAAAcwFkAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-11-27T11:31:12.344Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 68,
+              "Title": "ProductoDto.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\DTOs\\ProductoDto.cs",
+              "RelativeDocumentMoniker": "DTOs\\ProductoDto.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\DTOs\\ProductoDto.cs",
+              "RelativeToolTip": "DTOs\\ProductoDto.cs",
+              "ViewState": "AgIAACEAAAAAAAAAAAAAADgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T11:22:59.009Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 69,
+              "Title": "AdminUsuariosController.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Controllers\\AdminUsuariosController.cs",
+              "RelativeDocumentMoniker": "Controllers\\AdminUsuariosController.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Controllers\\AdminUsuariosController.cs",
+              "RelativeToolTip": "Controllers\\AdminUsuariosController.cs",
+              "ViewState": "AgIAAI8AAAAAAAAAAIBZwJQAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T11:28:49.543Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 70,
+              "Title": "AdminProductosController.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Controllers\\AdminProductosController.cs",
+              "RelativeDocumentMoniker": "Controllers\\AdminProductosController.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Controllers\\AdminProductosController.cs",
+              "RelativeToolTip": "Controllers\\AdminProductosController.cs",
+              "ViewState": "AgIAAJwAAAAAAAAAAIBZwKEAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T11:28:28.43Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 71,
+              "Title": "HomeController.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Controllers\\HomeController.cs",
+              "RelativeDocumentMoniker": "Controllers\\HomeController.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Controllers\\HomeController.cs",
+              "RelativeToolTip": "Controllers\\HomeController.cs",
+              "ViewState": "AgIAACQAAAAAAAAAAABRwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T11:27:24.148Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 72,
+              "Title": "SessionExtensions.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Helpers\\SessionExtensions.cs",
+              "RelativeDocumentMoniker": "Helpers\\SessionExtensions.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Helpers\\SessionExtensions.cs",
+              "RelativeToolTip": "Helpers\\SessionExtensions.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T11:27:09.675Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 73,
+              "Title": "CategoriaService.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Services\\Implementations\\CategoriaService.cs",
+              "RelativeDocumentMoniker": "Services\\Implementations\\CategoriaService.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Services\\Implementations\\CategoriaService.cs",
+              "RelativeToolTip": "Services\\Implementations\\CategoriaService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAEMAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T11:25:44.702Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 74,
+              "Title": "MappingProfile.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Mappings\\MappingProfile.cs",
+              "RelativeDocumentMoniker": "Mappings\\MappingProfile.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Mappings\\MappingProfile.cs",
+              "RelativeToolTip": "Mappings\\MappingProfile.cs",
+              "ViewState": "AgIAAEsAAAAAAAAAAABRwE4AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T11:25:24.291Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 75,
+              "Title": "CarritoService.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Services\\Implementations\\CarritoService.cs",
+              "RelativeDocumentMoniker": "Services\\Implementations\\CarritoService.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Services\\Implementations\\CarritoService.cs",
+              "RelativeToolTip": "Services\\Implementations\\CarritoService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAGAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T11:26:06.103Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 76,
+              "Title": "ProductoService.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Services\\Implementations\\ProductoService.cs",
+              "RelativeDocumentMoniker": "Services\\Implementations\\ProductoService.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Services\\Implementations\\ProductoService.cs",
+              "RelativeToolTip": "Services\\Implementations\\ProductoService.cs",
+              "ViewState": "AgIAAHMAAAAAAAAAAIBJwHUAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T11:25:55.157Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 77,
+              "Title": "Categoria.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Entities\\Categoria.cs",
+              "RelativeDocumentMoniker": "Entities\\Categoria.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Entities\\Categoria.cs",
+              "RelativeToolTip": "Entities\\Categoria.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAxwBUAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T11:22:05.067Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 78,
+              "Title": "IPedidoService.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Services\\Interfaces\\IPedidoService.cs",
+              "RelativeDocumentMoniker": "Services\\Interfaces\\IPedidoService.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Services\\Interfaces\\IPedidoService.cs",
+              "RelativeToolTip": "Services\\Interfaces\\IPedidoService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T11:25:15.245Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 79,
+              "Title": "IDireccionService.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Services\\Interfaces\\IDireccionService.cs",
+              "RelativeDocumentMoniker": "Services\\Interfaces\\IDireccionService.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Services\\Interfaces\\IDireccionService.cs",
+              "RelativeToolTip": "Services\\Interfaces\\IDireccionService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T11:25:09.977Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 80,
+              "Title": "ICarritoService.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Services\\Interfaces\\ICarritoService.cs",
+              "RelativeDocumentMoniker": "Services\\Interfaces\\ICarritoService.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Services\\Interfaces\\ICarritoService.cs",
+              "RelativeToolTip": "Services\\Interfaces\\ICarritoService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T11:25:05.217Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 81,
+              "Title": "IProductoService.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Services\\Interfaces\\IProductoService.cs",
+              "RelativeDocumentMoniker": "Services\\Interfaces\\IProductoService.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Services\\Interfaces\\IProductoService.cs",
+              "RelativeToolTip": "Services\\Interfaces\\IProductoService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T11:25:00.231Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 82,
+              "Title": "ICategoriaService.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Services\\Interfaces\\ICategoriaService.cs",
+              "RelativeDocumentMoniker": "Services\\Interfaces\\ICategoriaService.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Services\\Interfaces\\ICategoriaService.cs",
+              "RelativeToolTip": "Services\\Interfaces\\ICategoriaService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T11:24:55.152Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 83,
+              "Title": "IUsuarioService.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Services\\Interfaces\\IUsuarioService.cs",
+              "RelativeDocumentMoniker": "Services\\Interfaces\\IUsuarioService.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Services\\Interfaces\\IUsuarioService.cs",
+              "RelativeToolTip": "Services\\Interfaces\\IUsuarioService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T11:24:50.587Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 84,
+              "Title": "ProductoRepository.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Repositories\\Implementations\\ProductoRepository.cs",
+              "RelativeDocumentMoniker": "Repositories\\Implementations\\ProductoRepository.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Repositories\\Implementations\\ProductoRepository.cs",
+              "RelativeToolTip": "Repositories\\Implementations\\ProductoRepository.cs",
+              "ViewState": "AgIAAE8AAAAAAAAAAABBwFAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T11:24:19.386Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 85,
+              "Title": "UsuarioRepository.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Repositories\\Implementations\\UsuarioRepository.cs",
+              "RelativeDocumentMoniker": "Repositories\\Implementations\\UsuarioRepository.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Repositories\\Implementations\\UsuarioRepository.cs",
+              "RelativeToolTip": "Repositories\\Implementations\\UsuarioRepository.cs",
+              "ViewState": "AgIAAEUAAAAAAAAAAABBwEYAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T11:24:04.475Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 86,
+              "Title": "ICarritoRepository.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Repositories\\Interfaces\\ICarritoRepository.cs",
+              "RelativeDocumentMoniker": "Repositories\\Interfaces\\ICarritoRepository.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Repositories\\Interfaces\\ICarritoRepository.cs",
+              "RelativeToolTip": "Repositories\\Interfaces\\ICarritoRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T11:23:46.158Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 87,
+              "Title": "IProductoRepository.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Repositories\\Interfaces\\IProductoRepository.cs",
+              "RelativeDocumentMoniker": "Repositories\\Interfaces\\IProductoRepository.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Repositories\\Interfaces\\IProductoRepository.cs",
+              "RelativeToolTip": "Repositories\\Interfaces\\IProductoRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T11:23:41.168Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 88,
+              "Title": "ICategoriaRepository.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Repositories\\Interfaces\\ICategoriaRepository.cs",
+              "RelativeDocumentMoniker": "Repositories\\Interfaces\\ICategoriaRepository.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Repositories\\Interfaces\\ICategoriaRepository.cs",
+              "RelativeToolTip": "Repositories\\Interfaces\\ICategoriaRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T11:23:36.697Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 89,
+              "Title": "IUsuarioRepository.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Repositories\\Interfaces\\IUsuarioRepository.cs",
+              "RelativeDocumentMoniker": "Repositories\\Interfaces\\IUsuarioRepository.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Repositories\\Interfaces\\IUsuarioRepository.cs",
+              "RelativeToolTip": "Repositories\\Interfaces\\IUsuarioRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T11:23:31.62Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 90,
+              "Title": "LineaPedidoDto.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\DTOs\\LineaPedidoDto.cs",
+              "RelativeDocumentMoniker": "DTOs\\LineaPedidoDto.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\DTOs\\LineaPedidoDto.cs",
+              "RelativeToolTip": "DTOs\\LineaPedidoDto.cs",
+              "ViewState": "AgIAAB8AAAAAAAAAAEBUwCIAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T11:23:26.778Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 91,
+              "Title": "DireccionDto.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\DTOs\\DireccionDto.cs",
+              "RelativeDocumentMoniker": "DTOs\\DireccionDto.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\DTOs\\DireccionDto.cs",
+              "RelativeToolTip": "DTOs\\DireccionDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAEQAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T11:23:14.601Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 92,
+              "Title": "CategoriaDto.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\DTOs\\CategoriaDto.cs",
+              "RelativeDocumentMoniker": "DTOs\\CategoriaDto.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\DTOs\\CategoriaDto.cs",
+              "RelativeToolTip": "DTOs\\CategoriaDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T11:22:51.703Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 93,
+              "Title": "LineaPedido.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Entities\\LineaPedido.cs",
+              "RelativeDocumentMoniker": "Entities\\LineaPedido.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Entities\\LineaPedido.cs",
+              "RelativeToolTip": "Entities\\LineaPedido.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAxwCIAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T11:22:32.849Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 94,
+              "Title": "Usuario.cs",
+              "DocumentMoniker": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Entities\\Usuario.cs",
+              "RelativeDocumentMoniker": "Entities\\Usuario.cs",
+              "ToolTip": "C:\\Users\\CampusFP\\Desktop\\CARLOS\\DWES\\Primer_trimestre\\NET\\AldaJoyeros\\Entities\\Usuario.cs",
+              "RelativeToolTip": "Entities\\Usuario.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAxwCAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T11:21:59.858Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

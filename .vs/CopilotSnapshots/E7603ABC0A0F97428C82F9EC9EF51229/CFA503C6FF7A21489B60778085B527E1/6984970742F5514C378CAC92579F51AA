@@ -1,0 +1,110 @@
+﻿using AutoMapper;
+using AldaJoyeros.DTOs;
+using AldaJoyeros.Entities;
+using AldaJoyeros.Repositories.Interfaces;
+using AldaJoyeros.Services.Interfaces;
+
+namespace AldaJoyeros.Services.Implementations
+{
+    public class PedidoService : IPedidoService
+    {
+        private readonly IPedidoRepository _pedidoRepository;
+        private readonly ICarritoRepository _carritoRepository;
+        private readonly IDireccionRepository _direccionRepository;
+        private readonly IMapper _mapper;
+
+        public PedidoService(
+            IPedidoRepository pedidoRepository,
+            ICarritoRepository carritoRepository,
+            IDireccionRepository direccionRepository,
+            IMapper mapper)
+        {
+            _pedidoRepository = pedidoRepository;
+            _carritoRepository = carritoRepository;
+            _direccionRepository = direccionRepository;
+            _mapper = mapper;
+        }
+
+        public async Task<IEnumerable<PedidoDto>> GetAllAsync()
+        {
+            var pedidos = await _pedidoRepository.GetAllAsync();
+            return _mapper.Map<IEnumerable<PedidoDto>>(pedidos);
+        }
+
+        public async Task<PedidoDto?> GetByIdAsync(long id)
+        {
+            var pedido = await _pedidoRepository.GetByIdAsync(id);
+            return pedido == null ? null : _mapper.Map<PedidoDto>(pedido);
+        }
+
+        public async Task<IEnumerable<PedidoDto>> GetByUsuarioIdAsync(long usuarioId)
+        {
+            var pedidos = await _pedidoRepository.GetByUsuarioIdAsync(usuarioId);
+            return _mapper.Map<IEnumerable<PedidoDto>>(pedidos);
+        }
+
+        public async Task<PedidoDto> CreateFromCarritoAsync(long usuarioId, PedidoCreateDto pedidoCreateDto)
+        {
+            var carritoItems = await _carritoRepository.GetByUsuarioIdAsync(usuarioId);
+            if (!carritoItems.Any())
+            {
+                throw new InvalidOperationException("El carrito está vacío");
+            }
+
+            // Mapear la dirección y añadir el UsuarioId
+            var direccion = _mapper.Map<Direccion>(pedidoCreateDto.Direccion);
+            direccion.UsuarioId = usuarioId; // Añadir el ID del usuario
+            var createdDireccion = await _direccionRepository.CreateAsync(direccion);
+
+            var pedido = new Pedido
+            {
+                UsuarioId = usuarioId,
+                DireccionId = createdDireccion.Id,
+                Fecha = DateTime.Now,
+                Estado = EstadoPedido.PENDIENTE,
+                FechaEntregaEstimada = DateTime.Now.AddDays(7),
+                LineasPedido = carritoItems.Select(item => new LineaPedido
+                {
+                    ProductoId = item.ProductoId,
+                    Cantidad = item.Cantidad,
+                    Precio = item.Precio
+                }).ToList()
+            };
+
+            var createdPedido = await _pedidoRepository.CreateAsync(pedido);
+            await _carritoRepository.DeleteByUsuarioIdAsync(usuarioId);
+
+            var result = await _pedidoRepository.GetByIdAsync(createdPedido.Id);
+            return _mapper.Map<PedidoDto>(result);
+        }
+
+        public async Task<PedidoDto> UpdateEstadoAsync(long id, PedidoUpdateEstadoDto pedidoUpdateEstadoDto)
+        {
+            var pedido = await _pedidoRepository.GetByIdAsync(id);
+            if (pedido == null)
+            {
+                throw new KeyNotFoundException("Pedido no encontrado");
+            }
+
+            pedido.Estado = pedidoUpdateEstadoDto.Estado;
+            
+            if (pedidoUpdateEstadoDto.Estado == EstadoPedido.ENTREGADO && pedidoUpdateEstadoDto.FechaEntregaReal.HasValue)
+            {
+                pedido.FechaEntregaReal = pedidoUpdateEstadoDto.FechaEntregaReal;
+            }
+
+            var updatedPedido = await _pedidoRepository.UpdateAsync(pedido);
+            return _mapper.Map<PedidoDto>(updatedPedido);
+        }
+
+        public async Task DeleteAsync(long id)
+        {
+            if (!await _pedidoRepository.ExistsAsync(id))
+            {
+                throw new KeyNotFoundException("Pedido no encontrado");
+            }
+
+            await _pedidoRepository.DeleteAsync(id);
+        }
+    }
+}

@@ -1,0 +1,62 @@
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace AldaJoyeros.Entities
+{
+    [Table("direccion")]
+    public class Direccion
+    {
+        [Key]
+        [Column("id")]
+        public long Id { get; set; }
+
+        [Required]
+        [Column("usuario_id")]
+        public long UsuarioId { get; set; }
+
+        [Required]
+        [Column("nombre_completo")]
+        [StringLength(200)]
+        public string NombreCompleto { get; set; } = string.Empty;
+
+        [Required]
+        [Column("direccion_linea1")]
+        [StringLength(255)]
+        public string DireccionLinea1 { get; set; } = string.Empty;
+
+        [Column("direccion_linea2")]
+        [StringLength(255)]
+        public string? DireccionLinea2 { get; set; }
+
+        [Required]
+        [Column("ciudad")]
+        [StringLength(100)]
+        public string Ciudad { get; set; } = string.Empty;
+
+        [Required]
+        [Column("provincia")]
+        [StringLength(100)]
+        public string Provincia { get; set; } = string.Empty;
+
+        [Required]
+        [Column("codigo_postal")]
+        [StringLength(10)]
+        public string CodigoPostal { get; set; } = string.Empty;
+
+        [Required]
+        [Column("pais")]
+        [StringLength(100)]
+        public string Pais { get; set; } = "España";
+
+        [Column("telefono")]
+        [StringLength(20)]
+        public string? Telefono { get; set; }
+
+        [Column("es_principal")]
+        public bool EsPrincipal { get; set; } = false;
+
+        // Relaciones
+        [ForeignKey("UsuarioId")]
+        public virtual Usuario? Usuario { get; set; }
+    }
+}

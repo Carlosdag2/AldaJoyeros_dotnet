@@ -1,0 +1,91 @@
+﻿@model IEnumerable<AldaJoyeros.DTOs.ProductoDto>
+
+@{
+    ViewData["Title"] = "Productos";
+    var categorias = ViewBag.Categorias as IEnumerable<AldaJoyeros.DTOs.CategoriaDto>;
+    var categoriaSeleccionada = ViewBag.CategoriaSeleccionada as long?;
+}
+
+<h1 class="mb-4"><i class="fas fa-shopping-bag"></i> Catálogo de Productos</h1>
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-filter"></i> Categorías</h5>
+            </div>
+            <div class="list-group list-group-flush">
+                <a asp-action="Index" class="list-group-item list-group-item-action @(categoriaSeleccionada == null ? "active" : "")">
+                    Todas las categorías
+                </a>
+                @if (categorias != null)
+                {
+                    @foreach (var categoria in categorias)
+                    {
+                        <a asp-action="Index" asp-route-categoriaId="@categoria.Id" 
+                           class="list-group-item list-group-item-action @(categoriaSeleccionada == categoria.Id ? "active" : "")">
+                            @categoria.Nombre
+                        </a>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-9">
+        <div class="row">
+            @if (Model != null && Model.Any())
+            {
+                @foreach (var producto in Model)
+                {
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100 shadow-sm hover-shadow">
+                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                <i class="fas fa-gem fa-4x text-secondary"></i>
+                            </div>
+                            <div class="card-body">
+                                <span class="badge bg-secondary mb-2">@producto.CategoriaNombre</span>
+                                <h5 class="card-title">@producto.Nombre</h5>
+                                <p class="card-text text-muted">@producto.Descripcion.Substring(0, Math.Min(100, producto.Descripcion.Length))...</p>
+                                <h4 class="text-primary">@producto.Precio.ToString("C")</h4>
+                            </div>
+                            <div class="card-footer bg-white">
+                                <div class="d-flex justify-content-between gap-2">
+                                    <a asp-action="Detalle" asp-route-id="@producto.Id" class="btn btn-outline-primary flex-fill">
+                                        <i class="fas fa-eye"></i> Ver
+                                    </a>
+                                    <form asp-controller="Carrito" asp-action="Agregar" method="post" class="flex-fill">
+                                        <input type="hidden" name="productoId" value="@producto.Id" />
+                                        <button type="submit" class="btn btn-primary w-100">
+                                            <i class="fas fa-cart-plus"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="col-12">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> No hay productos en esta categoría.
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .hover-shadow {
+            transition: all 0.3s ease;
+        }
+        .hover-shadow:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2) !important;
+        }
+    </style>
+}

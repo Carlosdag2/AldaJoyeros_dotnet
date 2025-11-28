@@ -1,0 +1,14 @@
+﻿namespace AldaJoyeros.Entities
+{
+    /// <summary>
+    /// Estados posibles de un pedido
+    /// </summary>
+    public enum EstadoPedido
+    {
+        PENDIENTE,
+        PROCESANDO,
+        ENVIADO,
+        ENTREGADO,
+        CANCELADO
+    }
+}

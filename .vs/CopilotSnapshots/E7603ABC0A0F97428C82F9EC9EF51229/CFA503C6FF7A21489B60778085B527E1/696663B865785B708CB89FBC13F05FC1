@@ -1,0 +1,180 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using AldaJoyeros.Services.Interfaces;
+using AldaJoyeros.DTOs;
+using AldaJoyeros.Helpers;
+using AldaJoyeros.ViewModels;
+
+namespace AldaJoyeros.Controllers
+{
+    public class PedidosController : BaseController
+    {
+        private readonly IPedidoService _pedidoService;
+        private readonly ICarritoService _carritoService;
+        private readonly IDireccionService _direccionService;
+        private readonly IProductoImagenService _imagenService;
+
+        public PedidosController(
+            IPedidoService pedidoService,
+            ICarritoService carritoService,
+            IDireccionService direccionService,
+            IProductoImagenService imagenService)
+        {
+            _pedidoService = pedidoService;
+            _carritoService = carritoService;
+            _direccionService = direccionService;
+            _imagenService = imagenService;
+        }
+
+        public async Task<IActionResult> Index()
+        {
+            if (!IsAuthenticated || CurrentUser == null)
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
+            var pedidos = await _pedidoService.GetByUsuarioIdAsync(CurrentUser.Id);
+            
+            // Cargar imágenes para cada producto en todos los pedidos
+            foreach (var pedido in pedidos)
+            {
+                foreach (var linea in pedido.LineasPedido)
+                {
+                    if (linea.Producto != null && linea.ProductoId.HasValue)
+                    {
+                        var imagenes = await _imagenService.GetByProductoIdAsync(linea.ProductoId.Value);
+                        linea.Producto.Imagenes = imagenes.ToList();
+                    }
+                }
+            }
+            
+            return View(pedidos);
+        }
+
+        public async Task<IActionResult> Detalle(long id)
+        {
+            if (!IsAuthenticated || CurrentUser == null)
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
+            var pedido = await _pedidoService.GetByIdAsync(id);
+            if (pedido == null || pedido.UsuarioId != CurrentUser.Id)
+            {
+                return NotFound();
+            }
+
+            // Cargar imágenes de MongoDB para cada producto en las líneas del pedido
+            foreach (var linea in pedido.LineasPedido)
+            {
+                if (linea.Producto != null && linea.ProductoId.HasValue)
+                {
+                    var imagenes = await _imagenService.GetByProductoIdAsync(linea.ProductoId.Value);
+                    linea.Producto.Imagenes = imagenes.ToList();
+                }
+            }
+
+            return View(pedido);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Checkout()
+        {
+            if (!IsAuthenticated || CurrentUser == null)
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
+            var carritoItems = await _carritoService.GetByUsuarioIdAsync(CurrentUser.Id);
+            if (!carritoItems.Any())
+            {
+                TempData["Error"] = "Tu carrito está vacío";
+                return RedirectToAction("Index", "Carrito");
+            }
+
+            // Cargar imágenes para cada producto del carrito
+            foreach (var item in carritoItems)
+            {
+                if (item.Producto != null)
+                {
+                    var imagenes = await _imagenService.GetByProductoIdAsync(item.ProductoId);
+                    item.Producto.Imagenes = imagenes.ToList();
+                }
+            }
+
+            var viewModel = new CheckoutViewModel
+            {
+                CarritoItems = carritoItems,
+                Direccion = new DireccionDto()
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Checkout(CheckoutViewModel viewModel)
+        {
+            if (!IsAuthenticated || CurrentUser == null)
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                var carritoItems = await _carritoService.GetByUsuarioIdAsync(CurrentUser.Id);
+                
+                // Cargar imágenes
+                foreach (var item in carritoItems)
+                {
+                    if (item.Producto != null)
+                    {
+                        var imagenes = await _imagenService.GetByProductoIdAsync(item.ProductoId);
+                        item.Producto.Imagenes = imagenes.ToList();
+                    }
+                }
+                
+                viewModel.CarritoItems = carritoItems;
+                return View(viewModel);
+            }
+
+            try
+            {
+                // Crear el DTO del pedido con la dirección del ViewModel
+                var pedidoDto = new PedidoCreateDto
+                {
+                    Direccion = new DireccionCreateDto
+                    {
+                        Calle = viewModel.Direccion.Calle,
+                        Numero = viewModel.Direccion.Numero,
+                        Piso = viewModel.Direccion.Piso,
+                        CodigoPostal = viewModel.Direccion.CodigoPostal,
+                        Ciudad = viewModel.Direccion.Ciudad,
+                        Provincia = viewModel.Direccion.Provincia,
+                        UsuarioId = CurrentUser.Id
+                    }
+                };
+
+                var pedido = await _pedidoService.CreateFromCarritoAsync(CurrentUser.Id, pedidoDto);
+                TempData["Success"] = "Pedido realizado exitosamente";
+                return RedirectToAction("Detalle", new { id = pedido.Id });
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                var carritoItems = await _carritoService.GetByUsuarioIdAsync(CurrentUser.Id);
+                
+                // Cargar imágenes
+                foreach (var item in carritoItems)
+                {
+                    if (item.Producto != null)
+                    {
+                        var imagenes = await _imagenService.GetByProductoIdAsync(item.ProductoId);
+                        item.Producto.Imagenes = imagenes.ToList();
+                    }
+                }
+                
+                viewModel.CarritoItems = carritoItems;
+                return View(viewModel);
+            }
+        }
+    }
+}

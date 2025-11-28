@@ -1,0 +1,88 @@
+﻿using AutoMapper;
+using AldaJoyeros.DTOs;
+using AldaJoyeros.Entities;
+using AldaJoyeros.Repositories.Interfaces;
+using AldaJoyeros.Services.Interfaces;
+
+namespace AldaJoyeros.Services.Implementations
+{
+    public class ProductoService : IProductoService
+    {
+        private readonly IProductoRepository _productoRepository;
+        private readonly ICategoriaRepository _categoriaRepository;
+        private readonly IMapper _mapper;
+
+        public ProductoService(
+            IProductoRepository productoRepository,
+            ICategoriaRepository categoriaRepository,
+            IMapper mapper)
+        {
+            _productoRepository = productoRepository;
+            _categoriaRepository = categoriaRepository;
+            _mapper = mapper;
+        }
+
+        public async Task<IEnumerable<ProductoDto>> GetAllAsync()
+        {
+            var productos = await _productoRepository.GetAllAsync();
+            return _mapper.Map<IEnumerable<ProductoDto>>(productos);
+        }
+
+        public async Task<ProductoDto?> GetByIdAsync(long id)
+        {
+            var producto = await _productoRepository.GetByIdAsync(id);
+            return producto == null ? null : _mapper.Map<ProductoDto>(producto);
+        }
+
+        public async Task<IEnumerable<ProductoDto>> GetByCategoriaAsync(long categoriaId)
+        {
+            var productos = await _productoRepository.GetByCategoriaAsync(categoriaId);
+            return _mapper.Map<IEnumerable<ProductoDto>>(productos);
+        }
+
+        public async Task<ProductoDto> CreateAsync(ProductoCreateDto productoCreateDto)
+        {
+            if (!await _categoriaRepository.ExistsAsync(productoCreateDto.CategoriaId))
+            {
+                throw new KeyNotFoundException("La categoría especificada no existe");
+            }
+
+            if (await _productoRepository.NombreExistsAsync(productoCreateDto.Nombre))
+            {
+                throw new InvalidOperationException("Ya existe un producto con ese nombre");
+            }
+
+            var producto = _mapper.Map<Producto>(productoCreateDto);
+            var createdProducto = await _productoRepository.CreateAsync(producto);
+            return _mapper.Map<ProductoDto>(createdProducto);
+        }
+
+        public async Task<ProductoDto> UpdateAsync(long id, ProductoUpdateDto productoUpdateDto)
+        {
+            var producto = await _productoRepository.GetByIdAsync(id);
+            if (producto == null)
+            {
+                throw new KeyNotFoundException("Producto no encontrado");
+            }
+
+            if (!await _categoriaRepository.ExistsAsync(productoUpdateDto.CategoriaId))
+            {
+                throw new KeyNotFoundException("La categoría especificada no existe");
+            }
+
+            _mapper.Map(productoUpdateDto, producto);
+            var updatedProducto = await _productoRepository.UpdateAsync(producto);
+            return _mapper.Map<ProductoDto>(updatedProducto);
+        }
+
+        public async Task DeleteAsync(long id)
+        {
+            if (!await _productoRepository.ExistsAsync(id))
+            {
+                throw new KeyNotFoundException("Producto no encontrado");
+            }
+
+            await _productoRepository.DeleteAsync(id);
+        }
+    }
+}

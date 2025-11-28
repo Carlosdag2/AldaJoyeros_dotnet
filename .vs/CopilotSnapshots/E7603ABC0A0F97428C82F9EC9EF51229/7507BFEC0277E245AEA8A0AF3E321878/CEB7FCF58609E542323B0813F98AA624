@@ -1,0 +1,243 @@
+﻿using Microsoft.EntityFrameworkCore;
+using MongoDB.Driver;
+using AldaJoyeros.Data;
+using AldaJoyeros.Models.MongoDB;
+
+namespace AldaJoyeros.Utilities
+{
+    /// <summary>
+    /// Utilidad para migrar imágenes de MySQL a MongoDB
+    /// </summary>
+    public class ImageMigrationUtility
+    {
+        private readonly AldaJoyerosContext _mysqlContext;
+        private readonly MongoDbContext _mongoContext;
+        private readonly ILogger<ImageMigrationUtility> _logger;
+
+        public ImageMigrationUtility(
+            AldaJoyerosContext mysqlContext,
+            MongoDbContext mongoContext,
+            ILogger<ImageMigrationUtility> logger)
+        {
+            _mysqlContext = mysqlContext;
+            _mongoContext = mongoContext;
+            _logger = logger;
+        }
+
+        /// <summary>
+        /// Migra todas las imágenes de MySQL a MongoDB
+        /// </summary>
+        public async Task<MigrationResult> MigrateAllImagesAsync()
+        {
+            var result = new MigrationResult();
+            
+            try
+            {
+                _logger.LogInformation("Iniciando migración de imágenes MySQL -> MongoDB");
+
+                // Verificar si la tabla existe en MySQL
+                var tableExists = await CheckIfImageTableExistsAsync();
+                
+                if (!tableExists)
+                {
+                    _logger.LogWarning("La tabla producto_imagen no existe en MySQL. No hay nada que migrar.");
+                    result.Message = "No existe tabla producto_imagen en MySQL";
+                    return result;
+                }
+
+                // Obtener imágenes de MySQL
+                var mysqlImages = await GetImagesFromMySqlAsync();
+                
+                if (mysqlImages.Count == 0)
+                {
+                    _logger.LogInformation("No hay imágenes en MySQL para migrar");
+                    result.Message = "No hay imágenes en MySQL";
+                    return result;
+                }
+
+                _logger.LogInformation($"Encontradas {mysqlImages.Count} imágenes en MySQL");
+
+                // Migrar cada imagen a MongoDB
+                foreach (var mysqlImage in mysqlImages)
+                {
+                    try
+                    {
+                        var mongoImage = new ProductoImagenMongo
+                        {
+                            ProductoId = mysqlImage.ProductoId,
+                            ImagenData = mysqlImage.ImagenData,
+                            TipoMime = mysqlImage.TipoMime,
+                            TamanoBytes = mysqlImage.TamanoBytes,
+                            Orden = mysqlImage.Orden,
+                            EsPrincipal = mysqlImage.EsPrincipal,
+                            FechaCreacion = mysqlImage.FechaCreacion ?? DateTime.UtcNow
+                        };
+
+                        await _mongoContext.ProductoImagenes.InsertOneAsync(mongoImage);
+                        
+                        result.Success++;
+                        _logger.LogInformation($"Migrada imagen ID {mysqlImage.Id} del producto {mysqlImage.ProductoId}");
+                    }
+                    catch (Exception ex)
+                    {
+                        result.Errors++;
+                        _logger.LogError(ex, $"Error migrando imagen ID {mysqlImage.Id}");
+                    }
+                }
+
+                result.TotalProcessed = mysqlImages.Count;
+                result.Message = $"Migración completada: {result.Success} exitosas, {result.Errors} errores";
+                
+                _logger.LogInformation(result.Message);
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error general en la migración");
+                result.Message = $"Error: {ex.Message}";
+                return result;
+            }
+        }
+
+        /// <summary>
+        /// Verifica si la tabla de imágenes existe en MySQL
+        /// </summary>
+        private async Task<bool> CheckIfImageTableExistsAsync()
+        {
+            try
+            {
+                var sql = @"
+                    SELECT COUNT(*) 
+                    FROM information_schema.tables 
+                    WHERE table_schema = DATABASE() 
+                    AND table_name = 'producto_imagen'";
+                
+                var result = await _mysqlContext.Database.ExecuteSqlRawAsync(sql);
+                return result > 0;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Obtiene las imágenes de MySQL
+        /// </summary>
+        private async Task<List<MySqlProductoImagen>> GetImagesFromMySqlAsync()
+        {
+            try
+            {
+                // Query raw SQL ya que la entidad no existe en el contexto
+                var sql = @"
+                    SELECT 
+                        id as Id,
+                        producto_id as ProductoId,
+                        imagen_data as ImagenData,
+                        tipo_mime as TipoMime,
+                        tamano_bytes as TamanoBytes,
+                        orden as Orden,
+                        es_principal as EsPrincipal,
+                        fecha_creacion as FechaCreacion
+                    FROM producto_imagen
+                    ORDER BY producto_id, orden";
+
+                var connection = _mysqlContext.Database.GetDbConnection();
+                await connection.OpenAsync();
+
+                using var command = connection.CreateCommand();
+                command.CommandText = sql;
+
+                var images = new List<MySqlProductoImagen>();
+
+                using var reader = await command.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    images.Add(new MySqlProductoImagen
+                    {
+                        Id = reader.GetInt64(0),
+                        ProductoId = reader.GetInt64(1),
+                        ImagenData = reader["ImagenData"] as byte[] ?? Array.Empty<byte>(),
+                        TipoMime = reader.GetString(3),
+                        TamanoBytes = reader.GetInt32(4),
+                        Orden = reader.GetInt32(5),
+                        EsPrincipal = reader.GetBoolean(6),
+                        FechaCreacion = reader.IsDBNull(7) ? null : reader.GetDateTime(7)
+                    });
+                }
+
+                await connection.CloseAsync();
+
+                return images;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error obteniendo imágenes de MySQL");
+                return new List<MySqlProductoImagen>();
+            }
+        }
+
+        /// <summary>
+        /// Limpia la colección de MongoDB antes de migrar
+        /// </summary>
+        public async Task<bool> ClearMongoCollectionAsync()
+        {
+            try
+            {
+                await _mongoContext.ProductoImagenes.DeleteManyAsync(FilterDefinition<ProductoImagenMongo>.Empty);
+                _logger.LogInformation("Colección de MongoDB limpiada");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error limpiando colección de MongoDB");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Verifica la conectividad con MongoDB
+        /// </summary>
+        public async Task<bool> TestMongoConnectionAsync()
+        {
+            try
+            {
+                var count = await _mongoContext.ProductoImagenes.CountDocumentsAsync(FilterDefinition<ProductoImagenMongo>.Empty);
+                _logger.LogInformation($"Conexión MongoDB OK. Documentos actuales: {count}");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error conectando a MongoDB");
+                return false;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Clase temporal para leer imágenes de MySQL
+    /// </summary>
+    public class MySqlProductoImagen
+    {
+        public long Id { get; set; }
+        public long ProductoId { get; set; }
+        public byte[] ImagenData { get; set; } = Array.Empty<byte>();
+        public string TipoMime { get; set; } = string.Empty;
+        public int TamanoBytes { get; set; }
+        public int Orden { get; set; }
+        public bool EsPrincipal { get; set; }
+        public DateTime? FechaCreacion { get; set; }
+    }
+
+    /// <summary>
+    /// Resultado de la migración
+    /// </summary>
+    public class MigrationResult
+    {
+        public int TotalProcessed { get; set; }
+        public int Success { get; set; }
+        public int Errors { get; set; }
+        public string Message { get; set; } = string.Empty;
+    }
+}
