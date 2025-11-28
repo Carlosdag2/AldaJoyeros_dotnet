@@ -16,7 +16,9 @@ namespace AldaJoyeros.Repositories.Implementations
 
         public async Task<IEnumerable<Categoria>> GetAllAsync()
         {
-            return await _context.Categorias.ToListAsync();
+          return await _context.Categorias
+   .Include(c => c.Productos)
+   .ToListAsync();
         }
 
         public async Task<Categoria?> GetByIdAsync(long id)

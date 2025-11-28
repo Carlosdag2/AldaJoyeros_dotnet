@@ -51,7 +51,7 @@
                 <i class="fas fa-gem text-white text-xl"></i>
             </div>
             <div>
-                <div class="text-2xl font-bold text-gray-900">--</div>
+                <div class="text-2xl font-bold text-gray-900">@ViewBag.TotalProductos</div>
                 <div class="text-sm text-gray-600">Productos Totales</div>
             </div>
         </div>
@@ -80,7 +80,7 @@
                     <div class="flex items-center justify-between mb-4">
                         <div class="text-sm text-gray-600">
                             <i class="fas fa-gem mr-2"></i>
-                            <span class="font-semibold">-- productos</span>
+                            <span class="font-semibold">@categoria.CantidadProductos producto@(categoria.CantidadProductos != 1 ? "s" : "")</span>
                         </div>
                         <div class="flex items-center space-x-1">
                             <i class="fas fa-star text-yellow-500"></i>

@@ -18,7 +18,8 @@ namespace AldaJoyeros.Mappings
                 .ForMember(dest => dest.Password, opt => opt.Ignore()); // Se hashea en el servicio si se proporciona
 
             // Categoria mappings
-            CreateMap<Categoria, CategoriaDto>();
+            CreateMap<Categoria, CategoriaDto>()
+                .ForMember(dest => dest.CantidadProductos, opt => opt.MapFrom(src => src.Productos.Count));
             CreateMap<CategoriaCreateDto, Categoria>();
             CreateMap<CategoriaUpdateDto, Categoria>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore());

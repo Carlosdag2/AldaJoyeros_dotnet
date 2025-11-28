@@ -26,6 +26,9 @@ namespace AldaJoyeros.Controllers
 
             var productos = await _productoService.GetAllAsync();
             
+            // Guardar total antes de aplicar filtro de búsqueda
+            var totalProductos = productos.Count();
+            
             // Aplicar búsqueda si hay término
             if (!string.IsNullOrWhiteSpace(busqueda))
             {
@@ -39,6 +42,7 @@ namespace AldaJoyeros.Controllers
 
             var pagedResult = PagedResult<ProductoDto>.Create(productos, page, PageSize);
             ViewBag.Busqueda = busqueda;
+            ViewBag.TotalProductos = totalProductos;
 
             return View(pagedResult);
         }

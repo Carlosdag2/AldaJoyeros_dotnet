@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using AldaJoyeros.Services.Interfaces;
 using AldaJoyeros.DTOs;
+using System.Linq;
 
 namespace AldaJoyeros.Controllers
 {
@@ -21,6 +22,10 @@ namespace AldaJoyeros.Controllers
             }
 
             var categorias = await _categoriaService.GetAllAsync();
+            
+            // Calcular el total de productos
+            ViewBag.TotalProductos = categorias.Sum(c => c.CantidadProductos);
+
             return View(categorias);
         }
 
