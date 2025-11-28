@@ -62,7 +62,8 @@ namespace AldaJoyeros.Mappings
             CreateMap<Pedido, PedidoDto>()
                 .ForMember(dest => dest.UsuarioEmail, opt => opt.MapFrom(src => src.Usuario != null ? src.Usuario.Email : string.Empty))
                 .ForMember(dest => dest.Direccion, opt => opt.MapFrom(src => src.Direccion))
-                .ForMember(dest => dest.LineasPedido, opt => opt.MapFrom(src => src.LineasPedido));
+                .ForMember(dest => dest.LineasPedido, opt => opt.MapFrom(src => src.LineasPedido))
+                .ForMember(dest => dest.Total, opt => opt.MapFrom(src => src.LineasPedido.Sum(lp => lp.Precio * lp.Cantidad)));
             CreateMap<PedidoCreateDto, Pedido>()
                 .ForMember(dest => dest.Fecha, opt => opt.MapFrom(src => DateTime.Now))
                 .ForMember(dest => dest.Estado, opt => opt.MapFrom(src => "PENDIENTE"))
@@ -71,7 +72,8 @@ namespace AldaJoyeros.Mappings
             // LineaPedido mappings
             CreateMap<LineaPedido, LineaPedidoDto>()
                 .ForMember(dest => dest.ProductoNombre, opt => opt.MapFrom(src => src.Producto != null ? src.Producto.Nombre : string.Empty))
-                .ForMember(dest => dest.Producto, opt => opt.MapFrom(src => src.Producto));
+                .ForMember(dest => dest.Producto, opt => opt.MapFrom(src => src.Producto))
+                .ForMember(dest => dest.Subtotal, opt => opt.MapFrom(src => src.Precio * src.Cantidad));
             CreateMap<LineaPedidoCreateDto, LineaPedido>();
         }
     }

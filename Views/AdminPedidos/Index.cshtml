@@ -48,25 +48,25 @@
 
     <!-- Stats Grid -->
     <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
-        <div class="text-center">
+     <div class="text-center">
             <div class="text-2xl font-bold text-gray-900">@Model.TotalItems</div>
             <div class="text-sm text-gray-600">Total Pedidos</div>
         </div>
         <div class="text-center">
-            <div class="text-2xl font-bold text-yellow-600">--</div>
-            <div class="text-sm text-gray-600">Pendientes</div>
+      <div class="text-2xl font-bold text-yellow-600">@ViewBag.TotalPendientes</div>
+      <div class="text-sm text-gray-600">Pendientes</div>
         </div>
         <div class="text-center">
-            <div class="text-2xl font-bold text-blue-600">--</div>
+     <div class="text-2xl font-bold text-blue-600">@ViewBag.TotalEnProceso</div>
             <div class="text-sm text-gray-600">En Proceso</div>
         </div>
         <div class="text-center">
-            <div class="text-2xl font-bold text-purple-600">--</div>
-            <div class="text-sm text-gray-600">Enviados</div>
-        </div>
+    <div class="text-2xl font-bold text-purple-600">@ViewBag.TotalEnviados</div>
+       <div class="text-sm text-gray-600">Enviados</div>
+    </div>
         <div class="text-center">
-            <div class="text-2xl font-bold text-green-600">--</div>
-            <div class="text-sm text-gray-600">Entregados</div>
+         <div class="text-2xl font-bold text-green-600">@ViewBag.TotalEntregados</div>
+ <div class="text-sm text-gray-600">Entregados</div>
         </div>
     </div>
 </div>

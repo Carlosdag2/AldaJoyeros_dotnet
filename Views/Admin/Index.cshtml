@@ -13,53 +13,53 @@
 <!-- Quick Stats -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
     <!-- Categorías -->
-    <div class="bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl p-6 text-white shadow-xl transform hover:-translate-y-2 transition-all duration-300">
-        <div class="flex items-center justify-between mb-4">
-            <div class="w-16 h-16 bg-white bg-opacity-20 rounded-xl flex items-center justify-center backdrop-blur-sm">
-                <i class="fas fa-tags text-3xl"></i>
+  <div class="bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl p-6 text-white shadow-xl transform hover:-translate-y-2 transition-all duration-300">
+      <div class="flex items-center justify-between mb-4">
+   <div class="w-16 h-16 bg-white bg-opacity-20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+       <i class="fas fa-tags text-3xl"></i>
             </div>
             <i class="fas fa-arrow-up text-green-300"></i>
         </div>
         <h3 class="text-sm font-semibold text-purple-100 mb-1">CATEGORÍAS</h3>
-        <div class="text-3xl font-bold mb-2">--</div>
+        <div class="text-3xl font-bold mb-2">@ViewBag.TotalCategorias</div>
         <a asp-controller="AdminCategorias" asp-action="Index" 
            class="inline-flex items-center text-sm font-semibold hover:text-purple-100 transition-colors group">
             Ver todas
-            <i class="fas fa-arrow-right ml-2 group-hover:translate-x-2 transition-transform"></i>
+       <i class="fas fa-arrow-right ml-2 group-hover:translate-x-2 transition-transform"></i>
         </a>
-    </div>
+</div>
 
     <!-- Productos -->
     <div class="bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl p-6 text-white shadow-xl transform hover:-translate-y-2 transition-all duration-300">
-        <div class="flex items-center justify-between mb-4">
-            <div class="w-16 h-16 bg-white bg-opacity-20 rounded-xl flex items-center justify-center backdrop-blur-sm">
-                <i class="fas fa-gem text-3xl"></i>
-            </div>
-            <i class="fas fa-arrow-up text-green-300"></i>
+ <div class="flex items-center justify-between mb-4">
+<div class="w-16 h-16 bg-white bg-opacity-20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+              <i class="fas fa-gem text-3xl"></i>
+   </div>
+      <i class="fas fa-arrow-up text-green-300"></i>
         </div>
-        <h3 class="text-sm font-semibold text-green-100 mb-1">PRODUCTOS</h3>
-        <div class="text-3xl font-bold mb-2">--</div>
+   <h3 class="text-sm font-semibold text-green-100 mb-1">PRODUCTOS</h3>
+        <div class="text-3xl font-bold mb-2">@ViewBag.TotalProductos</div>
         <a asp-controller="AdminProductos" asp-action="Index" 
            class="inline-flex items-center text-sm font-semibold hover:text-green-100 transition-colors group">
-            Gestionar
-            <i class="fas fa-arrow-right ml-2 group-hover:translate-x-2 transition-transform"></i>
-        </a>
+      Gestionar
+       <i class="fas fa-arrow-right ml-2 group-hover:translate-x-2 transition-transform"></i>
+    </a>
     </div>
 
     <!-- Pedidos -->
     <div class="bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl p-6 text-white shadow-xl transform hover:-translate-y-2 transition-all duration-300">
         <div class="flex items-center justify-between mb-4">
-            <div class="w-16 h-16 bg-white bg-opacity-20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+     <div class="w-16 h-16 bg-white bg-opacity-20 rounded-xl flex items-center justify-center backdrop-blur-sm">
                 <i class="fas fa-box text-3xl"></i>
             </div>
-            <i class="fas fa-arrow-up text-orange-300"></i>
+     <i class="fas fa-arrow-up text-orange-300"></i>
         </div>
         <h3 class="text-sm font-semibold text-orange-100 mb-1">PEDIDOS</h3>
-        <div class="text-3xl font-bold mb-2">--</div>
+        <div class="text-3xl font-bold mb-2">@ViewBag.TotalPedidos</div>
         <a asp-controller="AdminPedidos" asp-action="Index" 
            class="inline-flex items-center text-sm font-semibold hover:text-orange-100 transition-colors group">
-            Ver pedidos
-            <i class="fas fa-arrow-right ml-2 group-hover:translate-x-2 transition-transform"></i>
+    Ver pedidos
+          <i class="fas fa-arrow-right ml-2 group-hover:translate-x-2 transition-transform"></i>
         </a>
     </div>
 
@@ -67,15 +67,15 @@
     <div class="bg-gradient-to-br from-blue-500 to-indigo-500 rounded-2xl p-6 text-white shadow-xl transform hover:-translate-y-2 transition-all duration-300">
         <div class="flex items-center justify-between mb-4">
             <div class="w-16 h-16 bg-white bg-opacity-20 rounded-xl flex items-center justify-center backdrop-blur-sm">
-                <i class="fas fa-users text-3xl"></i>
-            </div>
-            <i class="fas fa-arrow-up text-blue-300"></i>
+   <i class="fas fa-users text-3xl"></i>
+   </div>
+    <i class="fas fa-arrow-up text-blue-300"></i>
         </div>
         <h3 class="text-sm font-semibold text-blue-100 mb-1">USUARIOS</h3>
-        <div class="text-3xl font-bold mb-2">--</div>
+        <div class="text-3xl font-bold mb-2">@ViewBag.TotalUsuarios</div>
         <a asp-controller="AdminUsuarios" asp-action="Index" 
-           class="inline-flex items-center text-sm font-semibold hover:text-blue-100 transition-colors group">
-            Gestionar
+       class="inline-flex items-center text-sm font-semibold hover:text-blue-100 transition-colors group">
+      Gestionar
             <i class="fas fa-arrow-right ml-2 group-hover:translate-x-2 transition-transform"></i>
         </a>
     </div>

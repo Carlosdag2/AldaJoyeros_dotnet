@@ -29,6 +29,14 @@ namespace AldaJoyeros.Controllers
 
             var pedidosQuery = await _pedidoService.GetAllAsync();
             
+            // Calcular estadísticas por estado
+            var todosPedidos = pedidosQuery.ToList();
+            ViewBag.TotalPendientes = todosPedidos.Count(p => p.Estado == "PENDIENTE");
+            ViewBag.TotalEnProceso = todosPedidos.Count(p => p.Estado == "EN_PROCESO");
+            ViewBag.TotalEnviados = todosPedidos.Count(p => p.Estado == "ENVIADO");
+            ViewBag.TotalEntregados = todosPedidos.Count(p => p.Estado == "ENTREGADO");
+            ViewBag.TotalCancelados = todosPedidos.Count(p => p.Estado == "CANCELADO");
+            
             if (!string.IsNullOrEmpty(estado))
             {
                 pedidosQuery = pedidosQuery.Where(p => p.Estado == estado).ToList();
