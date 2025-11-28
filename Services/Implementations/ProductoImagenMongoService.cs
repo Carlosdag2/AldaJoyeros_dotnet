@@ -167,11 +167,55 @@ namespace AldaJoyeros.Services.Implementations
             }
         }
 
-        public async Task SetAsPrincipalAsync(long id)
+        public async Task DeleteByStringIdAsync(string id)
         {
             try
             {
-                var imagen = await _repository.GetByIdAsync(id.ToString());
+                var imagen = await _repository.GetByIdAsync(id);
+                if (imagen == null)
+                {
+                    throw new KeyNotFoundException("Imagen no encontrada");
+                }
+
+                var productoId = imagen.ProductoId;
+                var eraPrincipal = imagen.EsPrincipal;
+
+                var deleted = await _repository.DeleteAsync(id);
+                
+                if (!deleted)
+                {
+                    throw new InvalidOperationException("No se pudo eliminar la imagen");
+                }
+
+                _logger.LogInformation("Imagen eliminada de MongoDB con ID: {ImagenId}", id);
+
+                // Si era la principal, marcar otra como principal
+                if (eraPrincipal)
+                {
+                    var imagenes = await _repository.GetByProductoIdAsync(productoId);
+                    var siguiente = imagenes.OrderBy(i => i.Orden).FirstOrDefault();
+
+                    if (siguiente != null)
+                    {
+                        siguiente.EsPrincipal = true;
+                        await _repository.UpdateAsync(siguiente.Id, siguiente);
+    
+                        _logger.LogInformation("Nueva imagen principal establecida: {ImagenId}", siguiente.Id);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al eliminar imagen con ID: {ImagenId}", id);
+                throw;
+            }
+        }
+
+        public async Task SetAsPrincipalAsync(string id)
+        {
+            try
+            {
+                var imagen = await _repository.GetByIdAsync(id);
                 if (imagen == null)
                 {
                     throw new KeyNotFoundException("Imagen no encontrada");

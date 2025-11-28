@@ -9,6 +9,7 @@ namespace AldaJoyeros.Services.Interfaces
         Task<ProductoImagenDto> CreateAsync(ProductoImagenCreateDto imagenDto);
         Task<ProductoImagenDto> CreateFromFileAsync(ProductoImagenUploadDto uploadDto);
         Task DeleteAsync(long id);
-        Task SetAsPrincipalAsync(long id);
+        Task DeleteByStringIdAsync(string id);
+        Task SetAsPrincipalAsync(string id);
     }
 }

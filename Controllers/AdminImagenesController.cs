@@ -100,16 +100,9 @@ namespace AldaJoyeros.Controllers
 
             try
             {
-                // Convertir string ID de MongoDB a long temporal
-                if (long.TryParse(id, out long imagenId))
-                {
-                    await _imagenService.DeleteAsync(imagenId);
-                    TempData["Success"] = "Imagen eliminada exitosamente de MongoDB";
-                }
-                else
-                {
-                    TempData["Error"] = "ID de imagen inválido";
-                }
+                // El ID de MongoDB es string, usar el método apropiado
+                await _imagenService.DeleteByStringIdAsync(id);
+                TempData["Success"] = "Imagen eliminada exitosamente de MongoDB";
             }
             catch (Exception ex)
             {
@@ -130,16 +123,9 @@ namespace AldaJoyeros.Controllers
 
             try
             {
-                // Convertir string ID de MongoDB a long temporal
-                if (long.TryParse(id, out long imagenId))
-                {
-                    await _imagenService.SetAsPrincipalAsync(imagenId);
-                    TempData["Success"] = "Imagen principal actualizada";
-                }
-                else
-                {
-                    TempData["Error"] = "ID de imagen inválido";
-                }
+                // El ID de MongoDB ya es string, usarlo directamente
+                await _imagenService.SetAsPrincipalAsync(id);
+                TempData["Success"] = "Imagen principal actualizada";
             }
             catch (Exception ex)
             {
