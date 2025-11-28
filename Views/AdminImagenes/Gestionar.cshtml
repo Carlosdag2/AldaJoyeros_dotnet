@@ -53,7 +53,7 @@
                 Subir Nueva Imagen
             </h2>
 
-            <form asp-controller="AdminImagenes" asp-action="Subir" method="post" enctype="multipart/form-data" class="space-y-6">
+            <form asp-controller="AdminImagenes" asp-action="Subir" method="post" enctype="multipart/form-data" class="space-y-6" id="uploadForm">
                 <input type="hidden" name="productoId" value="@Model.Id" />
 
                 <!-- Selector de Archivo -->
@@ -61,17 +61,22 @@
                     <label class="block text-sm font-semibold text-gray-700 mb-2">
                         <i class="fas fa-image mr-2 text-gray-500"></i>Seleccionar Imagen
                     </label>
-                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-yellow-500 transition-all duration-200">
-                        <i class="fas fa-file-upload text-6xl text-gray-300 mb-4"></i>
-                        <input type="file" 
-                               name="archivo" 
-                               accept="image/*" 
-                               required
-                               class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-yellow-50 file:text-yellow-700 hover:file:bg-yellow-100" />
+                    <div id="dropZone" class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-yellow-500 transition-all duration-200 cursor-pointer bg-white">
+                        <i class="fas fa-cloud-upload-alt text-6xl text-gray-300 mb-4"></i>
+                        <p class="text-lg font-semibold text-gray-700 mb-2">
+                            Arrastra tu imagen aquí o haz clic para seleccionar
+                        </p>
                         <p class="text-xs text-gray-500 mt-2">
                             Formatos permitidos: JPG, PNG, WEBP, GIF (máx. 5MB)
                         </p>
                     </div>
+                    <!-- Input de archivo oculto, fuera del dropzone para no perderlo al cambiar el contenido -->
+                    <input type="file" 
+                           id="fileInput"
+                           name="archivo" 
+                           accept="image/*" 
+                           required
+                           class="hidden" />
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -107,6 +112,7 @@
                 </div>
 
                 <button type="submit" 
+                        id="submitBtn"
                         class="w-full inline-flex items-center justify-center gradient-gold text-gray-900 px-8 py-4 rounded-lg font-bold text-lg hover:shadow-2xl transition-all duration-200 transform hover:scale-105">
                     <i class="fas fa-upload mr-3"></i>
                     Subir Imagen
@@ -330,5 +336,80 @@
         .animate-fade-in {
             animation: fade-in 0.3s ease-out;
         }
+
+        #dropZone.drag-over {
+    border-color: #eab308;
+   background-color: #fef9c3;
+        }
     </style>
+}
+
+@section Scripts {
+    <script>
+ const dropZone = document.getElementById('dropZone');
+ const fileInput = document.getElementById('fileInput');
+ const uploadForm = document.getElementById('uploadForm');
+
+ // Click en dropzone abre el selector
+ dropZone.addEventListener('click', () => fileInput.click());
+
+ // Previene comportamiento por defecto
+ ['dragenter','dragover','dragleave','drop'].forEach(name => {
+ dropZone.addEventListener(name, e => { e.preventDefault(); e.stopPropagation(); }, false);
+ });
+
+ // Estilos visuales al arrastrar
+ ['dragenter','dragover'].forEach(name => {
+ dropZone.addEventListener(name, () => dropZone.classList.add('drag-over'), false);
+ });
+ ;['dragleave','drop'].forEach(name => {
+ dropZone.addEventListener(name, () => dropZone.classList.remove('drag-over'), false);
+ });
+
+ // Manejar drop
+ dropZone.addEventListener('drop', (e) => {
+ const files = e.dataTransfer.files;
+ if (!files || files.length ===0) return;
+ setFile(files[0]);
+ });
+
+ // Manejar selección por input
+ fileInput.addEventListener('change', (e) => {
+ if (!e.target.files || e.target.files.length ===0) return;
+ setFile(e.target.files[0]);
+ });
+
+ function setFile(file){
+ if (!file.type.startsWith('image/')) { alert('Selecciona una imagen válida'); fileInput.value=''; return; }
+ if (file.size >5*1024*1024) { alert('Tamaño máximo5MB'); fileInput.value=''; return; }
+
+ // Mostrar previsualización y nombre
+ const reader = new FileReader();
+ reader.onload = () => {
+ dropZone.innerHTML = `
+ <div class="space-y-3">
+ <img src="${reader.result}" alt="Vista previa" class="mx-auto rounded-lg shadow max-h-48 object-contain" />
+ <div class="inline-flex items-center px-3 py-2 bg-green-50 text-green-700 rounded-lg">
+ <i class="fas fa-file-image mr-2"></i>
+ <span>${file.name} (${(file.size/1024).toFixed(2)} KB)</span>
+ </div>
+ <p class="text-xs text-gray-500">Haz clic para cambiar la imagen</p>
+ </div>`;
+ };
+ reader.readAsDataURL(file);
+
+ // Reflejar archivo en el input si vino de DnD
+ const dt = new DataTransfer();
+ dt.items.add(file);
+ fileInput.files = dt.files;
+ }
+
+ // Validar antes de enviar
+ uploadForm.addEventListener('submit', (e) => {
+ if (!fileInput.files || fileInput.files.length ===0) {
+ e.preventDefault();
+ alert('Selecciona una imagen antes de subir');
+ }
+ });
+ </script>
 }
