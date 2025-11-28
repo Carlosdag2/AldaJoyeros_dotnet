@@ -10,7 +10,8 @@ namespace AldaJoyeros.Mappings
         public MappingProfile()
         {
             // Usuario mappings
-            CreateMap<Usuario, UsuarioDto>();
+            CreateMap<Usuario, UsuarioDto>()
+                .ForMember(dest => dest.CantidadPedidos, opt => opt.MapFrom(src => src.Pedidos.Count));
             CreateMap<UsuarioCreateDto, Usuario>()
                 .ForMember(dest => dest.Password, opt => opt.Ignore()); // Se hashea en el servicio
             CreateMap<UsuarioUpdateDto, Usuario>()

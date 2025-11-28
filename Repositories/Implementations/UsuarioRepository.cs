@@ -16,7 +16,9 @@ namespace AldaJoyeros.Repositories.Implementations
 
         public async Task<IEnumerable<Usuario>> GetAllAsync()
         {
-            return await _context.Usuarios.ToListAsync();
+            return await _context.Usuarios
+                .Include(u => u.Pedidos)
+                .ToListAsync();
         }
 
         public async Task<Usuario?> GetByIdAsync(long id)

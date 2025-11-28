@@ -24,6 +24,11 @@ namespace AldaJoyeros.Controllers
 
             var usuariosQuery = await _usuarioService.GetAllAsync();
             
+            // Calcular estadísticas antes de filtrar
+            var todosUsuarios = usuariosQuery.ToList();
+            ViewBag.TotalAdministradores = todosUsuarios.Count(u => u.Rol == "ADMIN");
+            ViewBag.TotalClientes = todosUsuarios.Count(u => u.Rol == "USER" || u.Rol == "CLIENTE");
+      
             if (!string.IsNullOrEmpty(rol))
             {
                 usuariosQuery = usuariosQuery.Where(u => u.Rol == rol).ToList();
