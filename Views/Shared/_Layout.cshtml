@@ -112,7 +112,17 @@
                     {
                         <a asp-controller="Carrito" asp-action="Index" class="relative text-gray-300 hover:text-yellow-400 transition-colors">
                             <i class="fas fa-shopping-cart text-xl"></i>
-                            <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">0</span>
+                            @{
+                                var carritoCount = ViewBag.CarritoCount ?? 0;
+                            }
+                            @if (carritoCount > 0)
+                            {
+                                <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">@carritoCount</span>
+                            }
+                            else
+                            {
+                                <span class="absolute -top-2 -right-2 bg-gray-400 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">0</span>
+                            }
                         </a>
                         <a asp-controller="Pedidos" asp-action="Index" class="text-gray-300 hover:text-yellow-400 transition-colors">
                             <i class="fas fa-box text-xl"></i>

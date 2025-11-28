@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using AldaJoyeros.Services.Interfaces;
 using AldaJoyeros.DTOs;
+using AldaJoyeros.Helpers;
 
 namespace AldaJoyeros.Controllers
 {
@@ -41,7 +42,7 @@ namespace AldaJoyeros.Controllers
                     return View(loginDto);
                 }
 
-                CurrentUser = usuario;
+                HttpContext.Session.SetObject("CurrentUser", usuario);
 
                 if (usuario.Rol == "ADMIN")
                 {
@@ -87,7 +88,7 @@ namespace AldaJoyeros.Controllers
                 };
 
                 var loggedUser = await _usuarioService.LoginAsync(loginDto);
-                CurrentUser = loggedUser;
+                HttpContext.Session.SetObject("CurrentUser", loggedUser);
 
                 return RedirectToAction("Index", "Home");
             }
