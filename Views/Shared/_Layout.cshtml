@@ -1,183 +1,348 @@
 ﻿<!DOCTYPE html>
-<html lang="es" class="h-full">
+<html lang="es" class="scroll-smooth">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Alda Joyeros</title>
-    
-    <!-- Tailwind CSS -->
+    <title>@ViewData["Title"] | ALDA JOYEROS</title>
+
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-         tailwind.config = {
-         theme: {
-         extend: {
-       colors: {
-        primary: '#059669',
-        secondary: '#10b981',
-         accent: '#047857',
-       'accent-dark': '#065f46',
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    colors: {
+                        emerald: {
+                            50: '#F0FDF4',
+                            100: '#DCFCE7',
+                            200: '#BBF7D0',
+                            300: '#86EFAC',
+                            400: '#4ADE80',
+                            500: '#22C55E',
+                            600: '#16A34A',
+                            700: '#15803D',
+                            800: '#166534',
+                            900: '#14532D',
+                        },
+                        dark: {
+                            800: '#1A1A1A',
+                            900: '#111111',
+                        }
+                    },
+                    animation: {
+                        'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
+                        'float': 'float 6s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        }
+                    }
+                }
+            }
         }
-         }
-           }
-       }
-      </script>
-    
-    <!-- Font Awesome -->
+    </script>
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
+        /* Scrollbar invisible para elegancia */
+        ::-webkit-scrollbar {
+            width: 8px;
         }
-        .font-display {
-            font-family: 'Playfair Display', serif;
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
         }
-        .gradient-gold {
-            background: linear-gradient(135deg, #059669 0%, #10b981 50%, #059669 100%);
+
+        ::-webkit-scrollbar-thumb {
+            background: #22C55E;
+            border-radius: 4px;
         }
-        .text-gradient {
-            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+
+        .luxury-text-shadow {
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-link {
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #22C55E, #16A34A);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
         }
     </style>
-    
     @await RenderSectionAsync("Styles", required: false)
 </head>
-<body class="h-full flex flex-col bg-gray-50">
-    <!-- Header -->
-    <header class="bg-white shadow-lg sticky top-0 z-50 border-b-2 border-green-600">
-        <nav class="container mx-auto px-4 py-3">
-            <div class="flex items-center justify-between">
-                <!-- Logo -->
-                <a href="/" class="flex items-center space-x-3 group">
-                    <img src="~/images/logo.png" alt="Alda Joyeros Logo" class="h-16 md:h-20 w-auto group-hover:scale-105 transition-transform duration-300" />
-                </a>
+<body class="font-sans text-gray-800 antialiased selection:bg-emerald-200 selection:text-black">
 
-                <!-- Mobile menu button -->
-                <button id="mobile-menu-btn" class="lg:hidden text-gray-900 hover:text-green-600 transition-colors">
-                    <i class="fas fa-bars text-2xl"></i>
-                </button>
-
-                <!-- Desktop Navigation -->
+    <header x-data="{ scrolled: false, mobileMenuOpen: false }"
+            @@scroll.window="scrolled = (window.pageYOffset > 20)"
+            :class="scrolled ? 'py-3 shadow-lg glass-nav' : 'py-5 bg-white'"
+            class="fixed w-full top-0 z-50 transition-all duration-500 ease-out">
+        <nav class="container mx-auto px-6">
+            <div class="flex justify-between items-center">
+                <!-- Left Navigation (Desktop) -->
                 <div class="hidden lg:flex items-center space-x-8">
-                    <a asp-controller="Home" asp-action="Index" class="text-gray-700 hover:text-green-600 transition-colors font-medium">
-                        <i class="fas fa-home mr-2"></i>Inicio
+                    <a asp-controller="Home" asp-action="Index" class="nav-link text-sm uppercase tracking-[0.15em] text-gray-700 hover:text-emerald-600 font-medium">
+                        <i class="fas fa-home mr-2 text-xs"></i>Inicio
                     </a>
-                    <a asp-controller="Productos" asp-action="Index" class="text-gray-700 hover:text-green-600 transition-colors font-medium">
-                        <i class="fas fa-gem mr-2"></i>Productos
+                    <a asp-controller="Productos" asp-action="Index" class="nav-link text-sm uppercase tracking-[0.15em] text-gray-700 hover:text-emerald-600 font-medium">
+                        <i class="fas fa-gem mr-2 text-xs"></i>Colecciones
                     </a>
                     
+                    @* Admin Panel Link - Solo visible para administradores *@
                     @if (ViewBag.IsAdmin == true)
                     {
-                        <div class="relative group">
-                            <button class="text-gray-700 hover:text-green-600 transition-colors font-medium flex items-center">
-                                <i class="fas fa-cog mr-2"></i>Administración
-                                <i class="fas fa-chevron-down ml-2 text-sm"></i>
-                            </button>
-                            <div class="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform group-hover:translate-y-0 translate-y-2 border border-gray-200">
-                                <div class="py-2">
-                                    <a asp-controller="Admin" asp-action="Index" class="block px-4 py-2 text-gray-700 hover:bg-green-50 transition-colors">
-                                        <i class="fas fa-tachometer-alt mr-2 text-blue-500"></i>Panel Admin
-                                    </a>
-                                    <hr class="my-2">
-                                    <a asp-controller="AdminCategorias" asp-action="Index" class="block px-4 py-2 text-gray-700 hover:bg-green-50 transition-colors">
-                                        <i class="fas fa-tags mr-2 text-purple-500"></i>Categorías
-                                    </a>
-                                    <a asp-controller="AdminProductos" asp-action="Index" class="block px-4 py-2 text-gray-700 hover:bg-green-50 transition-colors">
-                                        <i class="fas fa-gem mr-2 text-green-500"></i>Productos
-                                    </a>
-                                    <a asp-controller="AdminPedidos" asp-action="Index" class="block px-4 py-2 text-gray-700 hover:bg-green-50 transition-colors">
-                                        <i class="fas fa-box mr-2 text-orange-500"></i>Pedidos
-                                    </a>
-                                    <a asp-controller="AdminUsuarios" asp-action="Index" class="block px-4 py-2 text-gray-700 hover:bg-green-50 transition-colors">
-                                        <i class="fas fa-users mr-2 text-indigo-500"></i>Usuarios
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
+                        <a asp-controller="Admin" asp-action="Index" class="nav-link text-sm uppercase tracking-[0.15em] text-purple-600 hover:text-purple-700 font-semibold flex items-center gap-2">
+                            <i class="fas fa-shield-alt mr-2 text-xs"></i>Panel Admin
+                            <span class="bg-purple-100 text-purple-700 text-xs px-2 py-0.5 rounded-full font-bold">ADMIN</span>
+                        </a>
                     }
                 </div>
 
-                <!-- User Menu -->
+                <!-- Logo (Center) -->
+                <a asp-controller="Home" asp-action="Index" class="flex flex-col items-center gap-1 transform hover:scale-105 transition-transform duration-500 group">
+                    <div class="flex items-center">
+                        <img src="~/images/logo.png" alt="Alda Joyeros" class="h-20 w-auto object-contain group-hover:brightness-110 transition-all duration-500" />
+                    </div>
+                </a>
+
+                <!-- Right Navigation (Desktop) -->
                 <div class="hidden lg:flex items-center space-x-4">
                     @if (ViewBag.IsAuthenticated == true)
                     {
-                        <a asp-controller="Carrito" asp-action="Index" class="relative text-gray-700 hover:text-green-600 transition-colors">
-                            <i class="fas fa-shopping-cart text-xl"></i>
-                            @{
-                                var carritoCount = ViewBag.CarritoCount ?? 0;
-                            }
-                            @if (carritoCount > 0)
-                            {
-                                <span class="absolute -top-2 -right-2 bg-green-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">@carritoCount</span>
-                            }
-                            else
-                            {
-                                <span class="absolute -top-2 -right-2 bg-gray-400 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">0</span>
-                            }
+                        var currentUser = ViewBag.CurrentUser as AldaJoyeros.DTOs.UsuarioDto;
+                        
+                        <!-- Shopping Cart -->
+                        <a asp-controller="Carrito" asp-action="Index" class="relative group">
+                            <div class="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-emerald-50 transition-colors duration-200">
+                                <i class="fas fa-shopping-bag text-xl text-gray-700 group-hover:text-emerald-600 transition-colors"></i>
+                                @if (ViewBag.CarritoCount > 0)
+                                {
+                                    <span class="absolute -top-1 -right-1 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center shadow-lg animate-pulse">
+                                        @ViewBag.CarritoCount
+                                    </span>
+                                }
+                            </div>
                         </a>
-                        <a asp-controller="Pedidos" asp-action="Index" class="text-gray-700 hover:text-green-600 transition-colors">
-                            <i class="fas fa-box text-xl"></i>
-                        </a>
-                        <div class="relative group">
-                            <button class="flex items-center space-x-2 text-gray-700 hover:text-green-600 transition-colors">
-                                <i class="fas fa-user-circle text-2xl"></i>
-                                <span class="text-sm font-medium">@ViewBag.CurrentUser?.Email</span>
+
+                        <!-- User Dropdown -->
+                        <div x-data="{ open: false }" class="relative">
+                            <button @@click="open = !open" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-emerald-50 transition-colors duration-200 group">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-8 h-8 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md">
+                                        @if (!string.IsNullOrEmpty(currentUser?.Email))
+                                        {
+                                            @currentUser.Email.Substring(0, 1).ToUpper()
+                                        }
+                                        else
+                                        {
+                                            <text>U</text>
+                                        }
+                                    </div>
+                                    <div class="text-left">
+                                        <div class="text-sm font-semibold text-gray-700 group-hover:text-emerald-600">
+                                            @if (!string.IsNullOrEmpty(currentUser?.Email))
+                                            {
+                                                @currentUser.Email
+                                            }
+                                            else
+                                            {
+                                                <text>Usuario</text>
+                                            }
+                                        </div>
+                                        @if (ViewBag.IsAdmin == true)
+                                        {
+                                            <div class="text-xs text-purple-600 font-semibold uppercase">Administrador</div>
+                                        }
+                                        else
+                                        {
+                                            <div class="text-xs text-gray-500">Cliente</div>
+                                        }
+                                    </div>
+                                </div>
+                                <i class="fas fa-chevron-down text-xs text-gray-500 group-hover:text-emerald-600 transition-transform" :class="open && 'rotate-180'"></i>
                             </button>
-                            <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 border border-gray-200">
-                                <a asp-controller="Auth" asp-action="Logout" class="block px-4 py-3 text-gray-700 hover:bg-green-50 rounded-lg transition-colors">
-                                    <i class="fas fa-sign-out-alt mr-2 text-red-500"></i>Cerrar Sesión
+                            
+                            <div x-show="open" 
+                                 @@click.away="open = false"
+                                 x-transition:enter="transition ease-out duration-200"
+                                 x-transition:enter-start="opacity-0 translate-y-2"
+                                 x-transition:enter-end="opacity-100 translate-y-0"
+                                 x-transition:leave="transition ease-in duration-150"
+                                 x-transition:leave-start="opacity-100 translate-y-0"
+                                 x-transition:leave-end="opacity-0 translate-y-2"
+                                 class="absolute right-0 mt-3 w-64 bg-white rounded-xl shadow-2xl border border-gray-100 py-2 z-50 overflow-hidden">
+                                
+                                <!-- User Info Header -->
+                                <div class="px-4 py-3 bg-gradient-to-br from-emerald-50 to-green-50 border-b border-gray-100">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold shadow-md">
+                                            @if (!string.IsNullOrEmpty(currentUser?.Email))
+                                            {
+                                                @currentUser.Email.Substring(0, 1).ToUpper()
+                                            }
+                                        </div>
+                                        <div>
+                                            <div class="font-semibold text-gray-900">@currentUser?.Email</div>
+                                            <div class="text-xs text-gray-600">@currentUser?.Email</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Admin Panel Link -->
+                                @if (ViewBag.IsAdmin == true)
+                                {
+                                    <a asp-controller="Admin" asp-action="Index" class="flex items-center gap-3 px-4 py-3 text-sm text-purple-600 hover:bg-purple-50 transition-colors font-semibold">
+                                        <i class="fas fa-shield-alt w-5"></i>
+                                        <span>Panel de Administración</span>
+                                        <span class="ml-auto bg-purple-100 text-purple-700 text-xs px-2 py-0.5 rounded-full font-bold">ADMIN</span>
+                                    </a>
+                                    <div class="border-t border-gray-100 my-1"></div>
+                                }
+
+                                <!-- Menu Items -->
+                                <a asp-controller="Pedidos" asp-action="Index" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 transition-colors">
+                                    <i class="fas fa-box-open w-5"></i>
+                                    <span>Mis Pedidos</span>
+                                </a>
+                                
+                                <div class="border-t border-gray-100 my-1"></div>
+                                
+                                <a asp-controller="Auth" asp-action="Logout" class="flex items-center gap-3 px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors">
+                                    <i class="fas fa-sign-out-alt w-5"></i>
+                                    <span>Cerrar Sesión</span>
                                 </a>
                             </div>
                         </div>
                     }
                     else
                     {
-                        <a asp-controller="Auth" asp-action="Login" class="text-gray-700 hover:text-green-600 transition-colors font-medium">
-                            <i class="fas fa-sign-in-alt mr-2"></i>Iniciar Sesión
-                        </a>
-                        <a asp-controller="Auth" asp-action="Register" class="bg-green-600 text-white px-6 py-2 rounded-full font-semibold hover:bg-green-700 hover:shadow-lg transition-all duration-200 transform hover:scale-105">
-                            Registrarse
+                        <!-- Login Button -->
+                        <a asp-controller="Auth" asp-action="Login" class="flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-lg font-semibold hover:from-emerald-600 hover:to-emerald-700 transition-all duration-200 transform hover:scale-105 shadow-md hover:shadow-lg">
+                            <i class="fas fa-sign-in-alt"></i>
+                            <span>Iniciar Sesión</span>
                         </a>
                     }
                 </div>
+
+                <!-- Mobile Menu Button -->
+                <button @@click="mobileMenuOpen = !mobileMenuOpen" class="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors">
+                    <i class="fas text-xl text-gray-700 transition-transform duration-300" :class="mobileMenuOpen ? 'fa-times rotate-90' : 'fa-bars'"></i>
+                </button>
             </div>
 
-            <!-- Mobile Navigation -->
-            <div id="mobile-menu" class="hidden lg:hidden mt-4 pb-4 border-t border-gray-200 pt-4">
-                <div class="flex flex-col space-y-3">
-                    <a asp-controller="Home" asp-action="Index" class="text-gray-700 hover:text-green-600 transition-colors py-2">
-                        <i class="fas fa-home mr-2"></i>Inicio
-                    </a>
-                    <a asp-controller="Productos" asp-action="Index" class="text-gray-700 hover:text-green-600 transition-colors py-2">
-                        <i class="fas fa-gem mr-2"></i>Productos
-                    </a>
+            <!-- Mobile Menu -->
+            <div x-show="mobileMenuOpen"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 -translate-y-4"
+                 x-transition:enter-end="opacity-100 translate-y-0"
+                 x-transition:leave="transition ease-in duration-200"
+                 x-transition:leave-start="opacity-100 translate-y-0"
+                 x-transition:leave-end="opacity-0 -translate-y-4"
+                 class="lg:hidden mt-4 pt-4 border-t border-gray-200">
+                <div class="space-y-2">
                     @if (ViewBag.IsAuthenticated == true)
                     {
-                        <a asp-controller="Carrito" asp-action="Index" class="text-gray-700 hover:text-green-600 transition-colors py-2">
-                            <i class="fas fa-shopping-cart mr-2"></i>Carrito
+                        var currentUserMobile = ViewBag.CurrentUser as AldaJoyeros.DTOs.UsuarioDto;
+                        
+                        <!-- User Info Mobile -->
+                        <div class="px-4 py-3 bg-gradient-to-br from-emerald-50 to-green-50 rounded-lg mb-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold shadow-md">
+                                    @if (!string.IsNullOrEmpty(currentUserMobile?.Email))
+                                    {
+                                        @currentUserMobile.Email.Substring(0, 1).ToUpper()
+                                    }
+                                </div>
+                                <div>
+                                    <div class="font-semibold text-gray-900">@currentUserMobile?.Email</div>
+                                    @if (ViewBag.IsAdmin == true)
+                                    {
+                                        <div class="text-xs text-purple-600 font-semibold uppercase">Administrador</div>
+                                    }
+                                    else
+                                    {
+                                        <div class="text-xs text-gray-600">Cliente</div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    
+                    <a asp-controller="Home" asp-action="Index" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-emerald-50 text-gray-700 hover:text-emerald-600 transition-colors">
+                        <i class="fas fa-home w-5"></i>
+                        <span class="font-medium">Inicio</span>
+                    </a>
+                    <a asp-controller="Productos" asp-action="Index" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-emerald-50 text-gray-700 hover:text-emerald-600 transition-colors">
+                        <i class="fas fa-gem w-5"></i>
+                        <span class="font-medium">Colecciones</span>
+                    </a>
+                    
+                    @if (ViewBag.IsAuthenticated == true)
+                    {
+                        @if (ViewBag.IsAdmin == true)
+                        {
+                            <a asp-controller="Admin" asp-action="Index" class="flex items-center gap-3 px-4 py-3 rounded-lg bg-purple-50 text-purple-600 hover:bg-purple-100 transition-colors">
+                                <i class="fas fa-shield-alt w-5"></i>
+                                <span class="font-semibold">Panel Admin</span>
+                                <span class="ml-auto bg-purple-200 text-purple-700 text-xs px-2 py-0.5 rounded-full font-bold">ADMIN</span>
+                            </a>
+                        }
+                        
+                        <a asp-controller="Carrito" asp-action="Index" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-emerald-50 text-gray-700 hover:text-emerald-600 transition-colors">
+                            <i class="fas fa-shopping-bag w-5"></i>
+                            <span class="font-medium">Carrito</span>
+                            @if (ViewBag.CarritoCount > 0)
+                            {
+                                <span class="ml-auto bg-emerald-500 text-white text-xs font-bold px-2 py-1 rounded-full">@ViewBag.CarritoCount</span>
+                            }
                         </a>
-                        <a asp-controller="Pedidos" asp-action="Index" class="text-gray-700 hover:text-green-600 transition-colors py-2">
-                            <i class="fas fa-box mr-2"></i>Mis Pedidos
+                        <a asp-controller="Pedidos" asp-action="Index" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-emerald-50 text-gray-700 hover:text-emerald-600 transition-colors">
+                            <i class="fas fa-box-open w-5"></i>
+                            <span class="font-medium">Mis Pedidos</span>
                         </a>
-                        <a asp-controller="Auth" asp-action="Logout" class="text-gray-700 hover:text-green-600 transition-colors py-2">
-                            <i class="fas fa-sign-out-alt mr-2"></i>Cerrar Sesión
+                        <div class="border-t border-gray-200 my-2"></div>
+                        <a asp-controller="Auth" asp-action="Logout" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-red-50 text-red-600 transition-colors">
+                            <i class="fas fa-sign-out-alt w-5"></i>
+                            <span class="font-medium">Cerrar Sesión</span>
                         </a>
                     }
                     else
                     {
-                        <a asp-controller="Auth" asp-action="Login" class="text-gray-700 hover:text-green-600 transition-colors py-2">
-                            <i class="fas fa-sign-in-alt mr-2"></i>Iniciar Sesión
-                        </a>
-                        <a asp-controller="Auth" asp-action="Register" class="text-gray-700 hover:text-green-600 transition-colors py-2">
-                            <i class="fas fa-user-plus mr-2"></i>Registrarse
+                        <a asp-controller="Auth" asp-action="Login" class="flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-lg font-semibold shadow-md">
+                            <i class="fas fa-sign-in-alt"></i>
+                            <span>Iniciar Sesión</span>
                         </a>
                     }
                 </div>
@@ -185,111 +350,63 @@
         </nav>
     </header>
 
-    <!-- Alerts -->
-    @if (TempData["Success"] != null)
-    {
-        <div class="container mx-auto px-4 mt-4">
-            <div class="bg-green-50 border-l-4 border-green-500 p-4 rounded-r-lg shadow-md flex items-center justify-between animate-fade-in">
-                <div class="flex items-center">
-                    <i class="fas fa-check-circle text-green-500 text-2xl mr-3"></i>
-                    <span class="text-green-800 font-medium">@TempData["Success"]</span>
-                </div>
-                <button onclick="this.parentElement.parentElement.remove()" class="text-green-500 hover:text-green-700">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-        </div>
-    }
-
-    @if (TempData["Error"] != null)
-    {
-        <div class="container mx-auto px-4 mt-4">
-            <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg shadow-md flex items-center justify-between animate-fade-in">
-                <div class="flex items-center">
-                    <i class="fas fa-exclamation-circle text-red-500 text-2xl mr-3"></i>
-                    <span class="text-red-800 font-medium">@TempData["Error"]</span>
-                </div>
-                <button onclick="this.parentElement.parentElement.remove()" class="text-red-500 hover:text-red-700">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-        </div>
-    }
-
-    <!-- Main Content -->
-    <main class="flex-1 container mx-auto px-4 py-8">
+    <main class="min-h-screen pt-28">
         @RenderBody()
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-white mt-auto">
-     <div class="container mx-auto px-4 py-12">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-      <!-- About -->
-    <div>
- <div class="flex items-center space-x-3 mb-4">
-   <img src="~/images/logo.png" alt="Alda Joyeros Logo" class="h-14 w-auto bg-white p-2 rounded" />
-       <h3 class="font-display text-2xl font-bold">Alda Joyeros</h3>
- </div>
-  <p class="text-gray-400">Las mejores joyas para momentos especiales. Calidad, elegancia y tradición desde 1962.</p>
- </div>
-
-        <!-- Links -->
-  <div>
-   <h4 class="font-display text-lg font-semibold mb-4">Enlaces Rápidos</h4>
-<ul class="space-y-2">
-     <li><a href="#" class="text-gray-400 hover:text-green-400 transition-colors">Sobre Nosotros</a></li>
-     <li><a href="#" class="text-gray-400 hover:text-green-400 transition-colors">Contacto</a></li>
-    <li><a asp-controller="Home" asp-action="Privacy" class="text-gray-400 hover:text-green-400 transition-colors">Privacidad</a></li>
-    <li><a href="#" class="text-gray-400 hover:text-green-400 transition-colors">Términos y Condiciones</a></li>
-    </ul>
-       </div>
-
-     <!-- Social -->
-       <div>
-      <h4 class="font-display text-lg font-semibold mb-4">Síguenos</h4>
-       <div class="flex space-x-4">
-         <a href="#" class="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center hover:bg-green-600 transition-all duration-200 transform hover:scale-110">
-   <i class="fab fa-facebook-f"></i>
-       </a>
-      <a href="#" class="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center hover:bg-green-600 transition-all duration-200 transform hover:scale-110">
-    <i class="fab fa-instagram"></i>
-     </a>
-      <a href="#" class="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center hover:bg-green-600 transition-all duration-200 transform hover:scale-110">
-    <i class="fab fa-twitter"></i>
-  </a>
-     <a href="#" class="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center hover:bg-green-600 transition-all duration-200 transform hover:scale-110">
-  <i class="fab fa-whatsapp"></i>
-    </a>
-  </div>
-       </div>
-     </div>
-
-    <hr class="my-8 border-gray-700" />
-
-     <div class="text-center text-gray-400">
-  <p>&copy; 2025 Alda Joyeros - Todos los derechos reservados</p>
-    </div>
+    <footer class="bg-dark-900 text-white py-20 border-t border-gray-800">
+        <div class="container mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-12">
+            <div class="col-span-1 md:col-span-2">
+                <div class="flex items-center gap-3 mb-6">
+                    <img src="~/images/logo.png" alt="Alda Joyeros" class="h-14 w-auto object-contain brightness-200" />
+                    <h2 class="font-serif text-2xl tracking-widest">ALDA JOYEROS</h2>
+                </div>
+                <p class="text-gray-400 font-light max-w-md leading-relaxed">
+                    Desde 1962, creando piezas atemporales que capturan la esencia de la elegancia eterna. Cada diamante cuenta una historia.
+                </p>
+            </div>
+            <div>
+                <h4 class="text-emerald-400 text-xs tracking-[0.2em] mb-6 uppercase font-semibold">Servicio al Cliente</h4>
+                <ul class="space-y-3 text-sm font-light text-gray-300">
+                    <li>
+                        <a href="#" class="flex items-center gap-2 hover:text-emerald-400 transition-colors">
+                            <i class="fas fa-envelope text-xs"></i>
+                            <span>Contactar</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center gap-2 hover:text-emerald-400 transition-colors">
+                            <i class="fas fa-shipping-fast text-xs"></i>
+                            <span>Envíos y Devoluciones</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center gap-2 hover:text-emerald-400 transition-colors">
+                            <i class="fas fa-shield-alt text-xs"></i>
+                            <span>Cuidado de las Joyas</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-emerald-400 text-xs tracking-[0.2em] mb-6 uppercase font-semibold">Newsletter</h4>
+                <p class="text-gray-400 text-sm mb-4">Recibe nuestras últimas novedades</p>
+                <div class="flex gap-2">
+                    <input type="email" placeholder="tu@email.com" class="flex-1 bg-white/10 border border-gray-700 text-white px-4 py-2 rounded-lg text-sm placeholder-gray-500 focus:border-emerald-400 focus:outline-none transition-colors" />
+                    <button class="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg font-semibold transition-colors">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="container mx-auto px-6 mt-16 pt-8 border-t border-gray-800 text-center">
+            <p class="text-xs text-gray-600 uppercase tracking-widest">
+                &copy; 2025 Alda Joyeros. Made with Excellence.
+            </p>
         </div>
     </footer>
 
-    <!-- Scripts -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script>
-        // Mobile menu toggle
-        document.getElementById('mobile-menu-btn')?.addEventListener('click', function() {
-            document.getElementById('mobile-menu').classList.toggle('hidden');
-        });
-
-        // Auto-hide alerts after 5 seconds
-        setTimeout(() => {
-            document.querySelectorAll('.animate-fade-in').forEach(el => {
-                el.style.transition = 'opacity 0.5s';
-                el.style.opacity = '0';
-                setTimeout(() => el.remove(), 500);
-            });
-        }, 5000);
-    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
