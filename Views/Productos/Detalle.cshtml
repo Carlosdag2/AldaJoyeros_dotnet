@@ -189,18 +189,12 @@
                         Añadir al Carrito
                     </button>
 
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid gap-4">
                         <a asp-controller="Productos" asp-action="Index" 
                            class="flex items-center justify-center border-2 border-gray-300 text-gray-700 px-6 py-3 rounded-xl font-semibold hover:border-emerald-500 hover:text-emerald-600 hover:bg-emerald-50 transition-all duration-200">
                             <i class="fas fa-arrow-left mr-2"></i>
                             Volver
                         </a>
-                        
-                        <button type="button" 
-                                class="flex items-center justify-center border-2 border-emerald-500 text-emerald-600 px-6 py-3 rounded-xl font-semibold hover:bg-emerald-50 transition-all duration-200">
-                            <i class="fas fa-heart mr-2"></i>
-                            Favorito
-                        </button>
                     </div>
                 </form>
 
@@ -227,57 +221,6 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-
-        <!-- Información Adicional -->
-        <div class="mt-20 mb-16">
-            <div class="bg-gradient-to-r from-emerald-900 to-emerald-800 rounded-3xl p-12 text-white text-center relative overflow-hidden">
-                <!-- Decorative Elements -->
-                <div class="absolute top-0 right-0 w-64 h-64 bg-emerald-700 rounded-full opacity-20 -mr-32 -mt-32"></div>
-                <div class="absolute bottom-0 left-0 w-96 h-96 bg-emerald-700 rounded-full opacity-10 -ml-48 -mb-48"></div>
-                
-                <div class="relative z-10">
-                    <i class="fas fa-gem text-6xl text-emerald-300 mb-6 animate-pulse"></i>
-                    <h2 class="font-serif text-3xl md:text-4xl font-bold mb-4">Joyería de Calidad Excepcional</h2>
-                    <p class="text-emerald-100 text-lg max-w-3xl mx-auto leading-relaxed">
-                        Cada pieza es seleccionada cuidadosamente para garantizar la máxima calidad y elegancia. 
-                        Certificamos la autenticidad de todos nuestros productos con garantía de por vida.
-                    </p>
-                    <div class="mt-8 flex flex-wrap justify-center gap-6">
-                        <div class="flex items-center gap-2 text-emerald-100">
-                            <i class="fas fa-check-circle text-emerald-400"></i>
-                            <span>Materiales Premium</span>
-                        </div>
-                        <div class="flex items-center gap-2 text-emerald-100">
-                            <i class="fas fa-check-circle text-emerald-400"></i>
-                            <span>Artesanía Experta</span>
-                        </div>
-                        <div class="flex items-center gap-2 text-emerald-100">
-                            <i class="fas fa-check-circle text-emerald-400"></i>
-                            <span>Diseño Exclusivo</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Productos Relacionados (Sección placeholder) -->
-        <div class="mt-20 mb-16">
-            <div class="text-center mb-12">
-                <h2 class="font-serif text-3xl md:text-4xl font-bold text-gray-900 mb-3">
-                    También te puede interesar
-                </h2>
-                <div class="w-20 h-1 bg-emerald-500 mx-auto"></div>
-            </div>
-            
-            <div class="text-center text-gray-500 py-16 bg-gray-50 rounded-2xl">
-                <i class="fas fa-shopping-bag text-5xl mb-4 text-gray-300"></i>
-                <p class="text-lg">Descubre más productos en nuestro catálogo</p>
-                <a asp-controller="Productos" asp-action="Index" asp-route-categoriaId="@Model.CategoriaId" 
-                   class="inline-block mt-6 px-8 py-3 bg-emerald-500 text-white rounded-xl font-semibold hover:bg-emerald-600 transition-colors duration-200">
-                    Ver más de @Model.CategoriaNombre
-                </a>
             </div>
         </div>
     </div>
