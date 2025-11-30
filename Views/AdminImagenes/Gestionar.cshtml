@@ -1,415 +1,64 @@
 @model AldaJoyeros.DTOs.ProductoDto
+@{ViewData["Title"]="Gestionar Imágenes";}
 
-@{
-    ViewData["Title"] = "Gestionar Imágenes";
-    var producto = ViewBag.Producto as AldaJoyeros.DTOs.ProductoDto;
-}
-
-<!-- Header -->
-<div class="mb-8">
-    <div class="flex items-center justify-between">
-        <div>
-            <h1 class="font-display text-4xl font-bold text-gray-900 mb-2">
-                <i class="fas fa-images text-yellow-600"></i> Gestionar Imágenes
-            </h1>
-            <p class="text-gray-600">
-                Producto: <strong>@Model.Nombre</strong> (ID: #@Model.Id)
-            </p>
-        </div>
-        <a asp-controller="AdminProductos" asp-action="Editar" asp-route-id="@Model.Id" 
-           class="inline-flex items-center px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-lg hover:border-yellow-500 hover:text-yellow-600 transition-all duration-200 font-semibold">
-            <i class="fas fa-arrow-left mr-2"></i>
-            Volver al Producto
-        </a>
-    </div>
+<div class="container mx-auto px-6 py-8">
+<div class="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+<div><h1 class="font-serif text-4xl font-bold text-gray-900 mb-2 flex items-center gap-3"><div class="w-14 h-14 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg"><i class="fas fa-images text-white text-2xl"></i></div>Gestionar Imágenes</h1><p class="text-gray-600">Producto: <strong>@Model.Nombre</strong> (#@Model.Id)</p></div>
+<a asp-controller="AdminProductos" asp-action="Editar" asp-route-id="@Model.Id" class="inline-flex items-center px-8 py-3 border-2 border-gray-300 text-gray-700 rounded-xl hover:border-emerald-500 hover:text-emerald-600 hover:bg-emerald-50 transition-all font-semibold"><i class="fas fa-arrow-left mr-2"></i>Volver</a>
 </div>
 
-@if (TempData["Success"] != null)
-{
-    <div class="bg-green-50 border-l-4 border-green-500 p-4 rounded-r-lg mb-6 animate-fade-in">
-        <div class="flex items-center">
-            <i class="fas fa-check-circle text-green-500 text-xl mr-3"></i>
-            <span class="text-green-800 font-medium">@TempData["Success"]</span>
-        </div>
-    </div>
-}
-
-@if (TempData["Error"] != null)
-{
-    <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg mb-6 animate-fade-in">
-        <div class="flex items-center">
-            <i class="fas fa-exclamation-circle text-red-500 text-xl mr-3"></i>
-            <span class="text-red-800 font-medium">@TempData["Error"]</span>
-        </div>
-    </div>
-}
+@if(TempData["Success"]!=null){<div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 rounded-r-xl mb-6"><div class="flex items-center"><i class="fas fa-check-circle text-emerald-500 text-xl mr-3"></i><span class="text-emerald-800 font-medium">@TempData["Success"]</span></div></div>}
+@if(TempData["Error"]!=null){<div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-xl mb-6"><div class="flex items-center"><i class="fas fa-exclamation-circle text-red-500 text-xl mr-3"></i><span class="text-red-800 font-medium">@TempData["Error"]</span></div></div>}
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-    <!-- Subir Nueva Imagen -->
-    <div class="lg:col-span-2">
-        <div class="bg-white rounded-3xl shadow-xl p-8 mb-8">
-            <h2 class="font-display text-2xl font-bold text-gray-900 mb-6 flex items-center">
-                <i class="fas fa-cloud-upload-alt text-yellow-600 mr-3"></i>
-                Subir Nueva Imagen
-            </h2>
-
-            <form asp-controller="AdminImagenes" asp-action="Subir" method="post" enctype="multipart/form-data" class="space-y-6" id="uploadForm">
-                <input type="hidden" name="productoId" value="@Model.Id" />
-
-                <!-- Selector de Archivo -->
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">
-                        <i class="fas fa-image mr-2 text-gray-500"></i>Seleccionar Imagen
-                    </label>
-                    <div id="dropZone" class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-yellow-500 transition-all duration-200 cursor-pointer bg-white">
-                        <i class="fas fa-cloud-upload-alt text-6xl text-gray-300 mb-4"></i>
-                        <p class="text-lg font-semibold text-gray-700 mb-2">
-                            Arrastra tu imagen aquí o haz clic para seleccionar
-                        </p>
-                        <p class="text-xs text-gray-500 mt-2">
-                            Formatos permitidos: JPG, PNG, WEBP, GIF (máx. 5MB)
-                        </p>
-                    </div>
-                    <!-- Input de archivo oculto, fuera del dropzone para no perderlo al cambiar el contenido -->
-                    <input type="file" 
-                           id="fileInput"
-                           name="archivo" 
-                           accept="image/*" 
-                           required
-                           class="hidden" />
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Orden -->
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">
-                            <i class="fas fa-sort-numeric-up mr-2 text-gray-500"></i>Orden de Visualización
-                        </label>
-                        <input type="number" 
-                               name="orden" 
-                               value="@Model.Imagenes.Count()"
-                               min="0"
-                               class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-yellow-500 focus:ring focus:ring-yellow-200 transition-all duration-200" />
-                        <p class="text-xs text-gray-500 mt-1">0 = Primera posición</p>
-                    </div>
-
-                    <!-- Es Principal -->
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">
-                            <i class="fas fa-star mr-2 text-gray-500"></i>Configuración
-                        </label>
-                        <div class="flex items-center h-12 px-4 py-3 border-2 border-gray-300 rounded-lg">
-                            <input type="checkbox" 
-                                   name="esPrincipal" 
-                                   value="true"
-                                   id="esPrincipal"
-                                   class="w-5 h-5 text-yellow-600 focus:ring-yellow-500 border-gray-300 rounded" />
-                            <label for="esPrincipal" class="ml-3 text-sm font-medium text-gray-700">
-                                Marcar como imagen principal
-                            </label>
-                        </div>
-                    </div>
-                </div>
-
-                <button type="submit" 
-                        id="submitBtn"
-                        class="w-full inline-flex items-center justify-center gradient-gold text-gray-900 px-8 py-4 rounded-lg font-bold text-lg hover:shadow-2xl transition-all duration-200 transform hover:scale-105">
-                    <i class="fas fa-upload mr-3"></i>
-                    Subir Imagen
-                </button>
-            </form>
-        </div>
-
-        <!-- Galería de Imágenes -->
-        <div class="bg-white rounded-3xl shadow-xl p-8">
-            <h2 class="font-display text-2xl font-bold text-gray-900 mb-6 flex items-center">
-                <i class="fas fa-th-large text-yellow-600 mr-3"></i>
-                Imágenes Actuales
-                <span class="ml-3 px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm font-semibold">
-                    @Model.Imagenes.Count() @(Model.Imagenes.Count() == 1 ? "imagen" : "imágenes")
-                </span>
-            </h2>
-
-            @if (Model.TieneImagenes)
-            {
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    @foreach (var imagen in Model.Imagenes.OrderBy(i => i.Orden))
-                    {
-                        <div class="group bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-4 border-2 @(imagen.EsPrincipal ? "border-yellow-500" : "border-transparent") hover:border-yellow-300 transition-all duration-200">
-                            <!-- Imagen -->
-                            <div class="relative bg-white rounded-lg overflow-hidden mb-4 shadow-md" style="aspect-ratio: 1 / 1;">
-                                <img src="@imagen.ImagenBase64" 
-                                     alt="@Model.Nombre - Imagen @(imagen.Orden + 1)" 
-                                     class="w-full h-full object-cover" />
-                                
-                                @if (imagen.EsPrincipal)
-                                {
-                                    <div class="absolute top-3 right-3">
-                                        <span class="bg-yellow-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
-                                            <i class="fas fa-star mr-1"></i>PRINCIPAL
-                                        </span>
-                                    </div>
-                                }
-
-                                <div class="absolute top-3 left-3">
-                                    <span class="bg-black bg-opacity-70 text-white px-3 py-1 rounded-full text-xs font-semibold">
-                                        Orden: @imagen.Orden
-                                    </span>
-                                </div>
-                            </div>
-
-                            <!-- Info -->
-                            <div class="space-y-2 mb-4">
-                                <div class="flex items-center text-sm text-gray-600">
-                                    <i class="fas fa-file-image mr-2 text-gray-400"></i>
-                                    <span>@imagen.TipoMime</span>
-                                </div>
-                                <div class="flex items-center text-sm text-gray-600">
-                                    <i class="fas fa-weight-hanging mr-2 text-gray-400"></i>
-                                    <span>@((imagen.TamanoBytes / 1024.0).ToString("F2")) KB</span>
-                                </div>
-                                @if (imagen.FechaCreacion.HasValue)
-                                {
-                                    <div class="flex items-center text-sm text-gray-600">
-                                        <i class="fas fa-calendar mr-2 text-gray-400"></i>
-                                        <span>@imagen.FechaCreacion.Value.ToString("dd/MM/yyyy HH:mm")</span>
-                                    </div>
-                                }
-                            </div>
-
-                            <!-- Acciones -->
-                            <div class="grid grid-cols-2 gap-2">
-                                @if (!imagen.EsPrincipal)
-                                {
-                                    <form asp-controller="AdminImagenes" asp-action="EstablecerPrincipal" method="post" class="w-full">
-                                        <input type="hidden" name="id" value="@imagen.Id" />
-                                        <input type="hidden" name="productoId" value="@Model.Id" />
-                                        <button type="submit" 
-                                                class="w-full flex items-center justify-center px-3 py-2 bg-yellow-100 text-yellow-700 rounded-lg hover:bg-yellow-200 transition-all duration-200 text-sm font-semibold">
-                                            <i class="fas fa-star mr-1"></i>Hacer Principal
-                                        </button>
-                                    </form>
-                                }
-                                else
-                                {
-                                    <div class="w-full flex items-center justify-center px-3 py-2 bg-gray-100 text-gray-400 rounded-lg text-sm font-semibold cursor-not-allowed">
-                                        <i class="fas fa-star mr-1"></i>Es Principal
-                                    </div>
-                                }
-
-                                <form asp-controller="AdminImagenes" asp-action="Eliminar" method="post" 
-                                      onsubmit="return confirm('¿Eliminar esta imagen?')" class="w-full">
-                                    <input type="hidden" name="id" value="@imagen.Id" />
-                                    <input type="hidden" name="productoId" value="@Model.Id" />
-                                    <button type="submit" 
-                                            class="w-full flex items-center justify-center px-3 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-all duration-200 text-sm font-semibold">
-                                        <i class="fas fa-trash mr-1"></i>Eliminar
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                    }
-                </div>
-            }
-            else
-            {
-                <div class="text-center py-16">
-                    <i class="fas fa-images text-gray-300 text-8xl mb-4"></i>
-                    <h3 class="font-display text-2xl font-bold text-gray-700 mb-2">
-                        Sin Imágenes
-                    </h3>
-                    <p class="text-gray-500">
-                        Este producto aún no tiene imágenes. Sube la primera imagen arriba.
-                    </p>
-                </div>
-            }
-        </div>
-    </div>
-
-    <!-- Info Sidebar -->
-    <div class="lg:col-span-1 space-y-6">
-        <!-- Vista Previa del Producto -->
-        <div class="bg-white rounded-2xl p-6 shadow-lg">
-            <h3 class="font-bold text-gray-900 mb-4 flex items-center">
-                <i class="fas fa-eye text-blue-600 mr-2"></i>
-                Vista Previa
-            </h3>
-            
-            @if (Model.TieneImagenes)
-            {
-                <div class="bg-gradient-to-br from-amber-50 to-orange-50 rounded-lg overflow-hidden mb-4" style="aspect-ratio: 1 / 1;">
-                    <img src="@Model.ImagenPrincipal" 
-                         alt="@Model.Nombre" 
-                         class="w-full h-full object-cover" />
-                </div>
-            }
-            else
-            {
-                <div class="bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center mb-4" style="aspect-ratio: 1 / 1;">
-                    <i class="fas fa-gem text-gray-400 text-6xl opacity-30"></i>
-                </div>
-            }
-
-            <h4 class="font-bold text-gray-900 mb-2">@Model.Nombre</h4>
-            <p class="text-sm text-gray-600 mb-3">@Model.Descripcion</p>
-            <div class="text-2xl font-bold text-gradient">
-                @Model.Precio.ToString("C")
-            </div>
-        </div>
-
-        <!-- Estadísticas -->
-        <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-6">
-            <h3 class="font-bold text-gray-900 mb-4 flex items-center">
-                <i class="fas fa-chart-pie text-purple-600 mr-2"></i>
-                Estadísticas
-            </h3>
-            <div class="space-y-3">
-                <div class="flex justify-between items-center">
-                    <span class="text-sm text-gray-600">Total Imágenes:</span>
-                    <span class="font-bold text-gray-900">@Model.Imagenes.Count()</span>
-                </div>
-                <div class="flex justify-between items-center">
-                    <span class="text-sm text-gray-600">Tamaño Total:</span>
-                    <span class="font-bold text-gray-900">@((Model.Imagenes.Sum(i => i.TamanoBytes) / 1024.0).ToString("F2")) KB</span>
-                </div>
-                <div class="flex justify-between items-center">
-                    <span class="text-sm text-gray-600">Imagen Principal:</span>
-                    <span class="font-semibold text-gray-900">
-                        @if (Model.TieneImagenes)
-                        {
-                            <span class="text-green-600"><i class="fas fa-check-circle"></i> Sí</span>
-                        }
-                        else
-                        {
-                            <span class="text-red-600"><i class="fas fa-times-circle"></i> No</span>
-                        }
-                    </span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Consejos -->
-        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6">
-            <h3 class="font-bold text-gray-900 mb-4 flex items-center">
-                <i class="fas fa-lightbulb text-blue-600 mr-2"></i>
-                Consejos
-            </h3>
-            <ul class="text-sm text-gray-700 space-y-2">
-                <li class="flex items-start">
-                    <i class="fas fa-check text-green-500 mr-2 mt-1"></i>
-                    <span>Usa imágenes de alta calidad</span>
-                </li>
-                <li class="flex items-start">
-                    <i class="fas fa-check text-green-500 mr-2 mt-1"></i>
-                    <span>Máximo 5MB por imagen</span>
-                </li>
-                <li class="flex items-start">
-                    <i class="fas fa-check text-green-500 mr-2 mt-1"></i>
-                    <span>Primera imagen = Principal</span>
-                </li>
-                <li class="flex items-start">
-                    <i class="fas fa-check text-green-500 mr-2 mt-1"></i>
-                    <span>Fondo blanco o neutro</span>
-                </li>
-                <li class="flex items-start">
-                    <i class="fas fa-check text-green-500 mr-2 mt-1"></i>
-                    <span>Múltiples ángulos</span>
-                </li>
-            </ul>
-        </div>
-    </div>
+<div class="lg:col-span-2 space-y-8">
+<div class="bg-white rounded-3xl shadow-xl p-8 border border-gray-100">
+<h2 class="font-serif text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2"><div class="w-10 h-10 bg-emerald-100 rounded-xl flex items-center justify-center"><i class="fas fa-cloud-upload-alt text-emerald-600"></i></div>Subir Nueva Imagen</h2>
+<form asp-controller="AdminImagenes" asp-action="Subir" method="post" enctype="multipart/form-data" class="space-y-6" id="uploadForm">
+<input type="hidden" name="productoId" value="@Model.Id"/>
+<div><label class="block text-sm font-bold text-gray-700 mb-3">Seleccionar Imagen</label>
+<div id="dropZone" class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-emerald-500 transition-all cursor-pointer bg-gradient-to-br from-gray-50 to-emerald-50"><i class="fas fa-cloud-upload-alt text-6xl text-gray-300 mb-4"></i><p class="text-lg font-semibold text-gray-700 mb-2">Arrastra tu imagen aquí o haz clic</p><p class="text-xs text-gray-500">JPG, PNG, WEBP, GIF (máx. 5MB)</p></div>
+<input type="file" id="fileInput" name="archivo" accept="image/*" required class="hidden"/></div>
+<div class="grid grid-cols-2 gap-4">
+<div><label class="block text-sm font-bold text-gray-700 mb-2">Orden</label><input type="number" name="orden" value="@Model.Imagenes.Count()" min="0" class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100 transition-all outline-none"/></div>
+<div><label class="block text-sm font-bold text-gray-700 mb-2">Configuración</label><div class="flex items-center h-12 px-4 py-3 border-2 border-gray-300 rounded-xl"><input type="checkbox" name="esPrincipal" value="true" id="esPrincipal" class="w-5 h-5 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded"/><label for="esPrincipal" class="ml-3 text-sm font-medium text-gray-700">Imagen principal</label></div></div>
+</div>
+<button type="submit" class="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:from-emerald-600 hover:to-emerald-700 hover:shadow-2xl transition-all transform hover:scale-105"><i class="fas fa-upload mr-2"></i>Subir Imagen</button>
+</form>
 </div>
 
-@section Styles {
-    <style>
-        @@keyframes fade-in {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .animate-fade-in {
-            animation: fade-in 0.3s ease-out;
-        }
+<div class="bg-white rounded-3xl shadow-xl p-8 border border-gray-100">
+<h2 class="font-serif text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2"><div class="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center"><i class="fas fa-th-large text-purple-600"></i></div>Imágenes Actuales<span class="ml-3 px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-sm font-bold">@Model.Imagenes.Count()</span></h2>
+@if(Model.TieneImagenes){<div class="grid grid-cols-1 md:grid-cols-2 gap-6">@foreach(var img in Model.Imagenes.OrderBy(i=>i.Orden)){<div class="bg-gradient-to-br from-gray-50 to-emerald-50 rounded-2xl p-4 border-2 @(img.EsPrincipal?"border-emerald-500":"border-gray-200") hover:border-emerald-400 transition-all">
+<div class="relative bg-white rounded-xl overflow-hidden mb-4 shadow-md" style="aspect-ratio:1/1;"><img src="@img.ImagenBase64" alt="@Model.Nombre" class="w-full h-full object-cover"/>@if(img.EsPrincipal){<div class="absolute top-3 right-3"><span class="bg-emerald-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg"><i class="fas fa-star mr-1"></i>PRINCIPAL</span></div>}<div class="absolute top-3 left-3"><span class="bg-black bg-opacity-70 text-white px-3 py-1 rounded-full text-xs font-semibold">Orden: @img.Orden</span></div></div>
+<div class="space-y-2 mb-4 text-sm text-gray-600"><div><i class="fas fa-file-image mr-2"></i>@img.TipoMime</div><div><i class="fas fa-weight-hanging mr-2"></i>@((img.TamanoBytes/1024.0).ToString("F2")) KB</div></div>
+<div class="grid grid-cols-2 gap-2">@if(!img.EsPrincipal){<form asp-controller="AdminImagenes" asp-action="EstablecerPrincipal" method="post" class="w-full"><input type="hidden" name="id" value="@img.Id"/><input type="hidden" name="productoId" value="@Model.Id"/><button type="submit" class="w-full px-3 py-2 bg-emerald-100 text-emerald-700 rounded-lg hover:bg-emerald-200 transition-all text-sm font-bold"><i class="fas fa-star mr-1"></i>Hacer Principal</button></form>}else{<div class="w-full px-3 py-2 bg-gray-100 text-gray-400 rounded-lg text-sm font-bold text-center"><i class="fas fa-star mr-1"></i>Es Principal</div>}
+<form asp-controller="AdminImagenes" asp-action="Eliminar" method="post" onsubmit="return confirm('¿Eliminar imagen?')" class="w-full"><input type="hidden" name="id" value="@img.Id"/><input type="hidden" name="productoId" value="@Model.Id"/><button type="submit" class="w-full px-3 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-all text-sm font-bold"><i class="fas fa-trash mr-1"></i>Eliminar</button></form></div>
+</div>}}</div>}else{<div class="text-center py-16"><div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4"><i class="fas fa-images text-gray-300 text-5xl"></i></div><h3 class="font-serif text-2xl font-bold text-gray-700 mb-2">Sin Imágenes</h3><p class="text-gray-500">Sube la primera imagen arriba</p></div>}
+</div>
+</div>
 
-        #dropZone.drag-over {
-    border-color: #eab308;
-   background-color: #fef9c3;
-        }
-    </style>
-}
+<div class="lg:col-span-1 space-y-6">
+<div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100"><h3 class="font-bold text-gray-900 mb-4 flex items-center gap-2"><i class="fas fa-eye text-blue-600"></i>Vista Previa</h3>
+@if(Model.TieneImagenes){<div class="bg-gradient-to-br from-emerald-50 to-green-50 rounded-xl overflow-hidden mb-4" style="aspect-ratio:1/1;"><img src="@Model.ImagenPrincipal" alt="@Model.Nombre" class="w-full h-full object-cover"/></div>}else{<div class="bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center mb-4" style="aspect-ratio:1/1;"><i class="fas fa-gem text-gray-400 text-6xl opacity-30"></i></div>}
+<h4 class="font-bold text-gray-900 mb-2">@Model.Nombre</h4><p class="text-sm text-gray-600 mb-3">@Model.Descripcion</p><div class="text-2xl font-bold text-emerald-600">@Model.Precio.ToString("C")</div></div>
 
-@section Scripts {
-    <script>
- const dropZone = document.getElementById('dropZone');
- const fileInput = document.getElementById('fileInput');
- const uploadForm = document.getElementById('uploadForm');
+<div class="bg-gradient-to-br from-emerald-50 to-green-50 rounded-2xl p-6 border border-emerald-200"><h3 class="font-bold text-gray-900 mb-4 flex items-center gap-2"><i class="fas fa-chart-pie text-emerald-600"></i>Estadísticas</h3>
+<div class="space-y-3"><div class="flex justify-between bg-white rounded-lg p-3"><span class="text-sm text-gray-600">Total:</span><span class="font-bold text-emerald-600">@Model.Imagenes.Count()</span></div><div class="flex justify-between bg-white rounded-lg p-3"><span class="text-sm text-gray-600">Tamaño:</span><span class="font-bold text-gray-900">@((Model.Imagenes.Sum(i=>i.TamanoBytes)/1024.0).ToString("F2")) KB</span></div></div></div>
 
- // Click en dropzone abre el selector
- dropZone.addEventListener('click', () => fileInput.click());
+<div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-200"><h3 class="font-bold text-gray-900 mb-4 flex items-center gap-2"><i class="fas fa-lightbulb text-blue-600"></i>Consejos</h3>
+<ul class="text-sm text-gray-700 space-y-2"><li class="flex items-start gap-2"><i class="fas fa-check text-green-500 mt-0.5"></i><span>Imágenes de alta calidad</span></li><li class="flex items-start gap-2"><i class="fas fa-check text-green-500 mt-0.5"></i><span>Máximo 5MB por imagen</span></li><li class="flex items-start gap-2"><i class="fas fa-check text-green-500 mt-0.5"></i><span>Fondo blanco o neutro</span></li><li class="flex items-start gap-2"><i class="fas fa-check text-green-500 mt-0.5"></i><span>Múltiples ángulos</span></li></ul></div>
+</div>
+</div>
+</div>
 
- // Previene comportamiento por defecto
- ['dragenter','dragover','dragleave','drop'].forEach(name => {
- dropZone.addEventListener(name, e => { e.preventDefault(); e.stopPropagation(); }, false);
- });
-
- // Estilos visuales al arrastrar
- ['dragenter','dragover'].forEach(name => {
- dropZone.addEventListener(name, () => dropZone.classList.add('drag-over'), false);
- });
- ;['dragleave','drop'].forEach(name => {
- dropZone.addEventListener(name, () => dropZone.classList.remove('drag-over'), false);
- });
-
- // Manejar drop
- dropZone.addEventListener('drop', (e) => {
- const files = e.dataTransfer.files;
- if (!files || files.length ===0) return;
- setFile(files[0]);
- });
-
- // Manejar selección por input
- fileInput.addEventListener('change', (e) => {
- if (!e.target.files || e.target.files.length ===0) return;
- setFile(e.target.files[0]);
- });
-
- function setFile(file){
- if (!file.type.startsWith('image/')) { alert('Selecciona una imagen válida'); fileInput.value=''; return; }
- if (file.size >5*1024*1024) { alert('Tamaño máximo5MB'); fileInput.value=''; return; }
-
- // Mostrar previsualización y nombre
- const reader = new FileReader();
- reader.onload = () => {
- dropZone.innerHTML = `
- <div class="space-y-3">
- <img src="${reader.result}" alt="Vista previa" class="mx-auto rounded-lg shadow max-h-48 object-contain" />
- <div class="inline-flex items-center px-3 py-2 bg-green-50 text-green-700 rounded-lg">
- <i class="fas fa-file-image mr-2"></i>
- <span>${file.name} (${(file.size/1024).toFixed(2)} KB)</span>
- </div>
- <p class="text-xs text-gray-500">Haz clic para cambiar la imagen</p>
- </div>`;
- };
- reader.readAsDataURL(file);
-
- // Reflejar archivo en el input si vino de DnD
- const dt = new DataTransfer();
- dt.items.add(file);
- fileInput.files = dt.files;
- }
-
- // Validar antes de enviar
- uploadForm.addEventListener('submit', (e) => {
- if (!fileInput.files || fileInput.files.length ===0) {
- e.preventDefault();
- alert('Selecciona una imagen antes de subir');
- }
- });
- </script>
-}
+@section Scripts{<script>
+const dropZone=document.getElementById('dropZone'),fileInput=document.getElementById('fileInput');
+dropZone.onclick=()=>fileInput.click();
+['dragenter','dragover','dragleave','drop'].forEach(e=>dropZone.addEventListener(e,ev=>{ev.preventDefault();ev.stopPropagation();},false));
+['dragenter','dragover'].forEach(e=>dropZone.addEventListener(e,()=>dropZone.classList.add('border-emerald-500','bg-emerald-100'),false));
+['dragleave','drop'].forEach(e=>dropZone.addEventListener(e,()=>dropZone.classList.remove('border-emerald-500','bg-emerald-100'),false));
+dropZone.addEventListener('drop',e=>{const f=e.dataTransfer.files;if(f&&f.length>0)setFile(f[0]);});
+fileInput.onchange=e=>{if(e.target.files&&e.target.files.length>0)setFile(e.target.files[0]);};
+function setFile(file){if(!file.type.startsWith('image/')){alert('Imagen inválida');fileInput.value='';return;}if(file.size>5*1024*1024){alert('Máx 5MB');fileInput.value='';return;}const r=new FileReader();r.onload=()=>{dropZone.innerHTML=`<div class="space-y-3"><img src="${r.result}" class="mx-auto rounded-lg shadow max-h-48 object-contain"/><div class="inline-flex items-center px-3 py-2 bg-emerald-50 text-emerald-700 rounded-lg text-sm font-semibold"><i class="fas fa-file-image mr-2"></i>${file.name} (${(file.size/1024).toFixed(2)} KB)</div><p class="text-xs text-gray-500">Clic para cambiar</p></div>`;};r.readAsDataURL(file);const dt=new DataTransfer();dt.items.add(file);fileInput.files=dt.files;}
+</script>}

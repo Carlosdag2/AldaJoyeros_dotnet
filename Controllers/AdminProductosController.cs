@@ -110,6 +110,9 @@ namespace AldaJoyeros.Controllers
             };
 
             ViewBag.Categorias = await _categoriaService.GetAllAsync();
+            // Pasar la cantidad de imágenes al ViewBag
+            ViewBag.Imagenes = producto.Imagenes?.Count ?? 0;
+            
             return View(updateDto);
         }
 
@@ -124,6 +127,12 @@ namespace AldaJoyeros.Controllers
             if (!ModelState.IsValid)
             {
                 ViewBag.Categorias = await _categoriaService.GetAllAsync();
+                // Recuperar la cantidad de imágenes también en caso de error
+                var producto = await _productoService.GetByIdAsync(id);
+                if (producto != null)
+                {
+                    ViewBag.Imagenes = producto.Imagenes?.Count ?? 0;
+                }
                 return View(productoDto);
             }
 
@@ -137,6 +146,12 @@ namespace AldaJoyeros.Controllers
             {
                 ModelState.AddModelError("", ex.Message);
                 ViewBag.Categorias = await _categoriaService.GetAllAsync();
+                // Recuperar la cantidad de imágenes también en caso de error
+                var producto = await _productoService.GetByIdAsync(id);
+                if (producto != null)
+                {
+                    ViewBag.Imagenes = producto.Imagenes?.Count ?? 0;
+                }
                 return View(productoDto);
             }
         }

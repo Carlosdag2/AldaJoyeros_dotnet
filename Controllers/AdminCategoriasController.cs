@@ -85,6 +85,10 @@ namespace AldaJoyeros.Controllers
                 Nombre = categoria.Nombre
             };
 
+            // Pasar datos al ViewBag para la vista
+            ViewBag.CategoriaId = id;
+            ViewBag.CantidadProductos = categoria.CantidadProductos;
+
             return View(updateDto);
         }
 
@@ -98,6 +102,13 @@ namespace AldaJoyeros.Controllers
 
             if (!ModelState.IsValid)
             {
+                // Si hay errores, recuperar los datos para el ViewBag
+                var categoria = await _categoriaService.GetByIdAsync(id);
+                if (categoria != null)
+                {
+                    ViewBag.CategoriaId = id;
+                    ViewBag.CantidadProductos = categoria.CantidadProductos;
+                }
                 return View(categoriaDto);
             }
 
@@ -110,6 +121,13 @@ namespace AldaJoyeros.Controllers
             catch (Exception ex)
             {
                 ModelState.AddModelError("", ex.Message);
+                // Recuperar los datos para el ViewBag en caso de error
+                var categoria = await _categoriaService.GetByIdAsync(id);
+                if (categoria != null)
+                {
+                    ViewBag.CategoriaId = id;
+                    ViewBag.CantidadProductos = categoria.CantidadProductos;
+                }
                 return View(categoriaDto);
             }
         }
