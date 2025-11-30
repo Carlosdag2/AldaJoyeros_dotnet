@@ -95,7 +95,37 @@
 </div>
 </div>
 
-<hr class="border-gray-200"/>
+<div class="border-t border-gray-200 pt-8 mt-8">
+<h3 class="font-serif text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2"><div class="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center"><i class="fas fa-credit-card text-emerald-600"></i></div>Método de Pago</h3>
+
+<div class="space-y-3">
+<label class="flex items-center p-5 bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-300 rounded-xl hover:border-green-500 hover:shadow-md cursor-pointer transition-all">
+<input type="radio" asp-for="MetodoPago" value="Contra Reembolso" checked class="w-5 h-5 text-green-600 focus:ring-green-500"/>
+<div class="ml-4 flex-1"><div class="flex items-center gap-3"><div class="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center shadow-md"><i class="fas fa-money-bill-wave text-white text-xl"></i></div>
+<div><div class="font-bold text-gray-900 text-lg">Contra Reembolso</div><div class="text-sm text-gray-600">Paga cuando recibas tu pedido en efectivo</div></div></div></div>
+</label>
+
+<label class="flex items-center p-5 bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-xl hover:border-blue-400 hover:shadow-md cursor-pointer transition-all">
+<input type="radio" asp-for="MetodoPago" value="Tarjeta de Crédito" class="w-5 h-5 text-blue-600 focus:ring-blue-500"/>
+<div class="ml-4 flex-1"><div class="flex items-center gap-3"><div class="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center shadow-md"><i class="fas fa-credit-card text-white text-xl"></i></div>
+<div><div class="font-bold text-gray-900 text-lg">Tarjeta de Crédito/Débito</div><div class="text-sm text-gray-600">Pago seguro instantáneo <span class="text-blue-600 font-semibold">(Simulado para demostración)</span></div></div></div></div>
+</label>
+
+<label class="flex items-center p-5 bg-gradient-to-r from-purple-50 to-pink-50 border-2 border-purple-200 rounded-xl hover:border-purple-400 hover:shadow-md cursor-pointer transition-all">
+<input type="radio" asp-for="MetodoPago" value="Transferencia Bancaria" class="w-5 h-5 text-purple-600 focus:ring-purple-500"/>
+<div class="ml-4 flex-1"><div class="flex items-center gap-3"><div class="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center shadow-md"><i class="fas fa-university text-white text-xl"></i></div>
+<div><div class="font-bold text-gray-900 text-lg">Transferencia Bancaria</div><div class="text-sm text-gray-600">Transferencia directa a nuestra cuenta <span class="text-purple-600 font-semibold">(Simulado para demostración)</span></div></div></div></div>
+</label>
+</div>
+<span asp-validation-for="MetodoPago" class="text-red-500 text-sm mt-2 block"></span>
+
+<div class="mt-4 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl p-4 border border-yellow-200">
+<div class="flex items-start gap-3"><i class="fas fa-info-circle text-yellow-600 text-lg mt-0.5"></i>
+<div class="text-sm text-gray-700"><span class="font-bold">Nota:</span> Las opciones de pago con tarjeta y transferencia son simuladas para propósitos de demostración. En un entorno real, estos métodos procesarían pagos reales de forma segura.</div></div>
+</div>
+</div>
+
+<hr class="border-gray-200 my-8"/>
 
 <div class="flex flex-col sm:flex-row justify-between gap-4">
 <a asp-controller="Carrito" asp-action="Index" class="inline-flex items-center justify-center px-8 py-3 border-2 border-gray-300 text-gray-700 rounded-xl hover:border-emerald-500 hover:text-emerald-600 hover:bg-emerald-50 transition-all font-semibold"><i class="fas fa-arrow-left mr-2"></i>Volver al Carrito</a>

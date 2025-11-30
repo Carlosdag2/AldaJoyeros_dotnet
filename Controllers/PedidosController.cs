@@ -11,17 +11,20 @@ namespace AldaJoyeros.Controllers
         private readonly ICarritoService _carritoService;
         private readonly IDireccionService _direccionService;
         private readonly IProductoImagenService _imagenService;
+        private readonly IPaymentService _paymentService;
 
         public PedidosController(
             IPedidoService pedidoService,
             ICarritoService carritoService,
             IDireccionService direccionService,
-            IProductoImagenService imagenService)
+            IProductoImagenService imagenService,
+            IPaymentService paymentService)
         {
             _pedidoService = pedidoService;
             _carritoService = carritoService;
             _direccionService = direccionService;
             _imagenService = imagenService;
+            _paymentService = paymentService;
         }
 
         public async Task<IActionResult> Index()
@@ -33,7 +36,6 @@ namespace AldaJoyeros.Controllers
 
             var pedidos = await _pedidoService.GetByUsuarioIdAsync(CurrentUser.Id);
             
-            // Cargar imágenes para cada producto en todos los pedidos
             foreach (var pedido in pedidos)
             {
                 foreach (var linea in pedido.LineasPedido)
@@ -62,7 +64,6 @@ namespace AldaJoyeros.Controllers
                 return NotFound();
             }
 
-            // Cargar imágenes de MongoDB para cada producto en las líneas del pedido
             foreach (var linea in pedido.LineasPedido)
             {
                 if (linea.Producto != null && linea.ProductoId.HasValue)
@@ -90,7 +91,6 @@ namespace AldaJoyeros.Controllers
                 return RedirectToAction("Index", "Carrito");
             }
 
-            // Cargar imágenes para el resumen
             foreach (var item in carritoItems)
             {
                 if (item.Producto != null)
@@ -103,7 +103,8 @@ namespace AldaJoyeros.Controllers
             var viewModel = new CheckoutViewModel
             {
                 CarritoItems = carritoItems,
-                Direccion = new DireccionDto()
+                Direccion = new DireccionDto(),
+                MetodoPago = "Contra Reembolso"
             };
 
             return View(viewModel);
@@ -134,6 +135,33 @@ namespace AldaJoyeros.Controllers
 
             try
             {
+                // Procesar pago si no es contra reembolso
+                if (viewModel.MetodoPago != "Contra Reembolso")
+                {
+                    // Crear intención de pago
+                    var paymentIntentId = await _paymentService.CreatePaymentIntentAsync((decimal)viewModel.Total, "EUR");
+                    
+                    // Procesar el pago
+                    var paymentSuccess = await _paymentService.ProcessPaymentAsync(paymentIntentId, viewModel.MetodoPago);
+                    
+                    if (!paymentSuccess)
+                    {
+                        TempData["Error"] = "Error al procesar el pago. Por favor, inténtalo de nuevo.";
+                        var carritoItems = await _carritoService.GetByUsuarioIdAsync(CurrentUser.Id);
+                        foreach (var item in carritoItems)
+                        {
+                            if (item.Producto != null)
+                            {
+                                var imagenes = await _imagenService.GetByProductoIdAsync(item.ProductoId);
+                                item.Producto.Imagenes = imagenes.ToList();
+                            }
+                        }
+                        viewModel.CarritoItems = carritoItems;
+                        return View(viewModel);
+                    }
+                }
+
+                // Crear pedido
                 var pedidoDto = new PedidoCreateDto
                 {
                     Direccion = new DireccionCreateDto
@@ -148,7 +176,11 @@ namespace AldaJoyeros.Controllers
                 };
 
                 var pedido = await _pedidoService.CreateFromCarritoAsync(CurrentUser.Id, pedidoDto);
-                TempData["Success"] = "Pedido realizado exitosamente";
+                
+                TempData["Success"] = viewModel.MetodoPago == "Contra Reembolso" 
+                    ? "Pedido realizado exitosamente. Pagarás al recibir tu pedido." 
+                    : "Pedido realizado y pago procesado exitosamente.";
+                
                 return RedirectToAction("Detalle", new { id = pedido.Id });
             }
             catch (Exception ex)

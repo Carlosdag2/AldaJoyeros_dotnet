@@ -58,6 +58,9 @@ namespace AldaJoyeros
             // Registrar Servicio de Imágenes MongoDB
             builder.Services.AddScoped<IProductoImagenService, ProductoImagenMongoService>();
 
+            // Registrar Servicio de Pago Ficticio
+            builder.Services.AddSingleton<IPaymentService, FakePaymentService>();
+
             // Registrar Utilidades
             builder.Services.AddScoped<ImageMigrationUtility>();
 
