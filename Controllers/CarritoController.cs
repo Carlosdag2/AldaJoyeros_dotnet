@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using AldaJoyeros.Services.Interfaces;
 using AldaJoyeros.DTOs;
+using AldaJoyeros.Helpers;
 
 namespace AldaJoyeros.Controllers
 {
@@ -50,6 +51,13 @@ namespace AldaJoyeros.Controllers
         {
             if (!IsAuthenticated)
             {
+                // Guardar en carrito temporal
+                TempCarritoHelper.AddItem(HttpContext, productoId, cantidad);
+                TempData["Info"] = "Producto guardado. Por favor, inicia sesión para completar tu compra.";
+                
+                // Guardar la URL de retorno para redirigir después del login
+                HttpContext.Session.SetString("ReturnUrl", Request.Headers["Referer"].ToString() ?? Url.Action("Index", "Productos")!);
+                
                 return RedirectToAction("Login", "Auth");
             }
 

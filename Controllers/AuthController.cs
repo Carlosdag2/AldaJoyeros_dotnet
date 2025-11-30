@@ -8,10 +8,12 @@ namespace AldaJoyeros.Controllers
     public class AuthController : BaseController
     {
         private readonly IUsuarioService _usuarioService;
+        private readonly ICarritoService _carritoService;
 
-        public AuthController(IUsuarioService usuarioService)
+        public AuthController(IUsuarioService usuarioService, ICarritoService carritoService)
         {
             _usuarioService = usuarioService;
+            _carritoService = carritoService;
         }
 
         [HttpGet]
@@ -44,9 +46,27 @@ namespace AldaJoyeros.Controllers
 
                 HttpContext.Session.SetObject("CurrentUser", usuario);
 
+                // Procesar items del carrito temporal
+                await ProcessTempCarrito(usuario.Id);
+
+                // Verificar si hay URL de retorno
+                var returnUrl = HttpContext.Session.GetString("ReturnUrl");
+                HttpContext.Session.Remove("ReturnUrl");
+
+                if (!string.IsNullOrEmpty(returnUrl))
+                {
+                    return Redirect(returnUrl);
+                }
+
                 if (usuario.Rol == "ADMIN")
                 {
                     return RedirectToAction("Index", "Admin");
+                }
+
+                // Si había items en el carrito temporal, ir al carrito
+                if (TempCarritoHelper.HasItems(HttpContext))
+                {
+                    return RedirectToAction("Index", "Carrito");
                 }
 
                 return RedirectToAction("Index", "Home");
@@ -90,6 +110,24 @@ namespace AldaJoyeros.Controllers
                 var loggedUser = await _usuarioService.LoginAsync(loginDto);
                 HttpContext.Session.SetObject("CurrentUser", loggedUser);
 
+                // Procesar items del carrito temporal
+                await ProcessTempCarrito(loggedUser!.Id);
+
+                // Verificar si hay URL de retorno
+                var returnUrl = HttpContext.Session.GetString("ReturnUrl");
+                HttpContext.Session.Remove("ReturnUrl");
+
+                if (!string.IsNullOrEmpty(returnUrl))
+                {
+                    return Redirect(returnUrl);
+                }
+
+                // Si había items en el carrito temporal, ir al carrito
+                if (TempCarritoHelper.HasItems(HttpContext))
+                {
+                    return RedirectToAction("Index", "Carrito");
+                }
+
                 return RedirectToAction("Index", "Home");
             }
             catch (Exception ex)
@@ -103,6 +141,38 @@ namespace AldaJoyeros.Controllers
         {
             HttpContext.Session.Clear();
             return RedirectToAction("Index", "Home");
+        }
+
+        private async Task ProcessTempCarrito(long usuarioId)
+        {
+            var tempItems = TempCarritoHelper.GetItems(HttpContext);
+            
+            if (tempItems.Any())
+            {
+                foreach (var item in tempItems)
+                {
+                    try
+                    {
+                        var carritoItemDto = new CarritoItemCreateDto
+                        {
+                            ProductoId = item.ProductoId,
+                            Cantidad = item.Cantidad
+                        };
+
+                        await _carritoService.AddItemAsync(usuarioId, carritoItemDto);
+                    }
+                    catch (Exception)
+                    {
+                        // Si falla agregar algún item, continuar con los demás
+                        continue;
+                    }
+                }
+                
+                // Limpiar carrito temporal
+                TempCarritoHelper.Clear(HttpContext);
+                
+                TempData["Success"] = $"Se han agregado {tempItems.Count} producto(s) a tu carrito.";
+            }
         }
     }
 }

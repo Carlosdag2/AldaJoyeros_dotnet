@@ -18,6 +18,20 @@
 
             <!-- Form -->
             <div class="p-8">
+                @* Mensaje informativo si viene desde el carrito *@
+                @if (TempData["Info"] != null)
+                {
+                    <div class="mb-6 bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg">
+                        <div class="flex items-start">
+                            <i class="fas fa-info-circle text-blue-500 mt-0.5 mr-3"></i>
+                            <div>
+                                <p class="text-blue-800 text-sm font-semibold mb-1">Continúa tu compra</p>
+                                <p class="text-blue-700 text-sm">@TempData["Info"]</p>
+                            </div>
+                        </div>
+                    </div>
+                }
+
                 <form asp-action="Login" method="post" class="space-y-6">
                     <div asp-validation-summary="ModelOnly" class="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg">
                         <div class="flex items-center">
