@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] | ALDA JOYEROS</title>
+    <title>@ViewData["Title"] | ALDA JOYEROS 1962</title>
 
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
@@ -197,11 +197,11 @@
                             <div x-show="open" 
                                  @@click.away="open = false"
                                  x-transition:enter="transition ease-out duration-200"
-                                 x-transition:enter-start="opacity-0 translate-y-2"
-                                 x-transition:enter-end="opacity-100 translate-y-0"
+                                 x-transition:enter-start="opacity-0 translateY(2px)"
+                                 x-transition:enter-end="opacity-100 translateY(0)"
                                  x-transition:leave="transition ease-in duration-150"
-                                 x-transition:leave-start="opacity-100 translate-y-0"
-                                 x-transition:leave-end="opacity-0 translate-y-2"
+                                 x-transition:leave-start="opacity-100 translateY(0)"
+                                 x-transition:leave-end="opacity-0 translateY(2px)"
                                  class="absolute right-0 mt-3 w-64 bg-white rounded-xl shadow-2xl border border-gray-100 py-2 z-50 overflow-hidden">
                                 
                                 <!-- User Info Header -->
@@ -354,55 +354,174 @@
         @RenderBody()
     </main>
 
-    <footer class="bg-dark-900 text-white py-20 border-t border-gray-800">
-        <div class="container mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-12">
-            <div class="col-span-1 md:col-span-2">
-                <div class="flex items-center gap-3 mb-6">
-                    <img src="~/images/logo.png" alt="Alda Joyeros" class="h-14 w-auto object-contain brightness-200" />
-                    <h2 class="font-serif text-2xl tracking-widest">ALDA JOYEROS</h2>
+    <footer class="bg-dark-900 text-white py-16 border-t border-gray-800">
+        <div class="container mx-auto px-6">
+            <!-- Main Footer Content -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
+                <!-- Column 1: Brand & Description -->
+                <div class="space-y-6">
+                    <div class="flex flex-col gap-4">
+                        <h2 class="font-serif text-2xl tracking-wider text-emerald-400">ALDA JOYEROS 1962</h2>
+                    </div>
+                    <p class="text-gray-400 font-light leading-relaxed text-sm">
+                        Desde 1962, creando piezas atemporales que capturan la esencia de la elegancia. Cada joya cuenta una historia única.
+                    </p>
+                    <!-- Social Media -->
+                    <div class="flex gap-3">
+                        <a href="https://www.facebook.com/p/Alda-Joyeros-1962-100063636367531" class="w-10 h-10 bg-white/10 hover:bg-emerald-500 rounded-lg flex items-center justify-center transition-all duration-300 group">
+                            <i class="fab fa-facebook-f text-gray-400 group-hover:text-white transition-colors"></i>
+                        </a>
+                        <a href="https://www.instagram.com/aldajoyeros1962" class="w-10 h-10 bg-white/10 hover:bg-emerald-500 rounded-lg flex items-center justify-center transition-all duration-300 group">
+                            <i class="fab fa-instagram text-gray-400 group-hover:text-white transition-colors"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-white/10 hover:bg-emerald-500 rounded-lg flex items-center justify-center transition-all duration-300 group">
+                            <i class="fab fa-whatsapp text-gray-400 group-hover:text-white transition-colors"></i>
+                        </a>
+                    </div>
                 </div>
-                <p class="text-gray-400 font-light max-w-md leading-relaxed">
-                    Desde 1962, creando piezas atemporales que capturan la esencia de la elegancia eterna. Cada diamante cuenta una historia.
-                </p>
-            </div>
-            <div>
-                <h4 class="text-emerald-400 text-xs tracking-[0.2em] mb-6 uppercase font-semibold">Servicio al Cliente</h4>
-                <ul class="space-y-3 text-sm font-light text-gray-300">
-                    <li>
-                        <a href="#" class="flex items-center gap-2 hover:text-emerald-400 transition-colors">
-                            <i class="fas fa-envelope text-xs"></i>
-                            <span>Contactar</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" class="flex items-center gap-2 hover:text-emerald-400 transition-colors">
-                            <i class="fas fa-shipping-fast text-xs"></i>
-                            <span>Envíos y Devoluciones</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" class="flex items-center gap-2 hover:text-emerald-400 transition-colors">
-                            <i class="fas fa-shield-alt text-xs"></i>
-                            <span>Cuidado de las Joyas</span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-            <div>
-                <h4 class="text-emerald-400 text-xs tracking-[0.2em] mb-6 uppercase font-semibold">Newsletter</h4>
-                <p class="text-gray-400 text-sm mb-4">Recibe nuestras últimas novedades</p>
-                <div class="flex gap-2">
-                    <input type="email" placeholder="tu@email.com" class="flex-1 bg-white/10 border border-gray-700 text-white px-4 py-2 rounded-lg text-sm placeholder-gray-500 focus:border-emerald-400 focus:outline-none transition-colors" />
-                    <button class="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg font-semibold transition-colors">
-                        <i class="fas fa-paper-plane"></i>
-                    </button>
+
+                <!-- Column 2: Quick Links -->
+                <div>
+                    <h4 class="text-emerald-400 text-sm tracking-[0.2em] mb-6 uppercase font-bold">Navegación</h4>
+                    <ul class="space-y-3 text-sm">
+                        <li>
+                            <a asp-controller="Home" asp-action="Index" class="flex items-center gap-2 text-gray-400 hover:text-emerald-400 transition-colors">
+                                <i class="fas fa-chevron-right text-xs text-emerald-500"></i>
+                                <span>Inicio</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-controller="Productos" asp-action="Index" class="flex items-center gap-2 text-gray-400 hover:text-emerald-400 transition-colors">
+                                <i class="fas fa-chevron-right text-xs text-emerald-500"></i>
+                                <span>Catálogo Completo</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-controller="Carrito" asp-action="Index" class="flex items-center gap-2 text-gray-400 hover:text-emerald-400 transition-colors">
+                                <i class="fas fa-chevron-right text-xs text-emerald-500"></i>
+                                <span>Mi Carrito</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-controller="Pedidos" asp-action="Index" class="flex items-center gap-2 text-gray-400 hover:text-emerald-400 transition-colors">
+                                <i class="fas fa-chevron-right text-xs text-emerald-500"></i>
+                                <span>Mis Pedidos</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Column 3: Contact & Location -->
+                <div>
+                    <h4 class="text-emerald-400 text-sm tracking-[0.2em] mb-6 uppercase font-bold">Contacto</h4>
+                    <ul class="space-y-4 text-sm">
+                        <li class="flex items-start gap-3">
+                            <i class="fas fa-map-marker-alt text-emerald-500 mt-1"></i>
+                            <div class="text-gray-400">
+                                <div class="font-medium text-white mb-1">Dirección</div>
+                                Calle Sor Livia Alcorta, 24<br />
+                                45200 Illescas, Toledo
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <i class="fas fa-phone text-emerald-500 mt-1"></i>
+                            <div class="text-gray-400">
+                                <div class="font-medium text-white mb-1">Teléfono</div>
+                                <a href="tel:+34925541227" class="hover:text-emerald-400 transition-colors">
+                                    +34 925 54 12 27
+                                </a>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <i class="fas fa-envelope text-emerald-500 mt-1"></i>
+                            <div class="text-gray-400">
+                                <div class="font-medium text-white mb-1">Email</div>
+                                <a href="mailto:aldajoyeros1962@gmail.com" class="hover:text-emerald-400 transition-colors">
+                                    aldajoyeros1962@gmail.com
+                                </a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Column 4: Schedule & Newsletter -->
+                <div>
+                    <h4 class="text-emerald-400 text-sm tracking-[0.2em] mb-6 uppercase font-bold">Horario</h4>
+                    <div class="space-y-3 text-sm text-gray-400 mb-8">
+                        <div class="flex justify-between">
+                            <span class="font-medium text-white">Lunes - Viernes:</span>
+                        </div>
+                        <div class="pl-4 space-y-1 text-xs">
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-sun text-yellow-400"></i>
+                                <span>10:15 - 13:30</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-moon text-blue-400"></i>
+                                <span>17:00 - 20:00</span>
+                            </div>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="font-medium text-white">Sábados:</span>
+                            <span>10:15 - 13:30</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="font-medium text-white">Domingos:</span>
+                            <span class="text-red-400">Cerrado</span>
+                        </div>
+                    </div>
+
+                    <!-- Newsletter -->
+                    <div class="bg-white/5 rounded-xl p-4 border border-white/10">
+                        <h5 class="text-white font-semibold mb-3 text-sm">Newsletter</h5>
+                        <p class="text-gray-400 text-xs mb-3">Recibe ofertas exclusivas</p>
+                        <div class="flex gap-2">
+                            <input type="email" placeholder="tu@email.com" class="flex-1 bg-white/10 border border-gray-700 text-white px-3 py-2 rounded-lg text-xs placeholder-gray-500 focus:border-emerald-400 focus:outline-none transition-colors" />
+                            <button class="px-3 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white rounded-lg font-semibold transition-all shadow-md">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="container mx-auto px-6 mt-16 pt-8 border-t border-gray-800 text-center">
-            <p class="text-xs text-gray-600 uppercase tracking-widest">
-                &copy; 2025 Alda Joyeros. Made with Excellence.
-            </p>
+
+            <!-- Trust Badges -->
+            <div class="py-8 border-y border-gray-800">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+                    <div class="flex flex-col items-center gap-2">
+                        <i class="fas fa-shipping-fast text-2xl text-emerald-500"></i>
+                        <span class="text-xs text-gray-400 uppercase tracking-wider">Envío Gratis +50€</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-2">
+                        <i class="fas fa-shield-alt text-2xl text-emerald-500"></i>
+                        <span class="text-xs text-gray-400 uppercase tracking-wider">Compra Segura</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-2">
+                        <i class="fas fa-certificate text-2xl text-emerald-500"></i>
+                        <span class="text-xs text-gray-400 uppercase tracking-wider">Garantía de por vida</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-2">
+                        <i class="fas fa-undo text-2xl text-emerald-500"></i>
+                        <span class="text-xs text-gray-400 uppercase tracking-wider">30 Días Devolución</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Footer -->
+            <div class="pt-8 text-center">
+                <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                    <p class="text-xs text-gray-600 uppercase tracking-widest">
+                        &copy; @DateTime.Now.Year Alda Joyeros 1962. Todos los derechos reservados.
+                    </p>
+                    <div class="flex gap-6 text-xs text-gray-600">
+                        <a href="#" class="hover:text-emerald-400 transition-colors">Política de Privacidad</a>
+                        <span class="text-gray-800">|</span>
+                        <a href="#" class="hover:text-emerald-400 transition-colors">Términos y Condiciones</a>
+                        <span class="text-gray-800">|</span>
+                        <a href="#" class="hover:text-emerald-400 transition-colors">Cookies</a>
+                    </div>
+                </div>
+            </div>
         </div>
     </footer>
 

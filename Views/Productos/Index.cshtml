@@ -1,7 +1,7 @@
 @model AldaJoyeros.Helpers.PagedResult<AldaJoyeros.DTOs.ProductoDto>
 
 @{
-    ViewData["Title"] = "Catálogo de Joyas - Alda Joyeros";
+    ViewData["Title"] = "Catálogo de Joyas";
     var categorias = ViewBag.Categorias as IEnumerable<AldaJoyeros.DTOs.CategoriaDto>;
     var categoriaSeleccionada = ViewBag.CategoriaSeleccionada as long?;
     var busqueda = ViewBag.Busqueda as string ?? "";

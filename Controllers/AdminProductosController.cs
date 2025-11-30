@@ -34,7 +34,7 @@ namespace AldaJoyeros.Controllers
             {
                 productos = productos.Where(p => 
                     p.Nombre.Contains(busqueda, StringComparison.OrdinalIgnoreCase) ||
-                    p.Descripcion.Contains(busqueda, StringComparison.OrdinalIgnoreCase) ||
+                    (p.Descripcion != null && p.Descripcion.Contains(busqueda, StringComparison.OrdinalIgnoreCase)) ||
                     p.CategoriaNombre.Contains(busqueda, StringComparison.OrdinalIgnoreCase) ||
                     p.Id.ToString().Contains(busqueda)
                 ).ToList();
