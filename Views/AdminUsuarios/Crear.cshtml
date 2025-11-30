@@ -1,217 +1,207 @@
 @model AldaJoyeros.DTOs.UsuarioCreateDto
+@{ViewData["Title"]="Nuevo Usuario";}
 
-@{
-    ViewData["Title"] = "Nuevo Usuario";
-}
+<div class="container mx-auto px-6 py-8">
+    <div class="mb-8">
+        <h1 class="font-serif text-4xl md:text-5xl font-bold text-gray-900 mb-3 flex items-center gap-3">
+            <div class="w-14 h-14 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg">
+                <i class="fas fa-user-plus text-white text-2xl"></i>
+            </div>
+            Nuevo Usuario
+        </h1>
+        <p class="text-gray-600 text-lg">Crea una nueva cuenta de usuario en el sistema</p>
+    </div>
 
-<!-- Header -->
-<div class="mb-8">
-    <h1 class="font-display text-4xl font-bold text-gray-900 mb-2">
-        <i class="fas fa-user-plus text-indigo-600"></i> Nuevo Usuario
-    </h1>
-    <p class="text-gray-600">Crea una nueva cuenta de usuario en el sistema</p>
-</div>
-
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-    <!-- Form -->
-    <div class="lg:col-span-2">
-        <div class="bg-white rounded-3xl shadow-xl p-8">
-            <form asp-action="Crear" method="post" class="space-y-6">
-                <div asp-validation-summary="ModelOnly" class="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg mb-6">
-                    <div class="flex items-center">
-                        <i class="fas fa-exclamation-circle text-red-500 mr-3"></i>
-                        <span class="text-red-800 text-sm"></span>
-                    </div>
-                </div>
-
-                <!-- Email -->
-                <div>
-                    <label asp-for="Email" class="block text-sm font-semibold text-gray-700 mb-2">
-                        <i class="fas fa-envelope mr-2 text-gray-500"></i>Correo Electrónico
-                    </label>
-                    <input asp-for="Email" 
-                           type="email"
-                           class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:ring focus:ring-indigo-200 transition-all duration-200 text-lg"
-                           placeholder="usuario@ejemplo.com" />
-                    <span asp-validation-for="Email" class="text-red-500 text-sm mt-1 block"></span>
-                </div>
-
-                <!-- Password -->
-                <div>
-                    <label asp-for="Password" class="block text-sm font-semibold text-gray-700 mb-2">
-                        <i class="fas fa-lock mr-2 text-gray-500"></i>Contraseña
-                    </label>
-                    <input asp-for="Password" 
-                           type="password"
-                           class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:ring focus:ring-indigo-200 transition-all duration-200 text-lg"
-                           placeholder="Mínimo 6 caracteres" />
-                    <span asp-validation-for="Password" class="text-red-500 text-sm mt-1 block"></span>
-                    <p class="text-gray-500 text-xs mt-1">
-                        <i class="fas fa-info-circle mr-1"></i>Mínimo 6 caracteres
-                    </p>
-                </div>
-
-                <!-- Rol -->
-                <div>
-                    <label asp-for="Rol" class="block text-sm font-semibold text-gray-700 mb-3">
-                        <i class="fas fa-user-tag mr-2 text-gray-500"></i>Rol del Usuario
-                    </label>
-                    
-                    <div class="space-y-3">
-                        <!-- ADMIN -->
-                        <label class="flex items-center p-4 bg-red-50 border-2 border-red-200 rounded-xl hover:border-red-400 cursor-pointer transition-all group">
-                            <input type="radio" asp-for="Rol" value="ADMIN" 
-                                   class="w-5 h-5 text-red-600 focus:ring-red-500" />
-                            <div class="ml-4 flex-1">
-                                <div class="flex items-center">
-                                    <i class="fas fa-user-shield text-2xl text-red-600 mr-3"></i>
-                                    <div>
-                                        <div class="font-bold text-gray-900">Administrador</div>
-                                        <div class="text-sm text-gray-600">Acceso completo a todas las funciones del sistema</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </label>
-
-                        <!-- CLIENTE -->
-                        <label class="flex items-center p-4 bg-blue-50 border-2 border-blue-200 rounded-xl hover:border-blue-400 cursor-pointer transition-all group">
-                            <input type="radio" asp-for="Rol" value="CLIENTE" checked
-                                   class="w-5 h-5 text-blue-600 focus:ring-blue-500" />
-                            <div class="ml-4 flex-1">
-                                <div class="flex items-center">
-                                    <i class="fas fa-user text-2xl text-blue-600 mr-3"></i>
-                                    <div>
-                                        <div class="font-bold text-gray-900">Cliente</div>
-                                        <div class="text-sm text-gray-600">Usuario estándar que puede realizar compras</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </label>
-                    </div>
-                    <span asp-validation-for="Rol" class="text-red-500 text-sm mt-2 block"></span>
-                </div>
-
-                <!-- Preview Card -->
-                <div class="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl p-6 border-2 border-indigo-200">
-                    <h3 class="font-semibold text-gray-900 mb-3 flex items-center">
-                        <i class="fas fa-eye text-indigo-600 mr-2"></i>
-                        Vista Previa
-                    </h3>
-                    <div class="bg-white rounded-lg p-4 shadow-md">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2">
+            <div class="bg-white rounded-3xl shadow-xl p-8 border border-gray-100">
+                <form asp-action="Crear" method="post" class="space-y-6">
+                    <div asp-validation-summary="ModelOnly" class="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-xl mb-6">
                         <div class="flex items-center">
-                            <div class="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full flex items-center justify-center mr-4">
-                                <i class="fas fa-user text-white text-xl"></i>
+                            <i class="fas fa-exclamation-circle text-red-500 mr-3"></i>
+                            <span class="text-red-800 text-sm"></span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label asp-for="Email" class="block text-sm font-bold text-gray-700 mb-3 flex items-center gap-2">
+                            <div class="w-6 h-6 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-envelope text-blue-600 text-xs"></i>
                             </div>
-                            <div>
-                                <div class="font-bold text-gray-900" id="preview-email">usuario@ejemplo.com</div>
-                                <div class="text-sm text-gray-600" id="preview-rol">Cliente</div>
+                            Correo Electrónico
+                        </label>
+                        <input asp-for="Email" type="email" class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100 transition-all outline-none text-lg" placeholder="usuario@ejemplo.com"/>
+                        <span asp-validation-for="Email" class="text-red-500 text-sm mt-1 block"></span>
+                    </div>
+
+                    <div>
+                        <label asp-for="Password" class="block text-sm font-bold text-gray-700 mb-3 flex items-center gap-2">
+                            <div class="w-6 h-6 bg-purple-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-lock text-purple-600 text-xs"></i>
+                            </div>
+                            Contraseña
+                        </label>
+                        <input asp-for="Password" type="password" class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100 transition-all outline-none text-lg" placeholder="Mínimo 6 caracteres"/>
+                        <span asp-validation-for="Password" class="text-red-500 text-sm mt-1 block"></span>
+                        <p class="text-gray-500 text-xs mt-2 flex items-center gap-1">
+                            <i class="fas fa-info-circle"></i>Mínimo 6 caracteres
+                        </p>
+                    </div>
+
+                    <div>
+                        <label asp-for="Rol" class="block text-sm font-bold text-gray-700 mb-4 flex items-center gap-2">
+                            <div class="w-6 h-6 bg-indigo-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-user-tag text-indigo-600 text-xs"></i>
+                            </div>
+                            Rol del Usuario
+                        </label>
+
+                        <div class="space-y-3">
+                            <label class="flex items-center p-5 bg-gradient-to-r from-red-50 to-pink-50 border-2 border-red-200 rounded-xl hover:border-red-400 hover:shadow-md cursor-pointer transition-all">
+                                <input type="radio" asp-for="Rol" value="ADMIN" class="w-5 h-5 text-red-600 focus:ring-red-500"/>
+                                <div class="ml-4 flex-1">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 bg-red-500 rounded-xl flex items-center justify-center shadow-md">
+                                            <i class="fas fa-user-shield text-white text-lg"></i>
+                                        </div>
+                                        <div>
+                                            <div class="font-bold text-gray-900 text-lg">Administrador</div>
+                                            <div class="text-sm text-gray-600">Acceso completo a todas las funciones</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </label>
+
+                            <label class="flex items-center p-5 bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-xl hover:border-blue-400 hover:shadow-md cursor-pointer transition-all">
+                                <input type="radio" asp-for="Rol" value="CLIENTE" checked class="w-5 h-5 text-blue-600 focus:ring-blue-500"/>
+                                <div class="ml-4 flex-1">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center shadow-md">
+                                            <i class="fas fa-user text-white text-lg"></i>
+                                        </div>
+                                        <div>
+                                            <div class="font-bold text-gray-900 text-lg">Cliente</div>
+                                            <div class="text-sm text-gray-600">Usuario que puede realizar compras</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+                        <span asp-validation-for="Rol" class="text-red-500 text-sm mt-2 block"></span>
+                    </div>
+
+                    <div class="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl p-6 border border-indigo-200">
+                        <h3 class="font-bold text-gray-900 mb-4 flex items-center gap-2">
+                            <div class="w-8 h-8 bg-indigo-500 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-eye text-white"></i>
+                            </div>
+                            Vista Previa
+                        </h3>
+                        <div class="bg-white rounded-xl p-5 shadow-lg">
+                            <div class="flex items-center gap-4">
+                                <div class="w-14 h-14 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full flex items-center justify-center shadow-md">
+                                    <i class="fas fa-user text-white text-2xl"></i>
+                                </div>
+                                <div>
+                                    <div class="font-bold text-gray-900 text-lg" id="preview-email">usuario@ejemplo.com</div>
+                                    <div class="text-sm text-gray-600" id="preview-rol">Cliente</div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <hr />
+                    <hr class="border-gray-200"/>
 
-                <div class="flex flex-col sm:flex-row justify-between gap-4">
-                    <a asp-action="Index" 
-                       class="inline-flex items-center justify-center px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-lg hover:border-indigo-500 hover:text-indigo-600 transition-all duration-200 font-semibold">
-                        <i class="fas fa-times mr-2"></i>
-                        Cancelar
-                    </a>
-                    <button type="submit" 
-                            class="inline-flex items-center justify-center gradient-gold text-gray-900 px-8 py-3 rounded-lg font-bold text-lg hover:shadow-2xl transition-all duration-200 transform hover:scale-105">
-                        <i class="fas fa-save mr-2"></i>
-                        Crear Usuario
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Info Sidebar -->
-    <div class="lg:col-span-1 space-y-6">
-        <!-- Tips -->
-        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6">
-            <h3 class="font-bold text-gray-900 mb-4 flex items-center">
-                <i class="fas fa-lightbulb text-yellow-600 mr-2"></i>
-                Consejos de Seguridad
-            </h3>
-            <ul class="space-y-3 text-sm text-gray-700">
-                <li class="flex items-start">
-                    <i class="fas fa-check-circle text-green-600 mr-2 mt-1"></i>
-                    <span>Usa contraseñas seguras y únicas</span>
-                </li>
-                <li class="flex items-start">
-                    <i class="fas fa-check-circle text-green-600 mr-2 mt-1"></i>
-                    <span>Asigna el rol correcto desde el inicio</span>
-                </li>
-                <li class="flex items-start">
-                    <i class="fas fa-check-circle text-green-600 mr-2 mt-1"></i>
-                    <span>Verifica el email antes de crear</span>
-                </li>
-                <li class="flex items-start">
-                    <i class="fas fa-check-circle text-green-600 mr-2 mt-1"></i>
-                    <span>Limita el número de administradores</span>
-                </li>
-            </ul>
-        </div>
-
-        <!-- Roles Info -->
-        <div class="bg-white rounded-2xl p-6 shadow-lg">
-            <h3 class="font-bold text-gray-900 mb-4 flex items-center">
-                <i class="fas fa-info-circle text-indigo-600 mr-2"></i>
-                Información de Roles
-            </h3>
-            <div class="space-y-4">
-                <div>
-                    <div class="flex items-center mb-2">
-                        <i class="fas fa-user-shield text-red-600 mr-2"></i>
-                        <span class="font-semibold text-gray-900">Administrador</span>
+                    <div class="flex flex-col sm:flex-row justify-between gap-4">
+                        <a asp-action="Index" class="inline-flex items-center justify-center px-8 py-3 border-2 border-gray-300 text-gray-700 rounded-xl hover:border-emerald-500 hover:text-emerald-600 hover:bg-emerald-50 transition-all font-semibold">
+                            <i class="fas fa-times mr-2"></i>Cancelar
+                        </a>
+                        <button type="submit" class="inline-flex items-center justify-center bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:from-emerald-600 hover:to-emerald-700 hover:shadow-2xl transition-all transform hover:scale-105">
+                            <i class="fas fa-save mr-2"></i>Crear Usuario
+                        </button>
                     </div>
-                    <p class="text-xs text-gray-600 ml-6">
-                        Puede gestionar productos, categorías, pedidos y usuarios. Acceso total.
-                    </p>
-                </div>
-                <div>
-                    <div class="flex items-center mb-2">
-                        <i class="fas fa-user text-blue-600 mr-2"></i>
-                        <span class="font-semibold text-gray-900">Cliente</span>
-                    </div>
-                    <p class="text-xs text-gray-600 ml-6">
-                        Puede navegar, comprar productos y ver sus pedidos. Sin acceso admin.
-                    </p>
-                </div>
+                </form>
             </div>
         </div>
 
-        <!-- Warning -->
-        <div class="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-2xl p-6 border-2 border-yellow-200">
-            <div class="flex items-start">
-                <i class="fas fa-exclamation-triangle text-yellow-600 text-2xl mr-3 mt-1"></i>
-                <div>
-                    <h3 class="font-semibold text-gray-900 mb-2">Importante</h3>
-                    <p class="text-sm text-gray-700">
-                        El email debe ser único en el sistema. Las contraseñas se almacenan de forma segura con hash.
-                    </p>
+        <div class="lg:col-span-1 space-y-6">
+            <div class="bg-gradient-to-br from-emerald-50 to-green-50 rounded-2xl p-6 border border-emerald-200">
+                <h3 class="font-bold text-gray-900 mb-4 flex items-center gap-2">
+                    <div class="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-lightbulb text-white"></i>
+                    </div>
+                    Consejos de Seguridad
+                </h3>
+                <ul class="space-y-3 text-sm text-gray-700">
+                    <li class="flex items-start gap-2">
+                        <div class="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <i class="fas fa-check text-white text-xs"></i>
+                        </div>
+                        <span>Contraseñas seguras y únicas</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <div class="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <i class="fas fa-check text-white text-xs"></i>
+                        </div>
+                        <span>Asigna el rol correcto</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <div class="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <i class="fas fa-check text-white text-xs"></i>
+                        </div>
+                        <span>Verifica el email primero</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <div class="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <i class="fas fa-check text-white text-xs"></i>
+                        </div>
+                        <span>Limita los administradores</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+                <h3 class="font-bold text-gray-900 mb-4 flex items-center gap-2">
+                    <div class="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-info-circle text-indigo-600"></i>
+                    </div>
+                    Información de Roles
+                </h3>
+                <div class="space-y-4">
+                    <div class="bg-gradient-to-r from-red-50 to-pink-50 rounded-lg p-3 border border-red-200">
+                        <div class="flex items-center mb-2">
+                            <i class="fas fa-user-shield text-red-600 mr-2"></i>
+                            <span class="font-bold text-gray-900">Administrador</span>
+                        </div>
+                        <p class="text-xs text-gray-600">Gestiona productos, categorías, pedidos y usuarios</p>
+                    </div>
+                    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-3 border border-blue-200">
+                        <div class="flex items-center mb-2">
+                            <i class="fas fa-user text-blue-600 mr-2"></i>
+                            <span class="font-bold text-gray-900">Cliente</span>
+                        </div>
+                        <p class="text-xs text-gray-600">Navega, compra productos y ve sus pedidos</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-2xl p-6 border border-yellow-200">
+                <div class="flex items-start gap-3">
+                    <div class="w-10 h-10 bg-yellow-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-exclamation-triangle text-white"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-900 mb-2">Importante</h3>
+                        <p class="text-sm text-gray-700 leading-relaxed">El email debe ser único. Las contraseñas se almacenan con hash seguro.</p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-    <script>
-        // Live preview
-        document.querySelector('input[name="Email"]')?.addEventListener('input', function(e) {
-            document.getElementById('preview-email').textContent = e.target.value || 'usuario@ejemplo.com';
-        });
-
-        document.querySelectorAll('input[name="Rol"]').forEach(radio => {
-            radio.addEventListener('change', function(e) {
-                const rol = e.target.value === 'ADMIN' ? 'Administrador' : 'Cliente';
-                document.getElementById('preview-rol').textContent = rol;
-            });
-        });
-    </script>
-}
+@section Scripts{<partial name="_ValidationScriptsPartial"/>
+<script>
+document.querySelector('input[name="Email"]')?.addEventListener('input',e=>document.getElementById('preview-email').textContent=e.target.value||'usuario@ejemplo.com');
+document.querySelectorAll('input[name="Rol"]').forEach(r=>r.addEventListener('change',e=>document.getElementById('preview-rol').textContent=e.target.value==='ADMIN'?'Administrador':'Cliente'));
+</script>}
