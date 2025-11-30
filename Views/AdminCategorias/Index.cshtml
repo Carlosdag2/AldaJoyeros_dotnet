@@ -4,131 +4,204 @@
     ViewData["Title"] = "Gestión de Categorías";
 }
 
-<!-- Header -->
-<div class="flex justify-between items-center mb-8">
-    <div>
-        <h1 class="font-display text-4xl font-bold text-gray-900 mb-2">
-            <i class="fas fa-tags text-purple-600"></i> Gestión de Categorías
-        </h1>
-        <p class="text-gray-600">Administra las categorías de productos</p>
-    </div>
-    <a asp-action="Crear" 
-       class="inline-flex items-center gradient-gold text-gray-900 px-6 py-3 rounded-lg font-semibold hover:shadow-xl transition-all duration-200 transform hover:scale-105">
-        <i class="fas fa-plus-circle mr-2"></i>
-        Nueva Categoría
-    </a>
-</div>
-
-<!-- Stats -->
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-    <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-6">
-        <div class="flex items-center">
-            <div class="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center mr-4">
-                <i class="fas fa-tags text-white text-xl"></i>
-            </div>
-            <div>
-                <div class="text-2xl font-bold text-gray-900">@(Model?.Count() ?? 0)</div>
-                <div class="text-sm text-gray-600">Total Categorías</div>
-            </div>
-        </div>
-    </div>
-
-    <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6">
-        <div class="flex items-center">
-            <div class="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center mr-4">
-                <i class="fas fa-check-circle text-white text-xl"></i>
-            </div>
-            <div>
-                <div class="text-2xl font-bold text-gray-900">@(Model?.Count() ?? 0)</div>
-                <div class="text-sm text-gray-600">Activas</div>
-            </div>
-        </div>
-    </div>
-
-    <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-6">
-        <div class="flex items-center">
-            <div class="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center mr-4">
-                <i class="fas fa-gem text-white text-xl"></i>
-            </div>
-            <div>
-                <div class="text-2xl font-bold text-gray-900">@ViewBag.TotalProductos</div>
-                <div class="text-sm text-gray-600">Productos Totales</div>
-            </div>
-        </div>
-    </div>
-</div>
-
-@if (Model != null && Model.Any())
-{
-    <!-- Categories Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        @foreach (var categoria in Model)
-        {
-            <div class="group bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden">
-                <div class="bg-gradient-to-br from-purple-500 to-pink-500 p-6 text-white">
-                    <div class="flex items-center justify-between mb-4">
-                        <i class="fas fa-tag text-5xl opacity-20"></i>
-                        <div class="text-right">
-                            <div class="text-sm opacity-80">ID</div>
-                            <div class="text-2xl font-bold">#@categoria.Id</div>
-                        </div>
-                    </div>
-                    <h3 class="font-display text-2xl font-bold">@categoria.Nombre</h3>
+<div class="container mx-auto px-6 py-8">
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+        <div>
+            <h1 class="font-serif text-4xl md:text-5xl font-bold text-gray-900 mb-3 flex items-center gap-3">
+                <div class="w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg">
+                    <i class="fas fa-tags text-white text-2xl"></i>
                 </div>
-
-                <div class="p-6">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="text-sm text-gray-600">
-                            <i class="fas fa-gem mr-2"></i>
-                            <span class="font-semibold">@categoria.CantidadProductos producto@(categoria.CantidadProductos != 1 ? "s" : "")</span>
-                        </div>
-                        <div class="flex items-center space-x-1">
-                            <i class="fas fa-star text-yellow-500"></i>
-                            <i class="fas fa-star text-yellow-500"></i>
-                            <i class="fas fa-star text-yellow-500"></i>
-                            <i class="fas fa-star text-yellow-500"></i>
-                            <i class="fas fa-star text-gray-300"></i>
-                        </div>
-                    </div>
-
-                    <div class="flex gap-2">
-                        <a asp-action="Editar" asp-route-id="@categoria.Id" 
-                           class="flex-1 flex items-center justify-center px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-all duration-200 font-medium">
-                            <i class="fas fa-edit mr-2"></i>Editar
-                        </a>
-                        <form asp-action="Eliminar" asp-route-id="@categoria.Id" method="post" class="flex-1" 
-                              onsubmit="return confirm('¿Estás seguro de eliminar esta categoría?')">
-                            <button type="submit" 
-                                    class="w-full flex items-center justify-center px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all duration-200 font-medium">
-                                <i class="fas fa-trash mr-2"></i>Eliminar
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        }
-    </div>
-}
-else
-{
-    <!-- Empty State -->
-    <div class="bg-white rounded-3xl p-12 text-center shadow-lg">
-        <i class="fas fa-tags text-gray-300 text-6xl mb-4"></i>
-        <h3 class="font-display text-2xl font-bold text-gray-700 mb-2">No hay categorías registradas</h3>
-        <p class="text-gray-500 mb-6">Comienza creando tu primera categoría de productos</p>
+                Gestión de Categorías
+            </h1>
+            <p class="text-gray-600 text-lg">Administra las categorías de productos</p>
+        </div>
         <a asp-action="Crear" 
-           class="inline-flex items-center gradient-gold text-gray-900 px-6 py-3 rounded-lg font-semibold hover:shadow-xl transition-all duration-200">
+           class="inline-flex items-center bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:from-emerald-600 hover:to-emerald-700 hover:shadow-2xl transition-all duration-200 transform hover:scale-105">
             <i class="fas fa-plus-circle mr-2"></i>
-            Crear Primera Categoría
+            Nueva Categoría
         </a>
     </div>
-}
 
-<!-- Back Button -->
-<div class="mt-8">
-    <a asp-controller="Admin" asp-action="Index" 
-       class="inline-flex items-center text-gray-600 hover:text-gray-900 font-medium group">
-        <i class="fas fa-arrow-left mr-2 group-hover:-translate-x-2 transition-transform"></i>
-        Volver al Panel
-    </a>
+    <!-- Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-6 border border-purple-200 hover:shadow-lg transition-shadow duration-300">
+            <div class="flex items-center">
+                <div class="w-14 h-14 bg-purple-500 rounded-xl flex items-center justify-center mr-4 shadow-md">
+                    <i class="fas fa-tags text-white text-2xl"></i>
+                </div>
+                <div>
+                    <div class="text-3xl font-bold text-gray-900">@(Model?.Count() ?? 0)</div>
+                    <div class="text-sm text-gray-600 font-medium">Total Categorías</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-gradient-to-br from-emerald-50 to-green-50 rounded-2xl p-6 border border-emerald-200 hover:shadow-lg transition-shadow duration-300">
+            <div class="flex items-center">
+                <div class="w-14 h-14 bg-emerald-500 rounded-xl flex items-center justify-center mr-4 shadow-md">
+                    <i class="fas fa-check-circle text-white text-2xl"></i>
+                </div>
+                <div>
+                    <div class="text-3xl font-bold text-gray-900">@(Model?.Count() ?? 0)</div>
+                    <div class="text-sm text-gray-600 font-medium">Activas</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-200 hover:shadow-lg transition-shadow duration-300">
+            <div class="flex items-center">
+                <div class="w-14 h-14 bg-blue-500 rounded-xl flex items-center justify-center mr-4 shadow-md">
+                    <i class="fas fa-gem text-white text-2xl"></i>
+                </div>
+                <div>
+                    <div class="text-3xl font-bold text-gray-900">@ViewBag.TotalProductos</div>
+                    <div class="text-sm text-gray-600 font-medium">Productos Totales</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        <!-- Categories Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            @foreach (var categoria in Model)
+            {
+                <div class="group bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100">
+                    <!-- Header -->
+                    <div class="bg-gradient-to-br from-purple-500 to-pink-500 p-6 text-white relative overflow-hidden">
+                        <!-- Decorative Element -->
+                        <div class="absolute top-0 right-0 w-24 h-24 bg-white opacity-10 rounded-full -mr-12 -mt-12"></div>
+                        
+                        <div class="relative flex items-center justify-between mb-4">
+                            <div class="w-16 h-16 bg-white bg-opacity-20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+                                <i class="fas fa-tag text-3xl"></i>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-xs opacity-80 font-semibold">ID</div>
+                                <div class="text-2xl font-bold">#@categoria.Id</div>
+                            </div>
+                        </div>
+                        <h3 class="font-serif text-2xl font-bold relative">@categoria.Nombre</h3>
+                    </div>
+
+                    <!-- Body -->
+                    <div class="p-6">
+                        <!-- Info Badge -->
+                        <div class="flex items-center justify-between mb-6 bg-gradient-to-r from-emerald-50 to-green-50 rounded-xl p-4 border border-emerald-200">
+                            <div class="flex items-center gap-2 text-gray-700">
+                                <div class="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-gem text-white text-sm"></i>
+                                </div>
+                                <span class="font-bold text-lg">@categoria.CantidadProductos</span>
+                            </div>
+                            <span class="text-sm text-gray-600 font-medium">
+                                producto@(categoria.CantidadProductos != 1 ? "s" : "")
+                            </span>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="flex gap-3">
+                            <a asp-action="Editar" asp-route-id="@categoria.Id" 
+                               class="flex-1 flex items-center justify-center px-4 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl hover:from-emerald-600 hover:to-emerald-700 transition-all duration-200 font-bold shadow-sm hover:shadow-md">
+                                <i class="fas fa-edit mr-2"></i>Editar
+                            </a>
+                            <form asp-action="Eliminar" asp-route-id="@categoria.Id" method="post" class="flex-1" 
+                                  onsubmit="return confirm('¿Estás seguro de eliminar esta categoría? Esto eliminará también todos los productos asociados.')">
+                                <button type="submit" 
+                                        class="w-full flex items-center justify-center px-4 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl hover:from-red-600 hover:to-red-700 transition-all duration-200 font-bold shadow-sm hover:shadow-md">
+                                    <i class="fas fa-trash mr-2"></i>Eliminar
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <!-- Empty State -->
+        <div class="bg-white rounded-3xl p-12 text-center shadow-xl border border-gray-100 mb-8">
+            <div class="w-32 h-32 bg-gradient-to-br from-purple-100 to-pink-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="fas fa-tags text-purple-600 text-6xl"></i>
+            </div>
+            <h3 class="font-serif text-3xl font-bold text-gray-900 mb-3">No hay categorías registradas</h3>
+            <p class="text-gray-600 text-lg mb-8 leading-relaxed">
+                Comienza creando tu primera categoría de productos<br/>
+                para organizar tu catálogo
+            </p>
+            <a asp-action="Crear" 
+               class="inline-flex items-center bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:from-emerald-600 hover:to-emerald-700 hover:shadow-2xl transition-all duration-200 transform hover:scale-105">
+                <i class="fas fa-plus-circle mr-2"></i>
+                Crear Primera Categoría
+            </a>
+        </div>
+    }
+
+    <!-- Info Banner -->
+    <div class="bg-gradient-to-r from-purple-50 to-pink-50 border-l-4 border-purple-500 rounded-r-2xl p-6 mb-8 shadow-sm">
+        <div class="flex items-start gap-4">
+            <div class="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-lightbulb text-white text-xl"></i>
+            </div>
+            <div>
+                <h3 class="font-bold text-gray-900 text-lg mb-2">
+                    Tip: Organiza tus productos
+                </h3>
+                <p class="text-gray-700 leading-relaxed">
+                    Las categorías te ayudan a organizar tu catálogo de productos. 
+                    Crea categorías descriptivas para facilitar la navegación de tus clientes.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Back Button -->
+    <div class="flex flex-col sm:flex-row gap-4">
+        <a asp-controller="Admin" asp-action="Index" 
+           class="inline-flex items-center justify-center px-8 py-3 border-2 border-gray-300 text-gray-700 rounded-xl hover:border-emerald-500 hover:text-emerald-600 hover:bg-emerald-50 transition-all duration-200 font-semibold group">
+            <i class="fas fa-arrow-left mr-2 group-hover:-translate-x-2 transition-transform"></i>
+            Volver al Panel
+        </a>
+        <a asp-controller="AdminProductos" asp-action="Index" 
+           class="inline-flex items-center justify-center px-8 py-3 border-2 border-emerald-500 text-emerald-600 rounded-xl hover:bg-emerald-50 transition-all duration-200 font-semibold">
+            <i class="fas fa-gem mr-2"></i>
+            Ver Productos
+        </a>
+    </div>
 </div>
+
+@section Styles {
+    <style>
+        /* Smooth animations */
+        @@keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .grid > div {
+            animation: fadeInUp 0.6s ease-out;
+            animation-fill-mode: both;
+        }
+
+        .grid > div:nth-child(1) { animation-delay: 0.1s; }
+        .grid > div:nth-child(2) { animation-delay: 0.2s; }
+        .grid > div:nth-child(3) { animation-delay: 0.3s; }
+        .grid > div:nth-child(4) { animation-delay: 0.4s; }
+        .grid > div:nth-child(5) { animation-delay: 0.5s; }
+        .grid > div:nth-child(6) { animation-delay: 0.6s; }
+
+        /* Card hover effects */
+        .group:hover .bg-gradient-to-br {
+            transform: scale(1.02);
+        }
+    </style>
+}
