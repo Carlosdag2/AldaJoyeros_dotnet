@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using AldaJoyeros.Services.Interfaces;
 using AldaJoyeros.DTOs;
+using AldaJoyeros.Attributes;
 
 namespace AldaJoyeros.Controllers
 {
+    [JwtAuthorize("ADMIN")]
     public class AdminImagenesController : BaseController
     {
         private readonly IProductoImagenService _imagenService;
@@ -21,11 +23,6 @@ namespace AldaJoyeros.Controllers
         [HttpGet]
         public async Task<IActionResult> Gestionar(long id)
         {
-            if (!IsAuthenticated || !IsAdmin)
-            {
-                return RedirectToAction("Login", "Auth");
-            }
-
             var producto = await _productoService.GetByIdAsync(id);
             if (producto == null)
             {
@@ -40,11 +37,6 @@ namespace AldaJoyeros.Controllers
         [HttpPost]
         public async Task<IActionResult> Subir(long productoId, IFormFile archivo, int orden = 0, bool esPrincipal = false)
         {
-            if (!IsAuthenticated || !IsAdmin)
-            {
-                return RedirectToAction("Login", "Auth");
-            }
-
             try
             {
                 if (archivo == null || archivo.Length == 0)
@@ -93,11 +85,6 @@ namespace AldaJoyeros.Controllers
         [HttpPost]
         public async Task<IActionResult> Eliminar(string id, long productoId)
         {
-            if (!IsAuthenticated || !IsAdmin)
-            {
-                return RedirectToAction("Login", "Auth");
-            }
-
             try
             {
                 // El ID de MongoDB es string, usar el método apropiado
@@ -116,11 +103,6 @@ namespace AldaJoyeros.Controllers
         [HttpPost]
         public async Task<IActionResult> EstablecerPrincipal(string id, long productoId)
         {
-            if (!IsAuthenticated || !IsAdmin)
-            {
-                return RedirectToAction("Login", "Auth");
-            }
-
             try
             {
                 // El ID de MongoDB ya es string, usarlo directamente

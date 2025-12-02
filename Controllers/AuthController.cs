@@ -9,28 +9,33 @@ namespace AldaJoyeros.Controllers
     {
         private readonly IUsuarioService _usuarioService;
         private readonly ICarritoService _carritoService;
+        private readonly IJwtService _jwtService;
 
-        public AuthController(IUsuarioService usuarioService, ICarritoService carritoService)
+        public AuthController(IUsuarioService usuarioService, ICarritoService carritoService, IJwtService jwtService)
         {
             _usuarioService = usuarioService;
             _carritoService = carritoService;
+            _jwtService = jwtService;
         }
 
         [HttpGet]
-        public IActionResult Login()
+        public IActionResult Login(string? returnUrl = null)
         {
             if (IsAuthenticated)
             {
                 return RedirectToAction("Index", "Home");
             }
+            
+            ViewBag.ReturnUrl = returnUrl;
             return View();
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login(LoginDto loginDto)
+        public async Task<IActionResult> Login(LoginDto loginDto, string? returnUrl = null)
         {
             if (!ModelState.IsValid)
             {
+                ViewBag.ReturnUrl = returnUrl;
                 return View(loginDto);
             }
 
@@ -41,19 +46,29 @@ namespace AldaJoyeros.Controllers
                 if (usuario == null)
                 {
                     ModelState.AddModelError("", "Email o contraseña incorrectos");
+                    ViewBag.ReturnUrl = returnUrl;
                     return View(loginDto);
                 }
 
-                HttpContext.Session.SetObject("CurrentUser", usuario);
+                // Generar token JWT con toda la información del usuario
+                var token = _jwtService.GenerateToken(usuario);
+                
+                // Almacenar token en cookie HttpOnly segura
+                var cookieOptions = new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = Request.IsHttps, // true solo en HTTPS
+                    SameSite = SameSiteMode.Strict,
+                    Expires = DateTimeOffset.UtcNow.AddMinutes(1440) // 24 horas
+                };
+                
+                Response.Cookies.Append("jwt_token", token, cookieOptions);
 
                 // Procesar items del carrito temporal
                 await ProcessTempCarrito(usuario.Id);
 
-                // Verificar si hay URL de retorno
-                var returnUrl = HttpContext.Session.GetString("ReturnUrl");
-                HttpContext.Session.Remove("ReturnUrl");
-
-                if (!string.IsNullOrEmpty(returnUrl))
+                // Redirigir según returnUrl o rol
+                if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                 {
                     return Redirect(returnUrl);
                 }
@@ -74,25 +89,29 @@ namespace AldaJoyeros.Controllers
             catch (Exception ex)
             {
                 ModelState.AddModelError("", "Error al iniciar sesión: " + ex.Message);
+                ViewBag.ReturnUrl = returnUrl;
                 return View(loginDto);
             }
         }
 
         [HttpGet]
-        public IActionResult Register()
+        public IActionResult Register(string? returnUrl = null)
         {
             if (IsAuthenticated)
             {
                 return RedirectToAction("Index", "Home");
             }
+            
+            ViewBag.ReturnUrl = returnUrl;
             return View();
         }
 
         [HttpPost]
-        public async Task<IActionResult> Register(UsuarioCreateDto usuarioCreateDto)
+        public async Task<IActionResult> Register(UsuarioCreateDto usuarioCreateDto, string? returnUrl = null)
         {
             if (!ModelState.IsValid)
             {
+                ViewBag.ReturnUrl = returnUrl;
                 return View(usuarioCreateDto);
             }
 
@@ -108,16 +127,33 @@ namespace AldaJoyeros.Controllers
                 };
 
                 var loggedUser = await _usuarioService.LoginAsync(loginDto);
-                HttpContext.Session.SetObject("CurrentUser", loggedUser);
+                
+                if (loggedUser == null)
+                {
+                    ModelState.AddModelError("", "Error al iniciar sesión automáticamente");
+                    ViewBag.ReturnUrl = returnUrl;
+                    return View(usuarioCreateDto);
+                }
+                
+                // Generar token JWT
+                var token = _jwtService.GenerateToken(loggedUser);
+                
+                // Almacenar token en cookie HttpOnly
+                var cookieOptions = new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = Request.IsHttps,
+                    SameSite = SameSiteMode.Strict,
+                    Expires = DateTimeOffset.UtcNow.AddMinutes(1440)
+                };
+                
+                Response.Cookies.Append("jwt_token", token, cookieOptions);
 
                 // Procesar items del carrito temporal
-                await ProcessTempCarrito(loggedUser!.Id);
+                await ProcessTempCarrito(loggedUser.Id);
 
-                // Verificar si hay URL de retorno
-                var returnUrl = HttpContext.Session.GetString("ReturnUrl");
-                HttpContext.Session.Remove("ReturnUrl");
-
-                if (!string.IsNullOrEmpty(returnUrl))
+                // Redirigir según returnUrl
+                if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                 {
                     return Redirect(returnUrl);
                 }
@@ -133,13 +169,20 @@ namespace AldaJoyeros.Controllers
             catch (Exception ex)
             {
                 ModelState.AddModelError("", ex.Message);
+                ViewBag.ReturnUrl = returnUrl;
                 return View(usuarioCreateDto);
             }
         }
 
         public IActionResult Logout()
         {
-            HttpContext.Session.Clear();
+            // Eliminar cookie JWT
+            Response.Cookies.Delete("jwt_token");
+            
+            // Limpiar carrito temporal si existe
+            TempCarritoHelper.Clear(HttpContext);
+            
+            TempData["Success"] = "Sesión cerrada exitosamente";
             return RedirectToAction("Index", "Home");
         }
 
@@ -149,6 +192,7 @@ namespace AldaJoyeros.Controllers
             
             if (tempItems.Any())
             {
+                var successCount = 0;
                 foreach (var item in tempItems)
                 {
                     try
@@ -160,6 +204,7 @@ namespace AldaJoyeros.Controllers
                         };
 
                         await _carritoService.AddItemAsync(usuarioId, carritoItemDto);
+                        successCount++;
                     }
                     catch (Exception)
                     {
@@ -171,7 +216,10 @@ namespace AldaJoyeros.Controllers
                 // Limpiar carrito temporal
                 TempCarritoHelper.Clear(HttpContext);
                 
-                TempData["Success"] = $"Se han agregado {tempItems.Count} producto(s) a tu carrito.";
+                if (successCount > 0)
+                {
+                    TempData["Success"] = $"Se han agregado {successCount} producto(s) a tu carrito.";
+                }
             }
         }
     }

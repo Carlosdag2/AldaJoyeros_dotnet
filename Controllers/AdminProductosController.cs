@@ -2,9 +2,11 @@ using Microsoft.AspNetCore.Mvc;
 using AldaJoyeros.Services.Interfaces;
 using AldaJoyeros.DTOs;
 using AldaJoyeros.Helpers;
+using AldaJoyeros.Attributes;
 
 namespace AldaJoyeros.Controllers
 {
+    [JwtAuthorize("ADMIN")]
     public class AdminProductosController : BaseController
     {
         private readonly IProductoService _productoService;
@@ -19,11 +21,6 @@ namespace AldaJoyeros.Controllers
 
         public async Task<IActionResult> Index(string busqueda = "", int page = 1)
         {
-            if (!IsAuthenticated || !IsAdmin)
-            {
-                return RedirectToAction("Login", "Auth");
-            }
-
             var productos = await _productoService.GetAllAsync();
             
             // Guardar total antes de aplicar filtro de búsqueda
@@ -50,11 +47,6 @@ namespace AldaJoyeros.Controllers
         [HttpGet]
         public async Task<IActionResult> Crear()
         {
-            if (!IsAuthenticated || !IsAdmin)
-            {
-                return RedirectToAction("Login", "Auth");
-            }
-
             ViewBag.Categorias = await _categoriaService.GetAllAsync();
             return View();
         }
@@ -62,11 +54,6 @@ namespace AldaJoyeros.Controllers
         [HttpPost]
         public async Task<IActionResult> Crear(ProductoCreateDto productoDto)
         {
-            if (!IsAuthenticated || !IsAdmin)
-            {
-                return RedirectToAction("Login", "Auth");
-            }
-
             if (!ModelState.IsValid)
             {
                 ViewBag.Categorias = await _categoriaService.GetAllAsync();
@@ -90,11 +77,6 @@ namespace AldaJoyeros.Controllers
         [HttpGet]
         public async Task<IActionResult> Editar(long id)
         {
-            if (!IsAuthenticated || !IsAdmin)
-            {
-                return RedirectToAction("Login", "Auth");
-            }
-
             var producto = await _productoService.GetByIdAsync(id);
             if (producto == null)
             {
@@ -119,11 +101,6 @@ namespace AldaJoyeros.Controllers
         [HttpPost]
         public async Task<IActionResult> Editar(long id, ProductoUpdateDto productoDto)
         {
-            if (!IsAuthenticated || !IsAdmin)
-            {
-                return RedirectToAction("Login", "Auth");
-            }
-
             if (!ModelState.IsValid)
             {
                 ViewBag.Categorias = await _categoriaService.GetAllAsync();
@@ -159,11 +136,6 @@ namespace AldaJoyeros.Controllers
         [HttpPost]
         public async Task<IActionResult> Eliminar(long id)
         {
-            if (!IsAuthenticated || !IsAdmin)
-            {
-                return RedirectToAction("Login", "Auth");
-            }
-
             try
             {
                 await _productoService.DeleteAsync(id);

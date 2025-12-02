@@ -2,9 +2,11 @@ using Microsoft.AspNetCore.Mvc;
 using AldaJoyeros.Services.Interfaces;
 using AldaJoyeros.DTOs;
 using AldaJoyeros.Helpers;
+using AldaJoyeros.Attributes;
 
 namespace AldaJoyeros.Controllers
 {
+    [JwtAuthorize("ADMIN")]
     public class AdminUsuariosController : BaseController
     {
         private readonly IUsuarioService _usuarioService;
@@ -17,11 +19,6 @@ namespace AldaJoyeros.Controllers
 
         public async Task<IActionResult> Index(string rol = "", int page = 1)
         {
-            if (!IsAuthenticated || !IsAdmin)
-            {
-                return RedirectToAction("Login", "Auth");
-            }
-
             var usuariosQuery = await _usuarioService.GetAllAsync();
             
             // Calcular estadísticas antes de filtrar
@@ -43,22 +40,12 @@ namespace AldaJoyeros.Controllers
         [HttpGet]
         public IActionResult Crear()
         {
-            if (!IsAuthenticated || !IsAdmin)
-            {
-                return RedirectToAction("Login", "Auth");
-            }
-
             return View();
         }
 
         [HttpPost]
         public async Task<IActionResult> Crear(UsuarioCreateDto usuarioDto)
         {
-            if (!IsAuthenticated || !IsAdmin)
-            {
-                return RedirectToAction("Login", "Auth");
-            }
-
             if (!ModelState.IsValid)
             {
                 return View(usuarioDto);
@@ -80,11 +67,6 @@ namespace AldaJoyeros.Controllers
         [HttpGet]
         public async Task<IActionResult> Editar(long id)
         {
-            if (!IsAuthenticated || !IsAdmin)
-            {
-                return RedirectToAction("Login", "Auth");
-            }
-
             var usuario = await _usuarioService.GetByIdAsync(id);
             if (usuario == null)
             {
@@ -104,11 +86,6 @@ namespace AldaJoyeros.Controllers
         [HttpPost]
         public async Task<IActionResult> Editar(long id, UsuarioUpdateDto usuarioDto)
         {
-            if (!IsAuthenticated || !IsAdmin)
-            {
-                return RedirectToAction("Login", "Auth");
-            }
-
             if (!ModelState.IsValid)
             {
                 ViewBag.UsuarioId = id;
@@ -132,11 +109,6 @@ namespace AldaJoyeros.Controllers
         [HttpPost]
         public async Task<IActionResult> Eliminar(long id)
         {
-            if (!IsAuthenticated || !IsAdmin)
-            {
-                return RedirectToAction("Login", "Auth");
-            }
-
             try
             {
                 await _usuarioService.DeleteAsync(id);

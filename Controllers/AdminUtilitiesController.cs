@@ -1,11 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
 using AldaJoyeros.Utilities;
+using AldaJoyeros.Attributes;
 
 namespace AldaJoyeros.Controllers
 {
     /// <summary>
     /// Controlador para utilidades de administración
     /// </summary>
+    [JwtAuthorize("ADMIN")]
     public class AdminUtilitiesController : BaseController
     {
         private readonly ImageMigrationUtility _migrationUtility;
@@ -23,11 +25,6 @@ namespace AldaJoyeros.Controllers
         [HttpGet]
         public IActionResult Migration()
         {
-            if (!IsAuthenticated || !IsAdmin)
-            {
-                return RedirectToAction("Login", "Auth");
-            }
-
             return View();
         }
 
@@ -35,11 +32,6 @@ namespace AldaJoyeros.Controllers
         [HttpPost]
         public async Task<IActionResult> GetMySqlStats()
         {
-            if (!IsAuthenticated || !IsAdmin)
-            {
-                return Json(new { success = false, message = "No autorizado" });
-            }
-
             try
             {
                 var stats = await _migrationUtility.GetMySqlStatsAsync();
@@ -64,11 +56,6 @@ namespace AldaJoyeros.Controllers
         [HttpPost]
         public async Task<IActionResult> TestMongoConnection()
         {
-            if (!IsAuthenticated || !IsAdmin)
-            {
-                return Json(new { success = false, message = "No autorizado" });
-            }
-
             try
             {
                 var connected = await _migrationUtility.TestMongoConnectionAsync();
@@ -93,11 +80,6 @@ namespace AldaJoyeros.Controllers
         [HttpPost]
         public async Task<IActionResult> MigrateImages([FromForm] bool clearExisting = false)
         {
-            if (!IsAuthenticated || !IsAdmin)
-            {
-                return Json(new { success = false, message = "No autorizado" });
-            }
-
             try
             {
                 _logger.LogInformation("Iniciando migración de imágenes desde interfaz web");
@@ -135,11 +117,6 @@ namespace AldaJoyeros.Controllers
         [HttpPost]
         public async Task<IActionResult> ClearMongoImages()
         {
-            if (!IsAuthenticated || !IsAdmin)
-            {
-                return Json(new { success = false, message = "No autorizado" });
-            }
-
             try
             {
                 var cleared = await _migrationUtility.ClearMongoCollectionAsync();

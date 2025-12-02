@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using AldaJoyeros.Services.Interfaces;
 using AldaJoyeros.DTOs;
 using AldaJoyeros.Helpers;
+using AldaJoyeros.Attributes;
 
 namespace AldaJoyeros.Controllers
 {
@@ -21,13 +22,9 @@ namespace AldaJoyeros.Controllers
             _imagenService = imagenService;
         }
 
+        [JwtAuthorize]
         public async Task<IActionResult> Index()
         {
-            if (!IsAuthenticated)
-            {
-                return RedirectToAction("Login", "Auth");
-            }
-
             var items = await _carritoService.GetByUsuarioIdAsync(CurrentUser!.Id);
             
             // Cargar imágenes para cada producto del carrito
@@ -82,13 +79,9 @@ namespace AldaJoyeros.Controllers
         }
 
         [HttpPost]
+        [JwtAuthorize]
         public async Task<IActionResult> Actualizar(long itemId, int cantidad)
         {
-            if (!IsAuthenticated)
-            {
-                return RedirectToAction("Login", "Auth");
-            }
-
             try
             {
                 var updateDto = new CarritoItemUpdateDto { Cantidad = cantidad };
@@ -104,13 +97,9 @@ namespace AldaJoyeros.Controllers
         }
 
         [HttpPost]
+        [JwtAuthorize]
         public async Task<IActionResult> Eliminar(long itemId)
         {
-            if (!IsAuthenticated)
-            {
-                return RedirectToAction("Login", "Auth");
-            }
-
             try
             {
                 await _carritoService.DeleteItemAsync(CurrentUser!.Id, itemId);
@@ -125,13 +114,9 @@ namespace AldaJoyeros.Controllers
         }
 
         [HttpPost]
+        [JwtAuthorize]
         public async Task<IActionResult> Vaciar()
         {
-            if (!IsAuthenticated)
-            {
-                return RedirectToAction("Login", "Auth");
-            }
-
             try
             {
                 await _carritoService.ClearCarritoAsync(CurrentUser!.Id);

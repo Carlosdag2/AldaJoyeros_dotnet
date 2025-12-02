@@ -2,9 +2,11 @@ using Microsoft.AspNetCore.Mvc;
 using AldaJoyeros.Services.Interfaces;
 using AldaJoyeros.DTOs;
 using AldaJoyeros.Helpers;
+using AldaJoyeros.Attributes;
 
 namespace AldaJoyeros.Controllers
 {
+    [JwtAuthorize]
     public class PedidosController : BaseController
     {
         private readonly IPedidoService _pedidoService;
@@ -29,12 +31,7 @@ namespace AldaJoyeros.Controllers
 
         public async Task<IActionResult> Index()
         {
-            if (!IsAuthenticated || CurrentUser == null)
-            {
-                return RedirectToAction("Login", "Auth");
-            }
-
-            var pedidos = await _pedidoService.GetByUsuarioIdAsync(CurrentUser.Id);
+            var pedidos = await _pedidoService.GetByUsuarioIdAsync(CurrentUser!.Id);
             
             foreach (var pedido in pedidos)
             {
@@ -53,13 +50,8 @@ namespace AldaJoyeros.Controllers
 
         public async Task<IActionResult> Detalle(long id)
         {
-            if (!IsAuthenticated || CurrentUser == null)
-            {
-                return RedirectToAction("Login", "Auth");
-            }
-
             var pedido = await _pedidoService.GetByIdAsync(id);
-            if (pedido == null || pedido.UsuarioId != CurrentUser.Id)
+            if (pedido == null || pedido.UsuarioId != CurrentUser!.Id)
             {
                 return NotFound();
             }
@@ -79,12 +71,7 @@ namespace AldaJoyeros.Controllers
         [HttpGet]
         public async Task<IActionResult> Checkout()
         {
-            if (!IsAuthenticated || CurrentUser == null)
-            {
-                return RedirectToAction("Login", "Auth");
-            }
-
-            var carritoItems = await _carritoService.GetByUsuarioIdAsync(CurrentUser.Id);
+            var carritoItems = await _carritoService.GetByUsuarioIdAsync(CurrentUser!.Id);
             if (!carritoItems.Any())
             {
                 TempData["Error"] = "Tu carrito está vacío";
@@ -113,14 +100,9 @@ namespace AldaJoyeros.Controllers
         [HttpPost]
         public async Task<IActionResult> Checkout(CheckoutViewModel viewModel)
         {
-            if (!IsAuthenticated || CurrentUser == null)
-            {
-                return RedirectToAction("Login", "Auth");
-            }
-
             if (!ModelState.IsValid)
             {
-                var carritoItems = await _carritoService.GetByUsuarioIdAsync(CurrentUser.Id);
+                var carritoItems = await _carritoService.GetByUsuarioIdAsync(CurrentUser!.Id);
                 foreach (var item in carritoItems)
                 {
                     if (item.Producto != null)
@@ -147,7 +129,7 @@ namespace AldaJoyeros.Controllers
                     if (!paymentSuccess)
                     {
                         TempData["Error"] = "Error al procesar el pago. Por favor, inténtalo de nuevo.";
-                        var carritoItems = await _carritoService.GetByUsuarioIdAsync(CurrentUser.Id);
+                        var carritoItems = await _carritoService.GetByUsuarioIdAsync(CurrentUser!.Id);
                         foreach (var item in carritoItems)
                         {
                             if (item.Producto != null)
@@ -175,7 +157,7 @@ namespace AldaJoyeros.Controllers
                     }
                 };
 
-                var pedido = await _pedidoService.CreateFromCarritoAsync(CurrentUser.Id, pedidoDto);
+                var pedido = await _pedidoService.CreateFromCarritoAsync(CurrentUser!.Id, pedidoDto);
                 
                 TempData["Success"] = viewModel.MetodoPago == "Contra Reembolso" 
                     ? "Pedido realizado exitosamente. Pagarás al recibir tu pedido." 
@@ -186,7 +168,7 @@ namespace AldaJoyeros.Controllers
             catch (Exception ex)
             {
                 ModelState.AddModelError("", ex.Message);
-                var carritoItems = await _carritoService.GetByUsuarioIdAsync(CurrentUser.Id);
+                var carritoItems = await _carritoService.GetByUsuarioIdAsync(CurrentUser!.Id);
                 foreach (var item in carritoItems)
                 {
                     if (item.Producto != null)

@@ -6,6 +6,10 @@ using AldaJoyeros.Repositories.Implementations;
 using AldaJoyeros.Services.Interfaces;
 using AldaJoyeros.Services.Implementations;
 using AldaJoyeros.Utilities;
+using AldaJoyeros.Middleware;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace AldaJoyeros
 {
@@ -32,6 +36,48 @@ namespace AldaJoyeros
                 ?? new MongoDbSettings());
             
             builder.Services.AddSingleton<MongoDbContext>();
+
+            // Configurar JWT
+            var jwtSettings = builder.Configuration.GetSection("JwtSettings");
+            builder.Services.Configure<JwtSettings>(jwtSettings);
+
+            var jwtKey = jwtSettings.Get<JwtSettings>()?.Secret ?? throw new InvalidOperationException("JWT Secret no configurado en appsettings.json");
+            
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.RequireHttpsMetadata = false; // En producción cambiar a true
+                options.SaveToken = true;
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtKey)),
+                    ValidateIssuer = true,
+                    ValidIssuer = jwtSettings.Get<JwtSettings>()?.Issuer ?? "AldaJoyeros",
+                    ValidateAudience = true,
+                    ValidAudience = jwtSettings.Get<JwtSettings>()?.Audience ?? "AldaJoyerosApp",
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero
+                };
+                
+                // Leer token desde cookie
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        var token = context.Request.Cookies["jwt_token"];
+                        if (!string.IsNullOrEmpty(token))
+                        {
+                            context.Token = token;
+                        }
+                        return Task.CompletedTask;
+                    }
+                };
+            });
 
             // Configurar AutoMapper
             builder.Services.AddAutoMapper(typeof(Program));
@@ -61,16 +107,20 @@ namespace AldaJoyeros
             // Registrar Servicio de Pago Ficticio
             builder.Services.AddSingleton<IPaymentService, FakePaymentService>();
 
+            // Registrar Servicio JWT
+            builder.Services.AddScoped<IJwtService, JwtService>();
+
             // Registrar Utilidades
             builder.Services.AddScoped<ImageMigrationUtility>();
 
-            // Configurar Sesiones
+            // Configurar Sesiones solo para carrito temporal (usuarios no autenticados)
             builder.Services.AddDistributedMemoryCache();
             builder.Services.AddSession(options =>
             {
                 options.IdleTimeout = TimeSpan.FromMinutes(30);
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
+                options.Cookie.Name = ".AldaJoyeros.TempCart"; // Nombre específico para carrito temporal
             });
 
             var app = builder.Build();
@@ -85,7 +135,13 @@ namespace AldaJoyeros
             app.UseHttpsRedirection();
             app.UseRouting();
 
+            // Session solo para carrito temporal
             app.UseSession();
+            
+            // Agregar middleware JWT personalizado (NO consulta BD)
+            app.UseMiddleware<JwtMiddleware>();
+            
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapStaticAssets();

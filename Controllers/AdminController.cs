@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using AldaJoyeros.Services.Interfaces;
+using AldaJoyeros.Attributes;
 
 namespace AldaJoyeros.Controllers
 {
+    [JwtAuthorize("ADMIN")]
     public class AdminController : BaseController
     {
         private readonly ICategoriaService _categoriaService;
@@ -24,11 +26,6 @@ namespace AldaJoyeros.Controllers
 
         public async Task<IActionResult> Index()
         {
-            if (!IsAuthenticated || !IsAdmin)
-            {
-                return RedirectToAction("Login", "Auth");
-            }
-
             // Obtener estadísticas
             var categorias = await _categoriaService.GetAllAsync();
             var productos = await _productoService.GetAllAsync();

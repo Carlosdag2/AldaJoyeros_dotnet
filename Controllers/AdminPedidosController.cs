@@ -2,10 +2,12 @@ using Microsoft.AspNetCore.Mvc;
 using AldaJoyeros.Services.Interfaces;
 using AldaJoyeros.DTOs;
 using AldaJoyeros.Helpers;
+using AldaJoyeros.Attributes;
 using AldaJoyeros.Entities;
 
 namespace AldaJoyeros.Controllers
 {
+    [JwtAuthorize("ADMIN")]
     public class AdminPedidosController : BaseController
     {
         private readonly IPedidoService _pedidoService;
@@ -22,11 +24,6 @@ namespace AldaJoyeros.Controllers
 
         public async Task<IActionResult> Index(string estado = "", int page = 1)
         {
-            if (!IsAuthenticated || !IsAdmin)
-            {
-                return RedirectToAction("Login", "Auth");
-            }
-
             var pedidosQuery = await _pedidoService.GetAllAsync();
             
             // Calcular estadísticas por estado
@@ -50,11 +47,6 @@ namespace AldaJoyeros.Controllers
 
         public async Task<IActionResult> Detalle(long id)
         {
-            if (!IsAuthenticated || !IsAdmin)
-            {
-                return RedirectToAction("Login", "Auth");
-            }
-
             var pedido = await _pedidoService.GetByIdAsync(id);
             if (pedido == null)
             {
@@ -77,11 +69,6 @@ namespace AldaJoyeros.Controllers
         [HttpGet]
         public async Task<IActionResult> EditarEstado(long id)
         {
-            if (!IsAuthenticated || !IsAdmin)
-            {
-                return RedirectToAction("Login", "Auth");
-            }
-
             var pedido = await _pedidoService.GetByIdAsync(id);
             if (pedido == null)
             {
@@ -100,11 +87,6 @@ namespace AldaJoyeros.Controllers
         [HttpPost]
         public async Task<IActionResult> EditarEstado(long id, PedidoUpdateEstadoDto pedidoDto)
         {
-            if (!IsAuthenticated || !IsAdmin)
-            {
-                return RedirectToAction("Login", "Auth");
-            }
-
             if (!ModelState.IsValid)
             {
                 ViewBag.PedidoId = id;
@@ -128,11 +110,6 @@ namespace AldaJoyeros.Controllers
         [HttpPost]
         public async Task<IActionResult> Eliminar(long id)
         {
-            if (!IsAuthenticated || !IsAdmin)
-            {
-                return RedirectToAction("Login", "Auth");
-            }
-
             try
             {
                 await _pedidoService.DeleteAsync(id);
