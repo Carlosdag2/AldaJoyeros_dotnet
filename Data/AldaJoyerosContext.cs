@@ -16,25 +16,26 @@ namespace AldaJoyeros.Data
         public DbSet<Direccion> Direcciones { get; set; }
         public DbSet<Pedido> Pedidos { get; set; }
         public DbSet<LineaPedido> LineasPedido { get; set; }
+        public DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            // Configuración Usuario
+            // Configuraciï¿½n Usuario
             modelBuilder.Entity<Usuario>(entity =>
             {
                 entity.HasIndex(e => e.Email).IsUnique();
                 entity.Property(e => e.Rol).HasMaxLength(20);
             });
 
-            // Configuración Categoria
+            // Configuraciï¿½n Categoria
             modelBuilder.Entity<Categoria>(entity =>
             {
                 entity.HasIndex(e => e.Nombre).IsUnique();
             });
 
-            // Configuración Producto
+            // Configuraciï¿½n Producto
             modelBuilder.Entity<Producto>(entity =>
             {
                 entity.HasOne(p => p.Categoria)
@@ -43,7 +44,7 @@ namespace AldaJoyeros.Data
                     .OnDelete(DeleteBehavior.Restrict);
             });
 
-            // Configuración CarritoItem
+            // Configuraciï¿½n CarritoItem
             modelBuilder.Entity<CarritoItem>(entity =>
             {
                 entity.HasOne(ci => ci.Usuario)
@@ -57,7 +58,7 @@ namespace AldaJoyeros.Data
                     .OnDelete(DeleteBehavior.Cascade);
             });
 
-            // Configuración Direccion
+            // Configuraciï¿½n Direccion
             modelBuilder.Entity<Direccion>(entity =>
             {
                 entity.HasOne(d => d.Usuario)
@@ -66,7 +67,7 @@ namespace AldaJoyeros.Data
                     .OnDelete(DeleteBehavior.Cascade);
             });
 
-            // Configuración Pedido
+            // Configuraciï¿½n Pedido
             modelBuilder.Entity<Pedido>(entity =>
             {
                 entity.HasOne(p => p.Usuario)
@@ -84,7 +85,7 @@ namespace AldaJoyeros.Data
                     .HasMaxLength(50);
             });
 
-            // Configuración LineaPedido
+            // ConfiguraciÃ³n LineaPedido
             modelBuilder.Entity<LineaPedido>(entity =>
             {
                 entity.HasOne(lp => lp.Pedido)
@@ -96,6 +97,17 @@ namespace AldaJoyeros.Data
                     .WithMany(p => p.LineasPedido)
                     .HasForeignKey(lp => lp.ProductoId)
                     .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            // ConfiguraciÃ³n PasswordResetToken
+            modelBuilder.Entity<PasswordResetToken>(entity =>
+            {
+                entity.HasOne(t => t.Usuario)
+                    .WithMany()
+                    .HasForeignKey(t => t.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasIndex(t => t.Token).IsUnique();
             });
         }
     }

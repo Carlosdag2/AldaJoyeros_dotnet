@@ -11,5 +11,6 @@ namespace AldaJoyeros.Services.Interfaces
         Task<UsuarioDto> UpdateAsync(long id, UsuarioUpdateDto usuarioUpdateDto);
         Task DeleteAsync(long id);
         Task<UsuarioDto?> LoginAsync(LoginDto loginDto);
+        Task UpdatePasswordAsync(long userId, string newPassword);
     }
 }

@@ -2,6 +2,9 @@ using Microsoft.AspNetCore.Mvc;
 using AldaJoyeros.Services.Interfaces;
 using AldaJoyeros.DTOs;
 using AldaJoyeros.Helpers;
+using AldaJoyeros.Repositories.Interfaces;
+using AldaJoyeros.Entities;
+using System.Security.Cryptography;
 
 namespace AldaJoyeros.Controllers
 {
@@ -10,12 +13,24 @@ namespace AldaJoyeros.Controllers
         private readonly IUsuarioService _usuarioService;
         private readonly ICarritoService _carritoService;
         private readonly IJwtService _jwtService;
+        private readonly IPasswordResetTokenRepository _passwordResetTokenRepository;
+        private readonly IEmailService _emailService;
+        private readonly ILogger<AuthController> _logger;
 
-        public AuthController(IUsuarioService usuarioService, ICarritoService carritoService, IJwtService jwtService)
+        public AuthController(
+            IUsuarioService usuarioService, 
+            ICarritoService carritoService, 
+            IJwtService jwtService,
+            IPasswordResetTokenRepository passwordResetTokenRepository,
+            IEmailService emailService,
+            ILogger<AuthController> logger)
         {
             _usuarioService = usuarioService;
             _carritoService = carritoService;
             _jwtService = jwtService;
+            _passwordResetTokenRepository = passwordResetTokenRepository;
+            _emailService = emailService;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -31,7 +46,7 @@ namespace AldaJoyeros.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login(LoginDto loginDto, string? returnUrl = null)
+        public async Task<IActionResult> Login(LoginDto loginDto, string? returnUrl = null, bool RememberMe = false)
         {
             if (!ModelState.IsValid)
             {
@@ -45,13 +60,18 @@ namespace AldaJoyeros.Controllers
                 
                 if (usuario == null)
                 {
-                    ModelState.AddModelError("", "Email o contrase�a incorrectos");
+                    ModelState.AddModelError("", "Email o contraseña incorrectos");
                     ViewBag.ReturnUrl = returnUrl;
                     return View(loginDto);
                 }
 
-                // Generar token JWT con toda la informaci�n del usuario
+                // Generar token JWT con toda la información del usuario
                 var token = _jwtService.GenerateToken(usuario);
+                
+                // Configurar duración de la cookie según RememberMe
+                var expiration = RememberMe 
+                    ? DateTimeOffset.UtcNow.AddDays(30)  // 30 días si marca "Mantener sesión"
+                    : DateTimeOffset.UtcNow.AddHours(24); // 24 horas por defecto
                 
                 // Almacenar token en cookie HttpOnly segura
                 var cookieOptions = new CookieOptions
@@ -59,7 +79,7 @@ namespace AldaJoyeros.Controllers
                     HttpOnly = true,
                     Secure = Request.IsHttps, // true solo en HTTPS
                     SameSite = SameSiteMode.Strict,
-                    Expires = DateTimeOffset.UtcNow.AddMinutes(1440) // 24 horas
+                    Expires = expiration
                 };
                 
                 Response.Cookies.Append("jwt_token", token, cookieOptions);
@@ -67,7 +87,7 @@ namespace AldaJoyeros.Controllers
                 // Procesar items del carrito temporal
                 await ProcessTempCarrito(usuario.Id);
 
-                // Redirigir seg�n returnUrl o rol
+                // Redirigir seg�n returnUrl o rol
                 if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                 {
                     return Redirect(returnUrl);
@@ -78,7 +98,7 @@ namespace AldaJoyeros.Controllers
                     return RedirectToAction("Index", "Admin");
                 }
 
-                // Si hab�a items en el carrito temporal, ir al carrito
+                // Si hab�a items en el carrito temporal, ir al carrito
                 if (TempCarritoHelper.HasItems(HttpContext))
                 {
                     return RedirectToAction("Index", "Carrito");
@@ -88,7 +108,7 @@ namespace AldaJoyeros.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", "Error al iniciar sesi�n: " + ex.Message);
+                ModelState.AddModelError("", "Error al iniciar sesi�n: " + ex.Message);
                 ViewBag.ReturnUrl = returnUrl;
                 return View(loginDto);
             }
@@ -130,7 +150,7 @@ namespace AldaJoyeros.Controllers
                 
                 if (loggedUser == null)
                 {
-                    ModelState.AddModelError("", "Error al iniciar sesi�n autom�ticamente");
+                    ModelState.AddModelError("", "Error al iniciar sesi�n autom�ticamente");
                     ViewBag.ReturnUrl = returnUrl;
                     return View(usuarioCreateDto);
                 }
@@ -152,13 +172,13 @@ namespace AldaJoyeros.Controllers
                 // Procesar items del carrito temporal
                 await ProcessTempCarrito(loggedUser.Id);
 
-                // Redirigir seg�n returnUrl
+                // Redirigir seg�n returnUrl
                 if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                 {
                     return Redirect(returnUrl);
                 }
 
-                // Si hab�a items en el carrito temporal, ir al carrito
+                // Si hab�a items en el carrito temporal, ir al carrito
                 if (TempCarritoHelper.HasItems(HttpContext))
                 {
                     return RedirectToAction("Index", "Carrito");
@@ -182,8 +202,167 @@ namespace AldaJoyeros.Controllers
             // Limpiar carrito temporal si existe
             TempCarritoHelper.Clear(HttpContext);
             
-            TempData["Success"] = "Sesi�n cerrada exitosamente";
+            TempData["Success"] = "Sesión cerrada exitosamente";
             return RedirectToAction("Index", "Home");
+        }
+
+        [HttpGet]
+        public IActionResult ForgotPassword()
+        {
+            if (IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ForgotPassword(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                ModelState.AddModelError("", "El email es obligatorio");
+                return View();
+            }
+
+            try
+            {
+                var usuario = await _usuarioService.GetByEmailAsync(email);
+                
+                if (usuario != null)
+                {
+                    // Invalidar tokens anteriores del usuario
+                    await _passwordResetTokenRepository.InvalidateUserTokensAsync(usuario.Id);
+                    
+                    // Generar token único
+                    var tokenValue = GenerateSecureToken();
+                    
+                    // Crear token en base de datos
+                    var resetToken = new PasswordResetToken
+                    {
+                        UserId = usuario.Id,
+                        Token = tokenValue,
+                        ExpiresAt = DateTime.UtcNow.AddHours(24),
+                        Used = false,
+                        CreatedAt = DateTime.UtcNow
+                    };
+                    
+                    await _passwordResetTokenRepository.CreateAsync(resetToken);
+                    
+                    // Generar enlace de recuperación
+                    var resetLink = Url.Action("ResetPassword", "Auth", new { token = tokenValue }, Request.Scheme);
+                    
+                    // Enviar email
+                    try
+                    {
+                        await _emailService.SendPasswordResetEmailAsync(email, resetLink!);
+                        _logger.LogInformation("Email de recuperación enviado a {Email}", email);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Error al enviar email de recuperación a {Email}", email);
+                        // No revelamos el error al usuario por seguridad
+                    }
+                }
+                
+                // Siempre mostramos el mismo mensaje por seguridad
+                TempData["Success"] = "Si el email está registrado, recibirás instrucciones para restablecer tu contraseña.";
+                TempData["EmailSent"] = true;
+                
+                return View();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error en ForgotPassword para {Email}", email);
+                TempData["Success"] = "Si el email está registrado, recibirás instrucciones para restablecer tu contraseña.";
+                TempData["EmailSent"] = true;
+                return View();
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ResetPassword(string token)
+        {
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                TempData["Error"] = "Enlace inválido";
+                return RedirectToAction("Login");
+            }
+
+            var resetToken = await _passwordResetTokenRepository.GetByTokenAsync(token);
+            
+            if (resetToken == null)
+            {
+                TempData["Error"] = "El enlace ha expirado o ya fue utilizado. Solicita uno nuevo.";
+                return RedirectToAction("ForgotPassword");
+            }
+
+            ViewBag.Token = token;
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword(string token, string password, string confirmPassword)
+        {
+            ViewBag.Token = token;
+
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                TempData["Error"] = "Enlace inválido";
+                return RedirectToAction("Login");
+            }
+
+            if (string.IsNullOrWhiteSpace(password) || password.Length < 6)
+            {
+                ModelState.AddModelError("", "La contraseña debe tener al menos 6 caracteres");
+                return View();
+            }
+
+            if (password != confirmPassword)
+            {
+                ModelState.AddModelError("", "Las contraseñas no coinciden");
+                return View();
+            }
+
+            try
+            {
+                var resetToken = await _passwordResetTokenRepository.GetByTokenAsync(token);
+                
+                if (resetToken == null)
+                {
+                    TempData["Error"] = "El enlace ha expirado o ya fue utilizado. Solicita uno nuevo.";
+                    return RedirectToAction("ForgotPassword");
+                }
+
+                // Actualizar contraseña del usuario
+                await _usuarioService.UpdatePasswordAsync(resetToken.UserId, password);
+                
+                // Marcar token como usado
+                resetToken.Used = true;
+                await _passwordResetTokenRepository.UpdateAsync(resetToken);
+                
+                _logger.LogInformation("Contraseña restablecida para usuario {UserId}", resetToken.UserId);
+                
+                TempData["Success"] = "¡Contraseña restablecida exitosamente! Ya puedes iniciar sesión.";
+                return RedirectToAction("Login");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al restablecer contraseña");
+                ModelState.AddModelError("", "Error al restablecer la contraseña. Inténtalo de nuevo.");
+                return View();
+            }
+        }
+
+        private static string GenerateSecureToken()
+        {
+            var randomBytes = new byte[32];
+            using var rng = RandomNumberGenerator.Create();
+            rng.GetBytes(randomBytes);
+            return Convert.ToBase64String(randomBytes)
+                .Replace("+", "-")
+                .Replace("/", "_")
+                .Replace("=", "");
         }
 
         private async Task ProcessTempCarrito(long usuarioId)
@@ -208,7 +387,7 @@ namespace AldaJoyeros.Controllers
                     }
                     catch (Exception)
                     {
-                        // Si falla agregar alg�n item, continuar con los dem�s
+                        // Si falla agregar alg�n item, continuar con los dem�s
                         continue;
                     }
                 }

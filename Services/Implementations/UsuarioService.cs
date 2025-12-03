@@ -39,7 +39,7 @@ namespace AldaJoyeros.Services.Implementations
         {
             if (await _usuarioRepository.EmailExistsAsync(usuarioCreateDto.Email))
             {
-                throw new InvalidOperationException("El email ya está registrado");
+                throw new InvalidOperationException("El email ya estï¿½ registrado");
             }
 
             var usuario = _mapper.Map<Usuario>(usuarioCreateDto);
@@ -61,7 +61,7 @@ namespace AldaJoyeros.Services.Implementations
             usuario.Email = usuarioUpdateDto.Email;
             usuario.Rol = usuarioUpdateDto.Rol;
 
-            // Solo actualizar contraseña si se proporciona una nueva
+            // Solo actualizar contraseï¿½a si se proporciona una nueva
             if (!string.IsNullOrWhiteSpace(usuarioUpdateDto.Password))
             {
                 usuario.Password = BCrypt.Net.BCrypt.HashPassword(usuarioUpdateDto.Password);
@@ -91,6 +91,18 @@ namespace AldaJoyeros.Services.Implementations
             }
 
             return _mapper.Map<UsuarioDto>(usuario);
+        }
+
+        public async Task UpdatePasswordAsync(long userId, string newPassword)
+        {
+            var usuario = await _usuarioRepository.GetByIdAsync(userId);
+            if (usuario == null)
+            {
+                throw new KeyNotFoundException("Usuario no encontrado");
+            }
+
+            usuario.Password = BCrypt.Net.BCrypt.HashPassword(newPassword);
+            await _usuarioRepository.UpdateAsync(usuario);
         }
     }
 }

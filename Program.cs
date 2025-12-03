@@ -27,7 +27,7 @@ namespace AldaJoyeros
             builder.Services.AddDbContext<AldaJoyerosContext>(options =>
                 options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
-            // Configurar MongoDB (para imágenes)
+            // Configurar MongoDB (para imï¿½genes)
             builder.Services.Configure<MongoDbSettings>(
                 builder.Configuration.GetSection("MongoDbSettings"));
             
@@ -41,6 +41,10 @@ namespace AldaJoyeros
             var jwtSettings = builder.Configuration.GetSection("JwtSettings");
             builder.Services.Configure<JwtSettings>(jwtSettings);
 
+            // Configurar Email
+            builder.Services.Configure<EmailSettings>(
+                builder.Configuration.GetSection("EmailSettings"));
+
             var jwtKey = jwtSettings.Get<JwtSettings>()?.Secret ?? throw new InvalidOperationException("JWT Secret no configurado en appsettings.json");
             
             builder.Services.AddAuthentication(options =>
@@ -50,7 +54,7 @@ namespace AldaJoyeros
             })
             .AddJwtBearer(options =>
             {
-                options.RequireHttpsMetadata = false; // En producción cambiar a true
+                options.RequireHttpsMetadata = false; // En producciï¿½n cambiar a true
                 options.SaveToken = true;
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
@@ -89,6 +93,7 @@ namespace AldaJoyeros
             builder.Services.AddScoped<ICarritoRepository, CarritoRepository>();
             builder.Services.AddScoped<IDireccionRepository, DireccionRepository>();
             builder.Services.AddScoped<IPedidoRepository, PedidoRepository>();
+            builder.Services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
             
             // Registrar Repositorio MongoDB
             builder.Services.AddScoped<IProductoImagenMongoRepository, ProductoImagenMongoRepository>();
@@ -101,7 +106,7 @@ namespace AldaJoyeros
             builder.Services.AddScoped<IDireccionService, DireccionService>();
             builder.Services.AddScoped<IPedidoService, PedidoService>();
             
-            // Registrar Servicio de Imágenes MongoDB
+            // Registrar Servicio de Imï¿½genes MongoDB
             builder.Services.AddScoped<IProductoImagenService, ProductoImagenMongoService>();
 
             // Registrar Servicio de Pago Ficticio
@@ -109,6 +114,9 @@ namespace AldaJoyeros
 
             // Registrar Servicio JWT
             builder.Services.AddScoped<IJwtService, JwtService>();
+
+            // Registrar Servicio de Email
+            builder.Services.AddScoped<IEmailService, EmailService>();
 
             // Registrar Utilidades
             builder.Services.AddScoped<ImageMigrationUtility>();
@@ -120,7 +128,7 @@ namespace AldaJoyeros
                 options.IdleTimeout = TimeSpan.FromMinutes(30);
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
-                options.Cookie.Name = ".AldaJoyeros.TempCart"; // Nombre específico para carrito temporal
+                options.Cookie.Name = ".AldaJoyeros.TempCart"; // Nombre especï¿½fico para carrito temporal
             });
 
             var app = builder.Build();
