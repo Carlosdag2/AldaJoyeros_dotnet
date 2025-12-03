@@ -1,0 +1,272 @@
+@{
+    ViewData["Title"] = "Verificar Código";
+}
+
+<div class="min-h-[calc(100vh-7rem)] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+    <!-- Background decorativo -->
+    <div class="absolute inset-0 -z-10">
+        <div class="absolute top-0 -left-4 w-96 h-96 bg-emerald-300/30 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob"></div>
+        <div class="absolute top-0 -right-4 w-96 h-96 bg-teal-300/30 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-2000"></div>
+        <div class="absolute -bottom-8 left-20 w-96 h-96 bg-green-300/30 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-4000"></div>
+        <div class="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+    </div>
+
+    <div class="max-w-md w-full mx-auto">
+        <div class="bg-white rounded-3xl shadow-2xl shadow-gray-200/50 overflow-hidden backdrop-blur-xl border border-gray-100">
+            
+            <div class="p-8 lg:p-10">
+                <!-- Header -->
+                <div class="text-center mb-8">
+                    <div class="inline-flex items-center gap-3 mb-6">
+                        <div class="w-14 h-14 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-500/30">
+                            <i class="fas fa-shield-alt text-2xl text-white"></i>
+                        </div>
+                    </div>
+                    <h2 class="text-3xl font-bold text-gray-900 mb-2">Verificación</h2>
+                    <p class="text-gray-500">Introduce el código de 6 dígitos que te hemos enviado por email</p>
+                </div>
+
+                <!-- GitHub-style code illustration -->
+                <div class="flex justify-center mb-6">
+                    <div class="w-20 h-20 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-full flex items-center justify-center border-2 border-emerald-200">
+                        <i class="fas fa-envelope-open-text text-3xl text-emerald-600"></i>
+                    </div>
+                </div>
+
+                <form asp-action="VerifyCode" method="post" class="space-y-6" x-data="verifyCodeForm()">
+                    <input type="hidden" name="token" value="@ViewBag.Token" />
+                    
+                    <div asp-validation-summary="ModelOnly" class="bg-gradient-to-r from-red-50 to-rose-50 border border-red-200 p-4 rounded-2xl">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-exclamation-triangle text-red-600"></i>
+                            </div>
+                            <span class="text-red-800 text-sm font-medium"></span>
+                        </div>
+                    </div>
+
+                    <!-- Code Input Fields -->
+                    <div class="space-y-4">
+                        <label class="flex items-center justify-center gap-2 text-sm font-semibold text-gray-700">
+                            <i class="fas fa-key text-emerald-500 text-xs"></i>
+                            Código de verificación
+                        </label>
+                        
+                        <div class="flex justify-center gap-2 sm:gap-3">
+                            <template x-for="(digit, index) in digits" :key="index">
+                                <input type="text" 
+                                       maxlength="1" 
+                                       x-model="digits[index]"
+                                       x-on:input="handleInput($event, index)"
+                                       x-on:keydown="handleKeydown($event, index)"
+                                       x-on:paste="handlePaste($event)"
+                                       x-on:focus="$event.target.select()"
+                                       x-bind:data-index="index"
+                                       class="w-12 h-14 sm:w-14 sm:h-16 text-center text-2xl font-bold bg-gray-50 border-2 border-gray-200 rounded-xl focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all duration-300 outline-none text-gray-900"
+                                       inputmode="numeric"
+                                       pattern="[0-9]*" />
+                            </template>
+                        </div>
+                        
+                        <input type="hidden" name="code" x-model="fullCode" />
+                    </div>
+
+                    @if (ViewBag.Attempts != null && (int)ViewBag.Attempts > 0)
+                    {
+                        <div class="bg-amber-50 border border-amber-200 rounded-xl p-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-info-circle text-amber-600 text-sm"></i>
+                                </div>
+                                <span class="text-amber-800 text-sm">
+                                    Intentos realizados: <strong>@ViewBag.Attempts</strong> de 5
+                                </span>
+                            </div>
+                        </div>
+                    }
+
+                    <!-- Submit Button -->
+                    <button type="submit" 
+                            x-bind:disabled="!isComplete"
+                            x-bind:class="isComplete ? 'opacity-100' : 'opacity-50 cursor-not-allowed'"
+                            class="relative w-full overflow-hidden bg-gradient-to-r from-emerald-500 via-emerald-600 to-teal-600 text-white py-4 rounded-2xl font-bold text-lg shadow-xl shadow-emerald-500/30 hover:shadow-emerald-500/50 transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] group disabled:hover:scale-100">
+                        <span class="absolute inset-0 bg-gradient-to-r from-emerald-600 via-emerald-700 to-teal-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                        <span class="relative flex items-center justify-center gap-3">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Verificar Código</span>
+                        </span>
+                    </button>
+                </form>
+
+                <!-- Info message -->
+                <div class="mt-6 bg-gray-50 border border-gray-100 rounded-xl p-4">
+                    <div class="flex items-start gap-3">
+                        <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <i class="fas fa-envelope text-gray-500 text-sm"></i>
+                        </div>
+                        <div class="text-sm text-gray-600">
+                            <p>Revisa tu bandeja de entrada y carpeta de spam. El código expira en <strong>1 hora</strong>.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Request new code -->
+                <div class="mt-6 text-center">
+                    <p class="text-gray-500 text-sm mb-2">¿No recibiste el código?</p>
+                    <a asp-action="ForgotPassword" class="inline-flex items-center gap-2 text-emerald-600 hover:text-emerald-700 font-medium transition-colors">
+                        <i class="fas fa-redo text-sm"></i>
+                        <span>Solicitar nuevo código</span>
+                    </a>
+                </div>
+
+                <!-- Back to Login -->
+                <div class="mt-6 text-center">
+                    <a asp-action="Login" class="inline-flex items-center gap-2 text-gray-600 hover:text-emerald-600 font-medium transition-colors">
+                        <i class="fas fa-arrow-left text-sm"></i>
+                        <span>Volver al inicio de sesión</span>
+                    </a>
+                </div>
+
+                <!-- Security badges -->
+                <div class="mt-8 pt-6 border-t border-gray-100">
+                    <div class="flex items-center justify-center gap-6">
+                        <div class="flex items-center gap-2 text-gray-400">
+                            <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-shield-alt text-emerald-500 text-sm"></i>
+                            </div>
+                            <span class="text-xs font-medium">Verificación Segura</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-gray-400">
+                            <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-clock text-emerald-500 text-sm"></i>
+                            </div>
+                            <span class="text-xs font-medium">Expira en 1h</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        /* Animación de blobs */
+        @@keyframes blob {
+            0% { transform: translate(0px, 0px) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+            100% { transform: translate(0px, 0px) scale(1); }
+        }
+        
+        .animate-blob {
+            animation: blob 7s infinite;
+        }
+        
+        .animation-delay-2000 {
+            animation-delay: 2s;
+        }
+        
+        .animation-delay-4000 {
+            animation-delay: 4s;
+        }
+
+        /* Fade in animation */
+        @@keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .max-w-md {
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        /* Code input styling */
+        input[type="text"]:focus {
+            transform: scale(1.05);
+        }
+
+        /* Shake animation for error */
+        @@keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
+        .shake {
+            animation: shake 0.3s ease-in-out;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        function verifyCodeForm() {
+            return {
+                digits: ['', '', '', '', '', ''],
+                
+                get fullCode() {
+                    return this.digits.join('');
+                },
+                
+                get isComplete() {
+                    return this.digits.every(d => d !== '');
+                },
+                
+                handleInput(event, index) {
+                    const value = event.target.value;
+                    
+                    // Solo permitir dígitos
+                    if (!/^\d*$/.test(value)) {
+                        this.digits[index] = '';
+                        return;
+                    }
+                    
+                    // Mover al siguiente input si se ingresó un dígito
+                    if (value && index < 5) {
+                        const nextInput = document.querySelector(`input[data-index="${index + 1}"]`);
+                        if (nextInput) nextInput.focus();
+                    }
+                },
+                
+                handleKeydown(event, index) {
+                    // Backspace - mover al anterior
+                    if (event.key === 'Backspace' && !this.digits[index] && index > 0) {
+                        const prevInput = document.querySelector(`input[data-index="${index - 1}"]`);
+                        if (prevInput) prevInput.focus();
+                    }
+                    
+                    // Flechas izquierda/derecha
+                    if (event.key === 'ArrowLeft' && index > 0) {
+                        const prevInput = document.querySelector(`input[data-index="${index - 1}"]`);
+                        if (prevInput) prevInput.focus();
+                    }
+                    if (event.key === 'ArrowRight' && index < 5) {
+                        const nextInput = document.querySelector(`input[data-index="${index + 1}"]`);
+                        if (nextInput) nextInput.focus();
+                    }
+                },
+                
+                handlePaste(event) {
+                    event.preventDefault();
+                    const pastedData = event.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
+                    
+                    for (let i = 0; i < 6; i++) {
+                        this.digits[i] = pastedData[i] || '';
+                    }
+                    
+                    // Enfocar el último campo lleno o el primero vacío
+                    const focusIndex = Math.min(pastedData.length, 5);
+                    const input = document.querySelector(`input[data-index="${focusIndex}"]`);
+                    if (input) input.focus();
+                }
+            };
+        }
+    </script>
+}

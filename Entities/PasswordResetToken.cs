@@ -26,6 +26,17 @@ namespace AldaJoyeros.Entities
         [Column("used")]
         public bool Used { get; set; } = false;
 
+        [Required]
+        [Column("code")]
+        [StringLength(6)]
+        public string Code { get; set; } = string.Empty;
+
+        [Column("attempts")]
+        public int Attempts { get; set; } = 0;
+
+        [Column("code_verified")]
+        public bool CodeVerified { get; set; } = false;
+
         [Column("created_at")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 

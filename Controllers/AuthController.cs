@@ -234,29 +234,33 @@ namespace AldaJoyeros.Controllers
                     // Invalidar tokens anteriores del usuario
                     await _passwordResetTokenRepository.InvalidateUserTokensAsync(usuario.Id);
                     
-                    // Generar token único
+                    // Generar token único y código de 6 dígitos
                     var tokenValue = GenerateSecureToken();
+                    var verificationCode = GenerateVerificationCode();
                     
                     // Crear token en base de datos
                     var resetToken = new PasswordResetToken
                     {
                         UserId = usuario.Id,
                         Token = tokenValue,
-                        ExpiresAt = DateTime.UtcNow.AddHours(24),
+                        Code = verificationCode,
+                        ExpiresAt = DateTime.UtcNow.AddHours(1), // 1 hora para el código
                         Used = false,
+                        Attempts = 0,
+                        CodeVerified = false,
                         CreatedAt = DateTime.UtcNow
                     };
                     
                     await _passwordResetTokenRepository.CreateAsync(resetToken);
                     
-                    // Generar enlace de recuperación
-                    var resetLink = Url.Action("ResetPassword", "Auth", new { token = tokenValue }, Request.Scheme);
+                    // Generar enlace de verificación (lleva al usuario a la página para introducir el código)
+                    var verifyLink = Url.Action("VerifyCode", "Auth", new { token = tokenValue }, Request.Scheme);
                     
-                    // Enviar email
+                    // Enviar email con código
                     try
                     {
-                        await _emailService.SendPasswordResetEmailAsync(email, resetLink!);
-                        _logger.LogInformation("Email de recuperación enviado a {Email}", email);
+                        await _emailService.SendPasswordResetEmailAsync(email, verifyLink!, verificationCode);
+                        _logger.LogInformation("Email de recuperación con código enviado a {Email}", email);
                     }
                     catch (Exception ex)
                     {
@@ -281,6 +285,100 @@ namespace AldaJoyeros.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> VerifyCode(string token)
+        {
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                TempData["Error"] = "Enlace inválido";
+                return RedirectToAction("Login");
+            }
+
+            var resetToken = await _passwordResetTokenRepository.GetByTokenAsync(token);
+            
+            if (resetToken == null)
+            {
+                TempData["Error"] = "El enlace ha expirado o ya fue utilizado. Solicita uno nuevo.";
+                return RedirectToAction("ForgotPassword");
+            }
+
+            // Si ya se verificó el código, redirigir a resetear contraseña
+            if (resetToken.CodeVerified)
+            {
+                return RedirectToAction("ResetPassword", new { token = token });
+            }
+
+            ViewBag.Token = token;
+            ViewBag.Attempts = resetToken.Attempts;
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> VerifyCode(string token, string code)
+        {
+            ViewBag.Token = token;
+
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                TempData["Error"] = "Enlace inválido";
+                return RedirectToAction("Login");
+            }
+
+            if (string.IsNullOrWhiteSpace(code) || code.Length != 6)
+            {
+                ModelState.AddModelError("", "Introduce el código de 6 dígitos");
+                return View();
+            }
+
+            try
+            {
+                var resetToken = await _passwordResetTokenRepository.GetByTokenAsync(token);
+                
+                if (resetToken == null)
+                {
+                    TempData["Error"] = "El enlace ha expirado o ya fue utilizado. Solicita uno nuevo.";
+                    return RedirectToAction("ForgotPassword");
+                }
+
+                // Verificar número de intentos (máximo 5)
+                if (resetToken.Attempts >= 5)
+                {
+                    resetToken.Used = true;
+                    await _passwordResetTokenRepository.UpdateAsync(resetToken);
+                    TempData["Error"] = "Has superado el número máximo de intentos. Solicita un nuevo código.";
+                    return RedirectToAction("ForgotPassword");
+                }
+
+                // Incrementar intentos
+                resetToken.Attempts++;
+                
+                // Verificar código
+                if (resetToken.Code != code)
+                {
+                    await _passwordResetTokenRepository.UpdateAsync(resetToken);
+                    var remaining = 5 - resetToken.Attempts;
+                    ModelState.AddModelError("", $"Código incorrecto. Te quedan {remaining} intento(s).");
+                    ViewBag.Attempts = resetToken.Attempts;
+                    return View();
+                }
+
+                // Código correcto - marcar como verificado
+                resetToken.CodeVerified = true;
+                await _passwordResetTokenRepository.UpdateAsync(resetToken);
+                
+                _logger.LogInformation("Código verificado correctamente para usuario {UserId}", resetToken.UserId);
+                
+                // Redirigir a cambiar contraseña
+                return RedirectToAction("ResetPassword", new { token = token });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al verificar código");
+                ModelState.AddModelError("", "Error al verificar el código. Inténtalo de nuevo.");
+                return View();
+            }
+        }
+
+        [HttpGet]
         public async Task<IActionResult> ResetPassword(string token)
         {
             if (string.IsNullOrWhiteSpace(token))
@@ -295,6 +393,12 @@ namespace AldaJoyeros.Controllers
             {
                 TempData["Error"] = "El enlace ha expirado o ya fue utilizado. Solicita uno nuevo.";
                 return RedirectToAction("ForgotPassword");
+            }
+
+            // Verificar que el código ya fue validado
+            if (!resetToken.CodeVerified)
+            {
+                return RedirectToAction("VerifyCode", new { token = token });
             }
 
             ViewBag.Token = token;
@@ -334,6 +438,12 @@ namespace AldaJoyeros.Controllers
                     return RedirectToAction("ForgotPassword");
                 }
 
+                // Verificar que el código fue validado
+                if (!resetToken.CodeVerified)
+                {
+                    return RedirectToAction("VerifyCode", new { token = token });
+                }
+
                 // Actualizar contraseña del usuario
                 await _usuarioService.UpdatePasswordAsync(resetToken.UserId, password);
                 
@@ -363,6 +473,15 @@ namespace AldaJoyeros.Controllers
                 .Replace("+", "-")
                 .Replace("/", "_")
                 .Replace("=", "");
+        }
+
+        private static string GenerateVerificationCode()
+        {
+            using var rng = RandomNumberGenerator.Create();
+            var bytes = new byte[4];
+            rng.GetBytes(bytes);
+            var number = BitConverter.ToUInt32(bytes, 0) % 1000000;
+            return number.ToString("D6"); // Siempre 6 dígitos con ceros a la izquierda
         }
 
         private async Task ProcessTempCarrito(long usuarioId)
