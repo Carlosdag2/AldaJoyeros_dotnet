@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using AldaJoyeros.Services.Interfaces;
 using AldaJoyeros.DTOs;
-using AldaJoyeros.Helpers;
 using AldaJoyeros.Attributes;
+using System.Text.Json;
 
 namespace AldaJoyeros.Controllers
 {
@@ -15,6 +15,8 @@ namespace AldaJoyeros.Controllers
         private readonly IProductoImagenService _imagenService;
         private readonly IPaymentService _paymentService;
         private readonly ILogger<PedidosController> _logger;
+
+        private const string CheckoutSessionKey = "CheckoutData";
 
         public PedidosController(
             IPedidoService pedidoService,
@@ -31,6 +33,8 @@ namespace AldaJoyeros.Controllers
             _paymentService = paymentService;
             _logger = logger;
         }
+
+        #region Mis Pedidos
 
         public async Task<IActionResult> Index()
         {
@@ -71,39 +75,159 @@ namespace AldaJoyeros.Controllers
             return View(pedido);
         }
 
+        #endregion
+
+        #region Checkout - Paso 1: Dirección
+
         [HttpGet]
         public async Task<IActionResult> Checkout()
         {
-            var carritoItems = await _carritoService.GetByUsuarioIdAsync(CurrentUser!.Id);
+            // Limpiar sesión de checkout anterior
+            ClearCheckoutSession();
+
+            var carritoItems = await GetCarritoConImagenes();
             if (!carritoItems.Any())
             {
                 TempData["Error"] = "Tu carrito está vacío";
                 return RedirectToAction("Index", "Carrito");
             }
 
-            foreach (var item in carritoItems)
-            {
-                if (item.Producto != null)
-                {
-                    var imagenes = await _imagenService.GetByProductoIdAsync(item.ProductoId);
-                    item.Producto.Imagenes = imagenes.ToList();
-                }
-            }
+            // Obtener direcciones guardadas del usuario
+            var direcciones = await _direccionService.GetByUsuarioIdAsync(CurrentUser!.Id);
 
-            var viewModel = new CheckoutViewModel
+            var viewModel = new CheckoutDireccionViewModel
             {
                 CarritoItems = carritoItems,
-                Direccion = new DireccionDto(),
-                MetodoPago = "Contra Reembolso",
+                DireccionesGuardadas = direcciones,
+                UsarNuevaDireccion = !direcciones.Any()
+            };
+
+            return View("Checkout_Direccion", viewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> GuardarDireccion(
+            CheckoutDireccionViewModel viewModel,
+            long? DireccionSeleccionadaId = null,
+            bool UsarNuevaDireccion = false,
+            bool GuardarDireccion = false)
+        {
+            var carritoItems = await GetCarritoConImagenes();
+            if (!carritoItems.Any())
+            {
+                TempData["Error"] = "Tu carrito está vacío";
+                return RedirectToAction("Index", "Carrito");
+            }
+
+            DireccionDto direccionParaPedido;
+
+            try
+            {
+                // Opción 1: Usar dirección guardada seleccionada
+                if (DireccionSeleccionadaId.HasValue && !UsarNuevaDireccion)
+                {
+                    var direccionGuardada = await _direccionService.GetByIdAsync(DireccionSeleccionadaId.Value);
+                    if (direccionGuardada == null || direccionGuardada.UsuarioId != CurrentUser!.Id)
+                    {
+                        TempData["Error"] = "Dirección no válida";
+                        return RedirectToAction("Checkout");
+                    }
+                    direccionParaPedido = direccionGuardada;
+                    _logger.LogInformation("Usuario {UserId} usa dirección guardada {DireccionId}", CurrentUser.Id, DireccionSeleccionadaId);
+                }
+                // Opción 2: Usar nueva dirección
+                else
+                {
+                    // Validar campos obligatorios
+                    if (string.IsNullOrWhiteSpace(viewModel.NuevaDireccion.Calle) ||
+                        string.IsNullOrWhiteSpace(viewModel.NuevaDireccion.Numero) ||
+                        string.IsNullOrWhiteSpace(viewModel.NuevaDireccion.CodigoPostal) ||
+                        string.IsNullOrWhiteSpace(viewModel.NuevaDireccion.Ciudad) ||
+                        string.IsNullOrWhiteSpace(viewModel.NuevaDireccion.Provincia))
+                    {
+                        ModelState.AddModelError("", "Por favor, completa todos los campos obligatorios de la dirección");
+                        viewModel.CarritoItems = carritoItems;
+                        viewModel.DireccionesGuardadas = await _direccionService.GetByUsuarioIdAsync(CurrentUser!.Id);
+                        return View("Checkout_Direccion", viewModel);
+                    }
+
+                    // Si quiere guardar la dirección para futuras compras
+                    if (GuardarDireccion)
+                    {
+                        try
+                        {
+                            var direccionGuardada = await _direccionService.CreateAsync(CurrentUser!.Id, viewModel.NuevaDireccion);
+                            _logger.LogInformation("Nueva dirección guardada para usuario {UserId}: {DireccionId}", CurrentUser.Id, direccionGuardada.Id);
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogWarning(ex, "No se pudo guardar la dirección del usuario, continuando sin guardar");
+                        }
+                    }
+
+                    // Crear DTO para el pedido (independiente de si se guardó o no)
+                    direccionParaPedido = new DireccionDto
+                    {
+                        Calle = viewModel.NuevaDireccion.Calle,
+                        Numero = viewModel.NuevaDireccion.Numero,
+                        Piso = viewModel.NuevaDireccion.Piso,
+                        CodigoPostal = viewModel.NuevaDireccion.CodigoPostal,
+                        Ciudad = viewModel.NuevaDireccion.Ciudad,
+                        Provincia = viewModel.NuevaDireccion.Provincia
+                    };
+                }
+
+                // Guardar en sesión para el siguiente paso
+                var sessionData = new CheckoutSessionData
+                {
+                    Direccion = direccionParaPedido,
+                    DireccionConfirmada = true
+                };
+                SaveCheckoutSession(sessionData);
+
+                return RedirectToAction("CheckoutPago");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al procesar dirección");
+                ModelState.AddModelError("", "Error al procesar la dirección. Por favor, inténtalo de nuevo.");
+                viewModel.CarritoItems = carritoItems;
+                viewModel.DireccionesGuardadas = await _direccionService.GetByUsuarioIdAsync(CurrentUser!.Id);
+                return View("Checkout_Direccion", viewModel);
+            }
+        }
+
+        #endregion
+
+        #region Checkout - Paso 2: Método de Pago
+
+        [HttpGet]
+        public async Task<IActionResult> CheckoutPago()
+        {
+            var sessionData = GetCheckoutSession();
+            if (sessionData?.Direccion == null || !sessionData.DireccionConfirmada)
+            {
+                return RedirectToAction("Checkout");
+            }
+
+            var carritoItems = await GetCarritoConImagenes();
+            if (!carritoItems.Any())
+            {
+                TempData["Error"] = "Tu carrito está vacío";
+                return RedirectToAction("Index", "Carrito");
+            }
+
+            var viewModel = new CheckoutPagoViewModel
+            {
+                CarritoItems = carritoItems,
+                Direccion = sessionData.Direccion,
                 StripePublishableKey = _paymentService.GetPublishableKey()
             };
 
-            return View(viewModel);
+            return View("Checkout_Pago", viewModel);
         }
 
-        /// <summary>
-        /// Crea un PaymentIntent de Stripe para el checkout
-        /// </summary>
         [HttpPost]
         public async Task<IActionResult> CreatePaymentIntent()
         {
@@ -147,75 +271,192 @@ namespace AldaJoyeros.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Checkout(CheckoutViewModel viewModel)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ConfirmarPago(CheckoutPagoViewModel viewModel)
         {
-            if (!ModelState.IsValid)
+            var sessionData = GetCheckoutSession();
+            if (sessionData?.Direccion == null || !sessionData.DireccionConfirmada)
             {
-                var carritoItems = await _carritoService.GetByUsuarioIdAsync(CurrentUser!.Id);
-                foreach (var item in carritoItems)
-                {
-                    if (item.Producto != null)
-                    {
-                        var imagenes = await _imagenService.GetByProductoIdAsync(item.ProductoId);
-                        item.Producto.Imagenes = imagenes.ToList();
-                    }
-                }
+                return RedirectToAction("Checkout");
+            }
+
+            var carritoItems = await GetCarritoConImagenes();
+            if (!carritoItems.Any())
+            {
+                TempData["Error"] = "Tu carrito está vacío";
+                return RedirectToAction("Index", "Carrito");
+            }
+
+            if (string.IsNullOrEmpty(viewModel.MetodoPago))
+            {
                 viewModel.CarritoItems = carritoItems;
+                viewModel.Direccion = sessionData.Direccion;
                 viewModel.StripePublishableKey = _paymentService.GetPublishableKey();
-                return View(viewModel);
+                ModelState.AddModelError("", "Selecciona un método de pago");
+                return View("Checkout_Pago", viewModel);
+            }
+
+            if (viewModel.MetodoPago == "Tarjeta")
+            {
+                if (string.IsNullOrEmpty(viewModel.PaymentIntentId))
+                {
+                    viewModel.CarritoItems = carritoItems;
+                    viewModel.Direccion = sessionData.Direccion;
+                    viewModel.StripePublishableKey = _paymentService.GetPublishableKey();
+                    ModelState.AddModelError("", "Por favor, completa el pago con tarjeta");
+                    return View("Checkout_Pago", viewModel);
+                }
+
+                var paymentStatus = await _paymentService.GetPaymentStatusAsync(viewModel.PaymentIntentId);
+                if (!paymentStatus.IsSucceeded)
+                {
+                    viewModel.CarritoItems = carritoItems;
+                    viewModel.Direccion = sessionData.Direccion;
+                    viewModel.StripePublishableKey = _paymentService.GetPublishableKey();
+                    ModelState.AddModelError("", "El pago no se completó correctamente");
+                    return View("Checkout_Pago", viewModel);
+                }
+            }
+
+            sessionData.MetodoPago = viewModel.MetodoPago;
+            sessionData.PaymentIntentId = viewModel.PaymentIntentId;
+            sessionData.PagoConfirmado = true;
+            SaveCheckoutSession(sessionData);
+
+            return RedirectToAction("CheckoutConfirmacion");
+        }
+
+        #endregion
+
+        #region Checkout - Paso 3: Confirmación
+
+        [HttpGet]
+        public async Task<IActionResult> CheckoutConfirmacion()
+        {
+            var sessionData = GetCheckoutSession();
+            if (sessionData?.Direccion == null || !sessionData.DireccionConfirmada)
+            {
+                return RedirectToAction("Checkout");
+            }
+
+            if (string.IsNullOrEmpty(sessionData.MetodoPago) || !sessionData.PagoConfirmado)
+            {
+                return RedirectToAction("CheckoutPago");
+            }
+
+            var carritoItems = await GetCarritoConImagenes();
+            if (!carritoItems.Any())
+            {
+                TempData["Error"] = "Tu carrito está vacío";
+                return RedirectToAction("Index", "Carrito");
+            }
+
+            var viewModel = new CheckoutConfirmacionViewModel
+            {
+                CarritoItems = carritoItems,
+                Direccion = sessionData.Direccion,
+                MetodoPago = sessionData.MetodoPago,
+                PaymentIntentId = sessionData.PaymentIntentId
+            };
+
+            return View("Checkout_Confirmacion", viewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> FinalizarPedido()
+        {
+            var sessionData = GetCheckoutSession();
+            if (sessionData?.Direccion == null || !sessionData.DireccionConfirmada ||
+                string.IsNullOrEmpty(sessionData.MetodoPago) || !sessionData.PagoConfirmado)
+            {
+                return RedirectToAction("Checkout");
+            }
+
+            var carritoItems = await _carritoService.GetByUsuarioIdAsync(CurrentUser!.Id);
+            if (!carritoItems.Any())
+            {
+                TempData["Error"] = "Tu carrito está vacío";
+                return RedirectToAction("Index", "Carrito");
             }
 
             try
             {
-                // Si es pago con tarjeta, verificar que el pago fue exitoso en Stripe
-                if (viewModel.MetodoPago == "Tarjeta" && !string.IsNullOrEmpty(viewModel.PaymentIntentId))
+                if (sessionData.MetodoPago == "Tarjeta" && !string.IsNullOrEmpty(sessionData.PaymentIntentId))
                 {
-                    var paymentStatus = await _paymentService.GetPaymentStatusAsync(viewModel.PaymentIntentId);
-                    
+                    var paymentStatus = await _paymentService.GetPaymentStatusAsync(sessionData.PaymentIntentId);
                     if (!paymentStatus.IsSucceeded)
                     {
-                        TempData["Error"] = "El pago no se ha completado correctamente. Por favor, inténtalo de nuevo.";
-                        return await ReloadCheckoutView(viewModel);
+                        TempData["Error"] = "El pago no se completó correctamente";
+                        return RedirectToAction("CheckoutPago");
                     }
-                    
-                    _logger.LogInformation(
-                        "Pago confirmado con Stripe: {PaymentIntentId} - Estado: {Status}",
-                        viewModel.PaymentIntentId, paymentStatus.Status);
                 }
 
-                // Crear pedido
+                // Crear pedido - la dirección se copia al pedido (sin UsuarioId)
                 var pedidoDto = new PedidoCreateDto
                 {
                     Direccion = new DireccionCreateDto
                     {
-                        Calle = viewModel.Direccion.Calle,
-                        Numero = viewModel.Direccion.Numero,
-                        Piso = viewModel.Direccion.Piso,
-                        CodigoPostal = viewModel.Direccion.CodigoPostal,
-                        Ciudad = viewModel.Direccion.Ciudad,
-                        Provincia = viewModel.Direccion.Provincia
+                        Calle = sessionData.Direccion.Calle,
+                        Numero = sessionData.Direccion.Numero,
+                        Piso = sessionData.Direccion.Piso,
+                        CodigoPostal = sessionData.Direccion.CodigoPostal,
+                        Ciudad = sessionData.Direccion.Ciudad,
+                        Provincia = sessionData.Direccion.Provincia
                     }
                 };
 
                 var pedido = await _pedidoService.CreateFromCarritoAsync(CurrentUser!.Id, pedidoDto);
                 
-                TempData["Success"] = viewModel.MetodoPago == "Contra Reembolso" 
-                    ? "Pedido realizado exitosamente. Pagarás al recibir tu pedido." 
-                    : "Pedido realizado y pago procesado exitosamente.";
+                ClearCheckoutSession();
+
+                _logger.LogInformation(
+                    "Pedido {PedidoId} creado para usuario {UserId} - Método: {MetodoPago}",
+                    pedido.Id, CurrentUser.Id, sessionData.MetodoPago);
+
+                TempData["Success"] = sessionData.MetodoPago == "Contra Reembolso" 
+                    ? "¡Pedido realizado! Pagarás al recibir tu pedido." 
+                    : "¡Pedido realizado y pago procesado exitosamente!";
                 
-                return RedirectToAction("Detalle", new { id = pedido.Id });
+                return RedirectToAction("PedidoCompletado", new { id = pedido.Id });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error al procesar checkout");
-                ModelState.AddModelError("", ex.Message);
-                return await ReloadCheckoutView(viewModel);
+                _logger.LogError(ex, "Error al crear pedido");
+                TempData["Error"] = "Error al procesar el pedido: " + ex.Message;
+                return RedirectToAction("CheckoutConfirmacion");
             }
         }
 
-        private async Task<IActionResult> ReloadCheckoutView(CheckoutViewModel viewModel)
+        [HttpGet]
+        public async Task<IActionResult> PedidoCompletado(long id)
+        {
+            var pedido = await _pedidoService.GetByIdAsync(id);
+            if (pedido == null || pedido.UsuarioId != CurrentUser!.Id)
+            {
+                return RedirectToAction("Index");
+            }
+
+            foreach (var linea in pedido.LineasPedido)
+            {
+                if (linea.Producto != null && linea.ProductoId.HasValue)
+                {
+                    var imagenes = await _imagenService.GetByProductoIdAsync(linea.ProductoId.Value);
+                    linea.Producto.Imagenes = imagenes.ToList();
+                }
+            }
+
+            return View(pedido);
+        }
+
+        #endregion
+
+        #region Helpers
+
+        private async Task<IEnumerable<CarritoItemDto>> GetCarritoConImagenes()
         {
             var carritoItems = await _carritoService.GetByUsuarioIdAsync(CurrentUser!.Id);
+            
             foreach (var item in carritoItems)
             {
                 if (item.Producto != null)
@@ -224,9 +465,29 @@ namespace AldaJoyeros.Controllers
                     item.Producto.Imagenes = imagenes.ToList();
                 }
             }
-            viewModel.CarritoItems = carritoItems;
-            viewModel.StripePublishableKey = _paymentService.GetPublishableKey();
-            return View(viewModel);
+
+            return carritoItems;
         }
+
+        private CheckoutSessionData? GetCheckoutSession()
+        {
+            var json = HttpContext.Session.GetString(CheckoutSessionKey);
+            if (string.IsNullOrEmpty(json)) return null;
+            
+            return JsonSerializer.Deserialize<CheckoutSessionData>(json);
+        }
+
+        private void SaveCheckoutSession(CheckoutSessionData data)
+        {
+            var json = JsonSerializer.Serialize(data);
+            HttpContext.Session.SetString(CheckoutSessionKey, json);
+        }
+
+        private void ClearCheckoutSession()
+        {
+            HttpContext.Session.Remove(CheckoutSessionKey);
+        }
+
+        #endregion
     }
 }

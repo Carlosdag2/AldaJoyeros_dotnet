@@ -24,10 +24,12 @@ namespace AldaJoyeros.Repositories.Implementations
             return await _context.Direcciones.FindAsync(id);
         }
 
-        public async Task<Direccion?> GetByUsuarioIdAsync(long usuarioId)
+        public async Task<IEnumerable<Direccion>> GetByUsuarioIdAsync(long usuarioId)
         {
             return await _context.Direcciones
-                .FirstOrDefaultAsync(d => d.UsuarioId == usuarioId);
+                .Where(d => d.UsuarioId == usuarioId)
+                .OrderByDescending(d => d.Id)
+                .ToListAsync();
         }
 
         public async Task<Direccion> CreateAsync(Direccion direccion)

@@ -1,0 +1,320 @@
+@model AldaJoyeros.DTOs.CheckoutPagoViewModel
+@{ViewData["Title"]="Checkout - Pago";}
+
+<div class="container mx-auto px-6 py-8">
+<!-- Header -->
+<div class="mb-8 text-center">
+<h1 class="font-serif text-4xl md:text-5xl font-bold text-gray-900 mb-3 flex items-center justify-center gap-3">
+<div class="w-14 h-14 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg"><i class="fas fa-credit-card text-white text-2xl"></i></div>
+Método de Pago
+</h1>
+<p class="text-gray-600 text-lg">Paso 2 de 3: Selecciona cómo quieres pagar</p>
+</div>
+
+<!-- Progress Steps -->
+<div class="max-w-3xl mx-auto mb-12">
+<div class="flex items-center justify-between relative">
+<div class="absolute top-5 left-0 right-0 h-1 bg-gray-200 -z-10"></div>
+<div class="absolute top-5 left-0 h-1 bg-emerald-500 -z-10" style="width: 50%;"></div>
+
+<div class="flex flex-col items-center">
+<div class="w-12 h-12 bg-emerald-500 rounded-full flex items-center justify-center text-white font-bold shadow-lg mb-2"><i class="fas fa-check"></i></div>
+<div class="text-center"><div class="text-sm font-bold text-emerald-600">Dirección</div></div>
+</div>
+
+<div class="flex flex-col items-center">
+<div class="w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold shadow-lg mb-2 ring-4 ring-emerald-100">2</div>
+<div class="text-center"><div class="text-sm font-bold text-emerald-600">Pago</div></div>
+</div>
+
+<div class="flex flex-col items-center">
+<div class="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center text-gray-500 font-bold shadow-md mb-2">3</div>
+<div class="text-center"><div class="text-sm font-medium text-gray-400">Confirmación</div></div>
+</div>
+</div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+<!-- Métodos de Pago -->
+<div class="lg:col-span-2">
+<form id="payment-form" asp-action="ConfirmarPago" method="post" class="space-y-6">
+@Html.AntiForgeryToken()
+<input type="hidden" asp-for="PaymentIntentId" id="payment-intent-id"/>
+
+<!-- Dirección confirmada -->
+<div class="bg-gradient-to-r from-emerald-50 to-green-50 rounded-2xl p-5 border border-emerald-200">
+<div class="flex items-start justify-between">
+<div class="flex items-start gap-3">
+<div class="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center flex-shrink-0">
+<i class="fas fa-map-marker-alt text-white"></i>
+</div>
+<div>
+<div class="font-bold text-gray-900">Envío a:</div>
+<div class="text-gray-700">@Model.Direccion.Calle, @Model.Direccion.Numero @(!string.IsNullOrEmpty(Model.Direccion.Piso) ? $"- {Model.Direccion.Piso}" : "")</div>
+<div class="text-gray-600 text-sm">@Model.Direccion.CodigoPostal @Model.Direccion.Ciudad, @Model.Direccion.Provincia</div>
+</div>
+</div>
+<a asp-action="Checkout" class="text-emerald-600 hover:text-emerald-700 font-medium text-sm"><i class="fas fa-edit mr-1"></i>Cambiar</a>
+</div>
+</div>
+
+<!-- Opciones de Pago -->
+<div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+<h2 class="font-serif text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+<div class="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center"><i class="fas fa-wallet text-indigo-600"></i></div>
+¿Cómo quieres pagar?
+</h2>
+
+<div class="space-y-4">
+<!-- Tarjeta con Stripe -->
+<label class="payment-option block p-5 border-2 border-gray-200 rounded-2xl cursor-pointer transition-all hover:border-indigo-400 hover:shadow-md" data-method="Tarjeta">
+<div class="flex items-center gap-4">
+<input type="radio" name="MetodoPago" value="Tarjeta" class="w-5 h-5 text-indigo-600"/>
+<div class="w-14 h-14 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md">
+<i class="fab fa-stripe-s text-white text-2xl"></i>
+</div>
+<div class="flex-1">
+<div class="font-bold text-gray-900 text-lg">Tarjeta de Crédito/Débito</div>
+<div class="text-gray-600 text-sm flex items-center gap-2">
+<span>Pago seguro con Stripe</span>
+<i class="fab fa-cc-visa text-blue-600"></i>
+<i class="fab fa-cc-mastercard text-orange-500"></i>
+<i class="fab fa-cc-amex text-blue-500"></i>
+</div>
+</div>
+</div>
+
+<!-- Stripe Elements (se muestra al seleccionar) -->
+<div id="stripe-section" class="mt-5 pt-5 border-t border-gray-200 hidden">
+<div class="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl p-3 mb-4 border border-yellow-200 flex items-center gap-2">
+<i class="fas fa-flask text-yellow-600"></i>
+<span class="text-sm text-yellow-800 font-medium">Modo Test - No se realizarán cargos reales</span>
+</div>
+
+<div id="payment-element" class="bg-white p-4 rounded-xl border-2 border-gray-200 min-h-[120px]">
+<div class="flex items-center justify-center h-24 text-gray-400">
+<i class="fas fa-spinner fa-spin mr-2"></i>Cargando...
+</div>
+</div>
+
+<div id="payment-errors" class="hidden mt-3 p-3 bg-red-50 border-l-4 border-red-500 rounded-r-xl">
+<span id="error-message" class="text-red-700 text-sm"></span>
+</div>
+
+<!-- Tarjetas de prueba -->
+<div class="mt-4 p-4 bg-gray-50 rounded-xl">
+<div class="text-xs font-bold text-gray-500 mb-2"><i class="fas fa-info-circle mr-1"></i>Tarjetas de prueba:</div>
+<div class="flex flex-wrap gap-2 text-xs">
+<span class="px-2 py-1 bg-green-100 text-green-700 rounded-full"><i class="fas fa-check mr-1"></i>4242 4242 4242 4242</span>
+<span class="px-2 py-1 bg-red-100 text-red-700 rounded-full"><i class="fas fa-times mr-1"></i>4000 0000 0000 0002</span>
+</div>
+</div>
+</div>
+</label>
+
+<!-- Contra Reembolso -->
+<label class="payment-option block p-5 border-2 border-gray-200 rounded-2xl cursor-pointer transition-all hover:border-green-400 hover:shadow-md" data-method="Contra Reembolso">
+<div class="flex items-center gap-4">
+<input type="radio" name="MetodoPago" value="Contra Reembolso" checked class="w-5 h-5 text-green-600"/>
+<div class="w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-md">
+<i class="fas fa-money-bill-wave text-white text-2xl"></i>
+</div>
+<div class="flex-1">
+<div class="font-bold text-gray-900 text-lg">Contra Reembolso</div>
+<div class="text-gray-600 text-sm">Paga en efectivo cuando recibas tu pedido</div>
+</div>
+</div>
+</label>
+</div>
+</div>
+
+<!-- Botones -->
+<div class="flex flex-col sm:flex-row justify-between gap-4 pt-4">
+<a asp-action="Checkout" class="inline-flex items-center justify-center px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-xl hover:border-gray-400 transition-all font-semibold">
+<i class="fas fa-arrow-left mr-2"></i>Volver
+</a>
+<button type="submit" id="submit-btn" class="inline-flex items-center justify-center bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:from-emerald-600 hover:to-emerald-700 hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+<span id="btn-text">Continuar<i class="fas fa-arrow-right ml-2"></i></span>
+<span id="btn-loading" class="hidden"><i class="fas fa-spinner fa-spin mr-2"></i>Procesando...</span>
+</button>
+</div>
+</form>
+</div>
+
+<!-- Resumen -->
+<div class="lg:col-span-1">
+<div class="bg-white rounded-2xl shadow-lg p-6 sticky top-24 border border-gray-100">
+<h3 class="font-serif text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+<div class="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center"><i class="fas fa-receipt text-emerald-600"></i></div>
+Resumen
+</h3>
+
+<div class="space-y-3 max-h-48 overflow-y-auto mb-4">
+@foreach(var item in Model.CarritoItems){
+<div class="flex justify-between text-sm">
+<span class="text-gray-600">@item.ProductoNombre x @item.Cantidad</span>
+<span class="font-medium">@item.Subtotal.ToString("C")</span>
+</div>
+}
+</div>
+
+<div class="pt-4 border-t border-gray-200 space-y-2">
+<div class="flex justify-between text-sm"><span class="text-gray-600">Subtotal</span><span>@Model.Total.ToString("C")</span></div>
+<div class="flex justify-between text-sm"><span class="text-gray-600">Envío</span><span class="text-emerald-600 font-medium">GRATIS</span></div>
+</div>
+
+<div class="mt-4 pt-4 border-t-2 border-emerald-200 bg-emerald-50 -mx-6 px-6 py-4 rounded-b-2xl">
+<div class="flex justify-between items-center">
+<span class="text-lg font-bold">Total</span>
+<span class="text-2xl font-bold text-emerald-600">@Model.Total.ToString("C")</span>
+</div>
+</div>
+
+<!-- Seguridad -->
+<div class="mt-6 space-y-2">
+<div class="flex items-center gap-2 text-sm text-gray-600">
+<i class="fas fa-lock text-emerald-500"></i><span>Pago 100% seguro</span>
+</div>
+<div class="flex items-center gap-2 text-sm text-gray-600">
+<i class="fas fa-shield-alt text-emerald-500"></i><span>Datos encriptados</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+@section Scripts{
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+const stripeKey = '@Model.StripePublishableKey';
+let stripe = null;
+let elements = null;
+let paymentElement = null;
+let stripeReady = false;
+
+// Marcar opción seleccionada visualmente
+document.querySelectorAll('.payment-option').forEach(option => {
+    const radio = option.querySelector('input[type="radio"]');
+    
+    radio.addEventListener('change', async function() {
+        // Reset estilos
+        document.querySelectorAll('.payment-option').forEach(o => {
+            o.classList.remove('border-indigo-500', 'border-green-500', 'ring-2', 'ring-indigo-200', 'ring-green-200');
+            o.classList.add('border-gray-200');
+        });
+        
+        // Aplicar estilo seleccionado
+        if (this.value === 'Tarjeta') {
+            option.classList.remove('border-gray-200');
+            option.classList.add('border-indigo-500', 'ring-2', 'ring-indigo-200');
+            document.getElementById('stripe-section').classList.remove('hidden');
+            await initStripe();
+        } else {
+            option.classList.remove('border-gray-200');
+            option.classList.add('border-green-500', 'ring-2', 'ring-green-200');
+            document.getElementById('stripe-section').classList.add('hidden');
+        }
+    });
+    
+    // Trigger para opción por defecto
+    if (radio.checked) {
+        radio.dispatchEvent(new Event('change'));
+    }
+});
+
+async function initStripe() {
+    if (stripeReady) return;
+    
+    stripe = Stripe(stripeKey);
+    
+    const response = await fetch('/Pedidos/CreatePaymentIntent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+    });
+    
+    const data = await response.json();
+    
+    if (!data.success) {
+        showError(data.error || 'Error al inicializar el pago');
+        return;
+    }
+    
+    document.getElementById('payment-intent-id').value = data.paymentIntentId;
+    
+    elements = stripe.elements({
+        clientSecret: data.clientSecret,
+        appearance: {
+            theme: 'stripe',
+            variables: {
+                colorPrimary: '#10b981',
+                colorBackground: '#ffffff',
+                borderRadius: '8px'
+            }
+        }
+    });
+    
+    paymentElement = elements.create('payment');
+    document.getElementById('payment-element').innerHTML = '';
+    paymentElement.mount('#payment-element');
+    
+    paymentElement.on('change', (e) => {
+        if (e.error) showError(e.error.message);
+        else hideError();
+    });
+    
+    stripeReady = true;
+}
+
+function showError(msg) {
+    document.getElementById('payment-errors').classList.remove('hidden');
+    document.getElementById('error-message').textContent = msg;
+}
+
+function hideError() {
+    document.getElementById('payment-errors').classList.add('hidden');
+}
+
+function setLoading(loading) {
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = loading;
+    document.getElementById('btn-text').classList.toggle('hidden', loading);
+    document.getElementById('btn-loading').classList.toggle('hidden', !loading);
+}
+
+document.getElementById('payment-form').addEventListener('submit', async function(e) {
+    const method = document.querySelector('input[name="MetodoPago"]:checked').value;
+    
+    if (method !== 'Tarjeta') return true;
+    
+    e.preventDefault();
+    setLoading(true);
+    hideError();
+    
+    try {
+        const { error, paymentIntent } = await stripe.confirmPayment({
+            elements,
+            confirmParams: { return_url: window.location.href },
+            redirect: 'if_required'
+        });
+        
+        if (error) {
+            showError(error.message);
+            setLoading(false);
+            return;
+        }
+        
+        if (paymentIntent?.status === 'succeeded') {
+            document.getElementById('payment-intent-id').value = paymentIntent.id;
+            this.submit();
+        } else {
+            showError('El pago no se completó');
+            setLoading(false);
+        }
+    } catch (err) {
+        showError(err.message);
+        setLoading(false);
+    }
+});
+</script>
+}

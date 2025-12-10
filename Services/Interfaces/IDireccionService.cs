@@ -6,7 +6,7 @@ namespace AldaJoyeros.Services.Interfaces
     {
         Task<IEnumerable<DireccionDto>> GetAllAsync();
         Task<DireccionDto?> GetByIdAsync(long id);
-        Task<DireccionDto?> GetByUsuarioIdAsync(long usuarioId);
+        Task<IEnumerable<DireccionDto>> GetByUsuarioIdAsync(long usuarioId);
         Task<DireccionDto> CreateAsync(long usuarioId, DireccionCreateDto direccionCreateDto);
         Task<DireccionDto> UpdateAsync(long id, DireccionUpdateDto direccionUpdateDto);
         Task DeleteAsync(long id);

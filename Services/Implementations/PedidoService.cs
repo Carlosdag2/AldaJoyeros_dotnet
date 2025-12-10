@@ -51,8 +51,20 @@ namespace AldaJoyeros.Services.Implementations
                 throw new InvalidOperationException("El carrito está vacío");
             }
 
-            var direccion = _mapper.Map<Direccion>(pedidoCreateDto.Direccion);
-            var createdDireccion = await _direccionRepository.CreateAsync(direccion);
+            // Crear dirección de envío para el pedido (SIN asociar al usuario)
+            // Esto permite múltiples pedidos con diferentes direcciones
+            var direccionPedido = new Direccion
+            {
+                Calle = pedidoCreateDto.Direccion.Calle,
+                Numero = pedidoCreateDto.Direccion.Numero,
+                Piso = pedidoCreateDto.Direccion.Piso,
+                CodigoPostal = pedidoCreateDto.Direccion.CodigoPostal,
+                Ciudad = pedidoCreateDto.Direccion.Ciudad,
+                Provincia = pedidoCreateDto.Direccion.Provincia,
+                UsuarioId = null // NO asociar al usuario - es dirección del pedido
+            };
+            
+            var createdDireccion = await _direccionRepository.CreateAsync(direccionPedido);
 
             var pedido = new Pedido
             {

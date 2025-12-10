@@ -1,0 +1,177 @@
+@model AldaJoyeros.DTOs.PedidoDto
+@{ViewData["Title"]="¡Pedido Completado!";}
+
+<div class="container mx-auto px-6 py-12">
+<!-- Animación de éxito -->
+<div class="max-w-3xl mx-auto text-center mb-12">
+<div class="relative inline-block mb-6">
+<div class="w-32 h-32 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-full flex items-center justify-center shadow-2xl animate-bounce-slow">
+<i class="fas fa-check text-white text-6xl"></i>
+</div>
+<div class="absolute -top-2 -right-2 w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center shadow-lg">
+<i class="fas fa-star text-white"></i>
+</div>
+</div>
+
+<h1 class="font-serif text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+¡Gracias por tu compra!
+</h1>
+<p class="text-xl text-gray-600 mb-2">Tu pedido ha sido procesado correctamente</p>
+<p class="text-emerald-600 font-bold text-lg">
+<i class="fas fa-hashtag mr-1"></i>Pedido #@Model.Id
+</p>
+</div>
+
+<!-- Detalles del pedido -->
+<div class="max-w-4xl mx-auto">
+<div class="bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100">
+<!-- Header del pedido -->
+<div class="bg-gradient-to-r from-emerald-500 to-emerald-600 px-8 py-6 text-white">
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+<div>
+<div class="text-emerald-100 text-sm">Número de pedido</div>
+<div class="text-3xl font-bold">#@Model.Id</div>
+</div>
+<div class="text-right">
+<div class="text-emerald-100 text-sm">Fecha</div>
+<div class="font-bold">@Model.Fecha?.ToString("dd/MM/yyyy HH:mm")</div>
+</div>
+</div>
+</div>
+
+<!-- Productos -->
+<div class="p-8">
+<h2 class="font-serif text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+<i class="fas fa-box text-emerald-500"></i>Productos
+</h2>
+
+<div class="space-y-4">
+@foreach(var linea in Model.LineasPedido){
+<div class="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
+<div class="w-16 h-16 bg-white rounded-lg overflow-hidden shadow-sm flex-shrink-0">
+@if(linea.Producto?.TieneImagenes == true){
+<img src="@linea.Producto.ImagenPrincipal" alt="@linea.ProductoNombre" class="w-full h-full object-cover"/>
+}else{
+<div class="w-full h-full flex items-center justify-center bg-emerald-50">
+<i class="fas fa-gem text-emerald-300"></i>
+</div>
+}
+</div>
+<div class="flex-1">
+<div class="font-bold text-gray-900">@linea.ProductoNombre</div>
+<div class="text-gray-600 text-sm">Cantidad: @linea.Cantidad</div>
+</div>
+<div class="font-bold text-emerald-600">@linea.Subtotal.ToString("C")</div>
+</div>
+}
+</div>
+
+<!-- Totales -->
+<div class="mt-6 pt-6 border-t border-gray-200">
+<div class="flex justify-between text-gray-600 mb-2">
+<span>Subtotal</span>
+<span>@Model.Total.ToString("C")</span>
+</div>
+<div class="flex justify-between text-gray-600 mb-4">
+<span>Envío</span>
+<span class="text-emerald-600 font-medium">GRATIS</span>
+</div>
+<div class="flex justify-between text-2xl font-bold text-gray-900 pt-4 border-t-2 border-emerald-200">
+<span>Total</span>
+<span class="text-emerald-600">@Model.Total.ToString("C")</span>
+</div>
+</div>
+</div>
+
+<!-- Dirección de envío -->
+@if(Model.Direccion != null){
+<div class="px-8 pb-8">
+<div class="bg-blue-50 rounded-2xl p-6 border border-blue-100">
+<h3 class="font-bold text-gray-900 mb-3 flex items-center gap-2">
+<i class="fas fa-truck text-blue-600"></i>Envío a:
+</h3>
+<div class="text-gray-700">
+<div class="font-medium">@Model.Direccion.Calle, @Model.Direccion.Numero @(!string.IsNullOrEmpty(Model.Direccion.Piso) ? $"- {Model.Direccion.Piso}" : "")</div>
+<div>@Model.Direccion.CodigoPostal @Model.Direccion.Ciudad, @Model.Direccion.Provincia</div>
+</div>
+<div class="mt-4 pt-4 border-t border-blue-200">
+<div class="flex items-center gap-2 text-blue-700">
+<i class="fas fa-clock"></i>
+<span class="font-medium">Entrega estimada: 3-5 días laborables</span>
+</div>
+</div>
+</div>
+</div>
+}
+
+<!-- Estado del pedido -->
+<div class="px-8 pb-8">
+<div class="bg-gradient-to-r from-emerald-50 to-green-50 rounded-2xl p-6 border border-emerald-200">
+<h3 class="font-bold text-gray-900 mb-4 flex items-center gap-2">
+<i class="fas fa-tasks text-emerald-600"></i>Estado del pedido
+</h3>
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-emerald-500 rounded-full flex items-center justify-center">
+<i class="fas fa-clipboard-list text-white text-xl"></i>
+</div>
+<div>
+<div class="font-bold text-emerald-700 text-lg">@Model.Estado</div>
+<div class="text-gray-600 text-sm">Tu pedido está siendo procesado</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Acciones -->
+<div class="flex flex-col sm:flex-row justify-center gap-4 mt-8">
+<a asp-action="Detalle" asp-route-id="@Model.Id" class="inline-flex items-center justify-center px-6 py-3 bg-white border-2 border-emerald-500 text-emerald-600 rounded-xl font-bold hover:bg-emerald-50 transition-all">
+<i class="fas fa-eye mr-2"></i>Ver detalles del pedido
+</a>
+<a asp-action="Index" class="inline-flex items-center justify-center px-6 py-3 bg-white border-2 border-gray-300 text-gray-700 rounded-xl font-bold hover:bg-gray-50 transition-all">
+<i class="fas fa-list mr-2"></i>Mis pedidos
+</a>
+<a asp-controller="Productos" asp-action="Index" class="inline-flex items-center justify-center px-8 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl font-bold hover:from-emerald-600 hover:to-emerald-700 transition-all shadow-lg">
+<i class="fas fa-shopping-bag mr-2"></i>Seguir comprando
+</a>
+</div>
+
+<!-- Información adicional -->
+<div class="mt-12 bg-gray-50 rounded-2xl p-8 border border-gray-200">
+<h3 class="font-serif text-xl font-bold text-gray-900 mb-6 text-center">¿Qué sigue?</h3>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="text-center">
+<div class="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+<i class="fas fa-envelope text-blue-600 text-2xl"></i>
+</div>
+<h4 class="font-bold text-gray-900 mb-2">Confirmación por email</h4>
+<p class="text-gray-600 text-sm">Recibirás un email con los detalles de tu pedido</p>
+</div>
+<div class="text-center">
+<div class="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+<i class="fas fa-box-open text-purple-600 text-2xl"></i>
+</div>
+<h4 class="font-bold text-gray-900 mb-2">Preparación</h4>
+<p class="text-gray-600 text-sm">Prepararemos tu pedido con nuestro empaquetado premium</p>
+</div>
+<div class="text-center">
+<div class="w-16 h-16 bg-emerald-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+<i class="fas fa-truck text-emerald-600 text-2xl"></i>
+</div>
+<h4 class="font-bold text-gray-900 mb-2">Envío</h4>
+<p class="text-gray-600 text-sm">Te notificaremos cuando tu pedido esté en camino</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<style>
+@@keyframes bounce-slow {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+.animate-bounce-slow {
+    animation: bounce-slow 2s ease-in-out infinite;
+}
+</style>

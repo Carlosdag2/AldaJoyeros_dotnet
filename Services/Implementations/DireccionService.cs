@@ -34,10 +34,10 @@ namespace AldaJoyeros.Services.Implementations
             return direccion == null ? null : _mapper.Map<DireccionDto>(direccion);
         }
 
-        public async Task<DireccionDto?> GetByUsuarioIdAsync(long usuarioId)
+        public async Task<IEnumerable<DireccionDto>> GetByUsuarioIdAsync(long usuarioId)
         {
-            var direccion = await _direccionRepository.GetByUsuarioIdAsync(usuarioId);
-            return direccion == null ? null : _mapper.Map<DireccionDto>(direccion);
+            var direcciones = await _direccionRepository.GetByUsuarioIdAsync(usuarioId);
+            return _mapper.Map<IEnumerable<DireccionDto>>(direcciones);
         }
 
         public async Task<DireccionDto> CreateAsync(long usuarioId, DireccionCreateDto direccionCreateDto)
@@ -47,8 +47,16 @@ namespace AldaJoyeros.Services.Implementations
                 throw new KeyNotFoundException("Usuario no encontrado");
             }
 
-            var direccion = _mapper.Map<Direccion>(direccionCreateDto);
-            direccion.UsuarioId = usuarioId;
+            var direccion = new Direccion
+            {
+                Calle = direccionCreateDto.Calle,
+                Numero = direccionCreateDto.Numero,
+                Piso = direccionCreateDto.Piso,
+                CodigoPostal = direccionCreateDto.CodigoPostal,
+                Ciudad = direccionCreateDto.Ciudad,
+                Provincia = direccionCreateDto.Provincia,
+                UsuarioId = usuarioId
+            };
 
             var createdDireccion = await _direccionRepository.CreateAsync(direccion);
             return _mapper.Map<DireccionDto>(createdDireccion);
@@ -62,7 +70,13 @@ namespace AldaJoyeros.Services.Implementations
                 throw new KeyNotFoundException("Dirección no encontrada");
             }
 
-            _mapper.Map(direccionUpdateDto, direccion);
+            direccion.Calle = direccionUpdateDto.Calle;
+            direccion.Numero = direccionUpdateDto.Numero;
+            direccion.Piso = direccionUpdateDto.Piso;
+            direccion.CodigoPostal = direccionUpdateDto.CodigoPostal;
+            direccion.Ciudad = direccionUpdateDto.Ciudad;
+            direccion.Provincia = direccionUpdateDto.Provincia;
+
             var updatedDireccion = await _direccionRepository.UpdateAsync(direccion);
             return _mapper.Map<DireccionDto>(updatedDireccion);
         }

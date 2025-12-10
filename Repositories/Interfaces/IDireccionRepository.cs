@@ -6,7 +6,7 @@ namespace AldaJoyeros.Repositories.Interfaces
     {
         Task<IEnumerable<Direccion>> GetAllAsync();
         Task<Direccion?> GetByIdAsync(long id);
-        Task<Direccion?> GetByUsuarioIdAsync(long usuarioId);
+        Task<IEnumerable<Direccion>> GetByUsuarioIdAsync(long usuarioId);
         Task<Direccion> CreateAsync(Direccion direccion);
         Task<Direccion> UpdateAsync(Direccion direccion);
         Task DeleteAsync(long id);

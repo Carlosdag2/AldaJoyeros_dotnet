@@ -1,0 +1,219 @@
+@model AldaJoyeros.DTOs.CheckoutDireccionViewModel
+@{ViewData["Title"]="Checkout - Dirección";}
+
+@{
+    var direccionesGuardadas = Model.DireccionesGuardadas.ToList();
+    var tieneDirecciones = direccionesGuardadas.Any();
+}
+
+<div class="container mx-auto px-6 py-8">
+<!-- Header -->
+<div class="mb-8 text-center">
+<h1 class="font-serif text-4xl md:text-5xl font-bold text-gray-900 mb-3 flex items-center justify-center gap-3">
+<div class="w-14 h-14 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg"><i class="fas fa-shopping-bag text-white text-2xl"></i></div>
+Finalizar Compra
+</h1>
+<p class="text-gray-600 text-lg">Paso 1 de 3: Dirección de envío</p>
+</div>
+
+<!-- Progress Steps -->
+<div class="max-w-3xl mx-auto mb-12">
+<div class="flex items-center justify-between relative">
+<div class="absolute top-5 left-0 right-0 h-1 bg-gray-200 -z-10"></div>
+<div class="absolute top-5 left-0 h-1 bg-emerald-500 -z-10" style="width: 0%;"></div>
+
+<div class="flex flex-col items-center">
+<div class="w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold shadow-lg mb-2 ring-4 ring-emerald-100">1</div>
+<div class="text-center"><div class="text-sm font-bold text-emerald-600">Dirección</div></div>
+</div>
+
+<div class="flex flex-col items-center">
+<div class="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center text-gray-500 font-bold shadow-md mb-2">2</div>
+<div class="text-center"><div class="text-sm font-medium text-gray-400">Pago</div></div>
+</div>
+
+<div class="flex flex-col items-center">
+<div class="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center text-gray-500 font-bold shadow-md mb-2">3</div>
+<div class="text-center"><div class="text-sm font-medium text-gray-400">Confirmación</div></div>
+</div>
+</div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+<!-- Formulario de Dirección -->
+<div class="lg:col-span-2">
+<form asp-action="GuardarDireccion" method="post" class="space-y-6">
+@Html.AntiForgeryToken()
+
+@if(tieneDirecciones){
+<!-- Direcciones Guardadas -->
+<div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+<h2 class="font-serif text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+<div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center"><i class="fas fa-bookmark text-blue-600"></i></div>
+Mis direcciones guardadas
+<span class="ml-auto text-sm font-normal text-gray-500">(@direccionesGuardadas.Count)</span>
+</h2>
+
+<div class="space-y-3 max-h-80 overflow-y-auto">
+@foreach(var dir in direccionesGuardadas){
+<label class="direccion-option flex items-start p-4 bg-gradient-to-r from-gray-50 to-blue-50 border-2 border-gray-200 rounded-xl cursor-pointer transition-all hover:border-blue-400 hover:shadow-md">
+<input type="radio" name="DireccionSeleccionadaId" value="@dir.Id" class="mt-1 w-5 h-5 text-blue-600" onclick="seleccionarDireccionGuardada()"/>
+<div class="ml-4 flex-1">
+<div class="font-bold text-gray-900">@dir.Calle, @dir.Numero @(!string.IsNullOrEmpty(dir.Piso) ? $"- {dir.Piso}" : "")</div>
+<div class="text-sm text-gray-600">@dir.CodigoPostal @dir.Ciudad, @dir.Provincia</div>
+</div>
+<i class="fas fa-map-marker-alt text-blue-400 text-lg"></i>
+</label>
+}
+</div>
+
+<div class="mt-4 pt-4 border-t border-gray-200">
+<label class="flex items-center gap-3 cursor-pointer p-3 bg-emerald-50 rounded-xl border border-emerald-200 hover:bg-emerald-100 transition-all">
+<input type="radio" name="UsarNuevaDireccion" value="true" id="usar-nueva-radio" class="w-5 h-5 text-emerald-600" onclick="mostrarFormularioNueva()"/>
+<span class="font-bold text-emerald-700"><i class="fas fa-plus-circle mr-2"></i>Usar una dirección diferente</span>
+</label>
+</div>
+</div>
+}
+
+<!-- Nueva Dirección -->
+<div id="nueva-direccion-form" class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 @(tieneDirecciones ? "hidden" : "")">
+<h2 class="font-serif text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+<div class="w-10 h-10 bg-emerald-100 rounded-xl flex items-center justify-center"><i class="fas fa-map-marker-alt text-emerald-600"></i></div>
+@(tieneDirecciones ? "Nueva dirección de envío" : "Dirección de envío")
+</h2>
+
+<input type="hidden" name="UsarNuevaDireccion" value="@(!tieneDirecciones ? "true" : "false")" id="usar-nueva-hidden"/>
+
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+<div class="md:col-span-3">
+<label class="block text-sm font-bold text-gray-700 mb-2"><i class="fas fa-road text-gray-400 mr-2"></i>Calle *</label>
+<input asp-for="NuevaDireccion.Calle" class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100 transition-all outline-none" placeholder="Nombre de la calle"/>
+<span asp-validation-for="NuevaDireccion.Calle" class="text-red-500 text-sm"></span>
+</div>
+<div>
+<label class="block text-sm font-bold text-gray-700 mb-2"><i class="fas fa-hashtag text-gray-400 mr-2"></i>Nº *</label>
+<input asp-for="NuevaDireccion.Numero" class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100 transition-all outline-none" placeholder="Nº"/>
+<span asp-validation-for="NuevaDireccion.Numero" class="text-red-500 text-sm"></span>
+</div>
+</div>
+
+<div class="mt-4">
+<label class="block text-sm font-bold text-gray-700 mb-2"><i class="fas fa-building text-gray-400 mr-2"></i>Piso/Puerta</label>
+<input asp-for="NuevaDireccion.Piso" class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100 transition-all outline-none" placeholder="Ej: 2º A (opcional)"/>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+<div>
+<label class="block text-sm font-bold text-gray-700 mb-2"><i class="fas fa-mail-bulk text-gray-400 mr-2"></i>C.P. *</label>
+<input asp-for="NuevaDireccion.CodigoPostal" class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100 transition-all outline-none" placeholder="28001"/>
+<span asp-validation-for="NuevaDireccion.CodigoPostal" class="text-red-500 text-sm"></span>
+</div>
+<div>
+<label class="block text-sm font-bold text-gray-700 mb-2"><i class="fas fa-city text-gray-400 mr-2"></i>Ciudad *</label>
+<input asp-for="NuevaDireccion.Ciudad" class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100 transition-all outline-none" placeholder="Madrid"/>
+<span asp-validation-for="NuevaDireccion.Ciudad" class="text-red-500 text-sm"></span>
+</div>
+<div>
+<label class="block text-sm font-bold text-gray-700 mb-2"><i class="fas fa-map text-gray-400 mr-2"></i>Provincia *</label>
+<input asp-for="NuevaDireccion.Provincia" class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100 transition-all outline-none" placeholder="Madrid"/>
+<span asp-validation-for="NuevaDireccion.Provincia" class="text-red-500 text-sm"></span>
+</div>
+</div>
+
+<!-- Opción de guardar -->
+<div class="mt-6 pt-4 border-t border-gray-200">
+<label class="flex items-center gap-3 cursor-pointer bg-gradient-to-r from-emerald-50 to-green-50 p-4 rounded-xl border border-emerald-200 hover:shadow-md transition-all">
+<input type="checkbox" name="GuardarDireccion" value="true" class="w-5 h-5 text-emerald-600 rounded"/>
+<div>
+<span class="font-bold text-gray-900"><i class="fas fa-save text-emerald-500 mr-2"></i>Guardar esta dirección</span>
+<p class="text-sm text-gray-600">Para usarla en futuras compras</p>
+</div>
+</label>
+</div>
+</div>
+
+<!-- Botones -->
+<div class="flex flex-col sm:flex-row justify-between gap-4 pt-6">
+<a asp-controller="Carrito" asp-action="Index" class="inline-flex items-center justify-center px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-xl hover:border-gray-400 transition-all font-semibold">
+<i class="fas fa-arrow-left mr-2"></i>Volver al carrito
+</a>
+<button type="submit" class="inline-flex items-center justify-center bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:from-emerald-600 hover:to-emerald-700 hover:shadow-xl transition-all">
+Continuar al pago<i class="fas fa-arrow-right ml-2"></i>
+</button>
+</div>
+</form>
+</div>
+
+<!-- Resumen del Pedido -->
+<div class="lg:col-span-1">
+<div class="bg-white rounded-2xl shadow-lg p-6 sticky top-24 border border-gray-100">
+<h3 class="font-serif text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+<div class="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center"><i class="fas fa-shopping-cart text-emerald-600"></i></div>
+Tu pedido
+</h3>
+
+<div class="space-y-3 max-h-64 overflow-y-auto">
+@foreach(var item in Model.CarritoItems){
+<div class="flex items-center gap-3 p-2 bg-gray-50 rounded-lg">
+<div class="w-12 h-12 bg-white rounded-lg overflow-hidden shadow-sm flex-shrink-0">
+@if(item.Producto?.TieneImagenes == true){
+<img src="@item.Producto.ImagenPrincipal" alt="@item.ProductoNombre" class="w-full h-full object-cover"/>
+}else{
+<div class="w-full h-full flex items-center justify-center"><i class="fas fa-gem text-gray-300"></i></div>
+}
+</div>
+<div class="flex-1 min-w-0">
+<div class="font-medium text-gray-900 text-sm truncate">@item.ProductoNombre</div>
+<div class="text-xs text-gray-500">x @item.Cantidad</div>
+</div>
+<div class="font-bold text-emerald-600 text-sm">@item.Subtotal.ToString("C")</div>
+</div>
+}
+</div>
+
+<div class="mt-4 pt-4 border-t-2 border-gray-200">
+<div class="flex justify-between text-sm mb-2"><span class="text-gray-600">Subtotal</span><span class="font-medium">@Model.Total.ToString("C")</span></div>
+<div class="flex justify-between text-sm mb-4"><span class="text-gray-600">Envío</span><span class="font-medium text-emerald-600">GRATIS</span></div>
+<div class="flex justify-between bg-emerald-50 -mx-6 px-6 py-4 rounded-b-2xl border-t border-emerald-100">
+<span class="text-lg font-bold text-gray-900">Total</span>
+<span class="text-2xl font-bold text-emerald-600">@Model.Total.ToString("C")</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+@section Scripts{
+<partial name="_ValidationScriptsPartial"/>
+<script>
+function seleccionarDireccionGuardada() {
+    // Ocultar formulario de nueva dirección
+    document.getElementById('nueva-direccion-form').classList.add('hidden');
+    document.getElementById('usar-nueva-hidden').value = 'false';
+    
+    // Deseleccionar radio de nueva dirección
+    const radioNueva = document.getElementById('usar-nueva-radio');
+    if (radioNueva) radioNueva.checked = false;
+    
+    // Marcar visualmente la opción seleccionada
+    document.querySelectorAll('.direccion-option').forEach(opt => {
+        opt.classList.remove('border-blue-500', 'ring-2', 'ring-blue-200');
+    });
+    event.target.closest('.direccion-option').classList.add('border-blue-500', 'ring-2', 'ring-blue-200');
+}
+
+function mostrarFormularioNueva() {
+    // Mostrar formulario
+    document.getElementById('nueva-direccion-form').classList.remove('hidden');
+    document.getElementById('usar-nueva-hidden').value = 'true';
+    
+    // Deseleccionar direcciones guardadas
+    document.querySelectorAll('input[name="DireccionSeleccionadaId"]').forEach(r => r.checked = false);
+    document.querySelectorAll('.direccion-option').forEach(opt => {
+        opt.classList.remove('border-blue-500', 'ring-2', 'ring-blue-200');
+    });
+}
+</script>
+}
