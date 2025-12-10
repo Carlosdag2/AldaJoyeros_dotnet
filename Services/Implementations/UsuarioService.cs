@@ -39,7 +39,7 @@ namespace AldaJoyeros.Services.Implementations
         {
             if (await _usuarioRepository.EmailExistsAsync(usuarioCreateDto.Email))
             {
-                throw new InvalidOperationException("El email ya est� registrado");
+                throw new InvalidOperationException("El email ya está registrado");
             }
 
             var usuario = _mapper.Map<Usuario>(usuarioCreateDto);

@@ -4,7 +4,7 @@ using AldaJoyeros.Attributes;
 
 namespace AldaJoyeros.Controllers
 {
-    [JwtAuthorize("ADMIN")]
+    [AdminOnly]
     public class AdminController : BaseController
     {
         private readonly ICategoriaService _categoriaService;

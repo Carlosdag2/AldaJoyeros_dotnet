@@ -11,7 +11,7 @@
 <div class="flex flex-wrap gap-2 mb-6">
 <a asp-action="Index" class="px-4 py-2.5 rounded-xl font-bold transition-all @(string.IsNullOrEmpty(rolFiltro)?"bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-md":"bg-gray-100 text-gray-700 hover:bg-gray-200")"><i class="fas fa-th-large mr-2"></i>Todos</a>
 <a asp-action="Index" asp-route-rol="ADMIN" class="px-4 py-2.5 rounded-xl font-bold transition-all @(rolFiltro=="ADMIN"?"bg-red-500 text-white shadow-md":"bg-gray-100 text-gray-700 hover:bg-gray-200")"><i class="fas fa-user-shield mr-2"></i>Administradores</a>
-<a asp-action="Index" asp-route-rol="CLIENTE" class="px-4 py-2.5 rounded-xl font-bold transition-all @(rolFiltro=="CLIENTE"?"bg-blue-500 text-white shadow-md":"bg-gray-100 text-gray-700 hover:bg-gray-200")"><i class="fas fa-user mr-2"></i>Clientes</a>
+<a asp-action="Index" asp-route-rol="USER" class="px-4 py-2.5 rounded-xl font-bold transition-all @(rolFiltro=="USER"?"bg-blue-500 text-white shadow-md":"bg-gray-100 text-gray-700 hover:bg-gray-200")"><i class="fas fa-user mr-2"></i>Clientes</a>
 </div>
 
 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-6 border-t border-gray-200">

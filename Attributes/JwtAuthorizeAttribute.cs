@@ -1,8 +1,14 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using AldaJoyeros.Authorization;
+using AldaJoyeros.Extensions;
 
 namespace AldaJoyeros.Attributes
 {
+    /// <summary>
+    /// Atributo de autorización JWT personalizado.
+    /// Usa ClaimsPrincipal establecido por JwtMiddleware.
+    /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
     public class JwtAuthorizeAttribute : Attribute, IAuthorizationFilter
     {
@@ -15,24 +21,46 @@ namespace AldaJoyeros.Attributes
 
         public void OnAuthorization(AuthorizationFilterContext context)
         {
-            var isAuthenticated = context.HttpContext.Items["IsAuthenticated"] as bool? ?? false;
-            var userRole = context.HttpContext.Items["UserRole"] as string;
+            var user = context.HttpContext.User;
 
-            if (!isAuthenticated)
+            // Verificar autenticación usando ClaimsPrincipal
+            if (!user.IsAuthenticated())
             {
-                // Usuario no autenticado - redirigir a login con returnUrl
                 var returnUrl = context.HttpContext.Request.Path + context.HttpContext.Request.QueryString;
                 context.Result = new RedirectToActionResult("Login", "Auth", new { returnUrl });
                 return;
             }
 
-            // Si se requiere un rol específico
-            if (!string.IsNullOrEmpty(_requiredRole) && userRole != _requiredRole)
+            // Verificar rol si es requerido
+            if (!string.IsNullOrEmpty(_requiredRole))
             {
-                // Usuario no tiene el rol requerido - retornar 403 Forbidden
-                context.Result = new ForbidResult();
-                return;
+                var userRole = user.GetRole();
+                if (userRole != _requiredRole)
+                {
+                    context.Result = new ForbidResult();
+                    return;
+                }
             }
         }
+    }
+
+    /// <summary>
+    /// Atributo para requerir rol de administrador.
+    /// Equivalente a [JwtAuthorize("ADMIN")]
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
+    public class AdminOnlyAttribute : JwtAuthorizeAttribute
+    {
+        public AdminOnlyAttribute() : base(Roles.Admin) { }
+    }
+
+    /// <summary>
+    /// Atributo para requerir usuario autenticado (cualquier rol).
+    /// Equivalente a [JwtAuthorize()]
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
+    public class AuthenticatedOnlyAttribute : JwtAuthorizeAttribute
+    {
+        public AuthenticatedOnlyAttribute() : base(null) { }
     }
 }

@@ -7,6 +7,7 @@ using AldaJoyeros.Services.Interfaces;
 using AldaJoyeros.Services.Implementations;
 using AldaJoyeros.Utilities;
 using AldaJoyeros.Middleware;
+using AldaJoyeros.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -27,7 +28,7 @@ namespace AldaJoyeros
             builder.Services.AddDbContext<AldaJoyerosContext>(options =>
                 options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
-            // Configurar MongoDB (para im�genes)
+            // Configurar MongoDB (para imágenes)
             builder.Services.Configure<MongoDbSettings>(
                 builder.Configuration.GetSection("MongoDbSettings"));
             
@@ -54,7 +55,7 @@ namespace AldaJoyeros
             })
             .AddJwtBearer(options =>
             {
-                options.RequireHttpsMetadata = false; // En producci�n cambiar a true
+                options.RequireHttpsMetadata = false;
                 options.SaveToken = true;
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
@@ -68,7 +69,6 @@ namespace AldaJoyeros
                     ClockSkew = TimeSpan.Zero
                 };
                 
-                // Leer token desde cookie
                 options.Events = new JwtBearerEvents
                 {
                     OnMessageReceived = context =>
@@ -82,6 +82,9 @@ namespace AldaJoyeros
                     }
                 };
             });
+
+            // Configurar políticas de autorización
+            builder.Services.AddAuthorization(AuthorizationPolicies.ConfigurePolicies);
 
             // Configurar AutoMapper
             builder.Services.AddAutoMapper(typeof(Program));
@@ -106,7 +109,7 @@ namespace AldaJoyeros
             builder.Services.AddScoped<IDireccionService, DireccionService>();
             builder.Services.AddScoped<IPedidoService, PedidoService>();
             
-            // Registrar Servicio de Im�genes MongoDB
+            // Registrar Servicio de Imágenes MongoDB
             builder.Services.AddScoped<IProductoImagenService, ProductoImagenMongoService>();
 
             // Registrar Servicio de Pago Ficticio
@@ -128,7 +131,7 @@ namespace AldaJoyeros
                 options.IdleTimeout = TimeSpan.FromMinutes(30);
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
-                options.Cookie.Name = ".AldaJoyeros.TempCart"; // Nombre espec�fico para carrito temporal
+                options.Cookie.Name = ".AldaJoyeros.TempCart";
             });
 
             var app = builder.Build();
@@ -143,10 +146,9 @@ namespace AldaJoyeros
             app.UseHttpsRedirection();
             app.UseRouting();
 
-            // Session solo para carrito temporal
             app.UseSession();
             
-            // Agregar middleware JWT personalizado (NO consulta BD)
+            // Middleware JWT personalizado (establece ClaimsPrincipal)
             app.UseMiddleware<JwtMiddleware>();
             
             app.UseAuthentication();
