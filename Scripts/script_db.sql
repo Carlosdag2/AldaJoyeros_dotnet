@@ -8,14 +8,14 @@ CREATE TABLE `usuario` (
   `rol` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `UK5171l57faosmj8myawaucatdw` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
 CREATE TABLE `categoria` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `nombre` varchar(255) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `UK35t4wyxqrevf09uwx9e9p6o75` (`nombre`)
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
 CREATE TABLE `producto` (
   `id` bigint NOT NULL AUTO_INCREMENT,
@@ -27,7 +27,7 @@ CREATE TABLE `producto` (
   UNIQUE KEY `UK9su14n91mtgcg5ehl658v4afx` (`nombre`),
   KEY `FKodqr7965ok9rwquj1utiamt0m` (`categoria_id`),
   CONSTRAINT `FKodqr7965ok9rwquj1utiamt0m` FOREIGN KEY (`categoria_id`) REFERENCES `categoria` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=109 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
 CREATE TABLE `carrito_item` (
   `id` bigint NOT NULL AUTO_INCREMENT,
@@ -40,7 +40,7 @@ CREATE TABLE `carrito_item` (
   KEY `FKgug6o23iu3ptevhdqri0mnir6` (`usuario_id`),
   CONSTRAINT `FKgug6o23iu3ptevhdqri0mnir6` FOREIGN KEY (`usuario_id`) REFERENCES `usuario` (`id`),
   CONSTRAINT `FKs0kykle67ewnol1gcyk791rya` FOREIGN KEY (`producto_id`) REFERENCES `producto` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
 
 CREATE TABLE `direccion` (
@@ -55,7 +55,7 @@ CREATE TABLE `direccion` (
   PRIMARY KEY (`id`),
   KEY `idx_direccion_usuario_id` (`usuario_id`),
   CONSTRAINT `NOMBREFK` FOREIGN KEY (`usuario_id`) REFERENCES `usuario` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
 
 CREATE TABLE `password_reset_tokens` (
@@ -73,7 +73,7 @@ CREATE TABLE `password_reset_tokens` (
   KEY `idx_user_id` (`user_id`),
   KEY `idx_expires_at` (`expires_at`),
   CONSTRAINT `fk_password_reset_user` FOREIGN KEY (`user_id`) REFERENCES `usuario` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+);
 
 
 CREATE TABLE `pedido` (
@@ -89,7 +89,7 @@ CREATE TABLE `pedido` (
   KEY `FK6uxomgomm93vg965o8brugt00` (`usuario_id`),
   CONSTRAINT `FK6uxomgomm93vg965o8brugt00` FOREIGN KEY (`usuario_id`) REFERENCES `usuario` (`id`),
   CONSTRAINT `FKeuawl7ohmc0vexy5jwu7d7bjw` FOREIGN KEY (`direccion_id`) REFERENCES `direccion` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
 CREATE TABLE `linea_pedido` (
   `id` bigint NOT NULL AUTO_INCREMENT,
@@ -102,7 +102,7 @@ CREATE TABLE `linea_pedido` (
   KEY `FKhhtgctnq5gn29qdye9todv6ku` (`producto_id`),
   CONSTRAINT `FKhhtgctnq5gn29qdye9todv6ku` FOREIGN KEY (`producto_id`) REFERENCES `producto` (`id`),
   CONSTRAINT `FKoi533vfp5jf0jgf9dws0s0pw4` FOREIGN KEY (`pedido_id`) REFERENCES `pedido` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
 -- Inserts para los productos
 INSERT INTO producto (id, descripcion, nombre, precio, categoria_id) VALUES
