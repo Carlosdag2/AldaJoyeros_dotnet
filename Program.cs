@@ -46,6 +46,10 @@ namespace AldaJoyeros
             builder.Services.Configure<EmailSettings>(
                 builder.Configuration.GetSection("EmailSettings"));
 
+            // Configurar Stripe
+            builder.Services.Configure<StripeSettings>(
+                builder.Configuration.GetSection("StripeSettings"));
+
             var jwtKey = jwtSettings.Get<JwtSettings>()?.Secret ?? throw new InvalidOperationException("JWT Secret no configurado en appsettings.json");
             
             builder.Services.AddAuthentication(options =>
@@ -112,8 +116,8 @@ namespace AldaJoyeros
             // Registrar Servicio de Imágenes MongoDB
             builder.Services.AddScoped<IProductoImagenService, ProductoImagenMongoService>();
 
-            // Registrar Servicio de Pago Ficticio
-            builder.Services.AddSingleton<IPaymentService, FakePaymentService>();
+            // Registrar Servicio de Pago con Stripe
+            builder.Services.AddScoped<IPaymentService, StripePaymentService>();
 
             // Registrar Servicio JWT
             builder.Services.AddScoped<IJwtService, JwtService>();

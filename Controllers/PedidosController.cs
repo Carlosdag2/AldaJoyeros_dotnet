@@ -14,19 +14,22 @@ namespace AldaJoyeros.Controllers
         private readonly IDireccionService _direccionService;
         private readonly IProductoImagenService _imagenService;
         private readonly IPaymentService _paymentService;
+        private readonly ILogger<PedidosController> _logger;
 
         public PedidosController(
             IPedidoService pedidoService,
             ICarritoService carritoService,
             IDireccionService direccionService,
             IProductoImagenService imagenService,
-            IPaymentService paymentService)
+            IPaymentService paymentService,
+            ILogger<PedidosController> logger)
         {
             _pedidoService = pedidoService;
             _carritoService = carritoService;
             _direccionService = direccionService;
             _imagenService = imagenService;
             _paymentService = paymentService;
+            _logger = logger;
         }
 
         public async Task<IActionResult> Index()
@@ -91,10 +94,56 @@ namespace AldaJoyeros.Controllers
             {
                 CarritoItems = carritoItems,
                 Direccion = new DireccionDto(),
-                MetodoPago = "Contra Reembolso"
+                MetodoPago = "Contra Reembolso",
+                StripePublishableKey = _paymentService.GetPublishableKey()
             };
 
             return View(viewModel);
+        }
+
+        /// <summary>
+        /// Crea un PaymentIntent de Stripe para el checkout
+        /// </summary>
+        [HttpPost]
+        public async Task<IActionResult> CreatePaymentIntent()
+        {
+            try
+            {
+                var carritoItems = await _carritoService.GetByUsuarioIdAsync(CurrentUser!.Id);
+                if (!carritoItems.Any())
+                {
+                    return Json(new { success = false, error = "Carrito vacío" });
+                }
+
+                var total = (decimal)carritoItems.Sum(i => i.Subtotal);
+                
+                var result = await _paymentService.CreatePaymentIntentAsync(
+                    total,
+                    "EUR",
+                    $"Pedido Alda Joyeros - Usuario {CurrentUser.Id}",
+                    new Dictionary<string, string>
+                    {
+                        { "userId", CurrentUser.Id.ToString() },
+                        { "userEmail", CurrentUser.Email }
+                    });
+
+                if (result.Success)
+                {
+                    return Json(new 
+                    { 
+                        success = true, 
+                        clientSecret = result.ClientSecret,
+                        paymentIntentId = result.PaymentIntentId
+                    });
+                }
+
+                return Json(new { success = false, error = result.ErrorMessage });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al crear PaymentIntent");
+                return Json(new { success = false, error = "Error al procesar el pago" });
+            }
         }
 
         [HttpPost]
@@ -112,35 +161,26 @@ namespace AldaJoyeros.Controllers
                     }
                 }
                 viewModel.CarritoItems = carritoItems;
+                viewModel.StripePublishableKey = _paymentService.GetPublishableKey();
                 return View(viewModel);
             }
 
             try
             {
-                // Procesar pago si no es contra reembolso
-                if (viewModel.MetodoPago != "Contra Reembolso")
+                // Si es pago con tarjeta, verificar que el pago fue exitoso en Stripe
+                if (viewModel.MetodoPago == "Tarjeta" && !string.IsNullOrEmpty(viewModel.PaymentIntentId))
                 {
-                    // Crear intención de pago
-                    var paymentIntentId = await _paymentService.CreatePaymentIntentAsync((decimal)viewModel.Total, "EUR");
+                    var paymentStatus = await _paymentService.GetPaymentStatusAsync(viewModel.PaymentIntentId);
                     
-                    // Procesar el pago
-                    var paymentSuccess = await _paymentService.ProcessPaymentAsync(paymentIntentId, viewModel.MetodoPago);
-                    
-                    if (!paymentSuccess)
+                    if (!paymentStatus.IsSucceeded)
                     {
-                        TempData["Error"] = "Error al procesar el pago. Por favor, inténtalo de nuevo.";
-                        var carritoItems = await _carritoService.GetByUsuarioIdAsync(CurrentUser!.Id);
-                        foreach (var item in carritoItems)
-                        {
-                            if (item.Producto != null)
-                            {
-                                var imagenes = await _imagenService.GetByProductoIdAsync(item.ProductoId);
-                                item.Producto.Imagenes = imagenes.ToList();
-                            }
-                        }
-                        viewModel.CarritoItems = carritoItems;
-                        return View(viewModel);
+                        TempData["Error"] = "El pago no se ha completado correctamente. Por favor, inténtalo de nuevo.";
+                        return await ReloadCheckoutView(viewModel);
                     }
+                    
+                    _logger.LogInformation(
+                        "Pago confirmado con Stripe: {PaymentIntentId} - Estado: {Status}",
+                        viewModel.PaymentIntentId, paymentStatus.Status);
                 }
 
                 // Crear pedido
@@ -167,19 +207,26 @@ namespace AldaJoyeros.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error al procesar checkout");
                 ModelState.AddModelError("", ex.Message);
-                var carritoItems = await _carritoService.GetByUsuarioIdAsync(CurrentUser!.Id);
-                foreach (var item in carritoItems)
-                {
-                    if (item.Producto != null)
-                    {
-                        var imagenes = await _imagenService.GetByProductoIdAsync(item.ProductoId);
-                        item.Producto.Imagenes = imagenes.ToList();
-                    }
-                }
-                viewModel.CarritoItems = carritoItems;
-                return View(viewModel);
+                return await ReloadCheckoutView(viewModel);
             }
+        }
+
+        private async Task<IActionResult> ReloadCheckoutView(CheckoutViewModel viewModel)
+        {
+            var carritoItems = await _carritoService.GetByUsuarioIdAsync(CurrentUser!.Id);
+            foreach (var item in carritoItems)
+            {
+                if (item.Producto != null)
+                {
+                    var imagenes = await _imagenService.GetByProductoIdAsync(item.ProductoId);
+                    item.Producto.Imagenes = imagenes.ToList();
+                }
+            }
+            viewModel.CarritoItems = carritoItems;
+            viewModel.StripePublishableKey = _paymentService.GetPublishableKey();
+            return View(viewModel);
         }
     }
 }
