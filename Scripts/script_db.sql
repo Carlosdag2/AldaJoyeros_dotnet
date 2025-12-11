@@ -23,9 +23,12 @@ CREATE TABLE `producto` (
   `nombre` varchar(100) NOT NULL,
   `precio` double NOT NULL,
   `categoria_id` bigint NOT NULL,
+  `eliminado` tinyint(1) NOT NULL DEFAULT '0',
+  `fecha_eliminado` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `UK9su14n91mtgcg5ehl658v4afx` (`nombre`),
   KEY `FKodqr7965ok9rwquj1utiamt0m` (`categoria_id`),
+  KEY `idx_producto_eliminado` (`eliminado`),
   CONSTRAINT `FKodqr7965ok9rwquj1utiamt0m` FOREIGN KEY (`categoria_id`) REFERENCES `categoria` (`id`)
 );
 
