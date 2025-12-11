@@ -2,270 +2,262 @@
 @{
     ViewData["Title"] = "Carrito de Compras";
     var total = ViewBag.Total as double? ?? 0;
+    var itemCount = Model?.Count() ?? 0;
+    var totalUnidades = Model?.Sum(x => x.Cantidad) ?? 0;
 }
 
-<div class="container mx-auto px-6 py-8">
-    <!-- Header -->
-    <div class="mb-8">
-        <h1 class="font-serif text-4xl md:text-5xl font-bold text-gray-900 mb-3 flex items-center gap-3">
-            <div class="w-14 h-14 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg">
-                <i class="fas fa-shopping-cart text-white text-2xl"></i>
+<!-- Hero Header -->
+<div class="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 py-12">
+    <div class="container mx-auto px-4 sm:px-6">
+        <nav class="flex items-center gap-2 text-sm text-gray-400 mb-4">
+            <a asp-controller="Home" asp-action="Index" class="hover:text-white transition-colors">
+                <i class="fas fa-home"></i>
+            </a>
+            <i class="fas fa-chevron-right text-xs text-gray-600"></i>
+            <span class="text-emerald-400">Carrito</span>
+        </nav>
+        <div class="flex items-center gap-4">
+            <div class="w-14 h-14 bg-emerald-500/20 rounded-2xl flex items-center justify-center">
+                <i class="fas fa-shopping-bag text-emerald-400 text-2xl"></i>
             </div>
-            Mi Carrito
-        </h1>
-        <p class="text-gray-600 text-lg">Revisa tus productos antes de finalizar la compra</p>
-    </div>
-
-    @if (Model != null && Model.Any())
-    {
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <!-- Cart Items -->
-            <div class="lg:col-span-2 space-y-4">
-                @foreach (var item in Model)
+            <div>
+                <h1 class="text-3xl font-bold text-white">Mi Carrito</h1>
+                @if (itemCount > 0)
                 {
-                    <div class="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100">
-                        <div class="p-6">
-                            <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
-                                <!-- Product Image -->
-                                <div class="md:col-span-3">
-                                    <div class="bg-gradient-to-br from-emerald-50 to-green-50 rounded-xl overflow-hidden shadow-md" style="aspect-ratio:1/1;">
-                                        @if (item.Producto?.TieneImagenes == true)
-                                        {
-                                            <img src="@item.Producto.ImagenPrincipal" alt="@item.ProductoNombre" class="w-full h-full object-cover hover:scale-110 transition-transform duration-500" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'w-full h-full flex items-center justify-center\'><i class=\'fas fa-gem text-6xl text-emerald-600 opacity-30\'></i></div>';" />
-                                        }
-                                        else
-                                        {
-                                            <div class="w-full h-full flex items-center justify-center p-6">
-                                                <i class="fas fa-gem text-6xl text-emerald-600 opacity-30"></i>
-                                            </div>
-                                        }
-                                    </div>
-                                </div>
-
-                                <!-- Product Info -->
-                                <div class="md:col-span-4">
-                                    <h3 class="font-serif text-xl font-bold text-gray-900 mb-3">@item.ProductoNombre</h3>
-                                    <div class="space-y-2">
-                                        <p class="text-gray-600 flex items-center gap-2">
-                                            <span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-sm font-semibold"><i class="fas fa-tag mr-1"></i>@item.Precio.ToString("C")</span>
-                                            <span class="text-sm text-gray-500">por unidad</span>
-                                        </p>
-                                        @if (!string.IsNullOrEmpty(item.Producto?.CategoriaNombre))
-                                        {
-                                            <p class="text-sm text-gray-500"><i class="fas fa-folder-open mr-1"></i>@item.Producto.CategoriaNombre</p>
-                                        }
-                                    </div>
-                                </div>
-
-                                <!-- Quantity -->
-                                <div class="md:col-span-2">
-                                    <form asp-action="Actualizar" method="post" class="space-y-2">
-                                        <input type="hidden" name="itemId" value="@item.Id" />
-                                        <label class="text-sm text-gray-600 font-semibold block">Cantidad:</label>
-                                        <div class="flex items-center gap-2">
-                                            <input type="number" name="cantidad" value="@item.Cantidad" min="1" max="10" onchange="this.form.submit()" class="w-20 px-3 py-2 border-2 border-gray-300 rounded-xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100 transition-all text-center font-bold outline-none" />
-                                            <button type="button" onclick="this.previousElementSibling.stepUp(); this.previousElementSibling.form.submit();" class="w-8 h-8 bg-emerald-100 hover:bg-emerald-500 text-emerald-600 hover:text-white rounded-lg transition-all duration-200 flex items-center justify-center"><i class="fas fa-plus text-sm"></i></button>
-                                            <button type="button" onclick="this.previousElementSibling.previousElementSibling.stepDown(); this.previousElementSibling.previousElementSibling.form.submit();" class="w-8 h-8 bg-gray-100 hover:bg-gray-300 text-gray-600 hover:text-gray-800 rounded-lg transition-all duration-200 flex items-center justify-center"><i class="fas fa-minus text-sm"></i></button>
-                                        </div>
-                                    </form>
-                                </div>
-
-                                <!-- Subtotal & Delete -->
-                                <div class="md:col-span-3 flex items-center justify-between md:justify-end gap-4">
-                                    <div class="text-right">
-                                        <div class="text-xs text-gray-500 mb-1">Subtotal</div>
-                                        <div class="text-2xl font-bold text-emerald-600">@item.Subtotal.ToString("C")</div>
-                                    </div>
-                                    <form asp-action="Eliminar" method="post">
-                                        <input type="hidden" name="itemId" value="@item.Id" />
-                                        <button type="submit" onclick="return confirm('¿Eliminar este producto del carrito?')" class="w-10 h-10 bg-red-100 hover:bg-red-500 text-red-600 hover:text-white rounded-xl transition-all duration-200 flex items-center justify-center shadow-sm hover:shadow-md"><i class="fas fa-trash"></i></button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <p class="text-gray-400">@totalUnidades @(totalUnidades == 1 ? "artículo" : "artículos")</p>
                 }
-
-                <!-- Actions -->
-                <div class="flex flex-col sm:flex-row justify-between gap-4 pt-4">
-                    <a asp-controller="Productos" asp-action="Index" class="inline-flex items-center justify-center px-8 py-3 border-2 border-gray-300 text-gray-700 rounded-xl hover:border-emerald-500 hover:text-emerald-600 hover:bg-emerald-50 transition-all duration-200 font-semibold"><i class="fas fa-arrow-left mr-2"></i>Seguir Comprando</a>
-                    <form asp-action="Vaciar" method="post" class="inline">
-                        <button type="submit" onclick="return confirm('¿Vaciar todo el carrito?')" class="w-full inline-flex items-center justify-center px-8 py-3 bg-red-100 text-red-600 rounded-xl hover:bg-red-500 hover:text-white transition-all duration-200 font-semibold shadow-sm hover:shadow-md"><i class="fas fa-trash-alt mr-2"></i>Vaciar Carrito</button>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Order Summary -->
-            <div class="lg:col-span-1">
-                <div class="bg-white rounded-2xl shadow-xl p-6 sticky top-24 border border-gray-100">
-                    <h2 class="font-serif text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                        <div class="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-receipt text-emerald-600"></i>
-                        </div>
-                        Resumen
-                    </h2>
-
-                    <div class="space-y-4 mb-6">
-                        <div class="flex justify-between text-gray-700">
-                            <span class="font-medium">Productos:</span>
-                            <span class="font-semibold">@Model.Count()</span>
-                        </div>
-                        <div class="flex justify-between text-gray-700">
-                            <span class="font-medium">Subtotal:</span>
-                            <span class="font-semibold">@total.ToString("C")</span>
-                        </div>
-                        <div class="flex justify-between text-gray-700">
-                            <span class="font-medium">Envío:</span>
-                            <span class="font-semibold @(total > 50 ? "text-green-600" : "")">
-                                @if (total > 50)
-                                {
-                                    <span class="flex items-center gap-1">
-                                        <i class="fas fa-check-circle"></i>
-                                        GRATIS
-                                    </span>
-                                }
-                                else
-                                {
-                                    <span>5,00 €</span>
-                                }
-                            </span>
-                        </div>
-                        <hr class="border-gray-200" />
-                        <div class="flex justify-between items-baseline bg-gradient-to-r from-emerald-50 to-green-50 -mx-6 px-6 py-4 rounded-xl">
-                            <span class="text-lg font-bold text-gray-900">Total:</span>
-                            <span class="text-3xl font-bold text-emerald-600">
-                                @((total > 50 ? total : total + 5).ToString("C"))
-                            </span>
-                        </div>
-                    </div>
-
-                    @if (total < 50)
-                    {
-                        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-500 p-4 rounded-r-xl mb-6 shadow-sm">
-                            <div class="flex items-start gap-3">
-                                <div class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                                    <i class="fas fa-info-circle text-white"></i>
-                                </div>
-                                <div class="text-sm text-blue-800">
-                                    <p class="font-bold mb-1">¡Solo faltan @((50 - total).ToString("C"))!</p>
-                                    <p>Añade más productos y consigue <span class="font-semibold">envío gratis</span></p>
-                                </div>
-                            </div>
-                            <!-- Progress Bar -->
-                            <div class="mt-3 w-full bg-blue-200 rounded-full h-2 overflow-hidden">
-                                <div class="bg-blue-600 h-full rounded-full transition-all duration-500" style="width:@((total / 50 * 100).ToString("0"))%"></div>
-                            </div>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-green-500 p-4 rounded-r-xl mb-6 shadow-sm">
-                            <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                                    <i class="fas fa-check-circle text-white"></i>
-                                </div>
-                                <div class="text-sm text-green-800 font-bold">¡Felicidades! Tienes envío gratis</div>
-                            </div>
-                        </div>
-                    }
-
-                    <!-- Checkout Button -->
-                    <a asp-controller="Pedidos" asp-action="Checkout" class="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 text-white py-4 rounded-xl font-bold text-lg hover:from-emerald-600 hover:to-emerald-700 hover:shadow-2xl transition-all duration-200 transform hover:scale-105 flex items-center justify-center mb-6">
-                        <i class="fas fa-credit-card mr-2"></i>Proceder al Pago
-                    </a>
-
-                    <!-- Badges -->
-                    <div class="space-y-3 pt-6 border-t border-gray-200">
-                        <h3 class="text-sm font-semibold text-gray-700 mb-3">Compra con confianza:</h3>
-                        <div class="flex items-center gap-3 text-sm text-gray-600 bg-green-50 p-3 rounded-lg">
-                            <div class="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                                <i class="fas fa-shield-alt text-white"></i>
-                            </div>
-                            <span class="font-medium">Compra 100% segura</span>
-                        </div>
-                        <div class="flex items-center gap-3 text-sm text-gray-600 bg-blue-50 p-3 rounded-lg">
-                            <div class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                                <i class="fas fa-lock text-white"></i>
-                            </div>
-                            <span class="font-medium">Datos protegidos</span>
-                        </div>
-                        <div class="flex items-center gap-3 text-sm text-gray-600 bg-purple-50 p-3 rounded-lg">
-                            <div class="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                                <i class="fas fa-undo text-white"></i>
-                            </div>
-                            <span class="font-medium">Devoluciones en 30 días</span>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
-    }
-    else
-    {
-        <!-- Empty Cart Message -->
-        <div class="text-center py-20">
-            <div class="bg-white rounded-3xl p-12 shadow-xl max-w-2xl mx-auto border border-gray-100">
-                <div class="w-32 h-32 bg-gradient-to-br from-emerald-100 to-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <i class="fas fa-shopping-cart text-emerald-600 text-6xl"></i>
+    </div>
+</div>
+
+<div class="bg-gray-50 min-h-screen py-8">
+    <div class="container mx-auto px-4 sm:px-6">
+        @if (Model != null && Model.Any())
+        {
+            <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+                <!-- Cart Items -->
+                <div class="xl:col-span-2 space-y-4">
+                    <!-- Table Header (Desktop) -->
+                    <div class="hidden md:grid grid-cols-12 gap-4 px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                        <div class="col-span-6">Producto</div>
+                        <div class="col-span-2 text-center">Cantidad</div>
+                        <div class="col-span-2 text-right">Precio</div>
+                        <div class="col-span-2 text-right">Subtotal</div>
+                    </div>
+
+                    @foreach (var item in Model)
+                    {
+                        <div class="bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow border border-gray-100 overflow-hidden group">
+                            <div class="p-5 md:p-6">
+                                <div class="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6 items-center">
+                                    <!-- Product Info -->
+                                    <div class="md:col-span-6">
+                                        <div class="flex gap-4">
+                                            <!-- Image -->
+                                            <a asp-controller="Productos" asp-action="Detalle" asp-route-id="@item.ProductoId" 
+                                               class="flex-shrink-0 w-20 h-20 md:w-24 md:h-24 rounded-xl overflow-hidden bg-gradient-to-br from-gray-100 to-gray-50 group-hover:shadow-lg transition-shadow">
+                                                @if (item.Producto?.TieneImagenes == true)
+                                                {
+                                                    <img src="@item.Producto.ImagenPrincipal" 
+                                                         alt="@item.ProductoNombre" 
+                                                         class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                                }
+                                                else
+                                                {
+                                                    <div class="w-full h-full flex items-center justify-center">
+                                                        <i class="fas fa-gem text-2xl text-emerald-300"></i>
+                                                    </div>
+                                                }
+                                            </a>
+
+                                            <!-- Details -->
+                                            <div class="flex-1 min-w-0">
+                                                <a asp-controller="Productos" asp-action="Detalle" asp-route-id="@item.ProductoId"
+                                                   class="font-semibold text-gray-900 hover:text-emerald-600 transition-colors line-clamp-2 text-sm md:text-base">
+                                                    @item.ProductoNombre
+                                                </a>
+                                                @if (!string.IsNullOrEmpty(item.Producto?.CategoriaNombre))
+                                                {
+                                                    <span class="inline-block mt-2 px-2.5 py-0.5 bg-emerald-100 text-emerald-700 text-xs font-medium rounded-full">
+                                                        @item.Producto.CategoriaNombre
+                                                    </span>
+                                                }
+                                                <!-- Mobile price -->
+                                                <p class="md:hidden text-emerald-600 font-bold mt-2">@item.Precio.ToString("C")</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Quantity -->
+                                    <div class="md:col-span-2">
+                                        <form asp-action="Actualizar" method="post" class="flex items-center justify-center">
+                                            <input type="hidden" name="itemId" value="@item.Id" />
+                                            <div class="inline-flex items-center bg-gray-100 rounded-full p-1">
+                                                <button type="button" 
+                                                        onclick="this.nextElementSibling.stepDown(); this.form.submit();"
+                                                        class="w-8 h-8 rounded-full text-gray-600 hover:bg-white hover:shadow-sm transition-all flex items-center justify-center">
+                                                    <i class="fas fa-minus text-xs"></i>
+                                                </button>
+                                                <input type="number" 
+                                                       name="cantidad" 
+                                                       value="@item.Cantidad" 
+                                                       min="1" 
+                                                       max="10" 
+                                                       onchange="this.form.submit()"
+                                                       class="w-10 h-8 text-center bg-transparent text-sm font-bold text-gray-900 focus:outline-none" />
+                                                <button type="button" 
+                                                        onclick="this.previousElementSibling.stepUp(); this.form.submit();"
+                                                        class="w-8 h-8 rounded-full text-gray-600 hover:bg-white hover:shadow-sm transition-all flex items-center justify-center">
+                                                    <i class="fas fa-plus text-xs"></i>
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+
+                                    <!-- Price (Desktop) -->
+                                    <div class="hidden md:block md:col-span-2 text-right">
+                                        <span class="text-gray-600">@item.Precio.ToString("C")</span>
+                                    </div>
+
+                                    <!-- Subtotal & Delete -->
+                                    <div class="md:col-span-2">
+                                        <div class="flex items-center justify-between md:justify-end gap-4">
+                                            <span class="text-lg font-bold text-gray-900">@item.Subtotal.ToString("C")</span>
+                                            <form asp-action="Eliminar" method="post">
+                                                <input type="hidden" name="itemId" value="@item.Id" />
+                                                <button type="submit" 
+                                                        onclick="return confirm('¿Eliminar este producto del carrito?')"
+                                                        class="w-9 h-9 rounded-full bg-gray-100 text-gray-400 hover:bg-red-100 hover:text-red-500 transition-all flex items-center justify-center">
+                                                    <i class="fas fa-trash-alt text-sm"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    <!-- Actions Bar -->
+                    <div class="flex flex-col sm:flex-row justify-between items-center gap-4 pt-6 pb-4">
+                        <a asp-controller="Productos" asp-action="Index" 
+                           class="group inline-flex items-center gap-2 text-gray-600 hover:text-emerald-600 transition-colors font-medium">
+                            <i class="fas fa-arrow-left group-hover:-translate-x-1 transition-transform"></i>
+                            <span>Seguir comprando</span>
+                        </a>
+                        <form asp-action="Vaciar" method="post">
+                            <button type="submit" 
+                                    onclick="return confirm('¿Estás seguro de vaciar el carrito?')"
+                                    class="inline-flex items-center gap-2 px-4 py-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors text-sm font-medium">
+                                <i class="fas fa-trash-alt"></i>
+                                <span>Vaciar carrito</span>
+                            </button>
+                        </form>
+                    </div>
                 </div>
-                <h2 class="font-serif text-3xl font-bold text-gray-900 mb-4">Tu carrito está vacío</h2>
-                <p class="text-gray-600 mb-8 text-lg leading-relaxed">
-                    Añade productos increíbles para empezar tu compra<br />
-                    y disfruta de nuestras joyas exclusivas
+
+                <!-- Order Summary -->
+                <div class="xl:col-span-1">
+                    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden sticky top-24">
+                        <!-- Header -->
+                        <div class="bg-gradient-to-r from-gray-900 to-gray-800 px-6 py-5">
+                            <h2 class="font-bold text-lg text-white flex items-center gap-2">
+                                <i class="fas fa-receipt text-emerald-400"></i>
+                                Resumen del pedido
+                            </h2>
+                        </div>
+
+                        <div class="p-6">
+                            <!-- Line Items -->
+                            <div class="space-y-3 text-sm">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-500">Subtotal (@totalUnidades artículos)</span>
+                                    <span class="font-semibold text-gray-900">@total.ToString("C")</span>
+                                </div>
+                            </div>
+
+                            <!-- Total -->
+                            <div class="mt-6 pt-5 border-t-2 border-dashed border-gray-200">
+                                <div class="flex justify-between items-baseline">
+                                    <span class="text-gray-700 font-semibold">Total a pagar</span>
+                                    <div class="text-right">
+                                        <span class="text-3xl font-bold text-emerald-600">
+                                            @total.ToString("C")
+                                        </span>
+                                        <p class="text-xs text-gray-400 mt-1">IVA incluido</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Checkout Button -->
+                            <a asp-controller="Pedidos" asp-action="Checkout" 
+                               class="group w-full mt-6 inline-flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold rounded-xl transition-all shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/40 hover:scale-[1.02]">
+                                <i class="fas fa-lock text-emerald-200"></i>
+                                <span>Finalizar compra</span>
+                                <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                            </a>
+
+                            <!-- Payment Methods -->
+                            <div class="mt-5 flex items-center justify-center gap-3">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" class="h-6 opacity-60">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" class="h-6 opacity-60">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" class="h-5 opacity-60">
+                            </div>
+                        </div>
+
+                        <!-- Trust Badges -->
+                        <div class="bg-gray-50 px-6 py-4 border-t border-gray-100">
+                            <div class="grid grid-cols-3 gap-2 text-center">
+                                <div class="p-2">
+                                    <i class="fas fa-shield-alt text-emerald-500 text-lg mb-1"></i>
+                                    <p class="text-xs text-gray-500 leading-tight">Pago<br>seguro</p>
+                                </div>
+                                <div class="p-2">
+                                    <i class="fas fa-undo text-emerald-500 text-lg mb-1"></i>
+                                    <p class="text-xs text-gray-500 leading-tight">30 días<br>devolución</p>
+                                </div>
+                                <div class="p-2">
+                                    <i class="fas fa-certificate text-emerald-500 text-lg mb-1"></i>
+                                    <p class="text-xs text-gray-500 leading-tight">Garantía<br>de por vida</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <!-- Empty Cart -->
+            <div class="max-w-lg mx-auto text-center py-16">
+                <div class="relative">
+                    <div class="w-32 h-32 bg-gradient-to-br from-emerald-100 to-teal-100 rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg shadow-emerald-100">
+                        <i class="fas fa-shopping-bag text-5xl text-emerald-400"></i>
+                    </div>
+                    <div class="absolute top-0 right-1/3 w-6 h-6 bg-amber-200 rounded-full animate-bounce" style="animation-delay: 0.2s;"></div>
+                    <div class="absolute bottom-4 left-1/3 w-4 h-4 bg-emerald-200 rounded-full animate-bounce" style="animation-delay: 0.5s;"></div>
+                </div>
+                <h2 class="text-3xl font-bold text-gray-900 mb-3">Tu carrito está vacío</h2>
+                <p class="text-gray-500 mb-8 text-lg">
+                    ¡Es el momento perfecto para descubrir nuestras joyas exclusivas!
                 </p>
-                <a asp-controller="Productos" asp-action="Index" class="inline-flex items-center bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:from-emerald-600 hover:to-emerald-700 hover:shadow-2xl transition-all duration-200 transform hover:scale-105">
-                    <i class="fas fa-shopping-bag mr-3"></i>Explorar Productos
+                <a asp-controller="Productos" asp-action="Index" 
+                   class="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold rounded-full transition-all shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/40 hover:scale-105">
+                    <i class="fas fa-gem"></i>
+                    <span>Explorar colección</span>
+                    <i class="fas fa-arrow-right"></i>
                 </a>
             </div>
-        </div>
-    }
+        }
+    </div>
 </div>
 
 @section Styles {
     <style>
-        @@keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .space-y-4>div {
-            animation: fadeInUp .6s ease-out both;
-        }
-
-        .space-y-4>div:nth-child(1) {
-            animation-delay: .1s
-        }
-
-        .space-y-4>div:nth-child(2) {
-            animation-delay: .2s
-        }
-
-        .space-y-4>div:nth-child(3) {
-            animation-delay: .3s
-        }
-
-        .space-y-4>div:nth-child(4) {
-            animation-delay: .4s
-        }
-
-        .space-y-4>div:nth-child(5) {
-            animation-delay: .5s
-        }
-
+        .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         input[type=number]::-webkit-inner-spin-button,
-        input[type=number]::-webkit-outer-spin-button {
-            -webkit-appearance: none;
-            margin: 0
-        }
-
-        input[type=number] {
-            -moz-appearance: textfield
-        }
+        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
     </style>
 }
