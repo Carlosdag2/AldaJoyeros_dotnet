@@ -26,7 +26,13 @@ namespace AldaJoyeros.Controllers
             var producto = await _productoService.GetByIdAsync(id);
             if (producto == null)
             {
-                return NotFound();
+                TempData["Error"] = "Producto no encontrado";
+                return RedirectToAction("Index", "AdminProductos");
+            }
+
+            if (producto.Imagenes == null || !producto.Imagenes.Any())
+            {
+                TempData["Info"] = "Este producto aún no tiene imágenes. ¡Añade algunas!";
             }
 
             ViewBag.Producto = producto;
@@ -41,7 +47,7 @@ namespace AldaJoyeros.Controllers
             {
                 if (archivo == null || archivo.Length == 0)
                 {
-                    TempData["Error"] = "Debe seleccionar una imagen";
+                    TempData["Warning"] = "Debes seleccionar una imagen para subir";
                     return RedirectToAction("Gestionar", new { id = productoId });
                 }
 
@@ -51,14 +57,14 @@ namespace AldaJoyeros.Controllers
                 
                 if (!extensionesPermitidas.Contains(extension))
                 {
-                    TempData["Error"] = "Formato de imagen no permitido. Use: JPG, PNG, WEBP o GIF";
+                    TempData["Error"] = "Formato de imagen no permitido. Usa: JPG, PNG, WEBP o GIF";
                     return RedirectToAction("Gestionar", new { id = productoId });
                 }
 
                 // Validar tamaño (máximo 5MB)
                 if (archivo.Length > 5 * 1024 * 1024)
                 {
-                    TempData["Error"] = "La imagen no puede superar los 5MB";
+                    TempData["Error"] = "La imagen es demasiado grande. Máximo permitido: 5MB";
                     return RedirectToAction("Gestionar", new { id = productoId });
                 }
 
@@ -71,7 +77,7 @@ namespace AldaJoyeros.Controllers
                 };
 
                 await _imagenService.CreateFromFileAsync(uploadDto);
-                TempData["Success"] = "Imagen subida exitosamente a MongoDB";
+                TempData["Success"] = $"Imagen '{archivo.FileName}' subida exitosamente";
             }
             catch (Exception ex)
             {
@@ -89,7 +95,7 @@ namespace AldaJoyeros.Controllers
             {
                 // El ID de MongoDB es string, usar el método apropiado
                 await _imagenService.DeleteByStringIdAsync(id);
-                TempData["Success"] = "Imagen eliminada exitosamente de MongoDB";
+                TempData["Success"] = "Imagen eliminada exitosamente";
             }
             catch (Exception ex)
             {
@@ -107,7 +113,7 @@ namespace AldaJoyeros.Controllers
             {
                 // El ID de MongoDB ya es string, usarlo directamente
                 await _imagenService.SetAsPrincipalAsync(id);
-                TempData["Success"] = "Imagen principal actualizada";
+                TempData["Success"] = "Imagen principal actualizada. Esta imagen se mostrará primero en el catálogo.";
             }
             catch (Exception ex)
             {

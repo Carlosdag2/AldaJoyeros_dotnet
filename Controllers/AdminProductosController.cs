@@ -22,11 +22,8 @@ namespace AldaJoyeros.Controllers
         public async Task<IActionResult> Index(string busqueda = "", int page = 1)
         {
             var productos = await _productoService.GetAllAsync();
-            
-            // Guardar total antes de aplicar filtro de búsqueda
             var totalProductos = productos.Count();
             
-            // Aplicar búsqueda si hay término
             if (!string.IsNullOrWhiteSpace(busqueda))
             {
                 productos = productos.Where(p => 
@@ -35,6 +32,11 @@ namespace AldaJoyeros.Controllers
                     p.CategoriaNombre.Contains(busqueda, StringComparison.OrdinalIgnoreCase) ||
                     p.Id.ToString().Contains(busqueda)
                 ).ToList();
+                
+                if (!productos.Any())
+                {
+                    TempData["Info"] = $"No se encontraron productos con '{busqueda}'";
+                }
             }
 
             var pagedResult = PagedResult<ProductoDto>.Create(productos, page, PageSize);
@@ -47,7 +49,14 @@ namespace AldaJoyeros.Controllers
         [HttpGet]
         public async Task<IActionResult> Crear()
         {
-            ViewBag.Categorias = await _categoriaService.GetAllAsync();
+            var categorias = await _categoriaService.GetAllAsync();
+            if (!categorias.Any())
+            {
+                TempData["Warning"] = "Debes crear al menos una categoría antes de añadir productos";
+                return RedirectToAction("Index", "AdminCategorias");
+            }
+            
+            ViewBag.Categorias = categorias;
             return View();
         }
 
@@ -56,19 +65,20 @@ namespace AldaJoyeros.Controllers
         {
             if (!ModelState.IsValid)
             {
+                TempData["Warning"] = "Por favor, revisa los campos del formulario";
                 ViewBag.Categorias = await _categoriaService.GetAllAsync();
                 return View(productoDto);
             }
 
             try
             {
-                await _productoService.CreateAsync(productoDto);
-                TempData["Success"] = "Producto creado exitosamente";
-                return RedirectToAction("Index");
+                var producto = await _productoService.CreateAsync(productoDto);
+                TempData["Success"] = $"Producto '{productoDto.Nombre}' creado exitosamente. ¡Ahora puedes añadir imágenes!";
+                return RedirectToAction("Gestionar", "AdminImagenes", new { id = producto.Id });
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", ex.Message);
+                TempData["Error"] = $"Error al crear el producto: {ex.Message}";
                 ViewBag.Categorias = await _categoriaService.GetAllAsync();
                 return View(productoDto);
             }
@@ -80,7 +90,8 @@ namespace AldaJoyeros.Controllers
             var producto = await _productoService.GetByIdAsync(id);
             if (producto == null)
             {
-                return NotFound();
+                TempData["Error"] = "Producto no encontrado";
+                return RedirectToAction("Index");
             }
 
             var updateDto = new ProductoUpdateDto
@@ -92,8 +103,8 @@ namespace AldaJoyeros.Controllers
             };
 
             ViewBag.Categorias = await _categoriaService.GetAllAsync();
-            // Pasar la cantidad de imágenes al ViewBag
             ViewBag.Imagenes = producto.Imagenes?.Count ?? 0;
+            ViewBag.ProductoId = id;
             
             return View(updateDto);
         }
@@ -103,12 +114,13 @@ namespace AldaJoyeros.Controllers
         {
             if (!ModelState.IsValid)
             {
+                TempData["Warning"] = "Por favor, revisa los campos del formulario";
                 ViewBag.Categorias = await _categoriaService.GetAllAsync();
-                // Recuperar la cantidad de imágenes también en caso de error
                 var producto = await _productoService.GetByIdAsync(id);
                 if (producto != null)
                 {
                     ViewBag.Imagenes = producto.Imagenes?.Count ?? 0;
+                    ViewBag.ProductoId = id;
                 }
                 return View(productoDto);
             }
@@ -116,18 +128,18 @@ namespace AldaJoyeros.Controllers
             try
             {
                 await _productoService.UpdateAsync(id, productoDto);
-                TempData["Success"] = "Producto actualizado exitosamente";
+                TempData["Success"] = $"Producto '{productoDto.Nombre}' actualizado exitosamente";
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", ex.Message);
+                TempData["Error"] = $"Error al actualizar el producto: {ex.Message}";
                 ViewBag.Categorias = await _categoriaService.GetAllAsync();
-                // Recuperar la cantidad de imágenes también en caso de error
                 var producto = await _productoService.GetByIdAsync(id);
                 if (producto != null)
                 {
                     ViewBag.Imagenes = producto.Imagenes?.Count ?? 0;
+                    ViewBag.ProductoId = id;
                 }
                 return View(productoDto);
             }
@@ -138,12 +150,15 @@ namespace AldaJoyeros.Controllers
         {
             try
             {
+                var producto = await _productoService.GetByIdAsync(id);
+                var nombreProducto = producto?.Nombre ?? "El producto";
+                
                 await _productoService.DeleteAsync(id);
-                TempData["Success"] = "Producto eliminado exitosamente";
+                TempData["Success"] = $"Producto '{nombreProducto}' eliminado exitosamente";
             }
             catch (Exception ex)
             {
-                TempData["Error"] = ex.Message;
+                TempData["Error"] = $"No se pudo eliminar el producto: {ex.Message}";
             }
 
             return RedirectToAction("Index");

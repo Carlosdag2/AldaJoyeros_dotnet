@@ -26,7 +26,6 @@ namespace AldaJoyeros.Controllers
         {
             var pedidosQuery = await _pedidoService.GetAllAsync();
             
-            // Calcular estadísticas por estado
             var todosPedidos = pedidosQuery.ToList();
             ViewBag.TotalPendientes = todosPedidos.Count(p => p.Estado == "PENDIENTE");
             ViewBag.TotalEnProceso = todosPedidos.Count(p => p.Estado == "EN_PROCESO");
@@ -37,6 +36,11 @@ namespace AldaJoyeros.Controllers
             if (!string.IsNullOrEmpty(estado))
             {
                 pedidosQuery = pedidosQuery.Where(p => p.Estado == estado).ToList();
+                
+                if (!pedidosQuery.Any())
+                {
+                    TempData["Info"] = $"No hay pedidos con estado '{GetEstadoDisplay(estado)}'";
+                }
             }
 
             var pagedResult = PagedResult<PedidoDto>.Create(pedidosQuery, page, PageSize);
@@ -50,10 +54,10 @@ namespace AldaJoyeros.Controllers
             var pedido = await _pedidoService.GetByIdAsync(id);
             if (pedido == null)
             {
-                return NotFound();
+                TempData["Error"] = "Pedido no encontrado";
+                return RedirectToAction("Index");
             }
 
-            // Cargar imágenes de MongoDB para cada producto en las líneas del pedido
             foreach (var linea in pedido.LineasPedido)
             {
                 if (linea.Producto != null && linea.ProductoId.HasValue)
@@ -72,15 +76,17 @@ namespace AldaJoyeros.Controllers
             var pedido = await _pedidoService.GetByIdAsync(id);
             if (pedido == null)
             {
-                return NotFound();
+                TempData["Error"] = "Pedido no encontrado";
+                return RedirectToAction("Index");
             }
 
             var updateDto = new PedidoUpdateEstadoDto
             {
-                Estado = Enum.Parse<EstadoPedido>(pedido.Estado)
+                Estado = Enum.Parse<EstadoPedido>(pedido.Estado ?? "PENDIENTE")
             };
 
             ViewBag.PedidoId = id;
+            ViewBag.PedidoInfo = pedido;
             return View(updateDto);
         }
 
@@ -89,19 +95,33 @@ namespace AldaJoyeros.Controllers
         {
             if (!ModelState.IsValid)
             {
+                TempData["Warning"] = "Por favor, selecciona un estado válido";
                 ViewBag.PedidoId = id;
                 return View(pedidoDto);
             }
 
             try
             {
+                var pedidoAnterior = await _pedidoService.GetByIdAsync(id);
+                var estadoAnterior = pedidoAnterior?.Estado ?? "PENDIENTE";
+                
                 await _pedidoService.UpdateEstadoAsync(id, pedidoDto);
-                TempData["Success"] = "Estado del pedido actualizado exitosamente";
+                
+                var mensaje = pedidoDto.Estado switch
+                {
+                    EstadoPedido.EN_PROCESO => "El pedido está ahora en proceso de preparación",
+                    EstadoPedido.ENVIADO => "El pedido ha sido marcado como enviado",
+                    EstadoPedido.ENTREGADO => "El pedido ha sido marcado como entregado",
+                    EstadoPedido.CANCELADO => "El pedido ha sido cancelado",
+                    _ => "Estado del pedido actualizado"
+                };
+                
+                TempData["Success"] = mensaje;
                 return RedirectToAction("Detalle", new { id });
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", ex.Message);
+                TempData["Error"] = $"Error al actualizar el estado: {ex.Message}";
                 ViewBag.PedidoId = id;
                 return View(pedidoDto);
             }
@@ -112,15 +132,36 @@ namespace AldaJoyeros.Controllers
         {
             try
             {
+                var pedido = await _pedidoService.GetByIdAsync(id);
+                
+                // Advertir si el pedido está en proceso o enviado
+                if (pedido != null && (pedido.Estado == "EN_PROCESO" || pedido.Estado == "ENVIADO"))
+                {
+                    TempData["Warning"] = "Has eliminado un pedido que estaba en proceso o enviado. Asegúrate de notificar al cliente.";
+                }
+                
                 await _pedidoService.DeleteAsync(id);
-                TempData["Success"] = "Pedido eliminado exitosamente";
+                TempData["Success"] = $"Pedido #{id} eliminado exitosamente";
             }
             catch (Exception ex)
             {
-                TempData["Error"] = ex.Message;
+                TempData["Error"] = $"No se pudo eliminar el pedido: {ex.Message}";
             }
 
             return RedirectToAction("Index");
+        }
+
+        private static string GetEstadoDisplay(string estado)
+        {
+            return estado switch
+            {
+                "PENDIENTE" => "Pendiente",
+                "EN_PROCESO" => "En Proceso",
+                "ENVIADO" => "Enviado",
+                "ENTREGADO" => "Entregado",
+                "CANCELADO" => "Cancelado",
+                _ => estado
+            };
         }
     }
 }

@@ -50,6 +50,7 @@ namespace AldaJoyeros.Controllers
         {
             if (!ModelState.IsValid)
             {
+                TempData["Warning"] = "Por favor, completa todos los campos";
                 ViewBag.ReturnUrl = returnUrl;
                 return View(loginDto);
             }
@@ -60,34 +61,29 @@ namespace AldaJoyeros.Controllers
                 
                 if (usuario == null)
                 {
-                    ModelState.AddModelError("", "Email o contraseña incorrectos");
+                    TempData["Error"] = "Email o contraseña incorrectos";
                     ViewBag.ReturnUrl = returnUrl;
                     return View(loginDto);
                 }
 
-                // Generar token JWT con toda la información del usuario
                 var token = _jwtService.GenerateToken(usuario);
                 
-                // Configurar duración de la cookie según RememberMe
                 var expiration = RememberMe 
-                    ? DateTimeOffset.UtcNow.AddDays(30)  // 30 días si marca "Mantener sesión"
-                    : DateTimeOffset.UtcNow.AddHours(24); // 24 horas por defecto
+                    ? DateTimeOffset.UtcNow.AddDays(30)
+                    : DateTimeOffset.UtcNow.AddHours(24);
                 
-                // Almacenar token en cookie HttpOnly segura
                 var cookieOptions = new CookieOptions
                 {
                     HttpOnly = true,
-                    Secure = Request.IsHttps, // true solo en HTTPS
+                    Secure = Request.IsHttps,
                     SameSite = SameSiteMode.Strict,
                     Expires = expiration
                 };
                 
                 Response.Cookies.Append("jwt_token", token, cookieOptions);
 
-                // Procesar items del carrito temporal
                 await ProcessTempCarrito(usuario.Id);
 
-                // Redirigir seg�n returnUrl o rol
                 if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                 {
                     return Redirect(returnUrl);
@@ -95,20 +91,22 @@ namespace AldaJoyeros.Controllers
 
                 if (usuario.Rol == "ADMIN")
                 {
+                    TempData["Success"] = $"¡Bienvenido de nuevo, {usuario.Email.Split('@')[0]}!";
                     return RedirectToAction("Index", "Admin");
                 }
 
-                // Si hab�a items en el carrito temporal, ir al carrito
                 if (TempCarritoHelper.HasItems(HttpContext))
                 {
                     return RedirectToAction("Index", "Carrito");
                 }
 
+                TempData["Success"] = $"¡Bienvenido de nuevo, {usuario.Email.Split('@')[0]}!";
                 return RedirectToAction("Index", "Home");
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", "Error al iniciar sesi�n: " + ex.Message);
+                TempData["Error"] = "Error al iniciar sesión. Inténtalo de nuevo.";
+                _logger.LogError(ex, "Error en login para {Email}", loginDto.Email);
                 ViewBag.ReturnUrl = returnUrl;
                 return View(loginDto);
             }
@@ -131,6 +129,7 @@ namespace AldaJoyeros.Controllers
         {
             if (!ModelState.IsValid)
             {
+                TempData["Warning"] = "Por favor, revisa los campos del formulario";
                 ViewBag.ReturnUrl = returnUrl;
                 return View(usuarioCreateDto);
             }
@@ -150,15 +149,13 @@ namespace AldaJoyeros.Controllers
                 
                 if (loggedUser == null)
                 {
-                    ModelState.AddModelError("", "Error al iniciar sesi�n autom�ticamente");
+                    TempData["Warning"] = "Cuenta creada. Por favor, inicia sesión manualmente.";
                     ViewBag.ReturnUrl = returnUrl;
-                    return View(usuarioCreateDto);
+                    return RedirectToAction("Login");
                 }
                 
-                // Generar token JWT
                 var token = _jwtService.GenerateToken(loggedUser);
                 
-                // Almacenar token en cookie HttpOnly
                 var cookieOptions = new CookieOptions
                 {
                     HttpOnly = true,
@@ -169,26 +166,33 @@ namespace AldaJoyeros.Controllers
                 
                 Response.Cookies.Append("jwt_token", token, cookieOptions);
 
-                // Procesar items del carrito temporal
                 await ProcessTempCarrito(loggedUser.Id);
 
-                // Redirigir seg�n returnUrl
                 if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                 {
+                    TempData["Success"] = $"¡Bienvenido a Alda Joyeros, {loggedUser.Email.Split('@')[0]}! Tu cuenta ha sido creada.";
                     return Redirect(returnUrl);
                 }
 
-                // Si hab�a items en el carrito temporal, ir al carrito
                 if (TempCarritoHelper.HasItems(HttpContext))
                 {
+                    TempData["Success"] = "¡Cuenta creada! Ahora puedes completar tu compra.";
                     return RedirectToAction("Index", "Carrito");
                 }
 
+                TempData["Success"] = $"¡Bienvenido a Alda Joyeros! Tu cuenta ha sido creada exitosamente.";
                 return RedirectToAction("Index", "Home");
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", ex.Message);
+                if (ex.Message.Contains("ya está registrado") || ex.Message.Contains("already"))
+                {
+                    TempData["Error"] = "Este email ya está registrado. ¿Quieres iniciar sesión?";
+                }
+                else
+                {
+                    TempData["Error"] = $"Error al crear la cuenta: {ex.Message}";
+                }
                 ViewBag.ReturnUrl = returnUrl;
                 return View(usuarioCreateDto);
             }
@@ -196,13 +200,10 @@ namespace AldaJoyeros.Controllers
 
         public IActionResult Logout()
         {
-            // Eliminar cookie JWT
             Response.Cookies.Delete("jwt_token");
-            
-            // Limpiar carrito temporal si existe
             TempCarritoHelper.Clear(HttpContext);
             
-            TempData["Success"] = "Sesión cerrada exitosamente";
+            TempData["Success"] = "Has cerrado sesión correctamente. ¡Hasta pronto!";
             return RedirectToAction("Index", "Home");
         }
 
@@ -221,7 +222,7 @@ namespace AldaJoyeros.Controllers
         {
             if (string.IsNullOrWhiteSpace(email))
             {
-                ModelState.AddModelError("", "El email es obligatorio");
+                TempData["Warning"] = "Introduce tu email para recuperar la contraseña";
                 return View();
             }
 
@@ -231,20 +232,17 @@ namespace AldaJoyeros.Controllers
                 
                 if (usuario != null)
                 {
-                    // Invalidar tokens anteriores del usuario
                     await _passwordResetTokenRepository.InvalidateUserTokensAsync(usuario.Id);
                     
-                    // Generar token único y código de 6 dígitos
                     var tokenValue = GenerateSecureToken();
                     var verificationCode = GenerateVerificationCode();
                     
-                    // Crear token en base de datos
                     var resetToken = new PasswordResetToken
                     {
                         UserId = usuario.Id,
                         Token = tokenValue,
                         Code = verificationCode,
-                        ExpiresAt = DateTime.UtcNow.AddHours(1), // 1 hora para el código
+                        ExpiresAt = DateTime.UtcNow.AddHours(1),
                         Used = false,
                         Attempts = 0,
                         CodeVerified = false,
@@ -253,10 +251,8 @@ namespace AldaJoyeros.Controllers
                     
                     await _passwordResetTokenRepository.CreateAsync(resetToken);
                     
-                    // Generar enlace de verificación (lleva al usuario a la página para introducir el código)
                     var verifyLink = Url.Action("VerifyCode", "Auth", new { token = tokenValue }, Request.Scheme);
                     
-                    // Enviar email con código
                     try
                     {
                         await _emailService.SendPasswordResetEmailAsync(email, verifyLink!, verificationCode);
@@ -265,11 +261,9 @@ namespace AldaJoyeros.Controllers
                     catch (Exception ex)
                     {
                         _logger.LogError(ex, "Error al enviar email de recuperación a {Email}", email);
-                        // No revelamos el error al usuario por seguridad
                     }
                 }
                 
-                // Siempre mostramos el mismo mensaje por seguridad
                 TempData["Success"] = "Si el email está registrado, recibirás instrucciones para restablecer tu contraseña.";
                 TempData["EmailSent"] = true;
                 
@@ -289,7 +283,7 @@ namespace AldaJoyeros.Controllers
         {
             if (string.IsNullOrWhiteSpace(token))
             {
-                TempData["Error"] = "Enlace inválido";
+                TempData["Error"] = "Enlace inválido o expirado";
                 return RedirectToAction("Login");
             }
 
@@ -301,12 +295,12 @@ namespace AldaJoyeros.Controllers
                 return RedirectToAction("ForgotPassword");
             }
 
-            // Si ya se verificó el código, redirigir a resetear contraseña
             if (resetToken.CodeVerified)
             {
                 return RedirectToAction("ResetPassword", new { token = token });
             }
 
+            TempData["Info"] = "Hemos enviado un código de verificación a tu email. Revisa tu bandeja de entrada.";
             ViewBag.Token = token;
             ViewBag.Attempts = resetToken.Attempts;
             return View();
@@ -325,7 +319,7 @@ namespace AldaJoyeros.Controllers
 
             if (string.IsNullOrWhiteSpace(code) || code.Length != 6)
             {
-                ModelState.AddModelError("", "Introduce el código de 6 dígitos");
+                TempData["Warning"] = "Introduce el código de 6 dígitos que recibiste por email";
                 return View();
             }
 
@@ -339,41 +333,37 @@ namespace AldaJoyeros.Controllers
                     return RedirectToAction("ForgotPassword");
                 }
 
-                // Verificar número de intentos (máximo 5)
                 if (resetToken.Attempts >= 5)
                 {
                     resetToken.Used = true;
                     await _passwordResetTokenRepository.UpdateAsync(resetToken);
-                    TempData["Error"] = "Has superado el número máximo de intentos. Solicita un nuevo código.";
+                    TempData["Error"] = "Has superado el número máximo de intentos. Por seguridad, solicita un nuevo código.";
                     return RedirectToAction("ForgotPassword");
                 }
 
-                // Incrementar intentos
                 resetToken.Attempts++;
                 
-                // Verificar código
                 if (resetToken.Code != code)
                 {
                     await _passwordResetTokenRepository.UpdateAsync(resetToken);
                     var remaining = 5 - resetToken.Attempts;
-                    ModelState.AddModelError("", $"Código incorrecto. Te quedan {remaining} intento(s).");
+                    TempData["Error"] = $"Código incorrecto. Te quedan {remaining} intento(s).";
                     ViewBag.Attempts = resetToken.Attempts;
                     return View();
                 }
 
-                // Código correcto - marcar como verificado
                 resetToken.CodeVerified = true;
                 await _passwordResetTokenRepository.UpdateAsync(resetToken);
                 
                 _logger.LogInformation("Código verificado correctamente para usuario {UserId}", resetToken.UserId);
                 
-                // Redirigir a cambiar contraseña
+                TempData["Success"] = "¡Código verificado! Ahora puedes establecer tu nueva contraseña.";
                 return RedirectToAction("ResetPassword", new { token = token });
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error al verificar código");
-                ModelState.AddModelError("", "Error al verificar el código. Inténtalo de nuevo.");
+                TempData["Error"] = "Error al verificar el código. Inténtalo de nuevo.";
                 return View();
             }
         }
@@ -395,7 +385,6 @@ namespace AldaJoyeros.Controllers
                 return RedirectToAction("ForgotPassword");
             }
 
-            // Verificar que el código ya fue validado
             if (!resetToken.CodeVerified)
             {
                 return RedirectToAction("VerifyCode", new { token = token });
@@ -418,13 +407,13 @@ namespace AldaJoyeros.Controllers
 
             if (string.IsNullOrWhiteSpace(password) || password.Length < 6)
             {
-                ModelState.AddModelError("", "La contraseña debe tener al menos 6 caracteres");
+                TempData["Warning"] = "La contraseña debe tener al menos 6 caracteres";
                 return View();
             }
 
             if (password != confirmPassword)
             {
-                ModelState.AddModelError("", "Las contraseñas no coinciden");
+                TempData["Error"] = "Las contraseñas no coinciden";
                 return View();
             }
 
@@ -438,28 +427,25 @@ namespace AldaJoyeros.Controllers
                     return RedirectToAction("ForgotPassword");
                 }
 
-                // Verificar que el código fue validado
                 if (!resetToken.CodeVerified)
                 {
                     return RedirectToAction("VerifyCode", new { token = token });
                 }
 
-                // Actualizar contraseña del usuario
                 await _usuarioService.UpdatePasswordAsync(resetToken.UserId, password);
                 
-                // Marcar token como usado
                 resetToken.Used = true;
                 await _passwordResetTokenRepository.UpdateAsync(resetToken);
                 
                 _logger.LogInformation("Contraseña restablecida para usuario {UserId}", resetToken.UserId);
                 
-                TempData["Success"] = "¡Contraseña restablecida exitosamente! Ya puedes iniciar sesión.";
+                TempData["Success"] = "¡Contraseña restablecida exitosamente! Ya puedes iniciar sesión con tu nueva contraseña.";
                 return RedirectToAction("Login");
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error al restablecer contraseña");
-                ModelState.AddModelError("", "Error al restablecer la contraseña. Inténtalo de nuevo.");
+                TempData["Error"] = "Error al restablecer la contraseña. Inténtalo de nuevo.";
                 return View();
             }
         }
@@ -481,7 +467,7 @@ namespace AldaJoyeros.Controllers
             var bytes = new byte[4];
             rng.GetBytes(bytes);
             var number = BitConverter.ToUInt32(bytes, 0) % 1000000;
-            return number.ToString("D6"); // Siempre 6 dígitos con ceros a la izquierda
+            return number.ToString("D6");
         }
 
         private async Task ProcessTempCarrito(long usuarioId)
@@ -506,17 +492,15 @@ namespace AldaJoyeros.Controllers
                     }
                     catch (Exception)
                     {
-                        // Si falla agregar alg�n item, continuar con los dem�s
                         continue;
                     }
                 }
                 
-                // Limpiar carrito temporal
                 TempCarritoHelper.Clear(HttpContext);
                 
                 if (successCount > 0)
                 {
-                    TempData["Success"] = $"Se han agregado {successCount} producto(s) a tu carrito.";
+                    TempData["Info"] = $"Se han añadido {successCount} producto(s) a tu carrito.";
                 }
             }
         }

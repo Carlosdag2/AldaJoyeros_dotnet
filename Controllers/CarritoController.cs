@@ -27,7 +27,6 @@ namespace AldaJoyeros.Controllers
         {
             var items = await _carritoService.GetByUsuarioIdAsync(CurrentUser!.Id);
             
-            // Cargar imágenes para cada producto del carrito
             foreach (var item in items)
             {
                 if (item.Producto != null)
@@ -39,6 +38,11 @@ namespace AldaJoyeros.Controllers
             
             var total = await _carritoService.GetTotalAsync(CurrentUser.Id);
             
+            if (!items.Any())
+            {
+                TempData["Info"] = "Tu carrito está vacío. ¡Explora nuestras colecciones!";
+            }
+            
             ViewBag.Total = total;
             return View(items);
         }
@@ -46,13 +50,18 @@ namespace AldaJoyeros.Controllers
         [HttpPost]
         public async Task<IActionResult> Agregar(long productoId, int cantidad = 1)
         {
+            // Validar cantidad
+            if (cantidad < 1)
+            {
+                TempData["Error"] = "La cantidad debe ser al menos 1";
+                return RedirectToAction("Detalle", "Productos", new { id = productoId });
+            }
+
             if (!IsAuthenticated)
             {
-                // Guardar en carrito temporal
                 TempCarritoHelper.AddItem(HttpContext, productoId, cantidad);
-                TempData["Info"] = "Producto guardado. Por favor, inicia sesión para completar tu compra.";
+                TempData["Info"] = "Producto guardado temporalmente. Inicia sesión para completar tu compra.";
                 
-                // Guardar la URL de retorno para redirigir después del login
                 HttpContext.Session.SetString("ReturnUrl", Request.Headers["Referer"].ToString() ?? Url.Action("Index", "Productos")!);
                 
                 return RedirectToAction("Login", "Auth");
@@ -60,6 +69,13 @@ namespace AldaJoyeros.Controllers
 
             try
             {
+                var producto = await _productoService.GetByIdAsync(productoId);
+                if (producto == null)
+                {
+                    TempData["Error"] = "El producto no existe";
+                    return RedirectToAction("Index", "Productos");
+                }
+
                 var carritoItemDto = new CarritoItemCreateDto
                 {
                     ProductoId = productoId,
@@ -67,13 +83,13 @@ namespace AldaJoyeros.Controllers
                 };
 
                 await _carritoService.AddItemAsync(CurrentUser!.Id, carritoItemDto);
-                TempData["Success"] = "Producto agregado al carrito";
+                TempData["Success"] = $"'{producto.Nombre}' añadido al carrito";
                 
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
-                TempData["Error"] = ex.Message;
+                TempData["Error"] = $"No se pudo añadir al carrito: {ex.Message}";
                 return RedirectToAction("Detalle", "Productos", new { id = productoId });
             }
         }
@@ -84,13 +100,25 @@ namespace AldaJoyeros.Controllers
         {
             try
             {
+                if (cantidad < 1)
+                {
+                    TempData["Warning"] = "La cantidad mínima es 1. Si deseas eliminar el producto, usa el botón eliminar.";
+                    return RedirectToAction("Index");
+                }
+
+                if (cantidad > 99)
+                {
+                    TempData["Warning"] = "La cantidad máxima por producto es 99";
+                    return RedirectToAction("Index");
+                }
+
                 var updateDto = new CarritoItemUpdateDto { Cantidad = cantidad };
                 await _carritoService.UpdateItemAsync(CurrentUser!.Id, itemId, updateDto);
-                TempData["Success"] = "Carrito actualizado";
+                TempData["Success"] = "Cantidad actualizada";
             }
             catch (Exception ex)
             {
-                TempData["Error"] = ex.Message;
+                TempData["Error"] = $"Error al actualizar: {ex.Message}";
             }
 
             return RedirectToAction("Index");
@@ -107,7 +135,7 @@ namespace AldaJoyeros.Controllers
             }
             catch (Exception ex)
             {
-                TempData["Error"] = ex.Message;
+                TempData["Error"] = $"Error al eliminar: {ex.Message}";
             }
 
             return RedirectToAction("Index");
@@ -119,12 +147,19 @@ namespace AldaJoyeros.Controllers
         {
             try
             {
+                var items = await _carritoService.GetByUsuarioIdAsync(CurrentUser!.Id);
+                if (!items.Any())
+                {
+                    TempData["Info"] = "El carrito ya está vacío";
+                    return RedirectToAction("Index");
+                }
+
                 await _carritoService.ClearCarritoAsync(CurrentUser!.Id);
                 TempData["Success"] = "Carrito vaciado exitosamente";
             }
             catch (Exception ex)
             {
-                TempData["Error"] = ex.Message;
+                TempData["Error"] = $"Error al vaciar el carrito: {ex.Message}";
             }
 
             return RedirectToAction("Index");

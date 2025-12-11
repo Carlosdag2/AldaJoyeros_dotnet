@@ -19,10 +19,7 @@ namespace AldaJoyeros.Controllers
         public async Task<IActionResult> Index()
         {
             var categorias = await _categoriaService.GetAllAsync();
-            
-            // Calcular el total de productos
             ViewBag.TotalProductos = categorias.Sum(c => c.CantidadProductos);
-
             return View(categorias);
         }
 
@@ -37,18 +34,19 @@ namespace AldaJoyeros.Controllers
         {
             if (!ModelState.IsValid)
             {
+                TempData["Warning"] = "Por favor, revisa los campos del formulario";
                 return View(categoriaDto);
             }
 
             try
             {
                 await _categoriaService.CreateAsync(categoriaDto);
-                TempData["Success"] = "Categoría creada exitosamente";
+                TempData["Success"] = $"Categoría '{categoriaDto.Nombre}' creada exitosamente";
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", ex.Message);
+                TempData["Error"] = $"Error al crear la categoría: {ex.Message}";
                 return View(categoriaDto);
             }
         }
@@ -59,7 +57,8 @@ namespace AldaJoyeros.Controllers
             var categoria = await _categoriaService.GetByIdAsync(id);
             if (categoria == null)
             {
-                return NotFound();
+                TempData["Error"] = "Categoría no encontrada";
+                return RedirectToAction("Index");
             }
 
             var updateDto = new CategoriaUpdateDto
@@ -67,7 +66,6 @@ namespace AldaJoyeros.Controllers
                 Nombre = categoria.Nombre
             };
 
-            // Pasar datos al ViewBag para la vista
             ViewBag.CategoriaId = id;
             ViewBag.CantidadProductos = categoria.CantidadProductos;
 
@@ -79,7 +77,7 @@ namespace AldaJoyeros.Controllers
         {
             if (!ModelState.IsValid)
             {
-                // Si hay errores, recuperar los datos para el ViewBag
+                TempData["Warning"] = "Por favor, revisa los campos del formulario";
                 var categoria = await _categoriaService.GetByIdAsync(id);
                 if (categoria != null)
                 {
@@ -92,13 +90,12 @@ namespace AldaJoyeros.Controllers
             try
             {
                 await _categoriaService.UpdateAsync(id, categoriaDto);
-                TempData["Success"] = "Categoría actualizada exitosamente";
+                TempData["Success"] = $"Categoría '{categoriaDto.Nombre}' actualizada exitosamente";
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", ex.Message);
-                // Recuperar los datos para el ViewBag en caso de error
+                TempData["Error"] = $"Error al actualizar la categoría: {ex.Message}";
                 var categoria = await _categoriaService.GetByIdAsync(id);
                 if (categoria != null)
                 {
@@ -114,12 +111,15 @@ namespace AldaJoyeros.Controllers
         {
             try
             {
+                var categoria = await _categoriaService.GetByIdAsync(id);
+                var nombreCategoria = categoria?.Nombre ?? "La categoría";
+                
                 await _categoriaService.DeleteAsync(id);
-                TempData["Success"] = "Categoría eliminada exitosamente";
+                TempData["Success"] = $"Categoría '{nombreCategoria}' eliminada exitosamente";
             }
             catch (Exception ex)
             {
-                TempData["Error"] = ex.Message;
+                TempData["Error"] = $"No se pudo eliminar la categoría: {ex.Message}";
             }
 
             return RedirectToAction("Index");

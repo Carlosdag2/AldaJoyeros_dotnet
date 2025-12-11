@@ -21,7 +21,6 @@ namespace AldaJoyeros.Controllers
         {
             var usuariosQuery = await _usuarioService.GetAllAsync();
             
-            // Calcular estadísticas antes de filtrar
             var todosUsuarios = usuariosQuery.ToList();
             ViewBag.TotalAdministradores = todosUsuarios.Count(u => u.Rol == "ADMIN");
             ViewBag.TotalClientes = todosUsuarios.Count(u => u.Rol == "USER");
@@ -48,18 +47,19 @@ namespace AldaJoyeros.Controllers
         {
             if (!ModelState.IsValid)
             {
+                TempData["Warning"] = "Por favor, revisa los campos del formulario";
                 return View(usuarioDto);
             }
 
             try
             {
                 await _usuarioService.CreateAsync(usuarioDto);
-                TempData["Success"] = "Usuario creado exitosamente";
+                TempData["Success"] = $"Usuario '{usuarioDto.Email}' creado exitosamente";
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", ex.Message);
+                TempData["Error"] = $"Error al crear el usuario: {ex.Message}";
                 return View(usuarioDto);
             }
         }
@@ -70,7 +70,14 @@ namespace AldaJoyeros.Controllers
             var usuario = await _usuarioService.GetByIdAsync(id);
             if (usuario == null)
             {
-                return NotFound();
+                TempData["Error"] = "Usuario no encontrado";
+                return RedirectToAction("Index");
+            }
+
+            // Verificar si intenta editar su propia cuenta
+            if (CurrentUser != null && CurrentUser.Id == id)
+            {
+                TempData["Warning"] = "Estás editando tu propia cuenta. Ten cuidado al cambiar el rol.";
             }
 
             var updateDto = new UsuarioUpdateDto
@@ -80,6 +87,7 @@ namespace AldaJoyeros.Controllers
             };
 
             ViewBag.UsuarioId = id;
+            ViewBag.UsuarioEmail = usuario.Email;
             return View(updateDto);
         }
 
@@ -88,19 +96,28 @@ namespace AldaJoyeros.Controllers
         {
             if (!ModelState.IsValid)
             {
+                TempData["Warning"] = "Por favor, revisa los campos del formulario";
                 ViewBag.UsuarioId = id;
                 return View(usuarioDto);
             }
 
             try
             {
+                // Verificar si está quitándose el rol de admin a sí mismo
+                if (CurrentUser != null && CurrentUser.Id == id && usuarioDto.Rol != "ADMIN")
+                {
+                    TempData["Error"] = "No puedes quitarte el rol de administrador a ti mismo";
+                    ViewBag.UsuarioId = id;
+                    return View(usuarioDto);
+                }
+
                 await _usuarioService.UpdateAsync(id, usuarioDto);
-                TempData["Success"] = "Usuario actualizado exitosamente";
+                TempData["Success"] = $"Usuario '{usuarioDto.Email}' actualizado exitosamente";
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", ex.Message);
+                TempData["Error"] = $"Error al actualizar el usuario: {ex.Message}";
                 ViewBag.UsuarioId = id;
                 return View(usuarioDto);
             }
@@ -111,12 +128,22 @@ namespace AldaJoyeros.Controllers
         {
             try
             {
+                // No permitir eliminarse a sí mismo
+                if (CurrentUser != null && CurrentUser.Id == id)
+                {
+                    TempData["Error"] = "No puedes eliminar tu propia cuenta";
+                    return RedirectToAction("Index");
+                }
+
+                var usuario = await _usuarioService.GetByIdAsync(id);
+                var emailUsuario = usuario?.Email ?? "El usuario";
+                
                 await _usuarioService.DeleteAsync(id);
-                TempData["Success"] = "Usuario eliminado exitosamente";
+                TempData["Success"] = $"Usuario '{emailUsuario}' eliminado exitosamente";
             }
             catch (Exception ex)
             {
-                TempData["Error"] = ex.Message;
+                TempData["Error"] = $"No se pudo eliminar el usuario: {ex.Message}";
             }
 
             return RedirectToAction("Index");
