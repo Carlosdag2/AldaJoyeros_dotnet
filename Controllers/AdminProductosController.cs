@@ -19,29 +19,43 @@ namespace AldaJoyeros.Controllers
             _categoriaService = categoriaService;
         }
 
-        public async Task<IActionResult> Index(string busqueda = "", int page = 1)
+        public async Task<IActionResult> Index(string busqueda = "", string filtro = "activos", int page = 1)
         {
-            var productos = await _productoService.GetAllAsync();
-            var totalProductos = productos.Count();
+            // Obtener todos los productos incluyendo eliminados para admin
+            var productos = await _productoService.GetAllIncludingDeletedAsync();
+            var todosProductos = productos.ToList();
             
+            // Estadísticas
+            ViewBag.TotalProductos = todosProductos.Count(p => !p.Eliminado);
+            ViewBag.TotalEliminados = todosProductos.Count(p => p.Eliminado);
+            
+            // Aplicar filtro de estado
+            IEnumerable<ProductoDto> productosFiltrados = filtro switch
+            {
+                "eliminados" => todosProductos.Where(p => p.Eliminado),
+                "todos" => todosProductos,
+                _ => todosProductos.Where(p => !p.Eliminado) // activos por defecto
+            };
+            
+            // Aplicar búsqueda
             if (!string.IsNullOrWhiteSpace(busqueda))
             {
-                productos = productos.Where(p => 
+                productosFiltrados = productosFiltrados.Where(p => 
                     p.Nombre.Contains(busqueda, StringComparison.OrdinalIgnoreCase) ||
                     (p.Descripcion != null && p.Descripcion.Contains(busqueda, StringComparison.OrdinalIgnoreCase)) ||
                     p.CategoriaNombre.Contains(busqueda, StringComparison.OrdinalIgnoreCase) ||
                     p.Id.ToString().Contains(busqueda)
                 ).ToList();
                 
-                if (!productos.Any())
+                if (!productosFiltrados.Any())
                 {
                     TempData["Info"] = $"No se encontraron productos con '{busqueda}'";
                 }
             }
 
-            var pagedResult = PagedResult<ProductoDto>.Create(productos, page, PageSize);
+            var pagedResult = PagedResult<ProductoDto>.Create(productosFiltrados, page, PageSize);
             ViewBag.Busqueda = busqueda;
-            ViewBag.TotalProductos = totalProductos;
+            ViewBag.Filtro = filtro;
 
             return View(pagedResult);
         }
@@ -94,6 +108,11 @@ namespace AldaJoyeros.Controllers
                 return RedirectToAction("Index");
             }
 
+            if (producto.Eliminado)
+            {
+                TempData["Warning"] = "Este producto está eliminado. Restáuralo primero para editarlo.";
+            }
+
             var updateDto = new ProductoUpdateDto
             {
                 Nombre = producto.Nombre,
@@ -105,6 +124,7 @@ namespace AldaJoyeros.Controllers
             ViewBag.Categorias = await _categoriaService.GetAllAsync();
             ViewBag.Imagenes = producto.Imagenes?.Count ?? 0;
             ViewBag.ProductoId = id;
+            ViewBag.Eliminado = producto.Eliminado;
             
             return View(updateDto);
         }
@@ -121,6 +141,7 @@ namespace AldaJoyeros.Controllers
                 {
                     ViewBag.Imagenes = producto.Imagenes?.Count ?? 0;
                     ViewBag.ProductoId = id;
+                    ViewBag.Eliminado = producto.Eliminado;
                 }
                 return View(productoDto);
             }
@@ -140,6 +161,7 @@ namespace AldaJoyeros.Controllers
                 {
                     ViewBag.Imagenes = producto.Imagenes?.Count ?? 0;
                     ViewBag.ProductoId = id;
+                    ViewBag.Eliminado = producto.Eliminado;
                 }
                 return View(productoDto);
             }
@@ -154,7 +176,7 @@ namespace AldaJoyeros.Controllers
                 var nombreProducto = producto?.Nombre ?? "El producto";
                 
                 await _productoService.DeleteAsync(id);
-                TempData["Success"] = $"Producto '{nombreProducto}' eliminado exitosamente";
+                TempData["Success"] = $"Producto '{nombreProducto}' eliminado. Puedes restaurarlo desde la papelera.";
             }
             catch (Exception ex)
             {
@@ -162,6 +184,51 @@ namespace AldaJoyeros.Controllers
             }
 
             return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Restaurar(long id)
+        {
+            try
+            {
+                var producto = await _productoService.GetByIdAsync(id);
+                var nombreProducto = producto?.Nombre ?? "El producto";
+                
+                await _productoService.RestoreAsync(id);
+                TempData["Success"] = $"Producto '{nombreProducto}' restaurado exitosamente";
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"No se pudo restaurar el producto: {ex.Message}";
+            }
+
+            return RedirectToAction("Index", new { filtro = "eliminados" });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EliminarPermanente(long id)
+        {
+            try
+            {
+                var producto = await _productoService.GetByIdAsync(id);
+                
+                if (producto != null && !producto.Eliminado)
+                {
+                    TempData["Error"] = "Solo puedes eliminar permanentemente productos que estén en la papelera";
+                    return RedirectToAction("Index");
+                }
+                
+                var nombreProducto = producto?.Nombre ?? "El producto";
+                
+                await _productoService.HardDeleteAsync(id);
+                TempData["Success"] = $"Producto '{nombreProducto}' eliminado permanentemente";
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"No se pudo eliminar el producto: {ex.Message}";
+            }
+
+            return RedirectToAction("Index", new { filtro = "eliminados" });
         }
     }
 }

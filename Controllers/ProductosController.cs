@@ -23,6 +23,7 @@ namespace AldaJoyeros.Controllers
             ViewBag.CategoriaSeleccionada = categoriaId;
             ViewBag.Busqueda = busqueda;
 
+            // GetAllAsync y GetByCategoriaAsync ya filtran productos eliminados
             var productosQuery = categoriaId.HasValue
                 ? await _productoService.GetByCategoriaAsync(categoriaId.Value)
                 : await _productoService.GetAllAsync();
@@ -32,7 +33,7 @@ namespace AldaJoyeros.Controllers
             {
                 productosQuery = productosQuery.Where(p => 
                     p.Nombre.Contains(busqueda, StringComparison.OrdinalIgnoreCase) ||
-                    p.Descripcion.Contains(busqueda, StringComparison.OrdinalIgnoreCase) ||
+                    (p.Descripcion != null && p.Descripcion.Contains(busqueda, StringComparison.OrdinalIgnoreCase)) ||
                     p.CategoriaNombre.Contains(busqueda, StringComparison.OrdinalIgnoreCase)
                 ).ToList();
             }
@@ -44,10 +45,12 @@ namespace AldaJoyeros.Controllers
 
         public async Task<IActionResult> Detalle(long id)
         {
-            var producto = await _productoService.GetByIdAsync(id);
+            // Usar GetByIdActiveAsync para no mostrar productos eliminados
+            var producto = await _productoService.GetByIdActiveAsync(id);
             if (producto == null)
             {
-                return NotFound();
+                TempData["Error"] = "Este producto no está disponible";
+                return RedirectToAction("Index");
             }
 
             return View(producto);

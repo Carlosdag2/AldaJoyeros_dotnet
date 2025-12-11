@@ -11,6 +11,16 @@ namespace AldaJoyeros.DTOs
         public long CategoriaId { get; set; }
         public string CategoriaNombre { get; set; } = string.Empty;
         
+        /// <summary>
+        /// Indica si el producto está eliminado (soft delete)
+        /// </summary>
+        public bool Eliminado { get; set; }
+        
+        /// <summary>
+        /// Fecha en que se eliminó el producto
+        /// </summary>
+        public DateTime? FechaEliminado { get; set; }
+        
         // Imágenes del producto (ahora en Base64)
         public List<ProductoImagenDto> Imagenes { get; set; } = new List<ProductoImagenDto>();
         
