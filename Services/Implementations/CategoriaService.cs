@@ -3,6 +3,7 @@ using AldaJoyeros.DTOs;
 using AldaJoyeros.Entities;
 using AldaJoyeros.Repositories.Interfaces;
 using AldaJoyeros.Services.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace AldaJoyeros.Services.Implementations
 {
@@ -10,11 +11,16 @@ namespace AldaJoyeros.Services.Implementations
     {
         private readonly ICategoriaRepository _categoriaRepository;
         private readonly IMapper _mapper;
+        private readonly ILogger<CategoriaService> _logger;
 
-        public CategoriaService(ICategoriaRepository categoriaRepository, IMapper mapper)
+        public CategoriaService(
+            ICategoriaRepository categoriaRepository, 
+            IMapper mapper,
+            ILogger<CategoriaService> logger)
         {
             _categoriaRepository = categoriaRepository;
             _mapper = mapper;
+            _logger = logger;
         }
 
         public async Task<IEnumerable<CategoriaDto>> GetAllAsync()
@@ -49,6 +55,12 @@ namespace AldaJoyeros.Services.Implementations
                 throw new KeyNotFoundException("Categoría no encontrada");
             }
 
+            // No permitir renombrar a "Sin categoría" (reservado)
+            if (categoriaUpdateDto.Nombre == "Sin categoría" && categoria.Nombre != "Sin categoría")
+            {
+                throw new InvalidOperationException("El nombre 'Sin categoría' está reservado para el sistema");
+            }
+
             _mapper.Map(categoriaUpdateDto, categoria);
             var updatedCategoria = await _categoriaRepository.UpdateAsync(categoria);
             return _mapper.Map<CategoriaDto>(updatedCategoria);
@@ -56,12 +68,44 @@ namespace AldaJoyeros.Services.Implementations
 
         public async Task DeleteAsync(long id)
         {
-            if (!await _categoriaRepository.ExistsAsync(id))
+            var categoria = await _categoriaRepository.GetByIdAsync(id);
+            if (categoria == null)
             {
                 throw new KeyNotFoundException("Categoría no encontrada");
             }
 
+            // No permitir eliminar la categoría "Sin categoría"
+            if (categoria.Nombre == "Sin categoría")
+            {
+                throw new InvalidOperationException("No se puede eliminar la categoría 'Sin categoría' porque es la categoría por defecto del sistema");
+            }
+
+            // Si la categoría tiene productos, reasignarlos a "Sin categoría"
+            if (categoria.Productos != null && categoria.Productos.Any())
+            {
+                var defaultCategory = await _categoriaRepository.GetOrCreateDefaultCategoryAsync();
+                
+                _logger.LogInformation(
+                    "Reasignando {Count} productos de categoría '{From}' (ID: {FromId}) a '{To}' (ID: {ToId})",
+                    categoria.Productos.Count,
+                    categoria.Nombre,
+                    categoria.Id,
+                    defaultCategory.Nombre,
+                    defaultCategory.Id);
+
+                await _categoriaRepository.ReassignProductsAsync(id, defaultCategory.Id);
+            }
+
             await _categoriaRepository.DeleteAsync(id);
+        }
+
+        /// <summary>
+        /// Verifica si una categoría es la categoría por defecto del sistema
+        /// </summary>
+        public async Task<bool> IsDefaultCategoryAsync(long id)
+        {
+            var categoria = await _categoriaRepository.GetByIdAsync(id);
+            return categoria?.Nombre == "Sin categoría";
         }
     }
 }

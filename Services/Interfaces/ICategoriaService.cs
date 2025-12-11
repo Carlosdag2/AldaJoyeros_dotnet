@@ -9,5 +9,10 @@ namespace AldaJoyeros.Services.Interfaces
         Task<CategoriaDto> CreateAsync(CategoriaCreateDto categoriaCreateDto);
         Task<CategoriaDto> UpdateAsync(long id, CategoriaUpdateDto categoriaUpdateDto);
         Task DeleteAsync(long id);
+        
+        /// <summary>
+        /// Verifica si una categoría es la categoría por defecto del sistema
+        /// </summary>
+        Task<bool> IsDefaultCategoryAsync(long id);
     }
 }

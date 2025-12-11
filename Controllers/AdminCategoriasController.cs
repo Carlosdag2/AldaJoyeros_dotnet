@@ -38,6 +38,13 @@ namespace AldaJoyeros.Controllers
                 return View(categoriaDto);
             }
 
+            // No permitir crear categoría con nombre reservado
+            if (categoriaDto.Nombre.Trim().Equals("Sin categoría", StringComparison.OrdinalIgnoreCase))
+            {
+                TempData["Error"] = "El nombre 'Sin categoría' está reservado para el sistema";
+                return View(categoriaDto);
+            }
+
             try
             {
                 await _categoriaService.CreateAsync(categoriaDto);
@@ -61,6 +68,12 @@ namespace AldaJoyeros.Controllers
                 return RedirectToAction("Index");
             }
 
+            // Verificar si es la categoría por defecto
+            if (await _categoriaService.IsDefaultCategoryAsync(id))
+            {
+                TempData["Warning"] = "Esta es la categoría por defecto del sistema. No se puede renombrar ni eliminar.";
+            }
+
             var updateDto = new CategoriaUpdateDto
             {
                 Nombre = categoria.Nombre
@@ -68,6 +81,7 @@ namespace AldaJoyeros.Controllers
 
             ViewBag.CategoriaId = id;
             ViewBag.CantidadProductos = categoria.CantidadProductos;
+            ViewBag.IsDefaultCategory = categoria.Nombre == "Sin categoría";
 
             return View(updateDto);
         }
@@ -83,6 +97,7 @@ namespace AldaJoyeros.Controllers
                 {
                     ViewBag.CategoriaId = id;
                     ViewBag.CantidadProductos = categoria.CantidadProductos;
+                    ViewBag.IsDefaultCategory = categoria.Nombre == "Sin categoría";
                 }
                 return View(categoriaDto);
             }
@@ -101,6 +116,7 @@ namespace AldaJoyeros.Controllers
                 {
                     ViewBag.CategoriaId = id;
                     ViewBag.CantidadProductos = categoria.CantidadProductos;
+                    ViewBag.IsDefaultCategory = categoria.Nombre == "Sin categoría";
                 }
                 return View(categoriaDto);
             }
@@ -112,10 +128,25 @@ namespace AldaJoyeros.Controllers
             try
             {
                 var categoria = await _categoriaService.GetByIdAsync(id);
-                var nombreCategoria = categoria?.Nombre ?? "La categoría";
+                if (categoria == null)
+                {
+                    TempData["Error"] = "Categoría no encontrada";
+                    return RedirectToAction("Index");
+                }
+
+                var nombreCategoria = categoria.Nombre;
+                var cantidadProductos = categoria.CantidadProductos;
                 
                 await _categoriaService.DeleteAsync(id);
-                TempData["Success"] = $"Categoría '{nombreCategoria}' eliminada exitosamente";
+                
+                if (cantidadProductos > 0)
+                {
+                    TempData["Success"] = $"Categoría '{nombreCategoria}' eliminada. Sus {cantidadProductos} producto(s) fueron movidos a 'Sin categoría'.";
+                }
+                else
+                {
+                    TempData["Success"] = $"Categoría '{nombreCategoria}' eliminada exitosamente";
+                }
             }
             catch (Exception ex)
             {
