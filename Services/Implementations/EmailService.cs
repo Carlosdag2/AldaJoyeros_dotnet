@@ -320,7 +320,7 @@ namespace AldaJoyeros.Services.Implementations
                     <tr>
                         <td align='center' style='padding: 24px 16px;'>
                             <p style='margin: 0; font-size: 11px; color: #94a3b8;'>
-                                &copy; {DateTime.Now.Year} Alda Joyeros. Todos los derechos reservados.
+                                &copy; {DateTime.Now.Year} Alda Joyeros 1962. Todos los derechos reservados.
                             </p>
                         </td>
                     </tr>
