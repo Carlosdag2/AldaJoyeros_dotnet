@@ -1,64 +1,288 @@
 @model AldaJoyeros.DTOs.ProductoDto
-@{ViewData["Title"]="Gestionar Imágenes";}
+@{
+    ViewData["Title"] = "Gestionar Imágenes";
+}
 
-<div class="container mx-auto px-6 py-8">
-<div class="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-<div><h1 class="font-serif text-4xl font-bold text-gray-900 mb-2 flex items-center gap-3"><div class="w-14 h-14 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg"><i class="fas fa-images text-white text-2xl"></i></div>Gestionar Imágenes</h1><p class="text-gray-600">Producto: <strong>@Model.Nombre</strong> (#@Model.Id)</p></div>
-<a asp-controller="AdminProductos" asp-action="Editar" asp-route-id="@Model.Id" class="inline-flex items-center px-8 py-3 border-2 border-gray-300 text-gray-700 rounded-xl hover:border-emerald-500 hover:text-emerald-600 hover:bg-emerald-50 transition-all font-semibold"><i class="fas fa-arrow-left mr-2"></i>Volver</a>
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
+        <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\"60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%239C92AC\" fill-opacity=\"0.05\"%3E%3Cpath d=\"M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zM36 6V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 6V0H4v4H0v2h4v4h2V6h4V4H6z\"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-40"></div>
+        
+        <div class="relative container mx-auto px-6 py-8">
+            <nav class="flex items-center gap-2 text-sm text-slate-400 mb-4">
+                <a asp-controller="Admin" asp-action="Index" class="hover:text-white transition-colors"><i class="fas fa-home"></i></a>
+                <i class="fas fa-chevron-right text-xs"></i>
+                <a asp-controller="AdminProductos" asp-action="Index" class="hover:text-white transition-colors">Productos</a>
+                <i class="fas fa-chevron-right text-xs"></i>
+                <a asp-controller="AdminProductos" asp-action="Editar" asp-route-id="@Model.Id" class="hover:text-white transition-colors">#@Model.Id</a>
+                <i class="fas fa-chevron-right text-xs"></i>
+                <span class="text-white">Imágenes</span>
+            </nav>
+            
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <div class="w-14 h-14 bg-gradient-to-br from-violet-400 to-purple-600 rounded-2xl flex items-center justify-center shadow-xl shadow-violet-500/25">
+                        <i class="fas fa-images text-white text-2xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl md:text-3xl font-bold text-white">Gestionar Imágenes</h1>
+                        <p class="text-slate-400 text-sm mt-1">@Model.Nombre (#@Model.Id)</p>
+                    </div>
+                </div>
+                <a asp-controller="AdminProductos" asp-action="Editar" asp-route-id="@Model.Id" class="inline-flex items-center gap-2 px-5 py-2.5 bg-white/10 hover:bg-white/20 text-white rounded-xl font-medium transition-all border border-white/10">
+                    <i class="fas fa-arrow-left"></i>Volver al Producto
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mx-auto px-6 py-8">
+        @if(TempData["Success"] != null)
+        {
+            <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 rounded-r-lg mb-6">
+                <div class="flex items-center gap-2 text-emerald-700">
+                    <i class="fas fa-check-circle"></i>
+                    <span class="font-medium">@TempData["Success"]</span>
+                </div>
+            </div>
+        }
+        @if(TempData["Error"] != null)
+        {
+            <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg mb-6">
+                <div class="flex items-center gap-2 text-red-700">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span class="font-medium">@TempData["Error"]</span>
+                </div>
+            </div>
+        }
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Main Content -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Upload Form -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                    <div class="p-5 border-b border-slate-100">
+                        <h2 class="font-semibold text-slate-800 flex items-center gap-2">
+                            <i class="fas fa-cloud-upload-alt text-emerald-500"></i>
+                            Subir Nueva Imagen
+                        </h2>
+                    </div>
+                    <form asp-controller="AdminImagenes" asp-action="Subir" method="post" enctype="multipart/form-data" class="p-5 space-y-4">
+                        <input type="hidden" name="productoId" value="@Model.Id"/>
+                        
+                        <div id="dropZone" class="border-2 border-dashed border-slate-300 rounded-xl p-8 text-center hover:border-emerald-500 transition-all cursor-pointer bg-gradient-to-br from-slate-50 to-emerald-50">
+                            <i class="fas fa-cloud-upload-alt text-4xl text-slate-300 mb-3"></i>
+                            <p class="font-medium text-slate-600 mb-1">Arrastra tu imagen aquí o haz clic</p>
+                            <p class="text-xs text-slate-400">JPG, PNG, WEBP, GIF (máx. 5MB)</p>
+                        </div>
+                        <input type="file" id="fileInput" name="archivo" accept="image/*" required class="hidden"/>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-2">Orden</label>
+                                <input type="number" name="orden" value="@Model.Imagenes.Count()" min="0" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all outline-none"/>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-2">Configuración</label>
+                                <div class="flex items-center h-[42px] px-4 border border-slate-200 rounded-xl">
+                                    <input type="checkbox" name="esPrincipal" value="true" id="esPrincipal" class="w-4 h-4 text-emerald-600 rounded"/>
+                                    <label for="esPrincipal" class="ml-2 text-sm text-slate-600">Imagen principal</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white rounded-xl font-semibold transition-all shadow-lg shadow-emerald-500/25">
+                            <i class="fas fa-upload"></i>Subir Imagen
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Current Images -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                    <div class="p-5 border-b border-slate-100 flex items-center justify-between">
+                        <h2 class="font-semibold text-slate-800 flex items-center gap-2">
+                            <i class="fas fa-th-large text-violet-500"></i>
+                            Imágenes Actuales
+                        </h2>
+                        <span class="px-2.5 py-1 bg-emerald-100 text-emerald-700 rounded-full text-sm font-medium">@Model.Imagenes.Count()</span>
+                    </div>
+                    <div class="p-5">
+                        @if(Model.TieneImagenes)
+                        {
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                @foreach(var img in Model.Imagenes.OrderBy(i => i.Orden))
+                                {
+                                    <div class="bg-slate-50 rounded-xl p-4 border-2 @(img.EsPrincipal ? "border-emerald-400" : "border-slate-200")">
+                                        <div class="relative bg-white rounded-lg overflow-hidden mb-3 aspect-square shadow-sm">
+                                            <img src="@img.ImagenBase64" alt="@Model.Nombre" class="w-full h-full object-cover"/>
+                                            @if(img.EsPrincipal)
+                                            {
+                                                <div class="absolute top-2 right-2">
+                                                    <span class="bg-emerald-500 text-white px-2 py-1 rounded-full text-xs font-medium">
+                                                        <i class="fas fa-star mr-1"></i>Principal
+                                                    </span>
+                                                </div>
+                                            }
+                                            <div class="absolute top-2 left-2">
+                                                <span class="bg-black/60 text-white px-2 py-1 rounded-full text-xs">Orden: @img.Orden</span>
+                                            </div>
+                                        </div>
+                                        <div class="text-xs text-slate-500 mb-3 space-y-1">
+                                            <div><i class="fas fa-file-image mr-1"></i>@img.TipoMime</div>
+                                            <div><i class="fas fa-weight-hanging mr-1"></i>@((img.TamanoBytes / 1024.0).ToString("F2")) KB</div>
+                                        </div>
+                                        <div class="grid grid-cols-2 gap-2">
+                                            @if(!img.EsPrincipal)
+                                            {
+                                                <form asp-controller="AdminImagenes" asp-action="EstablecerPrincipal" method="post">
+                                                    <input type="hidden" name="id" value="@img.Id"/>
+                                                    <input type="hidden" name="productoId" value="@Model.Id"/>
+                                                    <button type="submit" class="w-full px-3 py-2 bg-emerald-100 hover:bg-emerald-500 text-emerald-700 hover:text-white rounded-lg transition-all text-xs font-medium">
+                                                        <i class="fas fa-star mr-1"></i>Principal
+                                                    </button>
+                                                </form>
+                                            }
+                                            else
+                                            {
+                                                <div class="px-3 py-2 bg-slate-100 text-slate-400 rounded-lg text-xs font-medium text-center">
+                                                    <i class="fas fa-star mr-1"></i>Es Principal
+                                                </div>
+                                            }
+                                            <form asp-controller="AdminImagenes" asp-action="Eliminar" method="post" onsubmit="return confirm('¿Eliminar imagen?')">
+                                                <input type="hidden" name="id" value="@img.Id"/>
+                                                <input type="hidden" name="productoId" value="@Model.Id"/>
+                                                <button type="submit" class="w-full px-3 py-2 bg-red-100 hover:bg-red-500 text-red-700 hover:text-white rounded-lg transition-all text-xs font-medium">
+                                                    <i class="fas fa-trash mr-1"></i>Eliminar
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="text-center py-12">
+                                <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <i class="fas fa-images text-slate-300 text-2xl"></i>
+                                </div>
+                                <h3 class="font-semibold text-slate-600 mb-1">Sin Imágenes</h3>
+                                <p class="text-sm text-slate-400">Sube la primera imagen arriba</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="space-y-6">
+                <!-- Preview -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
+                    <h3 class="font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                        <i class="fas fa-eye text-blue-500"></i>Vista Previa
+                    </h3>
+                    <div class="bg-slate-100 rounded-xl overflow-hidden aspect-square mb-4">
+                        @if(Model.TieneImagenes)
+                        {
+                            <img src="@Model.ImagenPrincipal" alt="@Model.Nombre" class="w-full h-full object-cover"/>
+                        }
+                        else
+                        {
+                            <div class="w-full h-full flex items-center justify-center">
+                                <i class="fas fa-gem text-slate-300 text-4xl"></i>
+                            </div>
+                        }
+                    </div>
+                    <h4 class="font-semibold text-slate-800 mb-1">@Model.Nombre</h4>
+                    <p class="text-sm text-slate-500 mb-2 line-clamp-2">@Model.Descripcion</p>
+                    <div class="text-lg font-bold text-emerald-600">@Model.Precio.ToString("C")</div>
+                </div>
+
+                <!-- Stats -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
+                    <h3 class="font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                        <i class="fas fa-chart-pie text-emerald-500"></i>Estadísticas
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center bg-slate-50 rounded-lg p-3">
+                            <span class="text-sm text-slate-600">Total</span>
+                            <span class="font-semibold text-slate-800">@Model.Imagenes.Count()</span>
+                        </div>
+                        <div class="flex justify-between items-center bg-slate-50 rounded-lg p-3">
+                            <span class="text-sm text-slate-600">Tamaño</span>
+                            <span class="font-semibold text-slate-800">@((Model.Imagenes.Sum(i => i.TamanoBytes) / 1024.0).ToString("F2")) KB</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tips -->
+                <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-5 border border-blue-200">
+                    <h3 class="font-semibold text-slate-800 mb-3 flex items-center gap-2">
+                        <i class="fas fa-lightbulb text-blue-500"></i>Consejos
+                    </h3>
+                    <ul class="text-sm text-slate-600 space-y-2">
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-check text-emerald-500 mt-0.5"></i>
+                            <span>Imágenes de alta calidad</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-check text-emerald-500 mt-0.5"></i>
+                            <span>Máximo 5MB por imagen</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-check text-emerald-500 mt-0.5"></i>
+                            <span>Múltiples ángulos</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
-@if(TempData["Success"]!=null){<div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 rounded-r-xl mb-6"><div class="flex items-center"><i class="fas fa-check-circle text-emerald-500 text-xl mr-3"></i><span class="text-emerald-800 font-medium">@TempData["Success"]</span></div></div>}
-@if(TempData["Error"]!=null){<div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-xl mb-6"><div class="flex items-center"><i class="fas fa-exclamation-circle text-red-500 text-xl mr-3"></i><span class="text-red-800 font-medium">@TempData["Error"]</span></div></div>}
+@section Scripts {
+    <script>
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        
+        dropZone.onclick = () => fileInput.click();
+        
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(e => {
+            dropZone.addEventListener(e, ev => { ev.preventDefault(); ev.stopPropagation(); }, false);
+        });
+        
+        ['dragenter', 'dragover'].forEach(e => {
+            dropZone.addEventListener(e, () => dropZone.classList.add('border-emerald-500', 'bg-emerald-100'), false);
+        });
+        
+        ['dragleave', 'drop'].forEach(e => {
+            dropZone.addEventListener(e, () => dropZone.classList.remove('border-emerald-500', 'bg-emerald-100'), false);
+        });
+        
+        dropZone.addEventListener('drop', e => {
+            const f = e.dataTransfer.files;
+            if (f && f.length > 0) setFile(f[0]);
+        });
+        
+        fileInput.onchange = e => {
+            if (e.target.files && e.target.files.length > 0) setFile(e.target.files[0]);
+        };
+        
+        function setFile(file) {
+            if (!file.type.startsWith('image/')) { alert('Imagen inválida'); fileInput.value = ''; return; }
+            if (file.size > 5 * 1024 * 1024) { alert('Máx 5MB'); fileInput.value = ''; return; }
+            const r = new FileReader();
+            r.onload = () => {
+                dropZone.innerHTML = `<div class="space-y-2"><img src="${r.result}" class="mx-auto rounded-lg shadow max-h-40 object-contain"/><div class="text-sm text-emerald-600 font-medium"><i class="fas fa-file-image mr-1"></i>${file.name}</div><p class="text-xs text-slate-400">Clic para cambiar</p></div>`;
+            };
+            r.readAsDataURL(file);
+            const dt = new DataTransfer();
+            dt.items.add(file);
+            fileInput.files = dt.files;
+        }
+    </script>
+}
 
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-<div class="lg:col-span-2 space-y-8">
-<div class="bg-white rounded-3xl shadow-xl p-8 border border-gray-100">
-<h2 class="font-serif text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2"><div class="w-10 h-10 bg-emerald-100 rounded-xl flex items-center justify-center"><i class="fas fa-cloud-upload-alt text-emerald-600"></i></div>Subir Nueva Imagen</h2>
-<form asp-controller="AdminImagenes" asp-action="Subir" method="post" enctype="multipart/form-data" class="space-y-6" id="uploadForm">
-<input type="hidden" name="productoId" value="@Model.Id"/>
-<div><label class="block text-sm font-bold text-gray-700 mb-3">Seleccionar Imagen</label>
-<div id="dropZone" class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-emerald-500 transition-all cursor-pointer bg-gradient-to-br from-gray-50 to-emerald-50"><i class="fas fa-cloud-upload-alt text-6xl text-gray-300 mb-4"></i><p class="text-lg font-semibold text-gray-700 mb-2">Arrastra tu imagen aquí o haz clic</p><p class="text-xs text-gray-500">JPG, PNG, WEBP, GIF (máx. 5MB)</p></div>
-<input type="file" id="fileInput" name="archivo" accept="image/*" required class="hidden"/></div>
-<div class="grid grid-cols-2 gap-4">
-<div><label class="block text-sm font-bold text-gray-700 mb-2">Orden</label><input type="number" name="orden" value="@Model.Imagenes.Count()" min="0" class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100 transition-all outline-none"/></div>
-<div><label class="block text-sm font-bold text-gray-700 mb-2">Configuración</label><div class="flex items-center h-12 px-4 py-3 border-2 border-gray-300 rounded-xl"><input type="checkbox" name="esPrincipal" value="true" id="esPrincipal" class="w-5 h-5 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded"/><label for="esPrincipal" class="ml-3 text-sm font-medium text-gray-700">Imagen principal</label></div></div>
-</div>
-<button type="submit" class="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:from-emerald-600 hover:to-emerald-700 hover:shadow-2xl transition-all transform hover:scale-105"><i class="fas fa-upload mr-2"></i>Subir Imagen</button>
-</form>
-</div>
-
-<div class="bg-white rounded-3xl shadow-xl p-8 border border-gray-100">
-<h2 class="font-serif text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2"><div class="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center"><i class="fas fa-th-large text-purple-600"></i></div>Imágenes Actuales<span class="ml-3 px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-sm font-bold">@Model.Imagenes.Count()</span></h2>
-@if(Model.TieneImagenes){<div class="grid grid-cols-1 md:grid-cols-2 gap-6">@foreach(var img in Model.Imagenes.OrderBy(i=>i.Orden)){<div class="bg-gradient-to-br from-gray-50 to-emerald-50 rounded-2xl p-4 border-2 @(img.EsPrincipal?"border-emerald-500":"border-gray-200") hover:border-emerald-400 transition-all">
-<div class="relative bg-white rounded-xl overflow-hidden mb-4 shadow-md" style="aspect-ratio:1/1;"><img src="@img.ImagenBase64" alt="@Model.Nombre" class="w-full h-full object-cover"/>@if(img.EsPrincipal){<div class="absolute top-3 right-3"><span class="bg-emerald-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg"><i class="fas fa-star mr-1"></i>PRINCIPAL</span></div>}<div class="absolute top-3 left-3"><span class="bg-black bg-opacity-70 text-white px-3 py-1 rounded-full text-xs font-semibold">Orden: @img.Orden</span></div></div>
-<div class="space-y-2 mb-4 text-sm text-gray-600"><div><i class="fas fa-file-image mr-2"></i>@img.TipoMime</div><div><i class="fas fa-weight-hanging mr-2"></i>@((img.TamanoBytes/1024.0).ToString("F2")) KB</div></div>
-<div class="grid grid-cols-2 gap-2">@if(!img.EsPrincipal){<form asp-controller="AdminImagenes" asp-action="EstablecerPrincipal" method="post" class="w-full"><input type="hidden" name="id" value="@img.Id"/><input type="hidden" name="productoId" value="@Model.Id"/><button type="submit" class="w-full px-3 py-2 bg-emerald-100 text-emerald-700 rounded-lg hover:bg-emerald-200 transition-all text-sm font-bold"><i class="fas fa-star mr-1"></i>Hacer Principal</button></form>}else{<div class="w-full px-3 py-2 bg-gray-100 text-gray-400 rounded-lg text-sm font-bold text-center"><i class="fas fa-star mr-1"></i>Es Principal</div>}
-<form asp-controller="AdminImagenes" asp-action="Eliminar" method="post" onsubmit="return confirm('¿Eliminar imagen?')" class="w-full"><input type="hidden" name="id" value="@img.Id"/><input type="hidden" name="productoId" value="@Model.Id"/><button type="submit" class="w-full px-3 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-all text-sm font-bold"><i class="fas fa-trash mr-1"></i>Eliminar</button></form></div>
-</div>}}</div>}else{<div class="text-center py-16"><div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4"><i class="fas fa-images text-gray-300 text-5xl"></i></div><h3 class="font-serif text-2xl font-bold text-gray-700 mb-2">Sin Imágenes</h3><p class="text-gray-500">Sube la primera imagen arriba</p></div>}
-</div>
-</div>
-
-<div class="lg:col-span-1 space-y-6">
-<div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100"><h3 class="font-bold text-gray-900 mb-4 flex items-center gap-2"><i class="fas fa-eye text-blue-600"></i>Vista Previa</h3>
-@if(Model.TieneImagenes){<div class="bg-gradient-to-br from-emerald-50 to-green-50 rounded-xl overflow-hidden mb-4" style="aspect-ratio:1/1;"><img src="@Model.ImagenPrincipal" alt="@Model.Nombre" class="w-full h-full object-cover"/></div>}else{<div class="bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center mb-4" style="aspect-ratio:1/1;"><i class="fas fa-gem text-gray-400 text-6xl opacity-30"></i></div>}
-<h4 class="font-bold text-gray-900 mb-2">@Model.Nombre</h4><p class="text-sm text-gray-600 mb-3">@Model.Descripcion</p><div class="text-2xl font-bold text-emerald-600">@Model.Precio.ToString("C")</div></div>
-
-<div class="bg-gradient-to-br from-emerald-50 to-green-50 rounded-2xl p-6 border border-emerald-200"><h3 class="font-bold text-gray-900 mb-4 flex items-center gap-2"><i class="fas fa-chart-pie text-emerald-600"></i>Estadísticas</h3>
-<div class="space-y-3"><div class="flex justify-between bg-white rounded-lg p-3"><span class="text-sm text-gray-600">Total:</span><span class="font-bold text-emerald-600">@Model.Imagenes.Count()</span></div><div class="flex justify-between bg-white rounded-lg p-3"><span class="text-sm text-gray-600">Tamaño:</span><span class="font-bold text-gray-900">@((Model.Imagenes.Sum(i=>i.TamanoBytes)/1024.0).ToString("F2")) KB</span></div></div></div>
-
-<div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-200"><h3 class="font-bold text-gray-900 mb-4 flex items-center gap-2"><i class="fas fa-lightbulb text-blue-600"></i>Consejos</h3>
-<ul class="text-sm text-gray-700 space-y-2"><li class="flex items-start gap-2"><i class="fas fa-check text-green-500 mt-0.5"></i><span>Imágenes de alta calidad</span></li><li class="flex items-start gap-2"><i class="fas fa-check text-green-500 mt-0.5"></i><span>Máximo 5MB por imagen</span></li><li class="flex items-start gap-2"><i class="fas fa-check text-green-500 mt-0.5"></i><span>Fondo blanco o neutro</span></li><li class="flex items-start gap-2"><i class="fas fa-check text-green-500 mt-0.5"></i><span>Múltiples ángulos</span></li></ul></div>
-</div>
-</div>
-</div>
-
-@section Scripts{<script>
-const dropZone=document.getElementById('dropZone'),fileInput=document.getElementById('fileInput');
-dropZone.onclick=()=>fileInput.click();
-['dragenter','dragover','dragleave','drop'].forEach(e=>dropZone.addEventListener(e,ev=>{ev.preventDefault();ev.stopPropagation();},false));
-['dragenter','dragover'].forEach(e=>dropZone.addEventListener(e,()=>dropZone.classList.add('border-emerald-500','bg-emerald-100'),false));
-['dragleave','drop'].forEach(e=>dropZone.addEventListener(e,()=>dropZone.classList.remove('border-emerald-500','bg-emerald-100'),false));
-dropZone.addEventListener('drop',e=>{const f=e.dataTransfer.files;if(f&&f.length>0)setFile(f[0]);});
-fileInput.onchange=e=>{if(e.target.files&&e.target.files.length>0)setFile(e.target.files[0]);};
-function setFile(file){if(!file.type.startsWith('image/')){alert('Imagen inválida');fileInput.value='';return;}if(file.size>5*1024*1024){alert('Máx 5MB');fileInput.value='';return;}const r=new FileReader();r.onload=()=>{dropZone.innerHTML=`<div class="space-y-3"><img src="${r.result}" class="mx-auto rounded-lg shadow max-h-48 object-contain"/><div class="inline-flex items-center px-3 py-2 bg-emerald-50 text-emerald-700 rounded-lg text-sm font-semibold"><i class="fas fa-file-image mr-2"></i>${file.name} (${(file.size/1024).toFixed(2)} KB)</div><p class="text-xs text-gray-500">Clic para cambiar</p></div>`;};r.readAsDataURL(file);const dt=new DataTransfer();dt.items.add(file);fileInput.files=dt.files;}
-</script>}
+@section Styles {
+    <style>.line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }</style>
+}

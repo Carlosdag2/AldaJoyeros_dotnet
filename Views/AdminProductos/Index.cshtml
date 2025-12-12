@@ -4,144 +4,290 @@
     var busqueda = ViewBag.Busqueda as string ?? "";
     var filtro = ViewBag.Filtro as string ?? "activos";
     var totalEliminados = (int)(ViewBag.TotalEliminados ?? 0);
+    var totalProductos = (int)(ViewBag.TotalProductos ?? 0);
 }
 
-<div class="container mx-auto px-6 py-8">
-<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
-<div><h1 class="font-serif text-4xl md:text-5xl font-bold text-gray-900 mb-3 flex items-center gap-3"><div class="w-14 h-14 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg"><i class="fas fa-gem text-white text-2xl"></i></div>Gestión de Productos</h1><p class="text-gray-600 text-lg">Administra el catálogo de productos</p></div>
-<a asp-action="Crear" class="inline-flex items-center bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:from-emerald-600 hover:to-emerald-700 hover:shadow-2xl transition-all transform hover:scale-105"><i class="fas fa-plus-circle mr-2"></i>Nuevo Producto</a>
-</div>
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
+        <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\"60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%239C92AC\" fill-opacity=\"0.05\"%3E%3Cpath d=\"M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-40"></div>
+        <div class="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+        
+        <div class="relative container mx-auto px-6 py-8">
+            <nav class="flex items-center gap-2 text-sm text-slate-400 mb-4">
+                <a asp-controller="Admin" asp-action="Index" class="hover:text-white transition-colors"><i class="fas fa-home"></i></a>
+                <i class="fas fa-chevron-right text-xs"></i>
+                <span class="text-white">Productos</span>
+            </nav>
+            
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <div class="w-14 h-14 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-2xl flex items-center justify-center shadow-xl shadow-emerald-500/25">
+                        <i class="fas fa-gem text-white text-2xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl md:text-3xl font-bold text-white">Gestión de Productos</h1>
+                        <p class="text-slate-400 text-sm mt-1">Administra el catálogo de productos</p>
+                    </div>
+                </div>
+                <a asp-action="Crear" class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold rounded-xl transition-all shadow-lg shadow-emerald-500/25">
+                    <i class="fas fa-plus"></i>Nuevo Producto
+                </a>
+            </div>
+        </div>
+    </div>
 
-<div class="bg-white rounded-3xl shadow-xl p-8 mb-8 border border-gray-100">
-<!-- Filtros de estado -->
-<div class="flex flex-wrap gap-2 mb-6">
-<a asp-action="Index" asp-route-filtro="activos" asp-route-busqueda="@busqueda" 
-   class="inline-flex items-center px-4 py-2 rounded-xl font-semibold transition-all @(filtro == "activos" ? "bg-emerald-500 text-white shadow-lg" : "bg-gray-100 text-gray-700 hover:bg-emerald-100")">
-    <i class="fas fa-check-circle mr-2"></i>Activos (@ViewBag.TotalProductos)
-</a>
-<a asp-action="Index" asp-route-filtro="eliminados" asp-route-busqueda="@busqueda" 
-   class="inline-flex items-center px-4 py-2 rounded-xl font-semibold transition-all @(filtro == "eliminados" ? "bg-red-500 text-white shadow-lg" : "bg-gray-100 text-gray-700 hover:bg-red-100")">
-    <i class="fas fa-trash mr-2"></i>Papelera (@totalEliminados)
-</a>
-<a asp-action="Index" asp-route-filtro="todos" asp-route-busqueda="@busqueda" 
-   class="inline-flex items-center px-4 py-2 rounded-xl font-semibold transition-all @(filtro == "todos" ? "bg-blue-500 text-white shadow-lg" : "bg-gray-100 text-gray-700 hover:bg-blue-100")">
-    <i class="fas fa-list mr-2"></i>Todos
-</a>
-</div>
+    <div class="container mx-auto px-6 -mt-6 relative z-10 pb-12">
+        <!-- Filters & Search -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 mb-6">
+            <!-- Filter Tabs -->
+            <div class="flex flex-wrap gap-2 mb-5">
+                <a asp-action="Index" asp-route-filtro="activos" asp-route-busqueda="@busqueda" 
+                   class="inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all @(filtro == "activos" ? "bg-emerald-500 text-white shadow-md" : "bg-slate-100 text-slate-600 hover:bg-slate-200")">
+                    <i class="fas fa-check-circle"></i>Activos (@totalProductos)
+                </a>
+                <a asp-action="Index" asp-route-filtro="eliminados" asp-route-busqueda="@busqueda" 
+                   class="inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all @(filtro == "eliminados" ? "bg-red-500 text-white shadow-md" : "bg-slate-100 text-slate-600 hover:bg-slate-200")">
+                    <i class="fas fa-trash"></i>Papelera (@totalEliminados)
+                </a>
+                <a asp-action="Index" asp-route-filtro="todos" asp-route-busqueda="@busqueda" 
+                   class="inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all @(filtro == "todos" ? "bg-blue-500 text-white shadow-md" : "bg-slate-100 text-slate-600 hover:bg-slate-200")">
+                    <i class="fas fa-list"></i>Todos
+                </a>
+            </div>
 
-<form asp-action="Index" method="get" class="mb-6">
-<input type="hidden" name="filtro" value="@filtro" />
-<div class="relative max-w-2xl"><input type="text" name="busqueda" value="@busqueda" placeholder="Buscar por ID, nombre, descripción o categoría..." class="w-full px-6 py-4 pr-32 text-lg border-2 border-gray-300 rounded-xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100 transition-all outline-none shadow-sm"/>
-<button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white px-6 py-2.5 rounded-lg font-bold transition-all"><i class="fas fa-search mr-2"></i>Buscar</button></div>
-@if(!string.IsNullOrWhiteSpace(busqueda)){<div class="mt-3 flex items-center gap-3 flex-wrap"><span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-bold bg-emerald-100 text-emerald-700"><i class="fas fa-search mr-2"></i>Buscando: "@busqueda"</span>
-<a asp-action="Index" asp-route-filtro="@filtro" class="text-sm text-red-600 hover:text-red-700 font-bold flex items-center"><i class="fas fa-times-circle mr-1"></i>Limpiar</a>
-<span class="text-sm text-gray-600">(@Model.TotalItems encontrado@(Model.TotalItems!=1?"s":""))</span></div>}
-</form>
+            <!-- Search -->
+            <form asp-action="Index" method="get">
+                <input type="hidden" name="filtro" value="@filtro" />
+                <div class="relative max-w-2xl">
+                    <input type="text" name="busqueda" value="@busqueda" placeholder="Buscar por ID, nombre, descripción o categoría..." 
+                           class="w-full px-4 py-3 pr-28 border border-slate-200 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all outline-none"/>
+                    <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg font-medium text-sm transition-all">
+                        <i class="fas fa-search mr-1"></i>Buscar
+                    </button>
+                </div>
+                @if(!string.IsNullOrWhiteSpace(busqueda))
+                {
+                    <div class="mt-3 flex items-center gap-3 flex-wrap">
+                        <span class="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-emerald-100 text-emerald-700">
+                            <i class="fas fa-search mr-2 text-xs"></i>"@busqueda"
+                        </span>
+                        <a asp-action="Index" asp-route-filtro="@filtro" class="text-sm text-red-500 hover:text-red-600 font-medium flex items-center gap-1">
+                            <i class="fas fa-times-circle"></i>Limpiar
+                        </a>
+                        <span class="text-sm text-slate-500">(@Model.TotalItems resultado@(Model.TotalItems!=1?"s":""))</span>
+                    </div>
+                }
+            </form>
 
-<div class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-6 border-t border-gray-200">
-<div class="bg-gradient-to-br from-emerald-50 to-green-50 rounded-xl p-4 text-center border border-emerald-200"><div class="text-3xl font-bold text-emerald-600">@ViewBag.TotalProductos</div><div class="text-sm text-gray-600 font-medium">Activos</div></div>
-<div class="bg-gradient-to-br from-red-50 to-rose-50 rounded-xl p-4 text-center border border-red-200"><div class="text-3xl font-bold text-red-600">@totalEliminados</div><div class="text-sm text-gray-600 font-medium">En Papelera</div></div>
-<div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-4 text-center border border-purple-200"><div class="text-3xl font-bold text-purple-600">@Model.PageNumber/@Model.TotalPages</div><div class="text-sm text-gray-600 font-medium">Página</div></div>
-<div class="bg-gradient-to-br from-orange-50 to-red-50 rounded-xl p-4 text-center border border-orange-200"><div class="text-3xl font-bold text-orange-600">@Model.TotalItems</div><div class="text-sm text-gray-600 font-medium">Mostrando</div></div>
-</div>
-</div>
+            <!-- Quick Stats -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 pt-5 mt-5 border-t border-slate-100">
+                <div class="bg-gradient-to-br from-emerald-50 to-green-50 rounded-xl p-3 text-center border border-emerald-100">
+                    <div class="text-2xl font-bold text-emerald-600">@totalProductos</div>
+                    <div class="text-xs text-slate-500">Activos</div>
+                </div>
+                <div class="bg-gradient-to-br from-red-50 to-rose-50 rounded-xl p-3 text-center border border-red-100">
+                    <div class="text-2xl font-bold text-red-500">@totalEliminados</div>
+                    <div class="text-xs text-slate-500">Papelera</div>
+                </div>
+                <div class="bg-gradient-to-br from-violet-50 to-purple-50 rounded-xl p-3 text-center border border-violet-100">
+                    <div class="text-2xl font-bold text-violet-600">@Model.PageNumber/@Model.TotalPages</div>
+                    <div class="text-xs text-slate-500">Página</div>
+                </div>
+                <div class="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl p-3 text-center border border-amber-100">
+                    <div class="text-2xl font-bold text-amber-600">@Model.TotalItems</div>
+                    <div class="text-xs text-slate-500">Mostrando</div>
+                </div>
+            </div>
+        </div>
 
-@if(Model.Items != null && Model.Items.Any()){
-<div class="bg-white rounded-3xl shadow-xl overflow-hidden mb-8 border border-gray-100">
-<div class="overflow-x-auto">
-<table class="w-full">
-<thead class="bg-gradient-to-r from-emerald-600 to-green-600 text-white">
-<tr><th class="px-6 py-4 text-left font-bold"><i class="fas fa-hashtag mr-2"></i>ID</th><th class="px-6 py-4 text-left font-bold"><i class="fas fa-gem mr-2"></i>Producto</th><th class="px-6 py-4 text-left font-bold"><i class="fas fa-tag mr-2"></i>Categoría</th><th class="px-6 py-4 text-left font-bold"><i class="fas fa-euro-sign mr-2"></i>Precio</th><th class="px-6 py-4 text-center font-bold"><i class="fas fa-info-circle mr-2"></i>Estado</th><th class="px-6 py-4 text-center font-bold"><i class="fas fa-cog mr-2"></i>Acciones</th></tr>
-</thead>
-<tbody class="divide-y divide-gray-200">
-@foreach(var p in Model.Items){
-var nombreProducto = p.Nombre.Replace("'", "\\'");
-<tr class="@(p.Eliminado ? "bg-red-50/50" : "") hover:bg-emerald-50 transition-colors">
-<td class="px-6 py-4"><span class="font-mono font-bold text-gray-900">#@p.Id</span></td>
-<td class="px-6 py-4"><div class="flex items-center gap-3">
-<div class="w-16 h-16 bg-gradient-to-br from-emerald-50 to-green-50 rounded-xl overflow-hidden flex items-center justify-center shadow-md relative @(p.Eliminado ? "opacity-50 grayscale" : "")">
-@if(p.TieneImagenes){<img src="@p.ImagenPrincipal" alt="@p.Nombre" class="w-full h-full object-cover" onerror="this.onerror=null;this.parentElement.innerHTML='<i class=\'fas fa-gem text-2xl text-emerald-600 opacity-30\'></i>';"/>
-@if(p.Imagenes.Count > 1){<span class="absolute bottom-0 right-0 bg-emerald-600 text-white text-xs px-1.5 py-0.5 rounded-tl font-bold"><i class="fas fa-images"></i> @p.Imagenes.Count</span>}
-}else{<i class="fas fa-gem text-2xl text-emerald-600 opacity-30"></i>}
-</div>
-<div class="min-w-0"><div class="font-bold text-gray-900 truncate @(p.Eliminado ? "line-through text-gray-500" : "")">@p.Nombre</div><div class="text-sm text-gray-500 truncate">@p.Descripcion</div></div>
-</div></td>
-<td class="px-6 py-4"><span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-purple-100 text-purple-700"><i class="fas fa-tag mr-1"></i>@p.CategoriaNombre</span></td>
-<td class="px-6 py-4"><span class="text-xl font-bold text-emerald-600">@p.Precio.ToString("C")</span></td>
-<td class="px-6 py-4 text-center">
-@if(p.Eliminado){
-<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-700"><i class="fas fa-trash mr-1"></i>Eliminado</span>
-@if(p.FechaEliminado.HasValue){<div class="text-xs text-gray-400 mt-1">@p.FechaEliminado.Value.ToString("dd/MM/yyyy")</div>}
-}else{
-<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700"><i class="fas fa-check-circle mr-1"></i>Activo</span>
-}
-</td>
-<td class="px-6 py-4"><div class="flex items-center justify-center gap-2">
-@if(p.Eliminado){
-<!-- Acciones para productos eliminados -->
-<form asp-action="Restaurar" asp-route-id="@p.Id" method="post" class="inline">
-<button type="submit" class="w-9 h-9 bg-emerald-100 hover:bg-emerald-600 text-emerald-600 hover:text-white rounded-lg transition-all flex items-center justify-center" title="Restaurar"><i class="fas fa-undo"></i></button>
-</form>
-<form asp-action="EliminarPermanente" asp-route-id="@p.Id" method="post" class="inline" onsubmit="return confirm('ELIMINAR PERMANENTEMENTE: ¿Estás seguro de eliminar @Html.Raw(nombreProducto) de forma permanente? Esta acción NO se puede deshacer.');">
-<button type="submit" class="w-9 h-9 bg-red-100 hover:bg-red-600 text-red-600 hover:text-white rounded-lg transition-all flex items-center justify-center" title="Eliminar permanentemente"><i class="fas fa-times"></i></button>
-</form>
-}else{
-<!-- Acciones para productos activos -->
-<a asp-controller="Productos" asp-action="Detalle" asp-route-id="@p.Id" target="_blank" class="w-9 h-9 bg-blue-100 hover:bg-blue-600 text-blue-600 hover:text-white rounded-lg transition-all flex items-center justify-center" title="Ver"><i class="fas fa-eye"></i></a>
-<a asp-controller="AdminImagenes" asp-action="Gestionar" asp-route-id="@p.Id" class="w-9 h-9 bg-purple-100 hover:bg-purple-600 text-purple-600 hover:text-white rounded-lg transition-all flex items-center justify-center" title="Imágenes"><i class="fas fa-images"></i></a>
-<a asp-action="Editar" asp-route-id="@p.Id" class="w-9 h-9 bg-emerald-100 hover:bg-emerald-600 text-emerald-600 hover:text-white rounded-lg transition-all flex items-center justify-center" title="Editar"><i class="fas fa-edit"></i></a>
-<form asp-action="Eliminar" asp-route-id="@p.Id" method="post" class="inline" onsubmit="return confirm('¿Mover @Html.Raw(nombreProducto) a la papelera?');">
-<button type="submit" class="w-9 h-9 bg-red-100 hover:bg-red-600 text-red-600 hover:text-white rounded-lg transition-all flex items-center justify-center" title="Eliminar"><i class="fas fa-trash"></i></button>
-</form>
-}
-</div></td>
-</tr>
-}
-</tbody>
-</table>
-</div>
-</div>
+        @if(Model.Items != null && Model.Items.Any())
+        {
+            <!-- Products Table -->
+            <div class="bg-white rounded-2xl shadow-sm overflow-hidden border border-slate-100 mb-6">
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gradient-to-r from-slate-700 to-slate-800 text-white">
+                            <tr>
+                                <th class="px-5 py-4 text-left text-sm font-semibold">ID</th>
+                                <th class="px-5 py-4 text-left text-sm font-semibold">Producto</th>
+                                <th class="px-5 py-4 text-left text-sm font-semibold">Categoría</th>
+                                <th class="px-5 py-4 text-left text-sm font-semibold">Precio</th>
+                                <th class="px-5 py-4 text-center text-sm font-semibold">Estado</th>
+                                <th class="px-5 py-4 text-center text-sm font-semibold">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            @foreach(var p in Model.Items)
+                            {
+                                var nombreProducto = p.Nombre.Replace("'", "\\'");
+                                <tr class="@(p.Eliminado ? "bg-red-50/50" : "") hover:bg-slate-50 transition-colors">
+                                    <td class="px-5 py-4">
+                                        <span class="font-mono font-semibold text-slate-700">#@p.Id</span>
+                                    </td>
+                                    <td class="px-5 py-4">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-12 h-12 bg-slate-100 rounded-lg overflow-hidden flex items-center justify-center @(p.Eliminado ? "opacity-50 grayscale" : "")">
+                                                @if(p.TieneImagenes)
+                                                {
+                                                    <img src="@p.ImagenPrincipal" alt="@p.Nombre" class="w-full h-full object-cover"/>
+                                                }
+                                                else
+                                                {
+                                                    <i class="fas fa-gem text-slate-300"></i>
+                                                }
+                                            </div>
+                                            <div class="min-w-0">
+                                                <div class="font-medium text-slate-800 truncate max-w-[200px] @(p.Eliminado ? "line-through text-slate-400" : "")">@p.Nombre</div>
+                                                <div class="text-xs text-slate-400 truncate max-w-[200px]">@p.Descripcion</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-5 py-4">
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-violet-100 text-violet-700">
+                                            @p.CategoriaNombre
+                                        </span>
+                                    </td>
+                                    <td class="px-5 py-4">
+                                        <span class="font-bold text-emerald-600">@p.Precio.ToString("C")</span>
+                                    </td>
+                                    <td class="px-5 py-4 text-center">
+                                        @if(p.Eliminado)
+                                        {
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-600">
+                                                <i class="fas fa-trash mr-1 text-[10px]"></i>Eliminado
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-600">
+                                                <i class="fas fa-check mr-1 text-[10px]"></i>Activo
+                                            </span>
+                                        }
+                                    </td>
+                                    <td class="px-5 py-4">
+                                        <div class="flex items-center justify-center gap-1">
+                                            @if(p.Eliminado)
+                                            {
+                                                <form asp-action="Restaurar" asp-route-id="@p.Id" method="post" class="inline">
+                                                    <button type="submit" class="w-8 h-8 bg-emerald-100 hover:bg-emerald-500 text-emerald-600 hover:text-white rounded-lg transition-all flex items-center justify-center" title="Restaurar">
+                                                        <i class="fas fa-undo text-xs"></i>
+                                                    </button>
+                                                </form>
+                                                <form asp-action="EliminarPermanente" asp-route-id="@p.Id" method="post" class="inline" onsubmit="return confirm('¿Eliminar permanentemente? Esta acción NO se puede deshacer.');">
+                                                    <button type="submit" class="w-8 h-8 bg-red-100 hover:bg-red-500 text-red-600 hover:text-white rounded-lg transition-all flex items-center justify-center" title="Eliminar permanente">
+                                                        <i class="fas fa-times text-xs"></i>
+                                                    </button>
+                                                </form>
+                                            }
+                                            else
+                                            {
+                                                <a asp-controller="Productos" asp-action="Detalle" asp-route-id="@p.Id" target="_blank" class="w-8 h-8 bg-blue-100 hover:bg-blue-500 text-blue-600 hover:text-white rounded-lg transition-all flex items-center justify-center" title="Ver">
+                                                    <i class="fas fa-eye text-xs"></i>
+                                                </a>
+                                                <a asp-controller="AdminImagenes" asp-action="Gestionar" asp-route-id="@p.Id" class="w-8 h-8 bg-violet-100 hover:bg-violet-500 text-violet-600 hover:text-white rounded-lg transition-all flex items-center justify-center" title="Imágenes">
+                                                    <i class="fas fa-images text-xs"></i>
+                                                </a>
+                                                <a asp-action="Editar" asp-route-id="@p.Id" class="w-8 h-8 bg-emerald-100 hover:bg-emerald-500 text-emerald-600 hover:text-white rounded-lg transition-all flex items-center justify-center" title="Editar">
+                                                    <i class="fas fa-edit text-xs"></i>
+                                                </a>
+                                                <form asp-action="Eliminar" asp-route-id="@p.Id" method="post" class="inline" onsubmit="return confirm('¿Mover a papelera?');">
+                                                    <button type="submit" class="w-8 h-8 bg-red-100 hover:bg-red-500 text-red-600 hover:text-white rounded-lg transition-all flex items-center justify-center" title="Eliminar">
+                                                        <i class="fas fa-trash text-xs"></i>
+                                                    </button>
+                                                </form>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
-@if(Model.TotalPages > 1){
-<div class="flex justify-center items-center space-x-2 flex-wrap gap-2">
-@if(Model.HasPreviousPage){<a asp-action="Index" asp-route-page="@(Model.PageNumber-1)" asp-route-busqueda="@busqueda" asp-route-filtro="@filtro" class="px-4 py-2 bg-white border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-emerald-500 hover:border-emerald-500 hover:text-white transition-all font-semibold"><i class="fas fa-chevron-left"></i></a>}else{<span class="px-4 py-2 bg-gray-100 border-2 border-gray-200 text-gray-400 rounded-xl cursor-not-allowed"><i class="fas fa-chevron-left"></i></span>}
-@{var startPage = Math.Max(1, Model.PageNumber - 2); var endPage = Math.Min(Model.TotalPages, Model.PageNumber + 2);}
-@if(startPage > 1){<a asp-action="Index" asp-route-page="1" asp-route-busqueda="@busqueda" asp-route-filtro="@filtro" class="px-4 py-2 bg-white border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-emerald-500 hover:border-emerald-500 hover:text-white transition-all font-semibold">1</a>
-@if(startPage > 2){<span class="px-2 text-gray-500">...</span>}}
-@for(var i = startPage; i <= endPage; i++){
-@if(i == Model.PageNumber){<span class="px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl font-bold shadow-md">@i</span>}else{<a asp-action="Index" asp-route-page="@i" asp-route-busqueda="@busqueda" asp-route-filtro="@filtro" class="px-4 py-2 bg-white border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-emerald-500 hover:border-emerald-500 hover:text-white transition-all font-semibold">@i</a>}}
-@if(endPage < Model.TotalPages){@if(endPage < Model.TotalPages - 1){<span class="px-2 text-gray-500">...</span>}
-<a asp-action="Index" asp-route-page="@Model.TotalPages" asp-route-busqueda="@busqueda" asp-route-filtro="@filtro" class="px-4 py-2 bg-white border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-emerald-500 hover:border-emerald-500 hover:text-white transition-all font-semibold">@Model.TotalPages</a>}
-@if(Model.HasNextPage){<a asp-action="Index" asp-route-page="@(Model.PageNumber+1)" asp-route-busqueda="@busqueda" asp-route-filtro="@filtro" class="px-4 py-2 bg-white border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-emerald-500 hover:border-emerald-500 hover:text-white transition-all font-semibold"><i class="fas fa-chevron-right"></i></a>}else{<span class="px-4 py-2 bg-gray-100 border-2 border-gray-200 text-gray-400 rounded-xl cursor-not-allowed"><i class="fas fa-chevron-right"></i></span>}
-</div>
-}
-}else{
-<div class="bg-white rounded-3xl p-12 text-center shadow-xl border border-gray-100">
-<div class="w-24 h-24 bg-gradient-to-br @(filtro == "eliminados" ? "from-red-100 to-rose-100" : "from-emerald-100 to-green-100") rounded-full flex items-center justify-center mx-auto mb-6">
-<i class="fas @(filtro == "eliminados" ? "fa-trash-restore" : (string.IsNullOrWhiteSpace(busqueda) ? "fa-gem" : "fa-search")) @(filtro == "eliminados" ? "text-red-600" : "text-emerald-600") text-5xl"></i>
-</div>
-<h3 class="font-serif text-3xl font-bold text-gray-900 mb-3">
-@if(filtro == "eliminados"){<text>Papelera vacía</text>}
-else if(string.IsNullOrWhiteSpace(busqueda)){<text>No hay productos</text>}
-else{<text>No se encontraron productos</text>}
-</h3>
-<p class="text-gray-600 mb-8 text-lg">
-@if(filtro == "eliminados"){<text>No hay productos eliminados para restaurar</text>}
-else if(string.IsNullOrWhiteSpace(busqueda)){<text>Comienza agregando tu primer producto</text>}
-else{<text>Intenta con otros términos de búsqueda</text>}
-</p>
-@if(filtro == "eliminados"){
-<a asp-action="Index" asp-route-filtro="activos" class="inline-flex items-center bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:from-emerald-600 hover:to-emerald-700 hover:shadow-2xl transition-all transform hover:scale-105"><i class="fas fa-arrow-left mr-2"></i>Ver Productos Activos</a>
-}else if(string.IsNullOrWhiteSpace(busqueda)){
-<a asp-action="Crear" class="inline-flex items-center bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:from-emerald-600 hover:to-emerald-700 hover:shadow-2xl transition-all transform hover:scale-105"><i class="fas fa-plus-circle mr-2"></i>Crear Primer Producto</a>
-}else{
-<a asp-action="Index" asp-route-filtro="@filtro" class="inline-flex items-center bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:from-emerald-600 hover:to-emerald-700 hover:shadow-2xl transition-all transform hover:scale-105"><i class="fas fa-times-circle mr-2"></i>Limpiar Búsqueda</a>
-}
-</div>
-}
+            <!-- Pagination -->
+            @if(Model.TotalPages > 1)
+            {
+                <div class="flex justify-center items-center gap-2 flex-wrap">
+                    @if(Model.HasPreviousPage)
+                    {
+                        <a asp-action="Index" asp-route-page="@(Model.PageNumber-1)" asp-route-busqueda="@busqueda" asp-route-filtro="@filtro" 
+                           class="px-3 py-2 bg-white border border-slate-200 text-slate-600 rounded-lg hover:bg-emerald-500 hover:border-emerald-500 hover:text-white transition-all">
+                            <i class="fas fa-chevron-left text-xs"></i>
+                        </a>
+                    }
+                    
+                    @{var startPage = Math.Max(1, Model.PageNumber - 2); var endPage = Math.Min(Model.TotalPages, Model.PageNumber + 2);}
+                    
+                    @if(startPage > 1)
+                    {
+                        <a asp-action="Index" asp-route-page="1" asp-route-busqueda="@busqueda" asp-route-filtro="@filtro" class="px-3 py-2 bg-white border border-slate-200 text-slate-600 rounded-lg hover:bg-emerald-500 hover:border-emerald-500 hover:text-white transition-all">1</a>
+                        @if(startPage > 2){<span class="px-2 text-slate-400">...</span>}
+                    }
+                    
+                    @for(var i = startPage; i <= endPage; i++)
+                    {
+                        @if(i == Model.PageNumber)
+                        {
+                            <span class="px-3 py-2 bg-emerald-500 text-white rounded-lg font-medium">@i</span>
+                        }
+                        else
+                        {
+                            <a asp-action="Index" asp-route-page="@i" asp-route-busqueda="@busqueda" asp-route-filtro="@filtro" class="px-3 py-2 bg-white border border-slate-200 text-slate-600 rounded-lg hover:bg-emerald-500 hover:border-emerald-500 hover:text-white transition-all">@i</a>
+                        }
+                    }
+                    
+                    @if(endPage < Model.TotalPages)
+                    {
+                        @if(endPage < Model.TotalPages - 1){<span class="px-2 text-slate-400">...</span>}
+                        <a asp-action="Index" asp-route-page="@Model.TotalPages" asp-route-busqueda="@busqueda" asp-route-filtro="@filtro" class="px-3 py-2 bg-white border border-slate-200 text-slate-600 rounded-lg hover:bg-emerald-500 hover:border-emerald-500 hover:text-white transition-all">@Model.TotalPages</a>
+                    }
+                    
+                    @if(Model.HasNextPage)
+                    {
+                        <a asp-action="Index" asp-route-page="@(Model.PageNumber+1)" asp-route-busqueda="@busqueda" asp-route-filtro="@filtro" 
+                           class="px-3 py-2 bg-white border border-slate-200 text-slate-600 rounded-lg hover:bg-emerald-500 hover:border-emerald-500 hover:text-white transition-all">
+                            <i class="fas fa-chevron-right text-xs"></i>
+                        </a>
+                    }
+                </div>
+            }
+        }
+        else
+        {
+            <!-- Empty State -->
+            <div class="bg-white rounded-2xl p-12 text-center shadow-sm border border-slate-100">
+                <div class="w-20 h-20 bg-gradient-to-br @(filtro == "eliminados" ? "from-red-100 to-rose-100" : "from-emerald-100 to-green-100") rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="fas @(filtro == "eliminados" ? "fa-trash-restore text-red-500" : "fa-gem text-emerald-500") text-3xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-800 mb-2">
+                    @if(filtro == "eliminados"){<text>Papelera vacía</text>}
+                    else if(string.IsNullOrWhiteSpace(busqueda)){<text>No hay productos</text>}
+                    else{<text>Sin resultados</text>}
+                </h3>
+                <p class="text-slate-500 mb-6">
+                    @if(filtro == "eliminados"){<text>No hay productos eliminados</text>}
+                    else if(string.IsNullOrWhiteSpace(busqueda)){<text>Crea tu primer producto</text>}
+                    else{<text>Prueba con otros términos</text>}
+                </p>
+                @if(filtro != "eliminados" && string.IsNullOrWhiteSpace(busqueda))
+                {
+                    <a asp-action="Crear" class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold rounded-xl hover:shadow-lg transition-all">
+                        <i class="fas fa-plus"></i>Crear Producto
+                    </a>
+                }
+            </div>
+        }
 
-<div class="mt-8 flex gap-4">
-<a asp-controller="Admin" asp-action="Index" class="inline-flex items-center px-8 py-3 border-2 border-gray-300 text-gray-700 rounded-xl hover:border-emerald-500 hover:text-emerald-600 hover:bg-emerald-50 transition-all font-semibold group"><i class="fas fa-arrow-left mr-2 group-hover:-translate-x-2 transition-transform"></i>Volver al Panel</a>
-<a asp-controller="AdminCategorias" asp-action="Index" class="inline-flex items-center px-8 py-3 border-2 border-purple-500 text-purple-600 rounded-xl hover:bg-purple-50 transition-all font-semibold"><i class="fas fa-tags mr-2"></i>Gestionar Categorías</a>
-</div>
+        <!-- Navigation -->
+        <div class="mt-8 flex flex-wrap gap-3">
+            <a asp-controller="Admin" asp-action="Index" class="inline-flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-200 text-slate-600 hover:border-slate-300 rounded-xl transition-all font-medium">
+                <i class="fas fa-arrow-left"></i>Volver al Panel
+            </a>
+            <a asp-controller="AdminCategorias" asp-action="Index" class="inline-flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-200 text-slate-600 hover:border-violet-300 hover:text-violet-600 rounded-xl transition-all font-medium">
+                <i class="fas fa-tags"></i>Categorías
+            </a>
+        </div>
+    </div>
 </div>

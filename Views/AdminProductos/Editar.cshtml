@@ -1,197 +1,168 @@
 @model AldaJoyeros.DTOs.ProductoUpdateDto
-@{ViewData["Title"]="Editar Producto";var categorias=ViewBag.Categorias as IEnumerable<AldaJoyeros.DTOs.CategoriaDto>;var productoId=ViewContext.RouteData.Values["id"];var imagenes=ViewBag.Imagenes as int?;}
+@{
+    ViewData["Title"] = "Editar Producto";
+    var categorias = ViewBag.Categorias as IEnumerable<AldaJoyeros.DTOs.CategoriaDto>;
+    var productoId = ViewContext.RouteData.Values["id"];
+    var imagenes = ViewBag.Imagenes as int? ?? 0;
+}
 
-<div class="container mx-auto px-6 py-8">
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
     <!-- Header -->
-    <div class="mb-8">
-        <h1 class="font-serif text-4xl md:text-5xl font-bold text-gray-900 mb-3 flex items-center gap-3">
-            <div class="w-14 h-14 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg">
-                <i class="fas fa-edit text-white text-2xl"></i>
-            </div>
-            Editar Producto
-        </h1>
-        <p class="text-gray-600 text-lg">Modifica la información del producto #@productoId</p>
-    </div>
-
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <!-- Form Section -->
-        <div class="lg:col-span-2">
-            <div class="bg-white rounded-3xl shadow-xl p-8 border border-gray-100">
-                <form asp-action="Editar" method="post" class="space-y-6">
-                    <div asp-validation-summary="ModelOnly" class="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-xl mb-6">
-                        <div class="flex items-center">
-                            <i class="fas fa-exclamation-circle text-red-500 mr-3"></i>
-                            <span class="text-red-800 text-sm"></span>
-                        </div>
-                    </div>
-
-                    <!-- Nombre -->
-                    <div>
-                        <label asp-for="Nombre" class="block text-sm font-bold text-gray-700 mb-3 flex items-center gap-2">
-                            <div class="w-6 h-6 bg-emerald-100 rounded-lg flex items-center justify-center">
-                                <i class="fas fa-gem text-emerald-600 text-xs"></i>
-                            </div>
-                            Nombre del Producto
-                        </label>
-                        <input asp-for="Nombre" 
-                               class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100 transition-all outline-none text-lg"
-                               placeholder="Ej: Anillo de Diamantes Solitario"/>
-                        <span asp-validation-for="Nombre" class="text-red-500 text-sm mt-1 block"></span>
-                    </div>
-
-                    <!-- Descripción -->
-                    <div>
-                        <label asp-for="Descripcion" class="block text-sm font-bold text-gray-700 mb-3 flex items-center gap-2">
-                            <div class="w-6 h-6 bg-blue-100 rounded-lg flex items-center justify-center">
-                                <i class="fas fa-align-left text-blue-600 text-xs"></i>
-                            </div>
-                            Descripción
-                        </label>
-                        <textarea asp-for="Descripcion" 
-                                  rows="4" 
-                                  class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100 transition-all outline-none"
-                                  placeholder="Describe materiales, características y detalles..."></textarea>
-                        <span asp-validation-for="Descripcion" class="text-red-500 text-sm mt-1 block"></span>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Precio -->
-                        <div>
-                            <label asp-for="Precio" class="block text-sm font-bold text-gray-700 mb-3 flex items-center gap-2">
-                                <div class="w-6 h-6 bg-green-100 rounded-lg flex items-center justify-center">
-                                    <i class="fas fa-euro-sign text-green-600 text-xs"></i>
-                                </div>
-                                Precio (€)
-                            </label>
-                            <input asp-for="Precio" 
-                                   type="number" 
-                                   step="0.01"
-                                   class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100 transition-all outline-none text-lg font-bold"
-                                   placeholder="99.99"/>
-                            <span asp-validation-for="Precio" class="text-red-500 text-sm mt-1 block"></span>
-                        </div>
-
-                        <!-- Categoría -->
-                        <div>
-                            <label asp-for="CategoriaId" class="block text-sm font-bold text-gray-700 mb-3 flex items-center gap-2">
-                                <div class="w-6 h-6 bg-purple-100 rounded-lg flex items-center justify-center">
-                                    <i class="fas fa-tags text-purple-600 text-xs"></i>
-                                </div>
-                                Categoría
-                            </label>
-                            <select asp-for="CategoriaId" class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100 transition-all outline-none text-lg">
-                                <option value="">Selecciona una categoría</option>
-                                @if(categorias!=null){@foreach(var c in categorias){<option value="@c.Id">@c.Nombre</option>}}
-                            </select>
-                            <span asp-validation-for="CategoriaId" class="text-red-500 text-sm mt-1 block"></span>
-                        </div>
-                    </div>
-
-                    <!-- Info Card -->
-                    <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-200">
-                        <div class="flex items-start gap-4">
-                            <div class="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center flex-shrink-0">
-                                <i class="fas fa-info-circle text-white text-xl"></i>
-                            </div>
-                            <div>
-                                <h3 class="font-bold text-gray-900 mb-3">Información de Edición</h3>
-                                <ul class="text-sm text-gray-700 space-y-2">
-                                    <li class="flex items-start gap-2">
-                                        <i class="fas fa-check text-blue-600 mt-0.5"></i>
-                                        <span>Los cambios se reflejarán inmediatamente</span>
-                                    </li>
-                                    <li class="flex items-start gap-2">
-                                        <i class="fas fa-check text-blue-600 mt-0.5"></i>
-                                        <span>Pedidos existentes mantienen el precio original</span>
-                                    </li>
-                                    <li class="flex items-start gap-2">
-                                        <i class="fas fa-check text-blue-600 mt-0.5"></i>
-                                        <span>Verifica que la información sea precisa</span>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <hr class="border-gray-200"/>
-
-                    <div class="flex flex-col sm:flex-row justify-between gap-4">
-                        <a asp-action="Index" class="inline-flex items-center justify-center px-8 py-3 border-2 border-gray-300 text-gray-700 rounded-xl hover:border-emerald-500 hover:text-emerald-600 hover:bg-emerald-50 transition-all font-semibold">
-                            <i class="fas fa-times mr-2"></i>Cancelar
-                        </a>
-                        <button type="submit" class="inline-flex items-center justify-center bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:from-emerald-600 hover:to-emerald-700 hover:shadow-2xl transition-all transform hover:scale-105">
-                            <i class="fas fa-save mr-2"></i>Guardar Cambios
-                        </button>
-                    </div>
-                </form>
+    <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
+        <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\"60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%239C92AC\" fill-opacity=\"0.05\"%3E%3Cpath d=\"M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-40"></div>
+        
+        <div class="relative container mx-auto px-6 py-8">
+            <nav class="flex items-center gap-2 text-sm text-slate-400 mb-4">
+                <a asp-controller="Admin" asp-action="Index" class="hover:text-white transition-colors"><i class="fas fa-home"></i></a>
+                <i class="fas fa-chevron-right text-xs"></i>
+                <a asp-action="Index" class="hover:text-white transition-colors">Productos</a>
+                <i class="fas fa-chevron-right text-xs"></i>
+                <span class="text-white">Editar #@productoId</span>
+            </nav>
+            
+            <div class="flex items-center gap-4">
+                <div class="w-14 h-14 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-2xl flex items-center justify-center shadow-xl shadow-emerald-500/25">
+                    <i class="fas fa-edit text-white text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-bold text-white">Editar Producto</h1>
+                    <p class="text-slate-400 text-sm mt-1">Modificando producto #@productoId</p>
+                </div>
             </div>
         </div>
+    </div>
 
-        <!-- Info Sidebar -->
-        <div class="lg:col-span-1 space-y-6">
-            <!-- Stats -->
-            <div class="bg-gradient-to-br from-emerald-50 to-green-50 rounded-2xl p-6 border border-emerald-200">
-                <h3 class="font-bold text-gray-900 mb-4 flex items-center gap-2">
-                    <div class="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-chart-bar text-white"></i>
+    <div class="container mx-auto px-6 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Form -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                    <div class="p-6 border-b border-slate-100">
+                        <h2 class="font-semibold text-slate-800 flex items-center gap-2">
+                            <i class="fas fa-gem text-emerald-500"></i>
+                            Información del Producto
+                        </h2>
                     </div>
-                    Información
-                </h3>
-                <div class="space-y-3">
-                    <div class="flex justify-between bg-white rounded-lg p-3">
-                        <span class="text-sm text-gray-600 font-medium">ID:</span>
-                        <span class="font-bold text-emerald-600">#@productoId</span>
-                    </div>
-                    <div class="flex justify-between bg-white rounded-lg p-3">
-                        <span class="text-sm text-gray-600 font-medium">Estado:</span>
-                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700">
-                            <i class="fas fa-check-circle mr-1"></i>Activo
-                        </span>
-                    </div>
-                    <div class="flex justify-between bg-white rounded-lg p-3">
-                        <span class="text-sm text-gray-600 font-medium">Imágenes:</span>
-                        <span class="font-bold text-gray-900">@(imagenes??0)</span>
-                    </div>
+                    
+                    <form asp-action="Editar" method="post" class="p-6 space-y-5">
+                        <div asp-validation-summary="ModelOnly" class="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg text-red-700 text-sm"></div>
+
+                        <div>
+                            <label asp-for="Nombre" class="block text-sm font-medium text-slate-700 mb-2">Nombre *</label>
+                            <input asp-for="Nombre" class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all outline-none" placeholder="Nombre del producto"/>
+                            <span asp-validation-for="Nombre" class="text-red-500 text-sm mt-1 block"></span>
+                        </div>
+
+                        <div>
+                            <label asp-for="Descripcion" class="block text-sm font-medium text-slate-700 mb-2">Descripción</label>
+                            <textarea asp-for="Descripcion" rows="3" class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all outline-none resize-none" placeholder="Descripción del producto"></textarea>
+                            <span asp-validation-for="Descripcion" class="text-red-500 text-sm mt-1 block"></span>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label asp-for="Precio" class="block text-sm font-medium text-slate-700 mb-2">Precio (€) *</label>
+                                <input asp-for="Precio" type="number" step="0.01" class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all outline-none font-semibold" placeholder="99.99"/>
+                                <span asp-validation-for="Precio" class="text-red-500 text-sm mt-1 block"></span>
+                            </div>
+
+                            <div>
+                                <label asp-for="CategoriaId" class="block text-sm font-medium text-slate-700 mb-2">Categoría *</label>
+                                <select asp-for="CategoriaId" class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all outline-none">
+                                    <option value="">Selecciona categoría</option>
+                                    @if(categorias != null)
+                                    {
+                                        @foreach(var c in categorias)
+                                        {
+                                            <option value="@c.Id">@c.Nombre</option>
+                                        }
+                                    }
+                                </select>
+                                <span asp-validation-for="CategoriaId" class="text-red-500 text-sm mt-1 block"></span>
+                            </div>
+                        </div>
+
+                        <!-- Info -->
+                        <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                            <div class="flex items-start gap-3">
+                                <i class="fas fa-info-circle text-blue-500 mt-0.5"></i>
+                                <div class="text-sm text-blue-700">
+                                    <p class="font-medium mb-1">Información</p>
+                                    <ul class="space-y-1 text-blue-600">
+                                        <li>• Los cambios se reflejan inmediatamente</li>
+                                        <li>• Los pedidos existentes mantienen el precio original</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="flex flex-col sm:flex-row justify-between gap-4 pt-4 border-t border-slate-100">
+                            <a asp-action="Index" class="inline-flex items-center justify-center gap-2 px-5 py-2.5 border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 transition-all font-medium">
+                                <i class="fas fa-times"></i>Cancelar
+                            </a>
+                            <button type="submit" class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white rounded-xl font-semibold shadow-lg shadow-emerald-500/25 transition-all">
+                                <i class="fas fa-save"></i>Guardar Cambios
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
 
-            <!-- Actions -->
-            <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
-                <h3 class="font-bold text-gray-900 mb-4 flex items-center gap-2">
-                    <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-bolt text-purple-600"></i>
+            <!-- Sidebar -->
+            <div class="space-y-6">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
+                    <h3 class="font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                        <i class="fas fa-chart-bar text-emerald-500"></i>Información
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center bg-slate-50 rounded-lg p-3">
+                            <span class="text-sm text-slate-600">ID</span>
+                            <span class="font-semibold text-slate-800">#@productoId</span>
+                        </div>
+                        <div class="flex justify-between items-center bg-slate-50 rounded-lg p-3">
+                            <span class="text-sm text-slate-600">Estado</span>
+                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700">Activo</span>
+                        </div>
+                        <div class="flex justify-between items-center bg-slate-50 rounded-lg p-3">
+                            <span class="text-sm text-slate-600">Imágenes</span>
+                            <span class="font-semibold text-slate-800">@imagenes</span>
+                        </div>
                     </div>
-                    Acciones Rápidas
-                </h3>
-                <div class="space-y-2">
-                    <a asp-controller="Productos" asp-action="Detalle" asp-route-id="@productoId" target="_blank" class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 rounded-lg hover:shadow-md transition-all font-bold border border-blue-200">
-                        <i class="fas fa-external-link-alt"></i>Ver en Tienda
-                    </a>
-                    <a asp-controller="AdminImagenes" asp-action="Gestionar" asp-route-id="@productoId" class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-purple-50 to-pink-50 text-purple-700 rounded-lg hover:shadow-md transition-all font-bold border border-purple-200">
-                        <i class="fas fa-images"></i>Gestionar Imágenes
-                    </a>
                 </div>
-            </div>
 
-            <!-- Warning -->
-            <div class="bg-gradient-to-br from-red-50 to-orange-50 rounded-2xl p-6 border border-red-200">
-                <h3 class="font-bold text-gray-900 mb-3 flex items-center gap-2">
-                    <div class="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-exclamation-triangle text-white"></i>
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
+                    <h3 class="font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                        <i class="fas fa-bolt text-amber-500"></i>Acciones Rápidas
+                    </h3>
+                    <div class="space-y-2">
+                        <a asp-controller="Productos" asp-action="Detalle" asp-route-id="@productoId" target="_blank" class="flex items-center gap-2 px-4 py-3 bg-blue-50 hover:bg-blue-100 rounded-xl text-blue-600 transition-all text-sm font-medium">
+                            <i class="fas fa-external-link-alt"></i>Ver en Tienda
+                            <i class="fas fa-arrow-right ml-auto text-xs"></i>
+                        </a>
+                        <a asp-controller="AdminImagenes" asp-action="Gestionar" asp-route-id="@productoId" class="flex items-center gap-2 px-4 py-3 bg-violet-50 hover:bg-violet-100 rounded-xl text-violet-600 transition-all text-sm font-medium">
+                            <i class="fas fa-images"></i>Gestionar Imágenes
+                            <i class="fas fa-arrow-right ml-auto text-xs"></i>
+                        </a>
                     </div>
-                    Zona de Peligro
-                </h3>
-                <p class="text-sm text-gray-700 mb-4 leading-relaxed">
-                    Eliminar este producto es permanente y no se puede deshacer.
-                </p>
-                <form asp-action="Eliminar" asp-route-id="@productoId" method="post" onsubmit="return confirm('¿Estás SEGURO de eliminar este producto? Esta acción NO se puede deshacer.')">
-                    <button type="submit" class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-lg hover:from-red-700 hover:to-red-800 transition-all font-bold shadow-md hover:shadow-lg">
-                        <i class="fas fa-trash"></i>Eliminar Producto
-                    </button>
-                </form>
+                </div>
+
+                <div class="bg-red-50 border border-red-200 rounded-2xl p-5">
+                    <h3 class="font-semibold text-slate-800 mb-3 flex items-center gap-2">
+                        <i class="fas fa-exclamation-triangle text-red-500"></i>Zona de Peligro
+                    </h3>
+                    <p class="text-sm text-slate-600 mb-4">Eliminar es permanente y no se puede deshacer.</p>
+                    <form asp-action="Eliminar" asp-route-id="@productoId" method="post" onsubmit="return confirm('¿Eliminar este producto? Esta acción NO se puede deshacer.')">
+                        <button type="submit" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-xl font-medium transition-all">
+                            <i class="fas fa-trash"></i>Eliminar Producto
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-@section Scripts{<partial name="_ValidationScriptsPartial"/>}
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

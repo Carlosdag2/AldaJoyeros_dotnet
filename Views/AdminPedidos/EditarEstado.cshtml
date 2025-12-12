@@ -1,108 +1,224 @@
 @model AldaJoyeros.DTOs.PedidoUpdateEstadoDto
 @using AldaJoyeros.Entities
-@{ViewData["Title"]="Cambiar Estado del Pedido";var pedidoId=ViewBag.PedidoId as long?;}
-
-<div class="container mx-auto px-6 py-8">
-<div class="mb-8"><h1 class="font-serif text-4xl md:text-5xl font-bold text-gray-900 mb-3 flex items-center gap-3"><div class="w-14 h-14 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg"><i class="fas fa-edit text-white text-2xl"></i></div>Cambiar Estado del Pedido</h1><p class="text-gray-600 text-lg">Actualiza el estado del pedido #@pedidoId</p></div>
-
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-<div class="lg:col-span-2">
-<div class="bg-white rounded-3xl shadow-xl p-8 border border-gray-100">
-<form asp-action="EditarEstado" method="post" class="space-y-6">
-<div asp-validation-summary="ModelOnly" class="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-xl mb-6"><div class="flex items-center"><i class="fas fa-exclamation-circle text-red-500 mr-3"></i><span class="text-red-800 text-sm"></span></div></div>
-
-<div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-200">
-<div class="flex items-center justify-between">
-<div><div class="text-sm text-gray-600 mb-2 font-medium">Estado Actual:</div>
-<div class="text-2xl font-bold text-gray-900">
-@switch(Model.Estado.ToString()){
-case "PENDIENTE":<span class="inline-flex items-center text-yellow-600"><i class="fas fa-clock mr-2"></i>Pendiente</span>break;
-case "EN_PROCESO":<span class="inline-flex items-center text-blue-600"><i class="fas fa-sync-alt mr-2"></i>En Proceso</span>break;
-case "ENVIADO":<span class="inline-flex items-center text-purple-600"><i class="fas fa-shipping-fast mr-2"></i>Enviado</span>break;
-case "ENTREGADO":<span class="inline-flex items-center text-green-600"><i class="fas fa-check-circle mr-2"></i>Entregado</span>break;
-case "CANCELADO":<span class="inline-flex items-center text-red-600"><i class="fas fa-times-circle mr-2"></i>Cancelado</span>break;
+@{
+    ViewData["Title"] = "Cambiar Estado del Pedido";
+    var pedidoId = ViewBag.PedidoId as long?;
 }
-</div></div>
-<div class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center shadow-lg"><i class="fas fa-arrow-right text-white text-xl"></i></div>
-</div>
+
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
+        <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\"60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%239C92AC\" fill-opacity=\"0.05\"%3E%3Cpath d=\"M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-40"></div>
+        
+        <div class="relative container mx-auto px-6 py-8">
+            <nav class="flex items-center gap-2 text-sm text-slate-400 mb-4">
+                <a asp-controller="Admin" asp-action="Index" class="hover:text-white transition-colors"><i class="fas fa-home"></i></a>
+                <i class="fas fa-chevron-right text-xs"></i>
+                <a asp-action="Index" class="hover:text-white transition-colors">Pedidos</a>
+                <i class="fas fa-chevron-right text-xs"></i>
+                <a asp-action="Detalle" asp-route-id="@pedidoId" class="hover:text-white transition-colors">#@pedidoId</a>
+                <i class="fas fa-chevron-right text-xs"></i>
+                <span class="text-white">Estado</span>
+            </nav>
+            
+            <div class="flex items-center gap-4">
+                <div class="w-14 h-14 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-2xl flex items-center justify-center shadow-xl shadow-emerald-500/25">
+                    <i class="fas fa-edit text-white text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-bold text-white">Cambiar Estado</h1>
+                    <p class="text-slate-400 text-sm mt-1">Pedido #@pedidoId</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mx-auto px-6 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Form -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                    <div class="p-6 border-b border-slate-100">
+                        <h2 class="font-semibold text-slate-800 flex items-center gap-2">
+                            <i class="fas fa-exchange-alt text-emerald-500"></i>
+                            Selecciona el Nuevo Estado
+                        </h2>
+                    </div>
+                    
+                    <form asp-action="EditarEstado" method="post" class="p-6 space-y-5">
+                        <div asp-validation-summary="ModelOnly" class="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg text-red-700 text-sm"></div>
+
+                        <!-- Current Status -->
+                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
+                            <div class="text-sm text-slate-500 mb-2">Estado Actual</div>
+                            <div class="text-lg font-semibold">
+                                @switch(Model.Estado.ToString())
+                                {
+                                    case "PENDIENTE":
+                                        <span class="text-yellow-600"><i class="fas fa-clock mr-2"></i>Pendiente</span>
+                                        break;
+                                    case "EN_PROCESO":
+                                        <span class="text-blue-600"><i class="fas fa-sync-alt mr-2"></i>En Proceso</span>
+                                        break;
+                                    case "ENVIADO":
+                                        <span class="text-purple-600"><i class="fas fa-shipping-fast mr-2"></i>Enviado</span>
+                                        break;
+                                    case "ENTREGADO":
+                                        <span class="text-green-600"><i class="fas fa-check-circle mr-2"></i>Entregado</span>
+                                        break;
+                                    case "CANCELADO":
+                                        <span class="text-red-600"><i class="fas fa-times-circle mr-2"></i>Cancelado</span>
+                                        break;
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Status Options -->
+                        <div class="space-y-3">
+                            <label class="flex items-center p-4 bg-gradient-to-r from-yellow-50 to-amber-50 border-2 border-yellow-200 rounded-xl hover:border-yellow-400 cursor-pointer transition-all">
+                                <input type="radio" asp-for="Estado" value="@EstadoPedido.PENDIENTE" class="w-4 h-4 text-yellow-600"/>
+                                <div class="ml-3 flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-yellow-500 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-clock text-white"></i>
+                                    </div>
+                                    <div>
+                                        <div class="font-semibold text-slate-800">Pendiente</div>
+                                        <div class="text-xs text-slate-500">Pendiente de procesamiento</div>
+                                    </div>
+                                </div>
+                            </label>
+
+                            <label class="flex items-center p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-xl hover:border-blue-400 cursor-pointer transition-all">
+                                <input type="radio" asp-for="Estado" value="@EstadoPedido.EN_PROCESO" class="w-4 h-4 text-blue-600"/>
+                                <div class="ml-3 flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-sync-alt text-white"></i>
+                                    </div>
+                                    <div>
+                                        <div class="font-semibold text-slate-800">En Proceso</div>
+                                        <div class="text-xs text-slate-500">El pedido se está preparando</div>
+                                    </div>
+                                </div>
+                            </label>
+
+                            <label class="flex items-center p-4 bg-gradient-to-r from-purple-50 to-violet-50 border-2 border-purple-200 rounded-xl hover:border-purple-400 cursor-pointer transition-all">
+                                <input type="radio" asp-for="Estado" value="@EstadoPedido.ENVIADO" class="w-4 h-4 text-purple-600"/>
+                                <div class="ml-3 flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-shipping-fast text-white"></i>
+                                    </div>
+                                    <div>
+                                        <div class="font-semibold text-slate-800">Enviado</div>
+                                        <div class="text-xs text-slate-500">En camino al cliente</div>
+                                    </div>
+                                </div>
+                            </label>
+
+                            <label class="flex items-center p-4 bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 rounded-xl hover:border-green-400 cursor-pointer transition-all">
+                                <input type="radio" asp-for="Estado" value="@EstadoPedido.ENTREGADO" class="w-4 h-4 text-green-600"/>
+                                <div class="ml-3 flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-check-circle text-white"></i>
+                                    </div>
+                                    <div>
+                                        <div class="font-semibold text-slate-800">Entregado</div>
+                                        <div class="text-xs text-slate-500">Entregado al cliente</div>
+                                    </div>
+                                </div>
+                            </label>
+
+                            <label class="flex items-center p-4 bg-gradient-to-r from-red-50 to-rose-50 border-2 border-red-200 rounded-xl hover:border-red-400 cursor-pointer transition-all">
+                                <input type="radio" asp-for="Estado" value="@EstadoPedido.CANCELADO" class="w-4 h-4 text-red-600"/>
+                                <div class="ml-3 flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-red-500 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-times-circle text-white"></i>
+                                    </div>
+                                    <div>
+                                        <div class="font-semibold text-slate-800">Cancelado</div>
+                                        <div class="text-xs text-slate-500">Pedido cancelado</div>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+                        <span asp-validation-for="Estado" class="text-red-500 text-sm block"></span>
+
+                        <!-- Actions -->
+                        <div class="flex flex-col sm:flex-row justify-between gap-4 pt-4 border-t border-slate-100">
+                            <a asp-action="Detalle" asp-route-id="@pedidoId" class="inline-flex items-center justify-center gap-2 px-5 py-2.5 border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 transition-all font-medium">
+                                <i class="fas fa-times"></i>Cancelar
+                            </a>
+                            <button type="submit" class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white rounded-xl font-semibold shadow-lg shadow-emerald-500/25 transition-all">
+                                <i class="fas fa-save"></i>Guardar Cambios
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="space-y-6">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
+                    <h3 class="font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                        <i class="fas fa-info-circle text-blue-500"></i>Información
+                    </h3>
+                    <div class="bg-slate-50 rounded-lg p-3">
+                        <span class="text-sm text-slate-600">ID Pedido</span>
+                        <span class="font-semibold text-slate-800 float-right">#@pedidoId</span>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
+                    <h3 class="font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                        <i class="fas fa-route text-violet-500"></i>Flujo de Estados
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center text-sm">
+                            <div class="w-8 h-8 bg-yellow-500 rounded-lg flex items-center justify-center mr-3">
+                                <i class="fas fa-clock text-white text-xs"></i>
+                            </div>
+                            <span class="text-slate-600">Pendiente</span>
+                        </div>
+                        <div class="ml-4 h-4 w-px bg-slate-200"></div>
+                        <div class="flex items-center text-sm">
+                            <div class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center mr-3">
+                                <i class="fas fa-sync-alt text-white text-xs"></i>
+                            </div>
+                            <span class="text-slate-600">En Proceso</span>
+                        </div>
+                        <div class="ml-4 h-4 w-px bg-slate-200"></div>
+                        <div class="flex items-center text-sm">
+                            <div class="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center mr-3">
+                                <i class="fas fa-shipping-fast text-white text-xs"></i>
+                            </div>
+                            <span class="text-slate-600">Enviado</span>
+                        </div>
+                        <div class="ml-4 h-4 w-px bg-slate-200"></div>
+                        <div class="flex items-center text-sm">
+                            <div class="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center mr-3">
+                                <i class="fas fa-check-circle text-white text-xs"></i>
+                            </div>
+                            <span class="text-slate-600">Entregado</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-amber-50 border border-amber-200 rounded-2xl p-5">
+                    <div class="flex items-start gap-3">
+                        <i class="fas fa-exclamation-triangle text-amber-500 mt-0.5"></i>
+                        <div class="text-sm">
+                            <p class="font-medium text-amber-700 mb-1">Importante</p>
+                            <ul class="text-amber-600 space-y-1">
+                                <li>• Los cambios son inmediatos</li>
+                                <li>• El cliente será notificado</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
-<div><label asp-for="Estado" class="block text-sm font-bold text-gray-700 mb-4 flex items-center gap-2"><div class="w-6 h-6 bg-emerald-100 rounded-lg flex items-center justify-center"><i class="fas fa-exchange-alt text-emerald-600 text-xs"></i></div>Selecciona el Nuevo Estado</label>
-
-<div class="space-y-3">
-<label class="flex items-center p-5 bg-gradient-to-r from-yellow-50 to-orange-50 border-2 border-yellow-200 rounded-xl hover:border-yellow-400 hover:shadow-md cursor-pointer transition-all group">
-<input type="radio" asp-for="Estado" value="@EstadoPedido.PENDIENTE" class="w-5 h-5 text-yellow-600 focus:ring-yellow-500"/>
-<div class="ml-4 flex-1"><div class="flex items-center gap-3"><div class="w-10 h-10 bg-yellow-500 rounded-xl flex items-center justify-center shadow-md"><i class="fas fa-clock text-white text-lg"></i></div>
-<div><div class="font-bold text-gray-900 text-lg">Pendiente</div><div class="text-sm text-gray-600">El pedido está pendiente de procesamiento</div></div></div></div>
-</label>
-
-<label class="flex items-center p-5 bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-xl hover:border-blue-400 hover:shadow-md cursor-pointer transition-all group">
-<input type="radio" asp-for="Estado" value="@EstadoPedido.EN_PROCESO" class="w-5 h-5 text-blue-600 focus:ring-blue-500"/>
-<div class="ml-4 flex-1"><div class="flex items-center gap-3"><div class="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center shadow-md"><i class="fas fa-sync-alt text-white text-lg"></i></div>
-<div><div class="font-bold text-gray-900 text-lg">En Proceso</div><div class="text-sm text-gray-600">El pedido se está preparando</div></div></div></div>
-</label>
-
-<label class="flex items-center p-5 bg-gradient-to-r from-purple-50 to-pink-50 border-2 border-purple-200 rounded-xl hover:border-purple-400 hover:shadow-md cursor-pointer transition-all group">
-<input type="radio" asp-for="Estado" value="@EstadoPedido.ENVIADO" class="w-5 h-5 text-purple-600 focus:ring-purple-500"/>
-<div class="ml-4 flex-1"><div class="flex items-center gap-3"><div class="w-10 h-10 bg-purple-500 rounded-xl flex items-center justify-center shadow-md"><i class="fas fa-shipping-fast text-white text-lg"></i></div>
-<div><div class="font-bold text-gray-900 text-lg">Enviado</div><div class="text-sm text-gray-600">El pedido está en camino al cliente</div></div></div></div>
-</label>
-
-<label class="flex items-center p-5 bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 rounded-xl hover:border-green-400 hover:shadow-md cursor-pointer transition-all group">
-<input type="radio" asp-for="Estado" value="@EstadoPedido.ENTREGADO" class="w-5 h-5 text-green-600 focus:ring-green-500"/>
-<div class="ml-4 flex-1"><div class="flex items-center gap-3"><div class="w-10 h-10 bg-green-500 rounded-xl flex items-center justify-center shadow-md"><i class="fas fa-check-circle text-white text-lg"></i></div>
-<div><div class="font-bold text-gray-900 text-lg">Entregado</div><div class="text-sm text-gray-600">El pedido ha sido entregado al cliente</div></div></div></div>
-</label>
-
-<label class="flex items-center p-5 bg-gradient-to-r from-red-50 to-orange-50 border-2 border-red-200 rounded-xl hover:border-red-400 hover:shadow-md cursor-pointer transition-all group">
-<input type="radio" asp-for="Estado" value="@EstadoPedido.CANCELADO" class="w-5 h-5 text-red-600 focus:ring-red-500"/>
-<div class="ml-4 flex-1"><div class="flex items-center gap-3"><div class="w-10 h-10 bg-red-500 rounded-xl flex items-center justify-center shadow-md"><i class="fas fa-times-circle text-white text-lg"></i></div>
-<div><div class="font-bold text-gray-900 text-lg">Cancelado</div><div class="text-sm text-gray-600">El pedido ha sido cancelado</div></div></div></div>
-</label>
-</div>
-<span asp-validation-for="Estado" class="text-red-500 text-sm mt-2 block"></span>
-</div>
-
-<hr class="border-gray-200"/>
-
-<div class="flex flex-col sm:flex-row justify-between gap-4">
-<a asp-action="Detalle" asp-route-id="@pedidoId" class="inline-flex items-center justify-center px-8 py-3 border-2 border-gray-300 text-gray-700 rounded-xl hover:border-emerald-500 hover:text-emerald-600 hover:bg-emerald-50 transition-all font-semibold"><i class="fas fa-times mr-2"></i>Cancelar</a>
-<button type="submit" class="inline-flex items-center justify-center bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:from-emerald-600 hover:to-emerald-700 hover:shadow-2xl transition-all transform hover:scale-105"><i class="fas fa-save mr-2"></i>Guardar Cambios</button>
-</div>
-</form>
-</div>
-</div>
-
-<div class="lg:col-span-1 space-y-6">
-<div class="bg-gradient-to-br from-emerald-50 to-green-50 rounded-2xl p-6 border border-emerald-200">
-<h3 class="font-bold text-gray-900 mb-4 flex items-center gap-2"><span class="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center"><i class="fas fa-info-circle text-white"></i></span>Info del Pedido</h3>
-<div class="space-y-3 text-sm"><div class="flex justify-between bg-white rounded-lg p-3"><span class="text-gray-600 font-medium">ID Pedido:</span><span class="font-bold text-emerald-600">#@pedidoId</span></div></div>
-</div>
-
-<div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
-<h3 class="font-bold text-gray-900 mb-4 flex items-center gap-2"><span class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center"><i class="fas fa-route text-blue-600"></i></span>Flujo de Estados</h3>
-<div class="space-y-2">
-<div class="flex items-center text-sm"><div class="w-10 h-10 bg-yellow-500 rounded-xl flex items-center justify-center mr-3 shadow-sm"><i class="fas fa-clock text-white"></i></div><span class="text-gray-700 font-medium">Pendiente</span></div>
-<div class="ml-5 h-6 w-0.5 bg-gray-300"></div>
-<div class="flex items-center text-sm"><div class="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center mr-3 shadow-sm"><i class="fas fa-sync-alt text-white"></i></div><span class="text-gray-700 font-medium">En Proceso</span></div>
-<div class="ml-5 h-6 w-0.5 bg-gray-300"></div>
-<div class="flex items-center text-sm"><div class="w-10 h-10 bg-purple-500 rounded-xl flex items-center justify-center mr-3 shadow-sm"><i class="fas fa-shipping-fast text-white"></i></div><span class="text-gray-700 font-medium">Enviado</span></div>
-<div class="ml-5 h-6 w-0.5 bg-gray-300"></div>
-<div class="flex items-center text-sm"><div class="w-10 h-10 bg-green-500 rounded-xl flex items-center justify-center mr-3 shadow-sm"><i class="fas fa-check-circle text-white"></i></div><span class="text-gray-700 font-medium">Entregado</span></div>
-</div>
-</div>
-
-<div class="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-2xl p-6 border border-yellow-200">
-<div class="flex items-start gap-3"><span class="w-10 h-10 bg-yellow-500 rounded-lg flex items-center justify-center flex-shrink-0"><i class="fas fa-exclamation-triangle text-white"></i></span>
-<div><h3 class="font-bold text-gray-900 mb-3">Importante</h3>
-<ul class="text-sm text-gray-700 space-y-2">
-<li class="flex items-start gap-2"><i class="fas fa-check text-yellow-600 mt-0.5"></i><span>Los cambios son inmediatos</span></li>
-<li class="flex items-start gap-2"><i class="fas fa-check text-yellow-600 mt-0.5"></i><span>El cliente será notificado</span></li>
-<li class="flex items-start gap-2"><i class="fas fa-check text-yellow-600 mt-0.5"></i><span>No se puede deshacer</span></li>
-</ul></div></div>
-</div>
-</div>
-</div>
-</div>
-
-@section Scripts{<partial name="_ValidationScriptsPartial"/>}
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

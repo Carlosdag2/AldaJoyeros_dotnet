@@ -1,80 +1,203 @@
 @model AldaJoyeros.Helpers.PagedResult<AldaJoyeros.DTOs.PedidoDto>
-@{ViewData["Title"]="Gestión de Pedidos";var estadoFiltro=ViewBag.EstadoFiltro as string??"";}
-
-<div class="container mx-auto px-6 py-8">
-<div class="mb-8"><h1 class="font-serif text-4xl md:text-5xl font-bold text-gray-900 mb-3 flex items-center gap-3"><div class="w-14 h-14 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl flex items-center justify-center shadow-lg"><i class="fas fa-box text-white text-2xl"></i></div>Gestión de Pedidos</h1><p class="text-gray-600 text-lg">Administra todos los pedidos de la tienda</p></div>
-
-<div class="bg-white rounded-3xl shadow-xl p-8 mb-8 border border-gray-100">
-<div class="flex flex-wrap gap-2 mb-6">
-<a asp-action="Index" class="px-4 py-2.5 rounded-xl font-bold transition-all @(string.IsNullOrEmpty(estadoFiltro)?"bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-md":"bg-gray-100 text-gray-700 hover:bg-gray-200")"><i class="fas fa-th-large mr-2"></i>Todos</a>
-<a asp-action="Index" asp-route-estado="PENDIENTE" class="px-4 py-2.5 rounded-xl font-bold transition-all @(estadoFiltro=="PENDIENTE"?"bg-yellow-500 text-white shadow-md":"bg-gray-100 text-gray-700 hover:bg-gray-200")"><i class="fas fa-clock mr-2"></i>Pendientes</a>
-<a asp-action="Index" asp-route-estado="EN_PROCESO" class="px-4 py-2.5 rounded-xl font-bold transition-all @(estadoFiltro=="EN_PROCESO"?"bg-blue-500 text-white shadow-md":"bg-gray-100 text-gray-700 hover:bg-gray-200")"><i class="fas fa-sync-alt mr-2"></i>En Proceso</a>
-<a asp-action="Index" asp-route-estado="ENVIADO" class="px-4 py-2.5 rounded-xl font-bold transition-all @(estadoFiltro=="ENVIADO"?"bg-purple-500 text-white shadow-md":"bg-gray-100 text-gray-700 hover:bg-gray-200")"><i class="fas fa-shipping-fast mr-2"></i>Enviados</a>
-<a asp-action="Index" asp-route-estado="ENTREGADO" class="px-4 py-2.5 rounded-xl font-bold transition-all @(estadoFiltro=="ENTREGADO"?"bg-green-500 text-white shadow-md":"bg-gray-100 text-gray-700 hover:bg-gray-200")"><i class="fas fa-check-circle mr-2"></i>Entregados</a>
-<a asp-action="Index" asp-route-estado="CANCELADO" class="px-4 py-2.5 rounded-xl font-bold transition-all @(estadoFiltro=="CANCELADO"?"bg-red-500 text-white shadow-md":"bg-gray-100 text-gray-700 hover:bg-gray-200")"><i class="fas fa-times-circle mr-2"></i>Cancelados</a>
-</div>
-
-<div class="grid grid-cols-2 md:grid-cols-5 gap-4 pt-6 border-t border-gray-200">
-<div class="bg-gradient-to-br from-emerald-50 to-green-50 rounded-xl p-4 text-center border border-emerald-200"><div class="text-3xl font-bold text-emerald-600">@Model.TotalItems</div><div class="text-sm text-gray-600 font-medium">Total</div></div>
-<div class="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl p-4 text-center border border-yellow-200"><div class="text-3xl font-bold text-yellow-600">@ViewBag.TotalPendientes</div><div class="text-sm text-gray-600 font-medium">Pendientes</div></div>
-<div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 text-center border border-blue-200"><div class="text-3xl font-bold text-blue-600">@ViewBag.TotalEnProceso</div><div class="text-sm text-gray-600 font-medium">En Proceso</div></div>
-<div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-4 text-center border border-purple-200"><div class="text-3xl font-bold text-purple-600">@ViewBag.TotalEnviados</div><div class="text-sm text-gray-600 font-medium">Enviados</div></div>
-<div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-4 text-center border border-green-200"><div class="text-3xl font-bold text-green-600">@ViewBag.TotalEntregados</div><div class="text-sm text-gray-600 font-medium">Entregados</div></div>
-</div>
-</div>
-
-@if(Model.Items!=null&&Model.Items.Any()){
-<div class="space-y-4 mb-8">
-@foreach(var p in Model.Items){
-<div class="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100">
-<div class="flex flex-col md:flex-row">
-<div class="flex-1 p-6">
-<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-<div><div class="text-xs text-gray-500 mb-1 font-medium">Nº Pedido</div><div class="font-bold text-lg text-gray-900">#@p.Id</div></div>
-<div><div class="text-xs text-gray-500 mb-1 font-medium">Cliente</div><div class="font-semibold text-gray-900">@p.UsuarioEmail</div></div>
-<div><div class="text-xs text-gray-500 mb-1 font-medium">Fecha</div><div class="font-semibold text-gray-900"><i class="fas fa-calendar mr-1 text-gray-400"></i>@p.Fecha?.ToString("dd/MM/yyyy")</div></div>
-<div><div class="text-xs text-gray-500 mb-1 font-medium">Total</div><div class="text-xl font-bold text-emerald-600">@p.Total.ToString("C")</div></div>
-</div>
-<div class="flex items-center gap-3">
-@switch(p.Estado){
-case "PENDIENTE":<span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold bg-yellow-100 text-yellow-700"><i class="fas fa-clock mr-1"></i>Pendiente</span>break;
-case "EN_PROCESO":<span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold bg-blue-100 text-blue-700"><i class="fas fa-sync-alt mr-1"></i>En Proceso</span>break;
-case "ENVIADO":<span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold bg-purple-100 text-purple-700"><i class="fas fa-shipping-fast mr-1"></i>Enviado</span>break;
-case "ENTREGADO":<span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold bg-green-100 text-green-700"><i class="fas fa-check-circle mr-1"></i>Entregado</span>break;
-case "CANCELADO":<span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold bg-red-100 text-red-700"><i class="fas fa-times-circle mr-1"></i>Cancelado</span>break;
+@{
+    ViewData["Title"] = "Gestión de Pedidos";
+    var estadoFiltro = ViewBag.EstadoFiltro as string ?? "";
+    var totalPendientes = ViewBag.TotalPendientes ?? 0;
+    var totalEnProceso = ViewBag.TotalEnProceso ?? 0;
+    var totalEnviados = ViewBag.TotalEnviados ?? 0;
+    var totalEntregados = ViewBag.TotalEntregados ?? 0;
 }
-<div class="text-sm text-gray-600 font-medium"><i class="fas fa-shopping-bag mr-1"></i>@p.LineasPedido.Count producto@(p.LineasPedido.Count!=1?"s":"")</div>
-</div>
-</div>
-<div class="bg-gradient-to-br from-gray-50 to-emerald-50 p-6 md:w-48 flex flex-col justify-center gap-2 border-l border-gray-200">
-<a asp-action="Detalle" asp-route-id="@p.Id" class="w-full flex items-center justify-center px-4 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all font-bold text-sm shadow-sm"><i class="fas fa-eye mr-2"></i>Ver Detalle</a>
-<a asp-action="EditarEstado" asp-route-id="@p.Id" class="w-full flex items-center justify-center px-4 py-2.5 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl hover:from-emerald-600 hover:to-emerald-700 transition-all font-bold text-sm shadow-sm"><i class="fas fa-edit mr-2"></i>Estado</a>
-<form asp-action="Eliminar" asp-route-id="@p.Id" method="post" onsubmit="return confirm('¿Eliminar este pedido?')">
-<button type="submit" class="w-full flex items-center justify-center px-4 py-2.5 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl hover:from-red-600 hover:to-red-700 transition-all font-bold text-sm shadow-sm"><i class="fas fa-trash mr-2"></i>Eliminar</button>
-</form>
-</div>
-</div>
-</div>
-}
-</div>
 
-@if(Model.TotalPages>1){<div class="flex justify-center items-center space-x-2 flex-wrap gap-2">
-@if(Model.HasPreviousPage){<a asp-action="Index" asp-route-page="@(Model.PageNumber-1)" asp-route-estado="@estadoFiltro" class="px-4 py-2 bg-white border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-emerald-500 hover:border-emerald-500 hover:text-white transition-all font-semibold"><i class="fas fa-chevron-left"></i></a>}else{<span class="px-4 py-2 bg-gray-100 border-2 border-gray-200 text-gray-400 rounded-xl cursor-not-allowed"><i class="fas fa-chevron-left"></i></span>}
-@{var startPage=Math.Max(1,Model.PageNumber-2);var endPage=Math.Min(Model.TotalPages,Model.PageNumber+2);}
-@if(startPage>1){<a asp-action="Index" asp-route-page="1" asp-route-estado="@estadoFiltro" class="px-4 py-2 bg-white border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-emerald-500 hover:border-emerald-500 hover:text-white transition-all font-semibold">1</a>
-@if(startPage>2){<span class="px-2 text-gray-500">...</span>}}
-@for(var i=startPage;i<=endPage;i++){
-@if(i==Model.PageNumber){<span class="px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl font-bold shadow-md">@i</span>}else{<a asp-action="Index" asp-route-page="@i" asp-route-estado="@estadoFiltro" class="px-4 py-2 bg-white border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-emerald-500 hover:border-emerald-500 hover:text-white transition-all font-semibold">@i</a>}}
-@if(endPage<Model.TotalPages){@if(endPage<Model.TotalPages-1){<span class="px-2 text-gray-500">...</span>}
-<a asp-action="Index" asp-route-page="@Model.TotalPages" asp-route-estado="@estadoFiltro" class="px-4 py-2 bg-white border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-emerald-500 hover:border-emerald-500 hover:text-white transition-all font-semibold">@Model.TotalPages</a>}
-@if(Model.HasNextPage){<a asp-action="Index" asp-route-page="@(Model.PageNumber+1)" asp-route-estado="@estadoFiltro" class="px-4 py-2 bg-white border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-emerald-500 hover:border-emerald-500 hover:text-white transition-all font-semibold"><i class="fas fa-chevron-right"></i></a>}else{<span class="px-4 py-2 bg-gray-100 border-2 border-gray-200 text-gray-400 rounded-xl cursor-not-allowed"><i class="fas fa-chevron-right"></i></span>}
-</div>}}else{
-<div class="bg-white rounded-3xl p-12 text-center shadow-xl border border-gray-100"><div class="w-24 h-24 bg-gradient-to-br from-orange-100 to-red-100 rounded-full flex items-center justify-center mx-auto mb-6"><i class="fas fa-box-open text-orange-600 text-5xl"></i></div>
-<h3 class="font-serif text-3xl font-bold text-gray-900 mb-3">No hay pedidos</h3>
-<p class="text-gray-600 text-lg">@(string.IsNullOrEmpty(estadoFiltro)?"Aún no se han realizado pedidos":$"No hay pedidos con estado {estadoFiltro}")</p>
-</div>}
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
+        <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\"60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%239C92AC\" fill-opacity=\"0.05\"%3E%3Cpath d=\"M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-40"></div>
+        <div class="absolute top-0 right-0 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+        
+        <div class="relative container mx-auto px-6 py-8">
+            <nav class="flex items-center gap-2 text-sm text-slate-400 mb-4">
+                <a asp-controller="Admin" asp-action="Index" class="hover:text-white transition-colors"><i class="fas fa-home"></i></a>
+                <i class="fas fa-chevron-right text-xs"></i>
+                <span class="text-white">Pedidos</span>
+            </nav>
+            
+            <div class="flex items-center gap-4">
+                <div class="w-14 h-14 bg-gradient-to-br from-amber-400 to-orange-500 rounded-2xl flex items-center justify-center shadow-xl shadow-amber-500/25">
+                    <i class="fas fa-shopping-bag text-white text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-bold text-white">Gestión de Pedidos</h1>
+                    <p class="text-slate-400 text-sm mt-1">Administra todos los pedidos de la tienda</p>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<div class="mt-8">
-<a asp-controller="Admin" asp-action="Index" class="inline-flex items-center px-8 py-3 border-2 border-gray-300 text-gray-700 rounded-xl hover:border-emerald-500 hover:text-emerald-600 hover:bg-emerald-50 transition-all font-semibold group"><i class="fas fa-arrow-left mr-2 group-hover:-translate-x-2 transition-transform"></i>Volver al Panel</a>
-</div>
+    <div class="container mx-auto px-6 -mt-6 relative z-10 pb-12">
+        <!-- Filters & Stats -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 mb-6">
+            <!-- Filter Tabs -->
+            <div class="flex flex-wrap gap-2 mb-5">
+                <a asp-action="Index" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all @(string.IsNullOrEmpty(estadoFiltro) ? "bg-emerald-500 text-white shadow-md" : "bg-slate-100 text-slate-600 hover:bg-slate-200")">
+                    <i class="fas fa-th-large"></i>Todos
+                </a>
+                <a asp-action="Index" asp-route-estado="PENDIENTE" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all @(estadoFiltro == "PENDIENTE" ? "bg-yellow-500 text-white shadow-md" : "bg-slate-100 text-slate-600 hover:bg-slate-200")">
+                    <i class="fas fa-clock"></i>Pendientes
+                </a>
+                <a asp-action="Index" asp-route-estado="EN_PROCESO" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all @(estadoFiltro == "EN_PROCESO" ? "bg-blue-500 text-white shadow-md" : "bg-slate-100 text-slate-600 hover:bg-slate-200")">
+                    <i class="fas fa-sync-alt"></i>En Proceso
+                </a>
+                <a asp-action="Index" asp-route-estado="ENVIADO" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all @(estadoFiltro == "ENVIADO" ? "bg-purple-500 text-white shadow-md" : "bg-slate-100 text-slate-600 hover:bg-slate-200")">
+                    <i class="fas fa-shipping-fast"></i>Enviados
+                </a>
+                <a asp-action="Index" asp-route-estado="ENTREGADO" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all @(estadoFiltro == "ENTREGADO" ? "bg-green-500 text-white shadow-md" : "bg-slate-100 text-slate-600 hover:bg-slate-200")">
+                    <i class="fas fa-check-circle"></i>Entregados
+                </a>
+                <a asp-action="Index" asp-route-estado="CANCELADO" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all @(estadoFiltro == "CANCELADO" ? "bg-red-500 text-white shadow-md" : "bg-slate-100 text-slate-600 hover:bg-slate-200")">
+                    <i class="fas fa-times-circle"></i>Cancelados
+                </a>
+            </div>
+
+            <!-- Stats -->
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-3 pt-5 border-t border-slate-100">
+                <div class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-3 text-center border border-slate-200">
+                    <div class="text-2xl font-bold text-slate-700">@Model.TotalItems</div>
+                    <div class="text-xs text-slate-500">Total</div>
+                </div>
+                <div class="bg-gradient-to-br from-yellow-50 to-amber-50 rounded-xl p-3 text-center border border-yellow-200">
+                    <div class="text-2xl font-bold text-yellow-600">@totalPendientes</div>
+                    <div class="text-xs text-slate-500">Pendientes</div>
+                </div>
+                <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-3 text-center border border-blue-200">
+                    <div class="text-2xl font-bold text-blue-600">@totalEnProceso</div>
+                    <div class="text-xs text-slate-500">En Proceso</div>
+                </div>
+                <div class="bg-gradient-to-br from-purple-50 to-violet-50 rounded-xl p-3 text-center border border-purple-200">
+                    <div class="text-2xl font-bold text-purple-600">@totalEnviados</div>
+                    <div class="text-xs text-slate-500">Enviados</div>
+                </div>
+                <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-3 text-center border border-green-200">
+                    <div class="text-2xl font-bold text-green-600">@totalEntregados</div>
+                    <div class="text-xs text-slate-500">Entregados</div>
+                </div>
+            </div>
+        </div>
+
+        @if(Model.Items != null && Model.Items.Any())
+        {
+            <!-- Orders List -->
+            <div class="space-y-4 mb-6">
+                @foreach(var p in Model.Items)
+                {
+                    <div class="bg-white rounded-2xl shadow-sm hover:shadow-md transition-all overflow-hidden border border-slate-100">
+                        <div class="flex flex-col md:flex-row">
+                            <div class="flex-1 p-5">
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                                    <div>
+                                        <div class="text-xs text-slate-400 mb-1">Nº Pedido</div>
+                                        <div class="font-bold text-slate-800">#@p.Id</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-xs text-slate-400 mb-1">Cliente</div>
+                                        <div class="font-medium text-slate-700 truncate">@p.UsuarioEmail</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-xs text-slate-400 mb-1">Fecha</div>
+                                        <div class="font-medium text-slate-700">@p.Fecha?.ToString("dd/MM/yyyy")</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-xs text-slate-400 mb-1">Total</div>
+                                        <div class="text-lg font-bold text-emerald-600">@p.Total.ToString("C")</div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    @switch(p.Estado)
+                                    {
+                                        case "PENDIENTE":
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700"><i class="fas fa-clock mr-1"></i>Pendiente</span>
+                                            break;
+                                        case "EN_PROCESO":
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700"><i class="fas fa-sync-alt mr-1"></i>En Proceso</span>
+                                            break;
+                                        case "ENVIADO":
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-700"><i class="fas fa-shipping-fast mr-1"></i>Enviado</span>
+                                            break;
+                                        case "ENTREGADO":
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700"><i class="fas fa-check-circle mr-1"></i>Entregado</span>
+                                            break;
+                                        case "CANCELADO":
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700"><i class="fas fa-times-circle mr-1"></i>Cancelado</span>
+                                            break;
+                                    }
+                                    <span class="text-sm text-slate-500">@p.LineasPedido.Count producto@(p.LineasPedido.Count != 1 ? "s" : "")</span>
+                                </div>
+                            </div>
+                            <div class="bg-slate-50 p-5 md:w-44 flex flex-row md:flex-col justify-center gap-2 border-t md:border-t-0 md:border-l border-slate-100">
+                                <a asp-action="Detalle" asp-route-id="@p.Id" class="flex-1 md:flex-none flex items-center justify-center gap-1 px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-all text-sm font-medium">
+                                    <i class="fas fa-eye text-xs"></i>Ver
+                                </a>
+                                <a asp-action="EditarEstado" asp-route-id="@p.Id" class="flex-1 md:flex-none flex items-center justify-center gap-1 px-3 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg transition-all text-sm font-medium">
+                                    <i class="fas fa-edit text-xs"></i>Estado
+                                </a>
+                                <form asp-action="Eliminar" asp-route-id="@p.Id" method="post" onsubmit="return confirm('¿Eliminar este pedido?')" class="flex-1 md:flex-none">
+                                    <button type="submit" class="w-full flex items-center justify-center gap-1 px-3 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-all text-sm font-medium">
+                                        <i class="fas fa-trash text-xs"></i>Eliminar
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <!-- Pagination -->
+            @if(Model.TotalPages > 1)
+            {
+                <div class="flex justify-center items-center gap-2 flex-wrap">
+                    @if(Model.HasPreviousPage)
+                    {
+                        <a asp-action="Index" asp-route-page="@(Model.PageNumber-1)" asp-route-estado="@estadoFiltro" class="px-3 py-2 bg-white border border-slate-200 text-slate-600 rounded-lg hover:bg-emerald-500 hover:border-emerald-500 hover:text-white transition-all">
+                            <i class="fas fa-chevron-left text-xs"></i>
+                        </a>
+                    }
+                    @{var startPage = Math.Max(1, Model.PageNumber - 2); var endPage = Math.Min(Model.TotalPages, Model.PageNumber + 2);}
+                    @for(var i = startPage; i <= endPage; i++)
+                    {
+                        @if(i == Model.PageNumber)
+                        {
+                            <span class="px-3 py-2 bg-emerald-500 text-white rounded-lg font-medium">@i</span>
+                        }
+                        else
+                        {
+                            <a asp-action="Index" asp-route-page="@i" asp-route-estado="@estadoFiltro" class="px-3 py-2 bg-white border border-slate-200 text-slate-600 rounded-lg hover:bg-emerald-500 hover:border-emerald-500 hover:text-white transition-all">@i</a>
+                        }
+                    }
+                    @if(Model.HasNextPage)
+                    {
+                        <a asp-action="Index" asp-route-page="@(Model.PageNumber+1)" asp-route-estado="@estadoFiltro" class="px-3 py-2 bg-white border border-slate-200 text-slate-600 rounded-lg hover:bg-emerald-500 hover:border-emerald-500 hover:text-white transition-all">
+                            <i class="fas fa-chevron-right text-xs"></i>
+                        </a>
+                    }
+                </div>
+            }
+        }
+        else
+        {
+            <!-- Empty State -->
+            <div class="bg-white rounded-2xl p-12 text-center shadow-sm border border-slate-100">
+                <div class="w-20 h-20 bg-gradient-to-br from-amber-100 to-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-box-open text-amber-500 text-3xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-800 mb-2">No hay pedidos</h3>
+                <p class="text-slate-500">@(string.IsNullOrEmpty(estadoFiltro) ? "Aún no se han realizado pedidos" : $"No hay pedidos con estado {estadoFiltro}")</p>
+            </div>
+        }
+
+        <!-- Navigation -->
+        <div class="mt-8">
+            <a asp-controller="Admin" asp-action="Index" class="inline-flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-200 text-slate-600 hover:border-slate-300 rounded-xl transition-all font-medium">
+                <i class="fas fa-arrow-left"></i>Volver al Panel
+            </a>
+        </div>
+    </div>
 </div>

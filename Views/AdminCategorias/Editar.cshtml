@@ -1,186 +1,135 @@
 @model AldaJoyeros.DTOs.CategoriaUpdateDto
-
 @{
     ViewData["Title"] = "Editar Categoría";
     var categoriaId = ViewBag.CategoriaId as long?;
     var cantidadProductos = ViewBag.CantidadProductos as int? ?? 0;
 }
 
-<div class="container mx-auto px-6 py-8">
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
     <!-- Header -->
-    <div class="mb-8">
-        <h1 class="font-serif text-4xl md:text-5xl font-bold text-gray-900 mb-3 flex items-center gap-3">
-            <div class="w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg">
-                <i class="fas fa-edit text-white text-2xl"></i>
-            </div>
-            Editar Categoría
-        </h1>
-        <p class="text-gray-600 text-lg">Modifica la información de la categoría #@categoriaId</p>
-    </div>
-
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <!-- Form -->
-        <div class="lg:col-span-2">
-            <div class="bg-white rounded-3xl shadow-xl p-8 border border-gray-100">
-                <form asp-action="Editar" method="post" class="space-y-6">
-                    <div asp-validation-summary="ModelOnly" class="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-xl mb-6">
-                        <div class="flex items-center">
-                            <i class="fas fa-exclamation-circle text-red-500 mr-3"></i>
-                            <span class="text-red-800 text-sm"></span>
-                        </div>
-                    </div>
-
-                    <!-- Nombre Field -->
-                    <div>
-                        <label asp-for="Nombre" class="block text-sm font-bold text-gray-700 mb-3 flex items-center gap-2">
-                            <div class="w-6 h-6 bg-purple-100 rounded-lg flex items-center justify-center">
-                                <i class="fas fa-tag text-purple-600 text-xs"></i>
-                            </div>
-                            Nombre de la Categoría
-                        </label>
-                        <input asp-for="Nombre" 
-                               class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100 transition-all duration-200 text-lg outline-none"
-                               placeholder="Ej: Anillos, Collares, Pulseras..." />
-                        <span asp-validation-for="Nombre" class="text-red-500 text-sm mt-1 block"></span>
-                    </div>
-
-                    <!-- Info Card -->
-                    <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-200">
-                        <div class="flex items-start gap-4">
-                            <div class="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center flex-shrink-0">
-                                <i class="fas fa-info-circle text-white text-xl"></i>
-                            </div>
-                            <div>
-                                <h3 class="font-bold text-gray-900 mb-3">Información Importante</h3>
-                                <ul class="text-sm text-gray-700 space-y-2">
-                                    <li class="flex items-start gap-2">
-                                        <i class="fas fa-check text-blue-600 mt-0.5"></i>
-                                        <span>Los cambios afectarán a todos los productos de esta categoría</span>
-                                    </li>
-                                    <li class="flex items-start gap-2">
-                                        <i class="fas fa-check text-blue-600 mt-0.5"></i>
-                                        <span>El nombre debe ser único en el sistema</span>
-                                    </li>
-                                    <li class="flex items-start gap-2">
-                                        <i class="fas fa-check text-blue-600 mt-0.5"></i>
-                                        <span>Los productos mantienen su vinculación con la categoría</span>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <hr class="border-gray-200" />
-
-                    <!-- Actions -->
-                    <div class="flex flex-col sm:flex-row justify-between gap-4">
-                        <a asp-action="Index" 
-                           class="inline-flex items-center justify-center px-8 py-3 border-2 border-gray-300 text-gray-700 rounded-xl hover:border-emerald-500 hover:text-emerald-600 hover:bg-emerald-50 transition-all duration-200 font-semibold">
-                            <i class="fas fa-times mr-2"></i>
-                            Cancelar
-                        </a>
-                        <button type="submit" 
-                                class="inline-flex items-center justify-center bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:from-emerald-600 hover:to-emerald-700 hover:shadow-2xl transition-all duration-200 transform hover:scale-105">
-                            <i class="fas fa-save mr-2"></i>
-                            Guardar Cambios
-                        </button>
-                    </div>
-                </form>
+    <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
+        <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\"60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%239C92AC\" fill-opacity=\"0.05\"%3E%3Cpath d=\"M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-40"></div>
+        
+        <div class="relative container mx-auto px-6 py-8">
+            <nav class="flex items-center gap-2 text-sm text-slate-400 mb-4">
+                <a asp-controller="Admin" asp-action="Index" class="hover:text-white transition-colors"><i class="fas fa-home"></i></a>
+                <i class="fas fa-chevron-right text-xs"></i>
+                <a asp-action="Index" class="hover:text-white transition-colors">Categorías</a>
+                <i class="fas fa-chevron-right text-xs"></i>
+                <span class="text-white">Editar #@categoriaId</span>
+            </nav>
+            
+            <div class="flex items-center gap-4">
+                <div class="w-14 h-14 bg-gradient-to-br from-violet-400 to-purple-600 rounded-2xl flex items-center justify-center shadow-xl shadow-violet-500/25">
+                    <i class="fas fa-edit text-white text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-bold text-white">Editar Categoría</h1>
+                    <p class="text-slate-400 text-sm mt-1">Modificando categoría #@categoriaId</p>
+                </div>
             </div>
         </div>
+    </div>
 
-        <!-- Info Sidebar -->
-        <div class="lg:col-span-1 space-y-6">
-            <!-- Stats -->
-            <div class="bg-gradient-to-br from-emerald-50 to-green-50 rounded-2xl p-6 border border-emerald-200">
-                <h3 class="font-bold text-gray-900 mb-4 flex items-center gap-2">
-                    <div class="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-chart-bar text-white"></i>
+    <div class="container mx-auto px-6 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Form -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                    <div class="p-6 border-b border-slate-100">
+                        <h2 class="font-semibold text-slate-800 flex items-center gap-2">
+                            <i class="fas fa-edit text-violet-500"></i>
+                            Información de la Categoría
+                        </h2>
                     </div>
-                    Estadísticas
-                </h3>
-                <div class="space-y-4">
-                    <div class="flex justify-between items-center bg-white rounded-lg p-3">
-                        <span class="text-sm text-gray-600 font-medium">Productos:</span>
-                        <span class="font-bold text-emerald-600 text-lg">@cantidadProductos</span>
-                    </div>
-                    <div class="flex justify-between items-center bg-white rounded-lg p-3">
-                        <span class="text-sm text-gray-600 font-medium">ID:</span>
-                        <span class="font-bold text-gray-900">#@categoriaId</span>
-                    </div>
+                    
+                    <form asp-action="Editar" method="post" class="p-6 space-y-6">
+                        <div asp-validation-summary="ModelOnly" class="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg text-red-700 text-sm"></div>
+
+                        <div>
+                            <label asp-for="Nombre" class="block text-sm font-medium text-slate-700 mb-2">
+                                Nombre de la Categoría *
+                            </label>
+                            <input asp-for="Nombre" 
+                                   class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all outline-none"
+                                   placeholder="Nombre de la categoría" />
+                            <span asp-validation-for="Nombre" class="text-red-500 text-sm mt-1 block"></span>
+                        </div>
+
+                        <!-- Info -->
+                        <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                            <div class="flex items-start gap-3">
+                                <i class="fas fa-info-circle text-blue-500 mt-0.5"></i>
+                                <div class="text-sm text-blue-700">
+                                    <p class="font-medium mb-1">Información</p>
+                                    <ul class="space-y-1 text-blue-600">
+                                        <li>• Los cambios afectarán a todos los productos asociados</li>
+                                        <li>• El nombre debe ser único en el sistema</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="flex flex-col sm:flex-row justify-between gap-4 pt-4 border-t border-slate-100">
+                            <a asp-action="Index" class="inline-flex items-center justify-center gap-2 px-5 py-2.5 border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 transition-all font-medium">
+                                <i class="fas fa-times"></i>Cancelar
+                            </a>
+                            <button type="submit" class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white rounded-xl font-semibold shadow-lg shadow-emerald-500/25 transition-all">
+                                <i class="fas fa-save"></i>Guardar Cambios
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
 
-            <!-- Quick Actions -->
-            <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
-                <h3 class="font-bold text-gray-900 mb-4 flex items-center gap-2">
-                    <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-bolt text-purple-600"></i>
+            <!-- Sidebar -->
+            <div class="space-y-6">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
+                    <h3 class="font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                        <i class="fas fa-chart-bar text-emerald-500"></i>Estadísticas
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center bg-slate-50 rounded-lg p-3">
+                            <span class="text-sm text-slate-600">ID</span>
+                            <span class="font-semibold text-slate-800">#@categoriaId</span>
+                        </div>
+                        <div class="flex justify-between items-center bg-slate-50 rounded-lg p-3">
+                            <span class="text-sm text-slate-600">Productos</span>
+                            <span class="font-semibold text-emerald-600">@cantidadProductos</span>
+                        </div>
                     </div>
-                    Acciones Rápidas
-                </h3>
-                <div class="space-y-2">
-                    <a asp-controller="AdminProductos" asp-action="Index" asp-route-categoriaId="@categoriaId"
-                       class="flex items-center gap-2 bg-gradient-to-r from-emerald-50 to-green-50 rounded-lg p-3 text-sm hover:shadow-md transition-all border border-emerald-200 group">
-                        <div class="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-gem text-white text-xs"></i>
-                        </div>
-                        <span class="font-medium text-gray-700 group-hover:text-emerald-600">Ver productos</span>
-                        <i class="fas fa-arrow-right ml-auto text-emerald-600 group-hover:translate-x-1 transition-transform"></i>
-                    </a>
-                    <a asp-controller="AdminProductos" asp-action="Crear" asp-route-categoriaId="@categoriaId"
-                       class="flex items-center gap-2 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-3 text-sm hover:shadow-md transition-all border border-purple-200 group">
-                        <div class="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-plus text-white text-xs"></i>
-                        </div>
-                        <span class="font-medium text-gray-700 group-hover:text-purple-600">Nuevo producto</span>
-                        <i class="fas fa-arrow-right ml-auto text-purple-600 group-hover:translate-x-1 transition-transform"></i>
-                    </a>
                 </div>
-            </div>
 
-            <!-- Warning -->
-            <div class="bg-gradient-to-br from-red-50 to-orange-50 rounded-2xl p-6 border border-red-200">
-                <h3 class="font-bold text-gray-900 mb-3 flex items-center gap-2">
-                    <div class="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-exclamation-triangle text-white"></i>
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
+                    <h3 class="font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                        <i class="fas fa-bolt text-amber-500"></i>Acciones Rápidas
+                    </h3>
+                    <div class="space-y-2">
+                        <a asp-controller="AdminProductos" asp-action="Index" 
+                           class="flex items-center gap-2 px-4 py-3 bg-slate-50 hover:bg-emerald-50 rounded-xl text-slate-600 hover:text-emerald-600 transition-all text-sm font-medium">
+                            <i class="fas fa-gem"></i>Ver productos
+                            <i class="fas fa-arrow-right ml-auto text-xs"></i>
+                        </a>
                     </div>
-                    Precaución
-                </h3>
-                <p class="text-sm text-gray-700 mb-4 leading-relaxed">
-                    Si eliminas esta categoría, los @cantidadProductos producto@(cantidadProductos != 1 ? "s" : "") asociado@(cantidadProductos != 1 ? "s" : "") quedarán sin categoría.
-                </p>
-                <div class="flex gap-2">
-                    <a asp-action="Index" 
-                       class="flex-1 text-center text-gray-600 hover:text-gray-800 font-semibold text-sm py-2 px-3 bg-white rounded-lg hover:shadow-md transition-all">
-                        <i class="fas fa-arrow-left mr-1"></i>
-                        Volver
-                    </a>
                 </div>
+
+                @if(cantidadProductos > 0)
+                {
+                    <div class="bg-amber-50 border border-amber-200 rounded-2xl p-5">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-exclamation-triangle text-amber-500 mt-0.5"></i>
+                            <div class="text-sm text-amber-700">
+                                <p class="font-medium mb-1">Precaución</p>
+                                <p>Esta categoría tiene @cantidadProductos producto(s) asociado(s).</p>
+                            </div>
+                        </div>
+                    </div>
+                }
             </div>
         </div>
     </div>
 </div>
-
-@section Styles {
-    <style>
-        /* Smooth animations */
-        @@keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .lg\:col-span-2 > div, .lg\:col-span-1 > div {
-            animation: fadeInUp 0.6s ease-out;
-        }
-    </style>
-}
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
