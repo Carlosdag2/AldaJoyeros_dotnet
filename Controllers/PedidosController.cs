@@ -14,6 +14,7 @@ namespace AldaJoyeros.Controllers
         private readonly IDireccionService _direccionService;
         private readonly IProductoImagenService _imagenService;
         private readonly IPaymentService _paymentService;
+        private readonly IEmailService _emailService;
         private readonly ILogger<PedidosController> _logger;
 
         private const string CheckoutSessionKey = "CheckoutData";
@@ -24,6 +25,7 @@ namespace AldaJoyeros.Controllers
             IDireccionService direccionService,
             IProductoImagenService imagenService,
             IPaymentService paymentService,
+            IEmailService emailService,
             ILogger<PedidosController> logger)
         {
             _pedidoService = pedidoService;
@@ -31,6 +33,7 @@ namespace AldaJoyeros.Controllers
             _direccionService = direccionService;
             _imagenService = imagenService;
             _paymentService = paymentService;
+            _emailService = emailService;
             _logger = logger;
         }
 
@@ -392,7 +395,7 @@ namespace AldaJoyeros.Controllers
                     }
                 }
 
-                // Crear pedido - la dirección se copia al pedido (sin UsuarioId)
+                // Crear pedido
                 var pedidoDto = new PedidoCreateDto
                 {
                     Direccion = new DireccionCreateDto
@@ -413,6 +416,18 @@ namespace AldaJoyeros.Controllers
                 _logger.LogInformation(
                     "Pedido {PedidoId} creado para usuario {UserId} - Método: {MetodoPago}",
                     pedido.Id, CurrentUser.Id, sessionData.MetodoPago);
+
+                // Enviar email de confirmación
+                try
+                {
+                    await _emailService.SendOrderConfirmationEmailAsync(CurrentUser.Email, pedido);
+                    _logger.LogInformation("Email de confirmación enviado para pedido {PedidoId}", pedido.Id);
+                }
+                catch (Exception emailEx)
+                {
+                    // No fallar el pedido si el email no se envía
+                    _logger.LogWarning(emailEx, "No se pudo enviar email de confirmación para pedido {PedidoId}", pedido.Id);
+                }
 
                 TempData["Success"] = sessionData.MetodoPago == "Contra Reembolso" 
                     ? "¡Pedido realizado! Pagarás al recibir tu pedido." 
