@@ -5,6 +5,7 @@ using AldaJoyeros.Repositories.Interfaces;
 using AldaJoyeros.Repositories.Implementations;
 using AldaJoyeros.Services.Interfaces;
 using AldaJoyeros.Services.Implementations;
+using AldaJoyeros.Services;
 using AldaJoyeros.Middleware;
 using AldaJoyeros.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -123,6 +124,9 @@ namespace AldaJoyeros
 
             // Registrar Servicio de Email
             builder.Services.AddScoped<IEmailService, EmailService>();
+
+            // Registrar Servicio de Códigos Postales
+            builder.Services.AddSingleton<ICodigoPostalService, CodigoPostalService>();
 
             // Configurar Sesiones solo para carrito temporal (usuarios no autenticados)
             builder.Services.AddDistributedMemoryCache();

@@ -52,7 +52,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
             <!-- Formulario -->
             <div class="lg:col-span-2">
-                <form asp-action="GuardarDireccion" method="post" class="space-y-6">
+                <form asp-action="GuardarDireccion" method="post" class="space-y-6" id="direccionForm">
                     @Html.AntiForgeryToken()
 
                     @if (tieneDirecciones)
@@ -142,29 +142,73 @@
                                        placeholder="Ej: 2º A" />
                             </div>
 
-                            <!-- CP, Ciudad, Provincia -->
+                            <!-- CP, Provincia, Ciudad -->
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Código Postal *</label>
-                                    <input asp-for="NuevaDireccion.CodigoPostal" 
-                                           class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all outline-none" 
-                                           placeholder="28001" />
+                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">
+                                        Código Postal *
+                                        <span id="cp-loading" class="hidden ml-2">
+                                            <i class="fas fa-spinner fa-spin text-emerald-500"></i>
+                                        </span>
+                                    </label>
+                                    <div class="relative">
+                                        <input asp-for="NuevaDireccion.CodigoPostal" 
+                                               id="codigoPostalInput"
+                                               class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all outline-none" 
+                                               placeholder="28001"
+                                               maxlength="5"
+                                               pattern="[0-9]{5}" />
+                                        <div id="cp-check" class="absolute right-3 top-1/2 -translate-y-1/2 hidden">
+                                            <i class="fas fa-check-circle text-emerald-500"></i>
+                                        </div>
+                                    </div>
                                     <span asp-validation-for="NuevaDireccion.CodigoPostal" class="text-red-500 text-sm"></span>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Ciudad *</label>
-                                    <input asp-for="NuevaDireccion.Ciudad" 
-                                           class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all outline-none" 
-                                           placeholder="Madrid" />
-                                    <span asp-validation-for="NuevaDireccion.Ciudad" class="text-red-500 text-sm"></span>
+                                    <p id="cp-hint" class="text-xs text-gray-400 mt-1">Al introducir el CP se rellenará automáticamente la provincia y ciudad</p>
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1.5">Provincia *</label>
-                                    <input asp-for="NuevaDireccion.Provincia" 
-                                           class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all outline-none" 
-                                           placeholder="Madrid" />
-                                    <span asp-validation-for="NuevaDireccion.Provincia" class="text-red-500 text-sm"></span>
+                                    <div class="relative">
+                                        <select name="NuevaDireccion.Provincia" 
+                                                id="provinciaSelect"
+                                                class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all outline-none appearance-none bg-white cursor-pointer">
+                                            <option value="">Selecciona provincia</option>
+                                        </select>
+                                        <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                                            <i class="fas fa-chevron-down text-gray-400"></i>
+                                        </div>
+                                    </div>
+                                    <span id="provincia-error" class="text-red-500 text-sm hidden">La provincia es obligatoria</span>
                                 </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Ciudad *</label>
+                                    <div class="relative">
+                                        <select name="NuevaDireccion.Ciudad" 
+                                                id="ciudadSelect"
+                                                class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all outline-none appearance-none bg-white cursor-pointer"
+                                                disabled>
+                                            <option value="">Primero selecciona provincia</option>
+                                        </select>
+                                        <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                                            <i class="fas fa-chevron-down text-gray-400"></i>
+                                        </div>
+                                    </div>
+                                    <span id="ciudad-error" class="text-red-500 text-sm hidden">La ciudad es obligatoria</span>
+                                    <p id="ciudad-otra-hint" class="text-xs text-gray-400 mt-1 hidden">
+                                        <i class="fas fa-info-circle mr-1"></i>Si tu ciudad no aparece, puedes escribirla directamente
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Input para ciudad personalizada -->
+                            <div id="ciudad-custom-container" class="hidden">
+                                <label class="block text-sm font-medium text-gray-700 mb-1.5">
+                                    <i class="fas fa-edit text-emerald-500 mr-1"></i>
+                                    Escribe tu ciudad
+                                </label>
+                                <input type="text" 
+                                       id="ciudadCustomInput"
+                                       class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all outline-none" 
+                                       placeholder="Nombre de tu ciudad o localidad" />
                             </div>
 
                             <!-- Guardar dirección -->
@@ -263,6 +307,325 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>
+        // Variables globales
+        let provinciasData = [];
+        let ciudadesCache = {};
+        let debounceTimer;
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', async function() {
+            await cargarProvincias();
+            setupEventListeners();
+            setupFormValidation();
+        });
+
+        // Cargar provincias desde la API
+        async function cargarProvincias() {
+            try {
+                const response = await fetch('/api/ubicacion/provincias');
+                if (response.ok) {
+                    provinciasData = await response.json();
+                    poblarSelectProvincias();
+                }
+            } catch (error) {
+                console.error('Error cargando provincias:', error);
+            }
+        }
+
+        // Poblar el select de provincias
+        function poblarSelectProvincias() {
+            const select = document.getElementById('provinciaSelect');
+            const currentValue = select.value;
+            
+            select.innerHTML = '<option value="">Selecciona provincia</option>';
+            
+            provinciasData.forEach(prov => {
+                const option = document.createElement('option');
+                option.value = prov.nombre;
+                option.textContent = prov.nombre;
+                if (prov.nombre === currentValue) {
+                    option.selected = true;
+                }
+                select.appendChild(option);
+            });
+        }
+
+        // Cargar ciudades por provincia
+        async function cargarCiudades(provincia) {
+            const select = document.getElementById('ciudadSelect');
+            
+            if (!provincia) {
+                select.innerHTML = '<option value="">Primero selecciona provincia</option>';
+                select.disabled = true;
+                return;
+            }
+
+            // Verificar caché
+            if (ciudadesCache[provincia]) {
+                poblarSelectCiudades(ciudadesCache[provincia], provincia);
+                return;
+            }
+
+            select.innerHTML = '<option value="">Cargando...</option>';
+            select.disabled = true;
+
+            try {
+                const response = await fetch(`/api/ubicacion/ciudades/${encodeURIComponent(provincia)}`);
+                if (response.ok) {
+                    const ciudades = await response.json();
+                    ciudadesCache[provincia] = ciudades;
+                    poblarSelectCiudades(ciudades, provincia);
+                }
+            } catch (error) {
+                console.error('Error cargando ciudades:', error);
+                select.innerHTML = '<option value="">Error al cargar</option>';
+            }
+        }
+
+        // Poblar el select de ciudades
+        function poblarSelectCiudades(ciudades, provincia) {
+            const select = document.getElementById('ciudadSelect');
+            const currentValue = select.value || select.getAttribute('data-pending-value');
+            
+            select.innerHTML = '<option value="">Selecciona ciudad</option>';
+            
+            ciudades.forEach(ciudad => {
+                const option = document.createElement('option');
+                option.value = ciudad;
+                option.textContent = ciudad;
+                if (ciudad === currentValue) {
+                    option.selected = true;
+                }
+                select.appendChild(option);
+            });
+
+            // Añadir opción "Otra"
+            const otraOption = document.createElement('option');
+            otraOption.value = "__otra__";
+            otraOption.textContent = "?? Otra ciudad (escribir)";
+            select.appendChild(otraOption);
+
+            select.disabled = false;
+            select.removeAttribute('data-pending-value');
+            
+            document.getElementById('ciudad-otra-hint').classList.remove('hidden');
+            
+            // Limpiar error si hay valor
+            if (select.value && select.value !== '__otra__') {
+                clearFieldError('ciudad');
+            }
+        }
+
+        // Buscar por código postal
+        async function buscarPorCodigoPostal(cp) {
+            if (cp.length !== 5) return;
+
+            const loading = document.getElementById('cp-loading');
+            const check = document.getElementById('cp-check');
+            
+            loading.classList.remove('hidden');
+            check.classList.add('hidden');
+
+            try {
+                const response = await fetch(`/api/ubicacion/codigopostal/${cp}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    // Establecer provincia
+                    const provinciaSelect = document.getElementById('provinciaSelect');
+                    provinciaSelect.value = data.provincia;
+                    clearFieldError('provincia');
+                    
+                    // Cargar ciudades y establecer la ciudad
+                    const ciudadSelect = document.getElementById('ciudadSelect');
+                    ciudadSelect.setAttribute('data-pending-value', data.ciudad);
+                    await cargarCiudades(data.provincia);
+                    
+                    // Si la ciudad no está en la lista, mostrar input personalizado
+                    if (ciudadSelect.value !== data.ciudad) {
+                        ciudadSelect.value = data.ciudad;
+                        if (!ciudadSelect.value) {
+                            // La ciudad no está en la lista, mostrar campo personalizado
+                            mostrarCiudadCustom(data.ciudad);
+                        }
+                    }
+                    
+                    clearFieldError('ciudad');
+                    check.classList.remove('hidden');
+                    
+                    // Animación de éxito
+                    provinciaSelect.classList.add('ring-2', 'ring-emerald-500/50');
+                    ciudadSelect.classList.add('ring-2', 'ring-emerald-500/50');
+                    setTimeout(() => {
+                        provinciaSelect.classList.remove('ring-2', 'ring-emerald-500/50');
+                        ciudadSelect.classList.remove('ring-2', 'ring-emerald-500/50');
+                    }, 1500);
+                }
+            } catch (error) {
+                console.error('Error buscando código postal:', error);
+            } finally {
+                loading.classList.add('hidden');
+            }
+        }
+
+        // Mostrar campo de ciudad personalizada
+        function mostrarCiudadCustom(ciudadInicial = '') {
+            const container = document.getElementById('ciudad-custom-container');
+            const input = document.getElementById('ciudadCustomInput');
+            const select = document.getElementById('ciudadSelect');
+            
+            container.classList.remove('hidden');
+            input.value = ciudadInicial;
+            
+            // Función para actualizar el select
+            function updateSelectFromInput() {
+                const customOption = select.querySelector('#custom-ciudad-option');
+                if (customOption) {
+                    customOption.value = input.value;
+                    customOption.textContent = input.value;
+                } else {
+                    const opt = document.createElement('option');
+                    opt.value = input.value;
+                    opt.textContent = input.value;
+                    opt.id = 'custom-ciudad-option';
+                    select.appendChild(opt);
+                }
+                select.value = input.value;
+                
+                if (input.value) {
+                    clearFieldError('ciudad');
+                }
+            }
+            
+            // Remover listener anterior si existe
+            input.removeEventListener('input', updateSelectFromInput);
+            input.addEventListener('input', updateSelectFromInput);
+            
+            if (ciudadInicial) {
+                updateSelectFromInput();
+            }
+        }
+
+        // Ocultar campo de ciudad personalizada
+        function ocultarCiudadCustom() {
+            document.getElementById('ciudad-custom-container').classList.add('hidden');
+        }
+
+        // Validación personalizada del formulario
+        function setupFormValidation() {
+            const form = document.getElementById('direccionForm');
+            
+            form.addEventListener('submit', function(e) {
+                // Solo validar si se está usando nueva dirección
+                const usarNueva = document.getElementById('usar-nueva-hidden').value === 'true';
+                
+                if (usarNueva) {
+                    let isValid = true;
+                    
+                    // Validar provincia
+                    const provincia = document.getElementById('provinciaSelect');
+                    if (!provincia.value) {
+                        showFieldError('provincia', 'La provincia es obligatoria');
+                        isValid = false;
+                    } else {
+                        clearFieldError('provincia');
+                    }
+                    
+                    // Validar ciudad
+                    const ciudad = document.getElementById('ciudadSelect');
+                    const ciudadCustom = document.getElementById('ciudadCustomInput');
+                    const ciudadValue = ciudad.value || ciudadCustom.value;
+                    
+                    if (!ciudadValue || ciudadValue === '__otra__') {
+                        showFieldError('ciudad', 'La ciudad es obligatoria');
+                        isValid = false;
+                    } else {
+                        clearFieldError('ciudad');
+                    }
+                    
+                    if (!isValid) {
+                        e.preventDefault();
+                        // Scroll al primer error
+                        const firstError = document.querySelector('.text-red-500:not(.hidden)');
+                        if (firstError) {
+                            firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Mostrar error en campo
+        function showFieldError(field, message) {
+            const errorSpan = document.getElementById(`${field}-error`);
+            const select = document.getElementById(`${field}Select`);
+            
+            if (errorSpan) {
+                errorSpan.textContent = message;
+                errorSpan.classList.remove('hidden');
+            }
+            
+            if (select) {
+                select.classList.add('border-red-500');
+                select.classList.remove('border-gray-200');
+            }
+        }
+        
+        // Limpiar error de campo
+        function clearFieldError(field) {
+            const errorSpan = document.getElementById(`${field}-error`);
+            const select = document.getElementById(`${field}Select`);
+            
+            if (errorSpan) {
+                errorSpan.classList.add('hidden');
+            }
+            
+            if (select) {
+                select.classList.remove('border-red-500');
+                select.classList.add('border-gray-200');
+            }
+        }
+
+        // Configurar event listeners
+        function setupEventListeners() {
+            // Código postal - búsqueda automática con debounce
+            const cpInput = document.getElementById('codigoPostalInput');
+            cpInput.addEventListener('input', function(e) {
+                // Solo permitir números
+                this.value = this.value.replace(/[^0-9]/g, '');
+                
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    if (this.value.length === 5) {
+                        buscarPorCodigoPostal(this.value);
+                    }
+                }, 300);
+            });
+
+            // Cambio de provincia
+            document.getElementById('provinciaSelect').addEventListener('change', function() {
+                ocultarCiudadCustom();
+                cargarCiudades(this.value);
+                
+                if (this.value) {
+                    clearFieldError('provincia');
+                }
+            });
+
+            // Cambio de ciudad - detectar "Otra"
+            document.getElementById('ciudadSelect').addEventListener('change', function() {
+                if (this.value === '__otra__') {
+                    mostrarCiudadCustom();
+                    this.value = '';
+                } else {
+                    ocultarCiudadCustom();
+                    if (this.value) {
+                        clearFieldError('ciudad');
+                    }
+                }
+            });
+        }
+
         function seleccionarDireccionGuardada(radio) {
             document.getElementById('nueva-direccion-form').classList.add('hidden');
             document.getElementById('usar-nueva-hidden').value = 'false';
@@ -305,6 +668,25 @@
         .direccion-option.border-emerald-500 {
             border-color: #10b981;
             background-color: rgb(236 253 245);
+        }
+        
+        /* Estilos para los selects */
+        select:focus {
+            outline: none;
+        }
+        
+        select option {
+            padding: 8px;
+        }
+        
+        /* Animación suave para los campos */
+        input, select {
+            transition: all 0.2s ease;
+        }
+        
+        /* Error state para selects */
+        select.border-red-500 {
+            border-color: #ef4444 !important;
         }
     </style>
 }
