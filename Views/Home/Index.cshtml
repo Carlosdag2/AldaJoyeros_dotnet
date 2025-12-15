@@ -10,29 +10,29 @@
     <div class="absolute inset-0">
         <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70 z-10"></div>
         <img src="https://images.unsplash.com/photo-1573408301185-9146fe634ad0?q=80&w=2400&auto=format&fit=crop"
-             class="w-full h-full object-cover scale-105 animate-float" 
+             class="w-full h-full object-cover scale-105 animate-float"
              alt="Imagen de fondo de joya en incio">
     </div>
 
     <!-- Hero Content -->
     <div class="relative z-20 container mx-auto h-full flex flex-col justify-center items-center text-center text-white px-6">
-        <span class="text-emerald-300 text-xs md:text-sm tracking-[0.3em] uppercase mb-4 opacity-0 animate-fade-in-up" 
+        <span class="text-emerald-300 text-xs md:text-sm tracking-[0.3em] uppercase mb-4 opacity-0 animate-fade-in-up"
               style="animation-delay: 0.2s; animation-fill-mode: forwards;">
             <i class="fas fa-gem mr-2"></i>Colección 2025
         </span>
-        
-        <h1 class="font-serif text-5xl md:text-7xl lg:text-8xl font-bold mb-6 opacity-0 animate-fade-in-up luxury-text-shadow" 
+
+        <h1 class="font-serif text-5xl md:text-7xl lg:text-8xl font-bold mb-6 opacity-0 animate-fade-in-up luxury-text-shadow"
             style="animation-delay: 0.4s; animation-fill-mode: forwards;">
             Alda Joyeros 1962
         </h1>
-        
-        <p class="text-lg md:text-xl text-gray-200 max-w-2xl mx-auto mb-10 font-light opacity-0 animate-fade-in-up" 
+
+        <p class="text-lg md:text-xl text-gray-200 max-w-2xl mx-auto mb-10 font-light opacity-0 animate-fade-in-up"
            style="animation-delay: 0.6s; animation-fill-mode: forwards;">
-            Elegancia atemporal para tus momentos más especiales.<br/>
+            Elegancia atemporal para tus momentos más especiales.<br />
             Descubre la excelencia en cada pieza.
         </p>
-        
-        <div class="flex flex-wrap justify-center gap-4 opacity-0 animate-fade-in-up" 
+
+        <div class="flex flex-wrap justify-center gap-4 opacity-0 animate-fade-in-up"
              style="animation-delay: 0.8s; animation-fill-mode: forwards;">
             <a asp-controller="Productos" asp-action="Index"
                class="inline-flex items-center px-8 py-4 bg-white/10 backdrop-blur-md border border-white/30 text-white text-sm uppercase tracking-[0.2em] hover:bg-white hover:text-black transition-all duration-500 rounded-sm">
@@ -136,7 +136,7 @@
                             <div class="absolute inset-x-0 bottom-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
                                 <form asp-controller="Carrito" asp-action="Agregar" method="post" class="w-full">
                                     <input type="hidden" name="productoId" value="@producto.Id" />
-                                    <button type="submit" 
+                                    <button type="submit"
                                             class="w-full bg-emerald-600 text-white py-3 text-xs uppercase tracking-widest hover:bg-emerald-700 transition-colors font-semibold">
                                         <i class="fas fa-cart-plus mr-2"></i>Añadir al Carrito
                                     </button>
@@ -154,7 +154,7 @@
                             <p class="text-emerald-600 font-serif text-xl font-semibold">
                                 @producto.Precio.ToString("C")
                             </p>
-                            
+
                             <!-- View Details Link -->
                             <a asp-controller="Productos" asp-action="Detalle" asp-route-id="@producto.Id"
                                class="inline-block mt-3 text-xs uppercase tracking-widest text-gray-600 hover:text-emerald-600 transition-colors border-b border-transparent hover:border-emerald-600 pb-1">
@@ -167,7 +167,7 @@
 
             <!-- View All Button -->
             <div class="text-center mt-16">
-                <a asp-controller="Productos" asp-action="Index" 
+                <a asp-controller="Productos" asp-action="Index"
                    class="inline-flex items-center px-8 py-4 bg-dark-900 text-white text-sm uppercase tracking-[0.2em] hover:bg-emerald-600 hover:text-white transition-all duration-300 rounded-sm">
                     <i class="fas fa-th mr-3"></i>
                     Ver Todo el Catálogo
@@ -188,161 +188,97 @@
 </section>
 
 <!-- Store Location Section -->
-<section class="relative py-20 bg-gradient-to-br from-dark-900 via-gray-900 to-dark-900 text-white overflow-hidden">
-    <!-- Background Pattern -->
-    <div class="absolute inset-0 opacity-10">
-        <div class="absolute inset-0" style="background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4xIj48cGF0aCBkPSJNMzYgMzRjMC0yLTItNC00LTRzLTQgMi00IDQgMiA0IDQgNCA0LTIgNC00eiIvPjwvZz48L2c+PC9zdmc+');"></div>
-    </div>
-
-    <div class="relative container mx-auto px-6 z-10">
-        <div class="text-center mb-12">
-            <i class="fas fa-store text-5xl text-emerald-400 mb-6 animate-pulse"></i>
-            <h2 class="font-serif text-4xl md:text-5xl font-bold mb-4">
-                Visita Nuestra Tienda Física
+<section class="py-28 bg-white">
+    <div class="container mx-auto px-6">
+        <!-- Section Header -->
+        <div class="text-center mb-16">
+            <div class="flex items-center justify-center gap-4 mb-6">
+                <div class="w-12 h-px bg-emerald-500"></div>
+                <span class="text-emerald-600 text-xs uppercase tracking-[0.4em]">Visítanos</span>
+                <div class="w-12 h-px bg-emerald-500"></div>
+            </div>
+            <h2 class="font-serif text-4xl md:text-5xl font-light text-gray-900 mb-4">
+                Nuestra Tienda
             </h2>
-            <p class="text-xl text-gray-300 max-w-2xl mx-auto font-light leading-relaxed">
-                Ven a conocer nuestra colección completa. Nuestros expertos te atenderán personalmente para ayudarte a encontrar la joya perfecta.
+            <p class="text-gray-500 max-w-xl mx-auto">
+                Te esperamos para ofrecerte una experiencia personalizada
             </p>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-12">
+        <div class="grid grid-cols-1 lg:grid-cols-5 gap-0 shadow-2xl overflow-hidden">
             <!-- Map -->
-            <div class="bg-white/10 backdrop-blur-md rounded-2xl overflow-hidden border border-white/20 shadow-2xl h-full">
-                <iframe src="@("https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3040.2628!2d-3.8479056!3d40.122812!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd41f1eb52287a03%3A0x7ea236ec19f47b25!2sAlda%20Joyeros%201962!5e0!3m2!1ses!2ses!4v1234567890")"
-                        width="100%" 
-                        height="100%" 
-                        style="border:0; min-height: 500px;" 
-                        allowfullscreen="" 
-                        loading="lazy" 
+            <div class="lg:col-span-3 aspect-[4/3] lg:aspect-auto lg:min-h-[550px] bg-gray-100">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3040.2628!2d-3.8479056!3d40.122812!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd41f1eb52287a03%3A0x7ea236ec19f47b25!2sAlda%20Joyeros%201962!5e0!3m2!1ses!2ses!4v1234567890"
+                        width="100%"
+                        height="100%"
+                        style="border:0; min-height: 450px;"
+                        allowfullscreen=""
+                        loading="lazy"
                         referrerpolicy="no-referrer-when-downgrade"
                         class="w-full h-full"></iframe>
             </div>
 
             <!-- Contact Info -->
-            <div class="space-y-6">
-                <!-- Address -->
-                <div class="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-300">
+            <div class="lg:col-span-2 bg-emerald-950 text-white p-12 lg:p-14 flex flex-col justify-center">
+                <div class="space-y-10">
+                    <!-- Logo -->
+                    <div class="mb-4">
+                        <p class="font-serif text-3xl tracking-wider">ALDA</p>
+                        <p class="text-emerald-400 text-sm tracking-[0.3em]">JOYEROS</p>
+                    </div>
+
+                    <!-- Address -->
                     <div class="flex items-start gap-4">
-                        <div class="w-12 h-12 bg-emerald-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
-                            <i class="fas fa-map-marker-alt text-white text-xl"></i>
+                        <div class="w-10 h-10 bg-emerald-900 flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-map-marker-alt text-emerald-400 text-sm"></i>
                         </div>
                         <div>
-                            <h3 class="font-serif text-xl font-bold mb-2">Dirección</h3>
-                            <p class="text-gray-300 leading-relaxed">
-                                Calle Sor Livia Alcorta, 24<br />
-                                45200 Illescas, Toledo, España
+                            <p class="text-emerald-500 text-xs uppercase tracking-[0.2em] mb-2">Dirección</p>
+                            <p class="text-white/80 leading-relaxed">
+                                C/ Sor Livia Alcorta, 24<br />
+                                45200 Illescas, Toledo
                             </p>
                         </div>
                     </div>
-                </div>
 
-                <!-- Phone -->
-                <div class="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-300">
+                    <!-- Phone -->
                     <div class="flex items-start gap-4">
-                        <div class="w-12 h-12 bg-emerald-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
-                            <i class="fas fa-phone text-white text-xl"></i>
+                        <div class="w-10 h-10 bg-emerald-900 flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-phone text-emerald-400 text-sm"></i>
                         </div>
                         <div>
-                            <h3 class="font-serif text-xl font-bold mb-2">Teléfono</h3>
-                            <a href="tel:+34925541227" class="text-emerald-400 hover:text-emerald-300 transition-colors text-lg font-semibold">
+                            <p class="text-emerald-500 text-xs uppercase tracking-[0.2em] mb-2">Teléfono</p>
+                            <a href="tel:+34925541227" class="text-white hover:text-emerald-400 transition-colors text-lg">
                                 +34 925 54 12 27
                             </a>
                         </div>
                     </div>
-                </div>
 
-                <!-- Hours -->
-                <div class="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-300">
+                    <!-- Hours -->
                     <div class="flex items-start gap-4">
-                        <div class="w-12 h-12 bg-emerald-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
-                            <i class="fas fa-clock text-white text-xl"></i>
+                        <div class="w-10 h-10 bg-emerald-900 flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-clock text-emerald-400 text-sm"></i>
                         </div>
-                        <div class="flex-1">
-                            <h3 class="font-serif text-xl font-bold mb-4">Horario</h3>
-                            <div class="space-y-3">
-                                <!-- Lunes a Viernes -->
-                                <div class="bg-white/5 rounded-lg p-3 border border-white/10">
-                                    <div class="flex items-center justify-between mb-2">
-                                        <span class="font-bold text-emerald-300 text-sm uppercase tracking-wide">
-                                            <i class="fas fa-calendar-week mr-2"></i>Lunes - Viernes
-                                        </span>
-                                    </div>
-                                    <div class="space-y-1.5 text-sm">
-                                        <div class="flex items-center justify-between text-gray-300">
-                                            <span class="flex items-center">
-                                                <i class="fas fa-sun text-yellow-400 mr-2 text-xs"></i>
-                                                Mañanas:
-                                            </span>
-                                            <span class="font-semibold text-emerald-300">10:15 - 13:30</span>
-                                        </div>
-                                        <div class="flex items-center justify-between text-gray-300">
-                                            <span class="flex items-center">
-                                                <i class="fas fa-moon text-blue-400 mr-2 text-xs"></i>
-                                                Tardes:
-                                            </span>
-                                            <span class="font-semibold text-emerald-300">17:00 - 20:00</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Sábados -->
-                                <div class="bg-white/5 rounded-lg p-3 border border-white/10">
-                                    <div class="flex items-center justify-between">
-                                        <span class="font-bold text-emerald-300 text-sm uppercase tracking-wide">
-                                            <i class="fas fa-calendar-day mr-2"></i>Sábados
-                                        </span>
-                                    </div>
-                                    <div class="flex items-center justify-between text-sm text-gray-300 mt-2">
-                                        <span class="flex items-center">
-                                            <i class="fas fa-sun text-yellow-400 mr-2 text-xs"></i>
-                                            Mañanas:
-                                        </span>
-                                        <span class="font-semibold text-emerald-300">10:15 - 13:30</span>
-                                    </div>
-                                </div>
-
-                                <!-- Domingos -->
-                                <div class="bg-red-500/10 rounded-lg p-3 border border-red-500/30">
-                                    <div class="flex items-center justify-between">
-                                        <span class="font-bold text-red-300 text-sm uppercase tracking-wide">
-                                            <i class="fas fa-calendar-times mr-2"></i>Domingos
-                                        </span>
-                                        <span class="font-bold text-red-400 text-sm flex items-center">
-                                            <i class="fas fa-times-circle mr-2"></i>Cerrado
-                                        </span>
-                                    </div>
-                                </div>
+                        <div>
+                            <p class="text-emerald-500 text-xs uppercase tracking-[0.2em] mb-2">Horario</p>
+                            <div class="text-white/80 text-sm space-y-1">
+                                <p>Lun - Vie: 10:15 - 13:30 / 17:00 - 20:00</p>
+                                <p>Sábados: 10:15 - 13:30</p>
+                                <p class="text-emerald-700">Domingos: Cerrado</p>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Email -->
-                <div class="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-300">
-                    <div class="flex items-start gap-4">
-                        <div class="w-12 h-12 bg-emerald-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
-                            <i class="fas fa-envelope text-white text-xl"></i>
-                        </div>
-                        <div>
-                            <h3 class="font-serif text-xl font-bold mb-2">Email</h3>
-                            <a href="mailto:aldajoyeros1962@gmail.com" class="text-emerald-400 hover:text-emerald-300 transition-colors text-lg font-semibold">
-                                aldajoyeros1962@gmail.com
-                            </a>
-                        </div>
-                    </div>
+                    <!-- CTA -->
+                    <a href="https://www.google.com/maps/dir//Calle+Sor+Livia+Alcorta,+24,+45200+Illescas,+Toledo"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       class="inline-flex items-center px-8 py-4 bg-emerald-600 text-white text-xs uppercase tracking-[0.2em] hover:bg-emerald-500 transition-colors mt-4">
+                        <i class="fas fa-directions mr-3"></i>
+                        Cómo Llegar
+                    </a>
                 </div>
             </div>
-        </div>
-
-        <!-- CTA Button -->
-        <div class="text-center mt-12">
-            <a href="https://www.google.com/maps/dir//Calle+Sor+Livia+Alcorta,+24,+45200+Illescas,+Toledo" 
-               target="_blank"
-               rel="noopener noreferrer"
-               class="inline-flex items-center px-10 py-4 border-2 border-emerald-400 text-emerald-400 text-sm uppercase tracking-[0.2em] hover:bg-emerald-400 hover:text-dark-900 transition-all duration-300 rounded-sm font-semibold">
-                <i class="fas fa-directions mr-3"></i>
-                Cómo Llegar
-            </a>
         </div>
     </div>
 </section>
@@ -392,6 +328,7 @@
                 opacity: 0;
                 transform: translateY(30px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -407,6 +344,7 @@
             0%, 100% {
                 transform: scale(1.05) translateY(0);
             }
+
             50% {
                 transform: scale(1.05) translateY(-20px);
             }
