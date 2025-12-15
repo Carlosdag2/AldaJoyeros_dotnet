@@ -1,4 +1,4 @@
-using AldaJoyeros.Services;
+using AldaJoyeros.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AldaJoyeros.Controllers.Api
@@ -45,9 +45,9 @@ namespace AldaJoyeros.Controllers.Api
         [HttpGet("codigopostal/{cp}")]
         public IActionResult BuscarPorCodigoPostal(string cp)
         {
-            if (string.IsNullOrEmpty(cp) || cp.Length != 5)
+            if (string.IsNullOrEmpty(cp) || !_codigoPostalService.EsCodigoPostalValido(cp))
             {
-                return BadRequest(new { error = "El código postal debe tener 5 dígitos" });
+                return BadRequest(new { error = "El código postal debe tener 5 dígitos válidos" });
             }
 
             var info = _codigoPostalService.BuscarPorCodigoPostal(cp);
