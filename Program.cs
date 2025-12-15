@@ -46,6 +46,10 @@ namespace AldaJoyeros
             builder.Services.Configure<EmailSettings>(
                 builder.Configuration.GetSection("EmailSettings"));
 
+            // Configurar Empresa (para facturas)
+            builder.Services.Configure<EmpresaSettings>(
+                builder.Configuration.GetSection("EmpresaSettings"));
+
             // Configurar Stripe
             builder.Services.Configure<StripeSettings>(
                 builder.Configuration.GetSection("StripeSettings"));
@@ -124,6 +128,9 @@ namespace AldaJoyeros
 
             // Registrar Servicio de Email
             builder.Services.AddScoped<IEmailService, EmailService>();
+
+            // Registrar Servicio de Facturas
+            builder.Services.AddScoped<IFacturaService, FacturaService>();
 
             // Registrar Servicio de Códigos Postales
             builder.Services.AddSingleton<ICodigoPostalService, CodigoPostalService>();

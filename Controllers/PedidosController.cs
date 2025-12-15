@@ -15,6 +15,7 @@ namespace AldaJoyeros.Controllers
         private readonly IProductoImagenService _imagenService;
         private readonly IPaymentService _paymentService;
         private readonly IEmailService _emailService;
+        private readonly IFacturaService _facturaService;
         private readonly ILogger<PedidosController> _logger;
 
         private const string CheckoutSessionKey = "CheckoutData";
@@ -26,6 +27,7 @@ namespace AldaJoyeros.Controllers
             IProductoImagenService imagenService,
             IPaymentService paymentService,
             IEmailService emailService,
+            IFacturaService facturaService,
             ILogger<PedidosController> logger)
         {
             _pedidoService = pedidoService;
@@ -34,6 +36,7 @@ namespace AldaJoyeros.Controllers
             _imagenService = imagenService;
             _paymentService = paymentService;
             _emailService = emailService;
+            _facturaService = facturaService;
             _logger = logger;
         }
 
@@ -417,21 +420,24 @@ namespace AldaJoyeros.Controllers
                     "Pedido {PedidoId} creado para usuario {UserId} - Método: {MetodoPago}",
                     pedido.Id, CurrentUser.Id, sessionData.MetodoPago);
 
-                // Enviar email de confirmación
+                // Enviar email de confirmación con factura adjunta
                 try
                 {
-                    await _emailService.SendOrderConfirmationEmailAsync(CurrentUser.Email, pedido);
-                    _logger.LogInformation("Email de confirmación enviado para pedido {PedidoId}", pedido.Id);
+                    var facturaPdf = await _facturaService.GenerarFacturaPdfAsync(pedido, CurrentUser.Email, CurrentUser.Email);
+                    var numeroFactura = _facturaService.GenerarNumeroFactura(pedido.Id);
+                    
+                    await _emailService.SendOrderConfirmationWithInvoiceAsync(CurrentUser.Email, pedido, facturaPdf, numeroFactura);
+                    _logger.LogInformation("Email de confirmación con factura {NumeroFactura} enviado para pedido {PedidoId}", numeroFactura, pedido.Id);
                 }
                 catch (Exception emailEx)
                 {
                     // No fallar el pedido si el email no se envía
-                    _logger.LogWarning(emailEx, "No se pudo enviar email de confirmación para pedido {PedidoId}", pedido.Id);
+                    _logger.LogWarning(emailEx, "No se pudo enviar email de confirmación con factura para pedido {PedidoId}", pedido.Id);
                 }
 
                 TempData["Success"] = sessionData.MetodoPago == "Contra Reembolso" 
-                    ? "¡Pedido realizado! Pagarás al recibir tu pedido." 
-                    : "¡Pedido realizado y pago procesado exitosamente!";
+                    ? "¡Pedido realizado! Pagarás al recibir tu pedido. Te hemos enviado la confirmación y factura por email." 
+                    : "¡Pedido realizado y pago procesado exitosamente! Te hemos enviado la confirmación y factura por email.";
                 
                 return RedirectToAction("PedidoCompletado", new { id = pedido.Id });
             }
