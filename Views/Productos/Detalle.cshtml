@@ -1,293 +1,211 @@
-@model AldaJoyeros.DTOs.ProductoDto
+ï»¿@model AldaJoyeros.DTOs.ProductoDto
 
 @{
     ViewData["Title"] = Model.Nombre;
     var imagenes = Model.Imagenes ?? new List<AldaJoyeros.DTOs.ProductoImagenDto>();
     var productUrl = $"{Context.Request.Scheme}://{Context.Request.Host}/Productos/Detalle/{Model.Id}";
-    var shareText = $"¡Mira esta joya increíble! {Model.Nombre} - {Model.Precio.ToString("C")} en Alda Joyeros";
+    var shareText = $"{Model.Nombre} - {Model.Precio.ToString("C")}";
     var encodedUrl = Uri.EscapeDataString(productUrl);
     var encodedText = Uri.EscapeDataString(shareText);
 }
 
-<div class="min-h-screen bg-gradient-to-br from-stone-50 via-white to-emerald-50/30">
-    <!-- Breadcrumb -->
-    <div class="container mx-auto px-6 py-6">
-        <nav class="flex items-center gap-2 text-sm">
-            <a asp-controller="Home" asp-action="Index" class="text-gray-500 hover:text-emerald-600 transition-colors">
-                <i class="fas fa-home"></i>
-            </a>
-            <i class="fas fa-chevron-right text-gray-300 text-xs"></i>
-            <a asp-controller="Productos" asp-action="Index" class="text-gray-500 hover:text-emerald-600 transition-colors">
-                Catálogo
-            </a>
-            <i class="fas fa-chevron-right text-gray-300 text-xs"></i>
-            <a asp-controller="Productos" asp-action="Index" asp-route-categoriaId="@Model.CategoriaId" class="text-gray-500 hover:text-emerald-600 transition-colors">
+<div class="min-h-screen bg-white text-dark-800 animate-fade-in-up">
+
+    <div class="container mx-auto px-4 md:px-8 py-6">
+        <nav class="flex items-center text-xs md:text-sm font-sans text-gray-400">
+            <a asp-controller="Home" asp-action="Index" class="hover:text-emerald-700 transition-colors">Inicio</a>
+            <span class="mx-2 text-gray-300">/</span>
+            <a asp-controller="Productos" asp-action="Index" class="hover:text-emerald-700 transition-colors">Joyas</a>
+            <span class="mx-2 text-gray-300">/</span>
+            <a asp-controller="Productos" asp-action="Index" asp-route-categoriaId="@Model.CategoriaId" class="hover:text-emerald-700 transition-colors">
                 @Model.CategoriaNombre
             </a>
-            <i class="fas fa-chevron-right text-gray-300 text-xs"></i>
-            <span class="text-emerald-600 font-medium truncate max-w-[200px]">@Model.Nombre</span>
+            <span class="mx-2 text-gray-300">/</span>
+            <span class="text-dark-900 font-medium truncate">@Model.Nombre</span>
         </nav>
     </div>
 
-    <!-- Product Detail -->
-    <div class="container mx-auto px-6 pb-16">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 xl:gap-16">
-            <!-- Image Gallery -->
-            <div class="space-y-4" x-data="{ activeImage: 0 }">
-                <!-- Main Image -->
-                <div class="relative aspect-square bg-white rounded-3xl overflow-hidden shadow-2xl group">
-                    @if (imagenes.Any())
-                    {
-                        @foreach (var (imagen, index) in imagenes.Select((img, i) => (img, i)))
+    <div class="container mx-auto px-4 md:px-8 pb-20">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 xl:gap-20">
+
+            <div class="lg:col-span-7" x-data="{ activeImage: 0 }">
+                <div class="lg:sticky lg:top-8 space-y-6">
+
+                    <div class="relative aspect-square md:aspect-[4/3] bg-gray-50 rounded-lg overflow-hidden border border-gray-100 group">
+                        @if (imagenes.Any())
                         {
-                            <img src="@imagen.ImagenBase64" 
-                                 alt="@Model.Nombre - Imagen @(index + 1)"
-                                 class="absolute inset-0 w-full h-full object-cover transition-all duration-500"
-                                 x-show="activeImage === @index"
-                                 x-transition:enter="transition ease-out duration-300"
-                                 x-transition:enter-start="opacity-0 scale-95"
-                                 x-transition:enter-end="opacity-100 scale-100" />
+                            @foreach (var (imagen, index) in imagenes.Select((img, i) => (img, i)))
+                            {
+                                <img src="@imagen.ImagenBase64"
+                                     alt="@Model.Nombre"
+                                     class="absolute inset-0 w-full h-full object-contain p-8 md:p-12 transition-all duration-700"
+                                     x-show="activeImage === @index"
+                                     x-transition:enter="transition ease-out duration-500"
+                                     x-transition:enter-start="opacity-0 scale-95"
+                                     x-transition:enter-end="opacity-100 scale-100" />
+                            }
+
+                            @if (imagenes.Count > 1)
+                            {
+                                <div class="absolute inset-0 flex items-center justify-between px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    <button @@click="activeImage = activeImage === 0 ? @(imagenes.Count - 1) : activeImage - 1"
+                                            class="w-10 h-10 rounded-full bg-white shadow-lg text-dark-900 hover:text-emerald-600 flex items-center justify-center transition-transform hover:scale-110">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </button>
+                                    <button @@click="activeImage = activeImage === @(imagenes.Count - 1) ? 0 : activeImage + 1"
+                                            class="w-10 h-10 rounded-full bg-white shadow-lg text-dark-900 hover:text-emerald-600 flex items-center justify-center transition-transform hover:scale-110">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </button>
+                                </div>
+
+                                <div class="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white/80 backdrop-blur px-3 py-1 rounded-full text-xs font-medium text-dark-800 shadow-sm">
+                                    <span x-text="activeImage + 1"></span> / @imagenes.Count
+                                </div>
+                            }
                         }
-                        
-                        <!-- Navigation Arrows -->
-                        @if (imagenes.Count > 1)
+                        else
                         {
-                            <button @@click="activeImage = activeImage === 0 ? @(imagenes.Count - 1) : activeImage - 1"
-                                    class="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full shadow-lg flex items-center justify-center text-gray-700 hover:bg-emerald-500 hover:text-white transition-all opacity-0 group-hover:opacity-100">
-                                <i class="fas fa-chevron-left"></i>
-                            </button>
-                            <button @@click="activeImage = activeImage === @(imagenes.Count - 1) ? 0 : activeImage + 1"
-                                    class="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full shadow-lg flex items-center justify-center text-gray-700 hover:bg-emerald-500 hover:text-white transition-all opacity-0 group-hover:opacity-100">
-                                <i class="fas fa-chevron-right"></i>
-                            </button>
-                        }
-                        
-                        <!-- Image Counter -->
-                        <div class="absolute bottom-4 right-4 bg-black/60 backdrop-blur-sm text-white px-3 py-1.5 rounded-full text-sm font-medium">
-                            <span x-text="activeImage + 1"></span> / @imagenes.Count
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-emerald-50 to-teal-50">
-                            <div class="text-center">
-                                <i class="fas fa-gem text-emerald-300 text-9xl mb-4"></i>
-                                <p class="text-gray-400 text-sm">Sin imagen disponible</p>
+                            <div class="w-full h-full flex flex-col items-center justify-center text-gray-300">
+                                <i class="fas fa-gem text-5xl mb-3 opacity-50"></i>
+                                <span class="font-sans text-sm">Sin imagen</span>
                             </div>
+                        }
+                    </div>
+
+                    @if (imagenes.Count > 1)
+                    {
+                        <div class="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
+                            @foreach (var (imagen, index) in imagenes.Select((img, i) => (img, i)))
+                            {
+                                <button @@click="activeImage = @index"
+                                        class="relative w-20 h-20 md:w-24 md:h-24 flex-shrink-0 bg-gray-50 rounded-md border transition-all duration-300 overflow-hidden"
+                                        :class="activeImage === @index ? 'border-emerald-600 ring-1 ring-emerald-600 ring-offset-2' : 'border-gray-200 hover:border-gray-300'">
+                                    <img src="@imagen.ImagenBase64" class="w-full h-full object-contain p-2" />
+                                </button>
+                            }
                         </div>
                     }
                 </div>
-
-                <!-- Thumbnail Gallery -->
-                @if (imagenes.Count > 1)
-                {
-                    <div class="flex gap-3 overflow-x-auto pb-2 scrollbar-thin">
-                        @foreach (var (imagen, index) in imagenes.Select((img, i) => (img, i)))
-                        {
-                            <button @@click="activeImage = @index"
-                                    class="flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden border-2 transition-all duration-300"
-                                    :class="activeImage === @index ? 'border-emerald-500 ring-2 ring-emerald-500/30 scale-105' : 'border-gray-200 hover:border-emerald-300'">
-                                <img src="@imagen.ImagenBase64" alt="Miniatura @(index + 1)" class="w-full h-full object-cover" />
-                            </button>
-                        }
-                    </div>
-                }
             </div>
 
-            <!-- Product Info -->
-            <div class="space-y-8">
-                <!-- Category & Title -->
-                <div>
-                    <div class="inline-flex items-center gap-2 px-4 py-2 bg-emerald-100 text-emerald-700 rounded-full text-sm font-semibold mb-4">
-                        <i class="fas fa-tag"></i>
-                        <span>@Model.CategoriaNombre</span>
-                    </div>
-                    <h1 class="font-serif text-4xl md:text-5xl font-bold text-gray-900 leading-tight mb-4">
+            <div class="lg:col-span-5 flex flex-col h-full pt-2">
+
+                <div class="mb-8 border-b border-gray-100 pb-8">
+                    <span class="inline-block text-emerald-700 font-bold text-xs tracking-widest uppercase mb-3 bg-emerald-50 px-2 py-1 rounded">
+                        @Model.CategoriaNombre
+                    </span>
+
+                    <h1 class="font-serif text-3xl md:text-4xl lg:text-5xl text-dark-900 leading-tight mb-4">
                         @Model.Nombre
                     </h1>
-                    <div class="flex items-center gap-4">
-                        <div class="flex items-center gap-1 text-amber-400">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star-half-alt"></i>
+
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-4">
+                            <span class="font-serif text-3xl text-dark-900">
+                                @Model.Precio.ToString("C")
+                            </span>
                         </div>
-                        <span class="text-gray-500 text-sm">(4.5 de 5 estrellas)</span>
-                        <span class="text-gray-300">|</span>
-                        <span class="text-emerald-600 text-sm font-medium">
-                            <i class="fas fa-check-circle mr-1"></i>En stock
-                        </span>
+                        <div class="flex items-center gap-2 text-emerald-700 text-sm font-medium bg-emerald-50 px-3 py-1.5 rounded-full">
+                            <span class="relative flex h-2.5 w-2.5">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                            </span>
+                            En Stock
+                        </div>
                     </div>
                 </div>
 
-                <!-- Price -->
-                <div class="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-2xl p-6 border border-emerald-100">
-                    <div class="flex items-baseline gap-3">
-                        <span class="font-serif text-5xl font-bold text-emerald-600">@Model.Precio.ToString("C")</span>
-                        <span class="text-gray-500 text-sm">IVA incluido</span>
-                    </div>
-                    <p class="text-emerald-700 text-sm mt-2 font-medium">
-                        <i class="fas fa-truck mr-2"></i>Envío gratis en pedidos superiores a 50€
+                <div class="prose prose-sm text-gray-600 font-sans leading-relaxed mb-8">
+                    <p>
+                        @(string.IsNullOrEmpty(Model.Descripcion)
+                                                ? "Una pieza atemporal que combina elegancia y sofisticaciÃ³n. DiseÃ±ada con los materiales de la mÃ¡s alta calidad, esta joya es el complemento perfecto para momentos inolvidables." 
+                                                        : Model.Descripcion)
                     </p>
                 </div>
 
-                <!-- Description -->
-                <div class="prose prose-gray max-w-none">
-                    <h3 class="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
-                        <div class="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-info-circle text-emerald-600 text-sm"></i>
-                        </div>
-                        Descripción
-                    </h3>
-                    <p class="text-gray-600 leading-relaxed text-lg">
-                        @(string.IsNullOrEmpty(Model.Descripcion) ? "Joya de alta calidad elaborada con los mejores materiales. Diseño exclusivo que combina elegancia y sofisticación." : Model.Descripcion)
-                    </p>
-                </div>
-
-                <!-- Quantity & Add to Cart -->
-                <form asp-controller="Carrito" asp-action="Agregar" method="post" class="space-y-4" x-data="{ cantidad: 1 }">
+                <form asp-controller="Carrito" asp-action="Agregar" method="post" x-data="{ cantidad: 1 }" class="space-y-6">
                     <input type="hidden" name="productoId" value="@Model.Id" />
-                    
-                    <div class="flex items-center gap-4">
-                        <label class="text-gray-700 font-semibold">Cantidad:</label>
-                        <div class="flex items-center border-2 border-gray-200 rounded-xl overflow-hidden">
-                            <button type="button" @@click="cantidad = Math.max(1, cantidad - 1)" 
-                                    class="w-12 h-12 bg-gray-50 hover:bg-gray-100 text-gray-600 transition-colors flex items-center justify-center">
-                                <i class="fas fa-minus"></i>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wide text-gray-500 mb-2">Cantidad</label>
+                        <div class="inline-flex items-center border border-gray-300 rounded hover:border-emerald-600 transition-colors bg-white">
+                            <button type="button" @@click="cantidad = Math.max(1, cantidad - 1)"
+                                    class="w-12 h-12 flex items-center justify-center text-gray-500 hover:text-emerald-700 hover:bg-gray-50 transition-colors">
+                                <i class="fas fa-minus text-xs"></i>
                             </button>
-                            <input type="number" name="cantidad" x-model="cantidad" min="1" max="99"
-                                   class="w-16 h-12 text-center font-bold text-lg border-x-2 border-gray-200 focus:outline-none" />
-                            <button type="button" @@click="cantidad = Math.min(99, cantidad + 1)" 
-                                    class="w-12 h-12 bg-gray-50 hover:bg-gray-100 text-gray-600 transition-colors flex items-center justify-center">
-                                <i class="fas fa-plus"></i>
+                            <input type="number" name="cantidad" x-model="cantidad" readonly
+                                   class="w-12 h-12 text-center border-none p-0 text-dark-900 font-medium focus:ring-0 cursor-default" />
+                            <button type="button" @@click="cantidad = Math.min(99, cantidad + 1)"
+                                    class="w-12 h-12 flex items-center justify-center text-gray-500 hover:text-emerald-700 hover:bg-gray-50 transition-colors">
+                                <i class="fas fa-plus text-xs"></i>
                             </button>
                         </div>
                     </div>
-                    
-                    <div class="flex flex-col sm:flex-row gap-4">
-                        <button type="submit" 
-                                class="flex-1 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white py-4 px-8 rounded-2xl font-bold text-lg hover:from-emerald-600 hover:to-emerald-700 hover:shadow-2xl hover:shadow-emerald-500/30 transition-all duration-300 transform hover:scale-[1.02] flex items-center justify-center gap-3">
-                            <i class="fas fa-cart-plus text-xl"></i>
-                            <span>Añadir al Carrito</span>
+
+                    <div class="flex flex-col gap-3">
+                        <button type="submit"
+                                class="w-full bg-dark-900 text-white font-sans font-medium text-sm uppercase tracking-widest py-4 px-8 rounded hover:bg-emerald-800 transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-3 group">
+                            <span>AÃ±adir al Carrito</span>
+                            <i class="fas fa-arrow-right transform group-hover:translate-x-1 transition-transform"></i>
                         </button>
                     </div>
                 </form>
 
-                <!-- Features -->
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="bg-white rounded-xl p-4 border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                                <i class="fas fa-shipping-fast text-blue-600"></i>
-                            </div>
-                            <div>
-                                <div class="font-semibold text-gray-900 text-sm">Envío Rápido</div>
-                                <div class="text-xs text-gray-500">3-5 días laborables</div>
-                            </div>
+                <div class="mt-8 space-y-4 py-6 border-t border-gray-100">
+                    <div class="flex items-start gap-4">
+                        <div class="w-8 h-8 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-600 flex-shrink-0 mt-1">
+                            <i class="fas fa-truck text-xs"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-serif font-bold text-dark-900 text-sm">EnvÃ­o Asegurado</h4>
+                            <p class="text-xs text-gray-500 mt-1">Entrega gratuita y segura en 24-48h laborales.</p>
                         </div>
                     </div>
-                    <div class="bg-white rounded-xl p-4 border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                                <i class="fas fa-shield-alt text-green-600"></i>
-                            </div>
-                            <div>
-                                <div class="font-semibold text-gray-900 text-sm">Garantía</div>
-                                <div class="text-xs text-gray-500">De por vida</div>
-                            </div>
+                    <div class="flex items-start gap-4">
+                        <div class="w-8 h-8 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-600 flex-shrink-0 mt-1">
+                            <i class="fas fa-certificate text-xs"></i>
                         </div>
-                    </div>
-                    <div class="bg-white rounded-xl p-4 border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                                <i class="fas fa-undo text-purple-600"></i>
-                            </div>
-                            <div>
-                                <div class="font-semibold text-gray-900 text-sm">Devoluciones</div>
-                                <div class="text-xs text-gray-500">30 días gratis</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="bg-white rounded-xl p-4 border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center">
-                                <i class="fas fa-certificate text-amber-600"></i>
-                            </div>
-                            <div>
-                                <div class="font-semibold text-gray-900 text-sm">Autenticidad</div>
-                                <div class="text-xs text-gray-500">100% certificado</div>
-                            </div>
+                        <div>
+                            <h4 class="font-serif font-bold text-dark-900 text-sm">Autenticidad Garantizada</h4>
+                            <p class="text-xs text-gray-500 mt-1">Incluye certificado oficial de calidad Alda Joyeros.</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Share Section -->
-                <div class="pt-6 border-t border-gray-100" x-data="shareProduct()">
-                    <div class="flex items-center gap-4 flex-wrap">
-                        <span class="text-gray-500 text-sm font-medium">Compartir:</span>
+                <div class="mt-auto pt-6 border-t border-gray-100" x-data="shareProduct()">
+                    <div class="flex items-center gap-4">
+                        <span class="text-xs font-bold uppercase tracking-wide text-gray-400">Compartir</span>
                         <div class="flex gap-2">
-                            <!-- Facebook -->
-                            <a href="https://www.facebook.com/sharer/sharer.php?u=@encodedUrl&quote=@encodedText" 
-                               target="_blank" 
-                               rel="noopener noreferrer"
-                               class="w-10 h-10 bg-blue-500 text-white rounded-full flex items-center justify-center hover:bg-blue-600 hover:scale-110 transition-all shadow-md hover:shadow-lg"
-                               title="Compartir en Facebook">
-                                <i class="fab fa-facebook-f"></i>
+                            <a href="https://www.facebook.com/sharer/sharer.php?u=@encodedUrl" target="_blank"
+                               class="w-8 h-8 rounded-full border border-gray-200 text-gray-400 flex items-center justify-center hover:bg-[#1877F2] hover:border-transparent hover:text-white transition-all">
+                                <i class="fab fa-facebook-f text-xs"></i>
                             </a>
-                            
-                            <!-- X -->
-                            <a href="https://x.com/intent/tweet?text=@encodedText&url=@encodedUrl" 
-                               target="_blank" 
-                               rel="noopener noreferrer"
-                               class="w-10 h-10 bg-black text-white rounded-full flex items-center justify-center hover:bg-gray-800 hover:scale-110 transition-all shadow-md hover:shadow-lg"
-                               title="Compartir en X (Twitter)">
-                                <i class="fab fa-x"></i>
+                            <a href="https://x.com/intent/tweet?text=@encodedText&url=@encodedUrl" target="_blank"
+                               class="w-8 h-8 rounded-full border border-gray-200 text-gray-400 flex items-center justify-center hover:bg-black hover:border-transparent hover:text-white transition-all">
+                                <i class="fab fa-x text-xs"></i>
                             </a>
-                            
-                            <!-- WhatsApp -->
-                            <a href="https://api.whatsapp.com/send?text=@encodedText%20@encodedUrl" 
-                               target="_blank" 
-                               rel="noopener noreferrer"
-                               class="w-10 h-10 bg-green-500 text-white rounded-full flex items-center justify-center hover:bg-green-600 hover:scale-110 transition-all shadow-md hover:shadow-lg"
-                               title="Compartir en WhatsApp">
-                                <i class="fab fa-whatsapp text-lg"></i>
-                            </a>                           
-                            
-                            <!-- Copy Link -->
-                            <button @@click="copyLink()" 
-                                    class="w-10 h-10 rounded-full flex items-center justify-center hover:scale-110 transition-all shadow-md hover:shadow-lg relative"
-                                    :class="copied ? 'bg-emerald-500 text-white' : 'bg-gray-200 text-gray-600 hover:bg-gray-300'"
-                                    title="Copiar enlace">
+                            <a href="https://api.whatsapp.com/send?text=@encodedText%20@encodedUrl" target="_blank"
+                               class="w-8 h-8 rounded-full border border-gray-200 text-gray-400 flex items-center justify-center hover:bg-[#25D366] hover:border-transparent hover:text-white transition-all">
+                                <i class="fab fa-whatsapp text-sm"></i>
+                            </a>
+                            <button @@click="copyLink()" class="relative w-8 h-8 rounded-full border border-gray-200 text-gray-400 flex items-center justify-center hover:bg-emerald-600 hover:border-transparent hover:text-white transition-all" title="Copiar enlace">
                                 <i class="fas" :class="copied ? 'fa-check' : 'fa-link'"></i>
+                                <span x-show="copied" x-transition class="absolute bottom-full mb-2 bg-dark-900 text-white text-[10px] py-1 px-2 rounded whitespace-nowrap">Copiado</span>
                             </button>
-                        </div>
-                        
-                        <!-- Copied notification -->
-                        <div x-show="copied" 
-                             x-transition:enter="transition ease-out duration-200"
-                             x-transition:enter-start="opacity-0 translate-y-1"
-                             x-transition:enter-end="opacity-100 translate-y-0"
-                             x-transition:leave="transition ease-in duration-150"
-                             x-transition:leave-start="opacity-100 translate-y-0"
-                             x-transition:leave-end="opacity-0 translate-y-1"
-                             class="inline-flex items-center gap-2 px-3 py-1.5 bg-emerald-100 text-emerald-700 rounded-full text-sm font-medium">
-                            <i class="fas fa-check-circle"></i>
-                            <span>¡Enlace copiado!</span>
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
 
-    <!-- Back to Catalog -->
-    <div class="container mx-auto px-6 pb-16">
-        <div class="border-t border-gray-200 pt-8">
+    <div class="border-t border-gray-100 bg-gray-50/50 py-8">
+        <div class="container mx-auto px-4">
             <a asp-controller="Productos" asp-action="Index" asp-route-categoriaId="@Model.CategoriaId"
-               class="inline-flex items-center gap-2 text-gray-600 hover:text-emerald-600 font-medium transition-colors group">
-                <i class="fas fa-arrow-left group-hover:-translate-x-1 transition-transform"></i>
-                <span>Volver al catálogo de @Model.CategoriaNombre</span>
+               class="inline-flex items-center gap-2 text-gray-500 hover:text-emerald-700 font-medium transition-colors group">
+                <i class="fas fa-arrow-left text-xs group-hover:-translate-x-1 transition-transform"></i>
+                <span class="font-serif">Volver a @Model.CategoriaNombre</span>
             </a>
         </div>
     </div>
@@ -295,27 +213,23 @@
 
 @section Styles {
     <style>
-        .scrollbar-thin::-webkit-scrollbar {
-            height: 6px;
+        /* Ocultar barra de desplazamiento en miniaturas */
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
         }
-        .scrollbar-thin::-webkit-scrollbar-track {
-            background: #f1f5f9;
-            border-radius: 3px;
+
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
-        .scrollbar-thin::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 3px;
-        }
-        .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
-        
-        /* Hide number input spinners */
+
+        /* Input number limpio */
         input[type=number]::-webkit-inner-spin-button,
         input[type=number]::-webkit-outer-spin-button {
             -webkit-appearance: none;
             margin: 0;
         }
+
         input[type=number] {
             -moz-appearance: textfield;
         }
@@ -328,33 +242,22 @@
             return {
                 copied: false,
                 productUrl: '@Html.Raw(productUrl)',
-                
+
                 async copyLink() {
                     try {
                         await navigator.clipboard.writeText(this.productUrl);
                         this.copied = true;
-                        setTimeout(() => {
-                            this.copied = false;
-                        }, 2000);
+                        setTimeout(() => { this.copied = false; }, 2000);
                     } catch (err) {
-                        // Fallback para navegadores que no soportan clipboard API
-                        const textArea = document.createElement('textarea');
-                        textArea.value = this.productUrl;
-                        textArea.style.position = 'fixed';
-                        textArea.style.left = '-999999px';
-                        document.body.appendChild(textArea);
-                        textArea.select();
-                        try {
-                            document.execCommand('copy');
-                            this.copied = true;
-                            setTimeout(() => {
-                                this.copied = false;
-                            }, 2000);
-                        } catch (e) {
-                            console.error('Error al copiar:', e);
-                            alert('No se pudo copiar el enlace. Por favor, cópialo manualmente: ' + this.productUrl);
-                        }
-                        document.body.removeChild(textArea);
+                        // Fallback bÃ¡sico
+                        const input = document.createElement('input');
+                        input.value = this.productUrl;
+                        document.body.appendChild(input);
+                        input.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(input);
+                        this.copied = true;
+                        setTimeout(() => { this.copied = false; }, 2000);
                     }
                 }
             }

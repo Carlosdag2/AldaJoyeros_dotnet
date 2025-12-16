@@ -1,808 +1,367 @@
 @model AldaJoyeros.Helpers.PagedResult<AldaJoyeros.DTOs.ProductoDto>
 
 @{
-    ViewData["Title"] = "Catálogo de Joyas";
+    ViewData["Title"] = "Colección Exclusiva";
     var categorias = ViewBag.Categorias as IEnumerable<AldaJoyeros.DTOs.CategoriaDto>;
     var categoriaSeleccionada = ViewBag.CategoriaSeleccionada as long?;
     var busqueda = ViewBag.Busqueda as string ?? "";
     var categoriaActual = categorias?.FirstOrDefault(c => c.Id == categoriaSeleccionada);
 }
 
-<!-- Hero Banner Mejorado -->
-<section class="relative py-24 mb-12 overflow-hidden">
-    <!-- Background con parallax effect -->
-    <div class="absolute inset-0">
-        <div class="absolute inset-0 bg-gradient-to-br from-gray-900 via-emerald-900/90 to-gray-900"></div>
-        <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?q=80&w=2070')] bg-cover bg-center opacity-20"></div>
-        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-emerald-500/10 via-transparent to-transparent"></div>
-    </div>
-    
-    <!-- Floating decorative elements -->
-    <div class="absolute top-20 left-10 w-20 h-20 bg-emerald-500/20 rounded-full blur-2xl animate-pulse"></div>
-    <div class="absolute bottom-10 right-20 w-32 h-32 bg-emerald-400/10 rounded-full blur-3xl animate-pulse" style="animation-delay: 1s;"></div>
-    <div class="absolute top-1/2 left-1/4 w-16 h-16 bg-amber-500/10 rounded-full blur-2xl animate-pulse" style="animation-delay: 2s;"></div>
-    
-    <div class="relative container mx-auto px-6 text-center text-white">
-        <!-- Breadcrumb elegante -->
-        <nav class="flex items-center justify-center gap-2 text-sm mb-6 opacity-70">
-            <a asp-controller="Home" asp-action="Index" class="hover:text-emerald-300 transition-colors">
-                <i class="fas fa-home"></i>
-            </a>
-            <i class="fas fa-chevron-right text-xs"></i>
-            <span class="text-emerald-300">Catálogo</span>
-            @if (categoriaActual != null)
-            {
-                <i class="fas fa-chevron-right text-xs"></i>
-                <span class="text-emerald-300 font-medium">@categoriaActual.Nombre</span>
-            }
-        </nav>
-        
-        <div class="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-emerald-300 text-xs tracking-[0.3em] uppercase mb-6 border border-white/20">
-            <i class="fas fa-gem animate-pulse"></i>
-            <span>Colección Exclusiva 2025</span>
+<div class="min-h-screen bg-stone-50 font-sans text-stone-800 selection:bg-emerald-900 selection:text-white">
+
+    <section class="relative pt-32 pb-20 lg:pt-40 lg:pb-32 overflow-hidden bg-emerald-950">
+        <div class="absolute inset-0 z-0">
+            <img src="https://images.unsplash.com/photo-1573408301185-9146fe634ad0?q=80&w=2075&auto=format&fit=crop"
+                 alt="Background"
+                 class="w-full h-full object-cover opacity-20" />
+            <div class="absolute inset-0 bg-gradient-to-b from-emerald-950/80 via-emerald-950/60 to-emerald-950"></div>
         </div>
-        
-        <h1 class="font-serif text-5xl md:text-7xl font-bold mb-6 leading-tight">
-            @if (categoriaActual != null)
-            {
-                <span class="bg-gradient-to-r from-white via-emerald-200 to-white bg-clip-text text-transparent">@categoriaActual.Nombre</span>
-            }
-            else
-            {
-                <span class="bg-gradient-to-r from-white via-emerald-200 to-white bg-clip-text text-transparent">Catálogo de Joyas</span>
-            }
-        </h1>
-        
-        <p class="text-gray-300 text-lg md:text-xl mb-10 max-w-2xl mx-auto font-light leading-relaxed">
-            Descubre piezas únicas que cuentan historias. Cada joya es una obra de arte diseñada para momentos inolvidables.
-        </p>
-        
-        <!-- Search Bar Mejorado con Sugerencias Dinámicas -->
-        <form asp-action="Index" method="get" class="max-w-2xl mx-auto" 
-              x-data="buscadorProductos('@categoriaSeleccionada')" 
-              x-on:click.away="cerrarSugerencias()">
-            <div class="relative group">
-                <input type="hidden" name="categoriaId" value="@categoriaSeleccionada" />
-                <div class="absolute inset-0 bg-gradient-to-r from-emerald-500/50 to-teal-500/50 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                <div class="relative">
-                    <div class="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 z-10">
-                        <i class="fas fa-search text-lg" x-show="!cargando"></i>
-                        <i class="fas fa-spinner fa-spin text-lg text-emerald-400" x-show="cargando" x-cloak></i>
-                    </div>
-                    <input type="text" 
-                           name="busqueda" 
-                           value="@busqueda"
-                           x-model="consulta"
-                           x-on:input.debounce.300ms="buscar()"
-                           x-on:focus="mostrarSugerencias = sugerencias.length > 0"
-                           x-on:keydown.arrow-down.prevent="navegarAbajo()"
-                           x-on:keydown.arrow-up.prevent="navegarArriba()"
-                           x-on:keydown.enter="seleccionarActual($event)"
-                           x-on:keydown.escape="cerrarSugerencias()"
-                           placeholder="¿Qué joya estás buscando?"
-                           autocomplete="off"
-                           class="w-full pl-14 pr-36 py-5 text-lg bg-white/10 backdrop-blur-md border-2 border-white/20 text-white placeholder-gray-400 rounded-2xl focus:border-emerald-400 focus:bg-white/20 focus:ring-4 focus:ring-emerald-500/20 transition-all duration-300 outline-none" />
-                    <button type="submit" 
-                            class="absolute right-2 top-1/2 -translate-y-1/2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-emerald-600 hover:to-emerald-700 transition-all duration-300 shadow-lg hover:shadow-emerald-500/30 flex items-center gap-2">
-                        <span class="hidden sm:inline">Buscar</span>
-                        <i class="fas fa-arrow-right"></i>
-                    </button>
-                </div>
-                
-                <!-- Dropdown de sugerencias -->
-                <div x-show="mostrarSugerencias && sugerencias.length > 0"
-                     x-transition:enter="transition ease-out duration-200"
-                     x-transition:enter-start="opacity-0 -translate-y-2"
-                     x-transition:enter-end="opacity-100 translate-y-0"
-                     x-transition:leave="transition ease-in duration-150"
-                     x-transition:leave-start="opacity-100 translate-y-0"
-                     x-transition:leave-end="opacity-0 -translate-y-2"
-                     x-cloak
-                     class="absolute left-0 right-0 mt-2 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-50">
-                    
-                    <div class="p-2">
-                        <div class="text-xs text-gray-400 uppercase tracking-wider px-3 py-2 font-semibold">
-                            <i class="fas fa-gem mr-1 text-emerald-500"></i>
-                            Sugerencias
-                        </div>
-                        
-                        <template x-for="(producto, index) in sugerencias" :key="producto.id">
-                            <a :href="'/Productos/Detalle/' + producto.id"
-                               class="flex items-center gap-4 p-3 rounded-xl transition-all duration-200 cursor-pointer"
-                               :class="indiceActivo === index ? 'bg-emerald-50 border-l-4 border-emerald-500' : 'hover:bg-gray-50'"
-                               x-on:mouseenter="indiceActivo = index"
-                               x-on:click="seleccionarProducto(producto)">
-                                
-                                <!-- Imagen del producto -->
-                                <div class="w-14 h-14 rounded-xl overflow-hidden bg-gradient-to-br from-gray-100 to-gray-50 flex-shrink-0 border border-gray-100">
-                                    <template x-if="producto.tieneImagen">
-                                        <img :src="producto.imagen" 
-                                             :alt="producto.nombre"
-                                             class="w-full h-full object-cover"
-                                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
-                                    </template>
-                                    <div x-show="!producto.tieneImagen" class="w-full h-full flex items-center justify-center">
-                                        <i class="fas fa-gem text-emerald-300 text-xl"></i>
-                                    </div>
-                                </div>
-                                
-                                <!-- Info del producto -->
-                                <div class="flex-1 min-w-0">
-                                    <div class="font-semibold text-gray-900 truncate" x-text="producto.nombre"></div>
-                                    <div class="flex items-center gap-2 mt-1">
-                                        <span class="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full" x-text="producto.categoria"></span>
-                                    </div>
-                                </div>
-                                
-                                <!-- Precio -->
-                                <div class="text-right flex-shrink-0">
-                                    <div class="font-bold text-emerald-600" x-text="producto.precioFormateado"></div>
-                                    <div class="text-xs text-gray-400">Ver detalles</div>
-                                </div>
-                            </a>
-                        </template>
-                    </div>
-                    
-                    <!-- Footer del dropdown -->
-                    <div class="bg-gray-50 px-4 py-3 border-t border-gray-100">
-                        <button type="submit" 
-                                class="w-full text-center text-sm text-emerald-600 hover:text-emerald-700 font-semibold transition-colors flex items-center justify-center gap-2">
-                            <i class="fas fa-search"></i>
-                            <span>Ver todos los resultados para "<span x-text="consulta" class="font-bold"></span>"</span>
-                            <i class="fas fa-arrow-right text-xs"></i>
+
+        <div class="relative z-10 container mx-auto px-6 text-center">
+            <nav class="flex items-center justify-center gap-3 text-xs uppercase tracking-[0.2em] text-stone-400 mb-8 font-medium">
+                <a asp-controller="Home" asp-action="Index" class="hover:text-white transition-colors">Inicio</a>
+                <span>/</span>
+                <span class="text-white">Catálogo</span>
+                @if (categoriaActual != null)
+                {
+                    <span>/</span>
+                    <span class="text-emerald-200">@categoriaActual.Nombre</span>
+                }
+            </nav>
+
+            <h1 class="font-serif text-5xl md:text-7xl text-white mb-6 leading-tight">
+                @if (categoriaActual != null)
+                {
+                    @categoriaActual.Nombre
+                }
+                else
+                {
+                    <span>Joyas <i class="font-light italic text-emerald-200">Atemporales</i></span>
+                }
+            </h1>
+
+            <p class="text-stone-300 text-lg md:text-xl font-light max-w-2xl mx-auto mb-12 leading-relaxed">
+                Descubre la excelencia en cada detalle. Piezas diseñadas para capturar la esencia de tus momentos más preciados.
+            </p>
+
+            <div class="max-w-xl mx-auto relative"
+                 x-data="buscadorProductos('@categoriaSeleccionada')"
+                 x-on:click.away="cerrarSugerencias()">
+
+                <form asp-action="Index" method="get" class="relative group">
+                    <input type="hidden" name="categoriaId" value="@categoriaSeleccionada" />
+
+                    <div class="relative flex items-center">
+                        <input type="text"
+                               name="busqueda"
+                               value="@busqueda"
+                               x-model="consulta"
+                               x-on:input.debounce.300ms="buscar()"
+                               x-on:focus="mostrarSugerencias = sugerencias.length > 0"
+                               x-on:keydown.arrow-down.prevent="navegarAbajo()"
+                               x-on:keydown.arrow-up.prevent="navegarArriba()"
+                               x-on:keydown.enter="seleccionarActual($event)"
+                               x-on:keydown.escape="cerrarSugerencias()"
+                               placeholder="Buscar anillos, collares..."
+                               autocomplete="off"
+                               class="w-full bg-white/10 backdrop-blur-md border border-white/20 text-white placeholder-stone-400 px-6 py-4 rounded-sm focus:outline-none focus:bg-white/15 focus:border-emerald-400 transition-all font-light tracking-wide text-lg" />
+
+                        <button type="submit" class="absolute right-2 p-3 text-stone-300 hover:text-white transition-colors">
+                            <i class="fas fa-search" x-show="!cargando"></i>
+                            <i class="fas fa-circle-notch fa-spin" x-show="cargando" x-cloak></i>
                         </button>
                     </div>
-                </div>
-            </div>
-            @if (!string.IsNullOrWhiteSpace(busqueda))
-            {
-                <div class="mt-4 flex items-center justify-center gap-4">
-                    <span class="inline-flex items-center gap-2 px-4 py-2 bg-emerald-500/20 backdrop-blur-sm rounded-full text-sm border border-emerald-500/30">
-                        <i class="fas fa-search text-emerald-300"></i>
-                        <span class="text-white">Buscando: <strong class="text-emerald-300">"@busqueda"</strong></span>
-                    </span>
-                    <a asp-action="Index" asp-route-categoriaId="@categoriaSeleccionada" 
-                       class="inline-flex items-center gap-2 px-4 py-2 bg-red-500/20 hover:bg-red-500/30 backdrop-blur-sm rounded-full text-sm text-red-300 hover:text-red-200 transition-all border border-red-500/30">
-                        <i class="fas fa-times"></i>
-                        <span>Limpiar</span>
-                    </a>
-                </div>
-            }
-        </form>
-        
-        <!-- Stats rápidas -->
-        <div class="flex flex-wrap items-center justify-center gap-8 mt-12">
-            <div class="flex items-center gap-3 text-gray-300">
-                <div class="w-12 h-12 bg-emerald-500/20 rounded-xl flex items-center justify-center border border-emerald-500/30">
-                    <i class="fas fa-gem text-emerald-400"></i>
-                </div>
-                <div class="text-left">
-                    <div class="text-2xl font-bold text-white">@Model.TotalItems</div>
-                    <div class="text-xs uppercase tracking-wider text-gray-400">Joyas únicas</div>
-                </div>
-            </div>
-            <div class="hidden md:block w-px h-10 bg-white/20"></div>
-            <div class="flex items-center gap-3 text-gray-300">
-                <div class="w-12 h-12 bg-amber-500/20 rounded-xl flex items-center justify-center border border-amber-500/30">
-                    <i class="fas fa-star text-amber-400"></i>
-                </div>
-                <div class="text-left">
-                    <div class="text-2xl font-bold text-white">4.9</div>
-                    <div class="text-xs uppercase tracking-wider text-gray-400">Valoración</div>
-                </div>
-            </div>
-            <div class="hidden md:block w-px h-10 bg-white/20"></div>
-            <div class="flex items-center gap-3 text-gray-300">
-                <div class="w-12 h-12 bg-purple-500/20 rounded-xl flex items-center justify-center border border-purple-500/30">
-                    <i class="fas fa-truck text-purple-400"></i>
-                </div>
-                <div class="text-left">
-                    <div class="text-2xl font-bold text-white">Gratis</div>
-                    <div class="text-xs uppercase tracking-wider text-gray-400">Envío +50€</div>
-                </div>
+
+                    <div x-show="mostrarSugerencias && sugerencias.length > 0"
+                         x-transition:enter="transition ease-out duration-200"
+                         x-transition:enter-start="opacity-0 translate-y-2"
+                         x-transition:enter-end="opacity-100 translate-y-0"
+                         x-cloak
+                         class="absolute left-0 right-0 top-full mt-2 bg-white rounded-sm shadow-2xl overflow-hidden z-50 text-left border border-stone-200">
+
+                        <div class="px-4 py-3 bg-stone-50 border-b border-stone-100 text-xs font-bold uppercase tracking-widest text-stone-500">
+                            Resultados Sugeridos
+                        </div>
+
+                        <ul>
+                            <template x-for="(producto, index) in sugerencias" :key="producto.id">
+                                <li>
+                                    <a :href="'/Productos/Detalle/' + producto.id"
+                                       class="flex items-center gap-4 px-4 py-3 transition-colors group"
+                                       :class="indiceActivo === index ? 'bg-stone-50' : 'hover:bg-stone-50'"
+                                       x-on:mouseenter="indiceActivo = index"
+                                       x-on:click="seleccionarProducto(producto)">
+
+                                        <div class="w-12 h-12 bg-stone-100 flex-shrink-0 flex items-center justify-center">
+                                            <template x-if="producto.tieneImagen">
+                                                <img :src="producto.imagen" class="w-full h-full object-cover mix-blend-multiply" alt="">
+                                            </template>
+                                            <i x-show="!producto.tieneImagen" class="fas fa-gem text-stone-300"></i>
+                                        </div>
+
+                                        <div class="flex-1 min-w-0">
+                                            <div class="text-stone-900 font-serif truncate group-hover:text-emerald-900 transition-colors" x-text="producto.nombre"></div>
+                                            <div class="text-xs text-stone-500 uppercase tracking-wide" x-text="producto.categoria"></div>
+                                        </div>
+
+                                        <div class="font-serif text-emerald-800 font-medium whitespace-nowrap" x-text="producto.precioFormateado"></div>
+                                    </a>
+                                </li>
+                            </template>
+                        </ul>
+
+                        <a href="#" @@click.prevent ="$el.closest('form').submit()" class="block w-full text-center py-3 bg-stone-50 text-xs uppercase tracking-widest font-bold text-stone-600 hover:text-emerald-900 border-t border-stone-100 transition-colors">
+                            Ver todos los resultados
+                        </a>
+                    </div>
+                </form>
+
+                @if (!string.IsNullOrWhiteSpace(busqueda))
+                {
+                    <div class="absolute -bottom-12 left-0 right-0 flex justify-center">
+                        <div class="inline-flex items-center gap-3 px-4 py-2 bg-white/10 rounded-full backdrop-blur-sm border border-white/10">
+                            <span class="text-stone-300 text-sm">Resultados para: <span class="text-white font-serif italic">"@busqueda"</span></span>
+                            <a asp-action="Index" asp-route-categoriaId="@categoriaSeleccionada" class="text-stone-400 hover:text-white transition-colors">
+                                <i class="fas fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+                }
             </div>
         </div>
-    </div>
-    
-    <!-- Wave divider -->
-    <div class="absolute bottom-0 left-0 right-0">
-        <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto">
-            <path d="M0 120L60 110C120 100 240 80 360 70C480 60 600 60 720 65C840 70 960 80 1080 85C1200 90 1320 90 1380 90L1440 90V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z" fill="white"/>
-        </svg>
-    </div>
-</section>
+    </section>
 
-<!-- Main Content -->
-<div class="container mx-auto px-6 pb-16" x-data="{ viewMode: localStorage.getItem('viewMode') || 'grid' }" x-init="$watch('viewMode', val => localStorage.setItem('viewMode', val))">
-    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        <!-- Sidebar - Filters Mejorado -->
-        <aside class="lg:col-span-1" x-data="{ isOpen: false }">
-            <!-- Mobile filter toggle -->
-            <button @@click="isOpen = !isOpen" 
-                    class="lg:hidden w-full flex items-center justify-between p-4 bg-white rounded-xl shadow-md mb-4 border border-gray-100">
-                <span class="flex items-center gap-2 font-semibold text-gray-900">
-                    <i class="fas fa-filter text-emerald-600"></i>
-                    Filtrar por categoría
-                </span>
-                <i class="fas fa-chevron-down transition-transform" :class="isOpen && 'rotate-180'"></i>
-            </button>
-            
-            <div class="lg:block" :class="isOpen ? 'block' : 'hidden'">
-                <div class="bg-white rounded-3xl shadow-xl overflow-hidden sticky top-24 border border-gray-100">
-                    <!-- Header del sidebar -->
-                    <div class="bg-gradient-to-r from-emerald-500 to-emerald-600 p-6 text-white">
-                        <h2 class="font-serif text-xl font-bold flex items-center gap-2">
-                            <i class="fas fa-filter"></i>
-                            Categorías
-                        </h2>
-                        <p class="text-emerald-100 text-sm mt-1">Filtra por tipo de joya</p>
-                    </div>
-                    
-                    <div class="p-4">
-                        <div class="space-y-2">
+    <div class="container mx-auto px-6 py-16" x-data="{ viewMode: localStorage.getItem('viewMode') || 'grid' }" x-init="$watch('viewMode', val => localStorage.setItem('viewMode', val))">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-12">
+
+            <aside class="lg:col-span-1 space-y-12">
+
+                <div class="hidden lg:block sticky top-24">
+                    <h3 class="font-serif text-2xl text-stone-900 mb-6">Colecciones</h3>
+                    <ul class="space-y-4">
+                        <li>
                             <a asp-action="Index" asp-route-busqueda="@busqueda"
-                               class="flex items-center justify-between px-4 py-3.5 rounded-xl transition-all duration-300 group @(categoriaSeleccionada == null ? "bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-lg shadow-emerald-500/30" : "bg-gray-50 text-gray-700 hover:bg-emerald-50 hover:text-emerald-700")">
-                                <span class="flex items-center gap-3">
-                                    <div class="w-8 h-8 rounded-lg flex items-center justify-center @(categoriaSeleccionada == null ? "bg-white/20" : "bg-emerald-100 group-hover:bg-emerald-200") transition-colors">
-                                        <i class="fas fa-th-large @(categoriaSeleccionada == null ? "text-white" : "text-emerald-600")"></i>
-                                    </div>
-                                    <span class="font-medium">Todas las joyas</span>
-                                </span>
-                                <i class="fas fa-chevron-right text-xs opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-all"></i>
+                               class="group flex items-center justify-between text-sm uppercase tracking-widest transition-all duration-300 @(categoriaSeleccionada == null ? "text-emerald-900 font-bold pl-2 border-l-2 border-emerald-900" : "text-stone-500 hover:text-stone-900 hover:pl-2 hover:border-l-2 hover:border-stone-300 border-l-2 border-transparent")">
+                                <span>Todas</span>
+                                <span class="text-xs text-stone-300 group-hover:text-emerald-900">(@Model.TotalItems)</span>
                             </a>
-                            
-                            @if (categorias != null)
+                        </li>
+                        @if (categorias != null)
+                        {
+                            @foreach (var cat in categorias)
                             {
-                                @foreach (var categoria in categorias)
-                                {
-                                    var isSelected = categoriaSeleccionada == categoria.Id;
-                                    <a asp-action="Index" asp-route-categoriaId="@categoria.Id" asp-route-busqueda="@busqueda"
-                                       class="flex items-center justify-between px-4 py-3.5 rounded-xl transition-all duration-300 group @(isSelected ? "bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-lg shadow-emerald-500/30" : "bg-gray-50 text-gray-700 hover:bg-emerald-50 hover:text-emerald-700")">
-                                        <span class="flex items-center gap-3">
-                                            <div class="w-8 h-8 rounded-lg flex items-center justify-center @(isSelected ? "bg-white/20" : "bg-emerald-100 group-hover:bg-emerald-200") transition-colors">
-                                                <i class="fas fa-tag @(isSelected ? "text-white" : "text-emerald-600")"></i>
-                                            </div>
-                                            <span class="font-medium">@categoria.Nombre</span>
-                                        </span>
-                                        <div class="flex items-center gap-2">
-                                            <span class="text-xs px-2 py-1 rounded-full @(isSelected ? "bg-white/20" : "bg-gray-200 text-gray-600")">
-                                                @categoria.CantidadProductos
-                                            </span>
-                                            <i class="fas fa-chevron-right text-xs opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-all"></i>
-                                        </div>
+                                var isActive = categoriaSeleccionada == cat.Id;
+                                <li>
+                                    <a asp-action="Index" asp-route-categoriaId="@cat.Id" asp-route-busqueda="@busqueda"
+                                       class="group flex items-center justify-between text-sm uppercase tracking-widest transition-all duration-300 @(isActive ? "text-emerald-900 font-bold pl-2 border-l-2 border-emerald-900" : "text-stone-500 hover:text-stone-900 hover:pl-2 hover:border-l-2 hover:border-stone-300 border-l-2 border-transparent")">
+                                        <span>@cat.Nombre</span>
+                                        <span class="text-xs text-stone-300 group-hover:text-emerald-900">(@cat.CantidadProductos)</span>
                                     </a>
-                                }
+                                </li>
                             }
-                        </div>
-                    </div>
+                        }
+                    </ul>
 
-                    <!-- Beneficios -->
-                    <div class="p-4 border-t border-gray-100">
-                        <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">¿Por qué elegirnos?</h3>
-                        <div class="space-y-3">
-                            <div class="flex items-center gap-3 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-100">
-                                <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/30">
-                                    <i class="fas fa-shipping-fast text-white"></i>
-                                </div>
-                                <div>
-                                    <div class="text-sm font-bold text-gray-900">Envío Gratis</div>
-                                    <div class="text-xs text-gray-500">En pedidos +50€</div>
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-3 p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-100">
-                                <div class="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center shadow-lg shadow-green-500/30">
-                                    <i class="fas fa-shield-alt text-white"></i>
-                                </div>
-                                <div>
-                                    <div class="text-sm font-bold text-gray-900">Garantía</div>
-                                    <div class="text-xs text-gray-500">De por vida</div>
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-3 p-3 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border border-purple-100">
-                                <div class="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center shadow-lg shadow-purple-500/30">
-                                    <i class="fas fa-undo text-white"></i>
-                                </div>
-                                <div>
-                                    <div class="text-sm font-bold text-gray-900">Devoluciones</div>
-                                    <div class="text-xs text-gray-500">30 días gratis</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- CTA Contacto -->
-                    <div class="p-4 bg-gradient-to-br from-gray-50 to-emerald-50">
-                        <div class="text-center">
-                            <div class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                                <i class="fas fa-headset text-2xl text-emerald-600"></i>
-                            </div>
-                            <h4 class="font-bold text-gray-900 mb-1">¿Necesitas ayuda?</h4>
-                            <p class="text-sm text-gray-600 mb-3">Estamos aquí para ti</p>
-                            <a href="tel:+34925541227" class="inline-flex items-center gap-2 text-emerald-600 font-semibold hover:text-emerald-700 transition-colors">
-                                <i class="fas fa-phone"></i>
-                                925 54 12 27
-                            </a>
-                        </div>
+                    <div class="mt-12 p-8 bg-stone-100 text-center">
+                        <i class="fas fa-shipping-fast text-2xl text-stone-400 mb-4"></i>
+                        <h4 class="font-serif text-lg text-stone-900 mb-2">Envío Gratuito</h4>
+                        <p class="text-xs text-stone-500 leading-relaxed mb-4">Disfruta de envío asegurado sin coste en pedidos superiores a 50€.</p>
                     </div>
                 </div>
-            </div>
-        </aside>
 
-        <!-- Products Grid -->
-        <div class="lg:col-span-3">
-            <!-- Results Header Mejorado -->
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
-                <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center">
-                        <i class="fas fa-gem text-emerald-600 text-xl"></i>
-                    </div>
-                    <div>
-                        <div class="text-gray-500 text-sm">Mostrando</div>
-                        <div class="font-bold text-gray-900">
-                            @Model.StartItem - @Model.EndItem <span class="text-gray-400 font-normal">de</span> @Model.TotalItems productos
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- View toggle funcional -->
-                <div class="flex items-center gap-2 bg-gray-100 rounded-xl p-1">
-                    <button @@click="viewMode = 'grid'" 
-                            :class="viewMode === 'grid' ? 'bg-white shadow-sm text-emerald-600' : 'text-gray-400 hover:text-gray-600'"
-                            class="p-2.5 rounded-lg transition-all duration-200"
-                            title="Vista en cuadrícula">
-                        <i class="fas fa-th-large"></i>
+                <div x-data="{ open: false }" class="lg:hidden">
+                    <button @@click="open = !open" class="w-full flex items-center justify-between px-6 py-4 bg-white border border-stone-200 uppercase tracking-widest text-xs font-bold">
+                        <span>Filtrar Colección</span>
+                        <i class="fas fa-chevron-down transition-transform" :class="open ? 'rotate-180' : ''"></i>
                     </button>
-                    <button @@click="viewMode = 'list'" 
-                            :class="viewMode === 'list' ? 'bg-white shadow-sm text-emerald-600' : 'text-gray-400 hover:text-gray-600'"
-                            class="p-2.5 rounded-lg transition-all duration-200"
-                            title="Vista en lista">
-                        <i class="fas fa-list"></i>
-                    </button>
+                    <div x-show="open" class="bg-white border-x border-b border-stone-200 p-6 space-y-4" x-collapse>
+                        <a asp-action="Index" class="block text-sm text-stone-600">Todas las joyas</a>
+                        @if (categorias != null)
+                        {
+                            @foreach (var cat in categorias)
+                            {
+                                <a asp-action="Index" asp-route-categoriaId="@cat.Id" class="block text-sm text-stone-600">@cat.Nombre</a>
+                            }
+                        }
+                    </div>
                 </div>
-            </div>
+            </aside>
 
-            @if (Model.Items != null && Model.Items.Any())
-            {
-                <!-- Products Grid View -->
-                <div x-show="viewMode === 'grid'" 
-                     x-transition:enter="transition ease-out duration-300"
-                     x-transition:enter-start="opacity-0"
-                     x-transition:enter-end="opacity-100"
-                     class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 mb-12">
-                    @foreach (var (producto, index) in Model.Items.Select((p, i) => (p, i)))
-                    {
-                        <div class="group bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden transform hover:-translate-y-2 border border-gray-100"
-                             style="animation: fadeInUp 0.6s ease-out @(index * 0.1)s both;">
-                            <!-- Product Image - Clickable -->
-                            <a asp-action="Detalle" asp-route-id="@producto.Id" class="block relative overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100 cursor-pointer" style="aspect-ratio: 4/5;">
-                                @if (producto.TieneImagenes)
-                                {
-                                    <img src="@producto.ImagenPrincipal" 
-                                         alt="@producto.Nombre" 
-                                         class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                                         loading="lazy"
-                                         onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'w-full h-full flex items-center justify-center\'><i class=\'fas fa-gem text-8xl text-emerald-200\'></i></div>';" />
-                                }
-                                else
-                                {
-                                    <div class="w-full h-full flex items-center justify-center">
-                                        <i class="fas fa-gem text-8xl text-emerald-200 group-hover:scale-110 transition-transform duration-500"></i>
-                                    </div>
-                                }
-                                
-                                <!-- Category Badge -->
-                                <div class="absolute top-4 left-4 z-10">
-                                    <span class="bg-white/95 backdrop-blur-sm text-gray-900 px-3 py-1.5 rounded-full text-xs font-bold shadow-lg border border-gray-100">
-                                        <i class="fas fa-tag text-emerald-500 mr-1"></i>@producto.CategoriaNombre
-                                    </span>
-                                </div>
+            <div class="lg:col-span-3">
 
-                                <!-- Image Count Badge -->
-                                @if (producto.Imagenes.Count > 1)
-                                {
-                                    <div class="absolute top-4 right-4 z-10">
-                                        <span class="bg-black/70 backdrop-blur-sm text-white px-2.5 py-1 rounded-full text-xs font-medium">
-                                            <i class="fas fa-images mr-1"></i>@producto.Imagenes.Count
-                                        </span>
-                                    </div>
-                                }
+                <div class="flex flex-col sm:flex-row justify-between items-center mb-10 pb-4 border-b border-stone-200">
+                    <p class="text-stone-500 text-sm italic mb-4 sm:mb-0">
+                        Mostrando <span class="font-bold text-stone-900">@Model.StartItem-@Model.EndItem</span> de @Model.TotalItems joyas
+                    </p>
 
-                                <!-- Hover overlay with icon -->
-                                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">
-                                    <div class="w-16 h-16 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center transform scale-0 group-hover:scale-100 transition-transform duration-300 shadow-xl">
-                                        <i class="fas fa-eye text-2xl text-emerald-600"></i>
-                                    </div>
-                                </div>
-                            </a>
-
-                            <!-- Product Info -->
-                            <div class="p-5">
-                                <a asp-action="Detalle" asp-route-id="@producto.Id" class="group/title">
-                                    <h3 class="font-serif text-lg font-bold text-gray-900 mb-2 group-hover/title:text-emerald-600 transition-colors line-clamp-1">
-                                        @producto.Nombre
-                                    </h3>
-                                </a>
-                                
-                                @if (!string.IsNullOrEmpty(producto.Descripcion))
-                                {
-                                    <p class="text-gray-500 text-sm mb-4 line-clamp-2 leading-relaxed">
-                                        @producto.Descripcion
-                                    </p>
-                                }
-                                
-                                <!-- Rating -->
-                                <div class="flex items-center gap-2 mb-4">
-                                    <div class="flex items-center gap-0.5 text-amber-400">
-                                        <i class="fas fa-star text-xs"></i>
-                                        <i class="fas fa-star text-xs"></i>
-                                        <i class="fas fa-star text-xs"></i>
-                                        <i class="fas fa-star text-xs"></i>
-                                        <i class="fas fa-star-half-alt text-xs"></i>
-                                    </div>
-                                    <span class="text-xs text-gray-400">(4.5)</span>
-                                </div>
-                                
-                                <!-- Price & Add to Cart -->
-                                <div class="flex items-center justify-between pt-4 border-t border-gray-100">
-                                    <a asp-action="Detalle" asp-route-id="@producto.Id" class="group/price">
-                                        <div class="text-xs text-gray-400 uppercase tracking-wider">Precio</div>
-                                        <div class="text-emerald-600 font-serif text-2xl font-bold group-hover/price:text-emerald-700 transition-colors">
-                                            @producto.Precio.ToString("C")
-                                        </div>
-                                    </a>
-                                    <form asp-controller="Carrito" asp-action="Agregar" method="post">
-                                        <input type="hidden" name="productoId" value="@producto.Id" />
-                                        <button type="submit" 
-                                                title="Añadir al carrito"
-                                                class="w-12 h-12 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl hover:from-emerald-600 hover:to-emerald-700 transition-all duration-200 shadow-lg hover:shadow-emerald-500/30 flex items-center justify-center transform hover:scale-110">
-                                            <i class="fas fa-cart-plus text-lg"></i>
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    }
+                    <div class="flex items-center gap-4">
+                        <span class="text-xs uppercase tracking-widest text-stone-400">Vista:</span>
+                        <button @@click="viewMode = 'grid'" :class="viewMode === 'grid' ? 'text-emerald-900' : 'text-stone-300 hover:text-stone-500'" class="transition-colors"><i class="fas fa-th-large text-lg"></i></button>
+                        <button @@click="viewMode = 'list'" :class="viewMode === 'list' ? 'text-emerald-900' : 'text-stone-300 hover:text-stone-500'" class="transition-colors"><i class="fas fa-list text-lg"></i></button>
+                    </div>
                 </div>
 
-                <!-- Products List View -->
-                <div x-show="viewMode === 'list'" 
-                     x-transition:enter="transition ease-out duration-300"
-                     x-transition:enter-start="opacity-0"
-                     x-transition:enter-end="opacity-100"
-                     class="space-y-4 mb-12">
-                    @foreach (var (producto, index) in Model.Items.Select((p, i) => (p, i)))
-                    {
-                        <div class="group bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100"
-                             style="animation: fadeInUp 0.4s ease-out @(index * 0.05)s both;">
-                            <div class="flex flex-col md:flex-row">
-                                <!-- Product Image -->
-                                <a asp-action="Detalle" asp-route-id="@producto.Id" class="relative md:w-48 lg:w-56 flex-shrink-0 overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100">
-                                    <div class="aspect-square md:aspect-auto md:h-full">
+                @if (Model.Items != null && Model.Items.Any())
+                {
+                    <div x-show="viewMode === 'grid'"
+                         class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-x-8 gap-y-12"
+                         x-transition:enter="transition ease-out duration-500"
+                         x-transition:enter-start="opacity-0 translate-y-4"
+                         x-transition:enter-end="opacity-100 translate-y-0">
+
+                        @foreach (var producto in Model.Items)
+                        {
+                            <div class="group relative flex flex-col">
+                                <div class="relative aspect-[4/5] bg-white overflow-hidden mb-4 border border-stone-100">
+                                    <a asp-action="Detalle" asp-route-id="@producto.Id" class="block w-full h-full">
                                         @if (producto.TieneImagenes)
                                         {
-                                            <img src="@producto.ImagenPrincipal" 
-                                                 alt="@producto.Nombre" 
-                                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                            <img src="@producto.ImagenPrincipal"
+                                                 alt="@producto.Nombre"
                                                  loading="lazy"
-                                                 onerror="this.onerror=null; this.src='/images/placeholder-product.jpg';" />
+                                                 class="w-full h-full object-cover object-center transform transition-transform duration-700 group-hover:scale-105" />
                                         }
                                         else
                                         {
-                                            <div class="w-full h-full flex items-center justify-center min-h-[200px]">
-                                                <i class="fas fa-gem text-5xl text-emerald-200"></i>
+                                            <div class="w-full h-full flex items-center justify-center bg-stone-50 text-stone-200">
+                                                <i class="fas fa-gem text-4xl"></i>
                                             </div>
                                         }
-                                        
-                                        <!-- Image Count Badge -->
-                                        @if (producto.Imagenes.Count > 1)
-                                        {
-                                            <div class="absolute bottom-2 left-2">
-                                                <span class="bg-black/70 backdrop-blur-sm text-white px-2 py-0.5 rounded-full text-xs font-medium">
-                                                    <i class="fas fa-images mr-1"></i>@producto.Imagenes.Count
-                                                </span>
-                                            </div>
-                                        }
-                                    </div>
-                                </a>
 
-                                <!-- Product Info -->
-                                <div class="flex-1 p-5 md:p-6 flex flex-col justify-between">
-                                    <div>
-                                        <!-- Category & Rating Row -->
-                                        <div class="flex flex-wrap items-center gap-3 mb-3">
-                                            <span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-bold">
-                                                <i class="fas fa-tag mr-1"></i>@producto.CategoriaNombre
-                                            </span>
-                                            <div class="flex items-center gap-1">
-                                                <div class="flex items-center gap-0.5 text-amber-400">
-                                                    <i class="fas fa-star text-xs"></i>
-                                                    <i class="fas fa-star text-xs"></i>
-                                                    <i class="fas fa-star text-xs"></i>
-                                                    <i class="fas fa-star text-xs"></i>
-                                                    <i class="fas fa-star-half-alt text-xs"></i>
-                                                </div>
-                                                <span class="text-xs text-gray-400 ml-1">(4.5)</span>
-                                            </div>
-                                        </div>
-                                        
-                                        <!-- Title -->
-                                        <a asp-action="Detalle" asp-route-id="@producto.Id">
-                                            <h3 class="font-serif text-xl md:text-2xl font-bold text-gray-900 mb-2 group-hover:text-emerald-600 transition-colors">
-                                                @producto.Nombre
-                                            </h3>
-                                        </a>
-                                        
-                                        <!-- Description -->
-                                        @if (!string.IsNullOrEmpty(producto.Descripcion))
-                                        {
-                                            <p class="text-gray-500 text-sm md:text-base mb-4 line-clamp-2 leading-relaxed">
-                                                @producto.Descripcion
-                                            </p>
-                                        }
-                                        
-                                        <!-- Features -->
-                                        <div class="hidden md:flex items-center gap-4 text-xs text-gray-500 mb-4">
-                                            <span class="flex items-center gap-1">
-                                                <i class="fas fa-shipping-fast text-blue-500"></i>
-                                                Envío gratis +50€
-                                            </span>
-                                            <span class="flex items-center gap-1">
-                                                <i class="fas fa-shield-alt text-green-500"></i>
-                                                Garantía de por vida
-                                            </span>
-                                            <span class="flex items-center gap-1">
-                                                <i class="fas fa-undo text-purple-500"></i>
-                                                30 días devolución
-                                            </span>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Price & Actions -->
-                                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-4 border-t border-gray-100">
-                                        <div>
-                                            <div class="text-xs text-gray-400 uppercase tracking-wider">Precio</div>
-                                            <div class="text-emerald-600 font-serif text-3xl font-bold">
-                                                @producto.Precio.ToString("C")
-                                            </div>
-                                        </div>
-                                        <div class="flex items-center gap-3">
-                                            <a asp-action="Detalle" asp-route-id="@producto.Id"
-                                               class="px-5 py-2.5 border-2 border-gray-200 text-gray-700 rounded-xl font-semibold hover:border-emerald-500 hover:text-emerald-600 transition-all flex items-center gap-2">
-                                                <i class="fas fa-eye"></i>
-                                                <span class="hidden sm:inline">Ver detalles</span>
-                                            </a>
+                                        <div class="absolute inset-x-0 bottom-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-t from-white/90 to-transparent">
                                             <form asp-controller="Carrito" asp-action="Agregar" method="post">
                                                 <input type="hidden" name="productoId" value="@producto.Id" />
-                                                <button type="submit" 
-                                                        class="px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl font-semibold hover:from-emerald-600 hover:to-emerald-700 transition-all shadow-lg hover:shadow-emerald-500/30 flex items-center gap-2">
-                                                    <i class="fas fa-cart-plus"></i>
-                                                    <span class="hidden sm:inline">Añadir</span>
+                                                <button type="submit" class="w-full py-3 bg-emerald-900 text-white text-xs uppercase tracking-widest font-bold hover:bg-black transition-colors">
+                                                    Añadir al carrito
                                                 </button>
                                             </form>
                                         </div>
+                                    </a>
+
+                                    <div class="absolute top-3 left-3 flex flex-col gap-2">
+                                        <span class="px-2 py-1 bg-white/90 backdrop-blur text-[10px] uppercase tracking-wider font-bold text-stone-900">
+                                            @producto.CategoriaNombre
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="text-center space-y-1">
+                                    <h3 class="font-serif text-lg text-stone-900 group-hover:text-emerald-800 transition-colors">
+                                        <a asp-action="Detalle" asp-route-id="@producto.Id">@producto.Nombre</a>
+                                    </h3>
+                                    <div class="font-serif text-stone-600">@producto.Precio.ToString("C")</div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <div x-show="viewMode === 'list'" class="space-y-6" x-cloak>
+                        @foreach (var producto in Model.Items)
+                        {
+                            <div class="group flex flex-col sm:flex-row bg-white border border-stone-100 hover:border-emerald-900/20 transition-all duration-300">
+                                <div class="w-full sm:w-48 aspect-square flex-shrink-0 bg-stone-50 relative overflow-hidden">
+                                    <a asp-action="Detalle" asp-route-id="@producto.Id">
+                                        @if (producto.TieneImagenes)
+                                        {
+                                            <img src="@producto.ImagenPrincipal" alt="@producto.Nombre" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                                        }
+                                        else
+                                        {
+                                            <div class="w-full h-full flex items-center justify-center text-stone-300"><i class="fas fa-gem text-3xl"></i></div>
+                                        }
+                                    </a>
+                                </div>
+                                <div class="p-6 flex-1 flex flex-col justify-center">
+                                    <div class="text-xs uppercase tracking-widest text-emerald-800 mb-2">@producto.CategoriaNombre</div>
+                                    <h3 class="font-serif text-xl text-stone-900 mb-2">
+                                        <a asp-action="Detalle" asp-route-id="@producto.Id">@producto.Nombre</a>
+                                    </h3>
+                                    <p class="text-sm text-stone-500 mb-4 line-clamp-2">@producto.Descripcion</p>
+                                    <div class="flex items-center justify-between mt-auto">
+                                        <span class="font-serif text-2xl text-stone-900">@producto.Precio.ToString("C")</span>
+                                        <a asp-action="Detalle" asp-route-id="@producto.Id" class="text-xs uppercase tracking-widest font-bold text-stone-900 border-b border-stone-900 pb-0.5 hover:text-emerald-800 hover:border-emerald-800 transition-colors">
+                                            Ver Detalles
+                                        </a>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    }
-                </div>
+                        }
+                    </div>
 
-                <!-- Pagination Mejorada -->
-                @if (Model.TotalPages > 1)
-                {
-                    <div class="flex flex-col items-center gap-6 py-12">
-                        <!-- Page info -->
-                        <div class="text-gray-500 text-sm">
-                            Página <span class="font-bold text-gray-900">@Model.PageNumber</span> de <span class="font-bold text-gray-900">@Model.TotalPages</span>
-                        </div>
-                        
-                        <!-- Pagination buttons -->
-                        <div class="flex flex-wrap justify-center items-center gap-2">
-                            <!-- First page -->
-                            @if (Model.PageNumber > 2)
-                            {
-                                <a asp-action="Index" asp-route-page="1" asp-route-categoriaId="@categoriaSeleccionada" asp-route-busqueda="@busqueda"
-                                   class="w-12 h-12 bg-white border-2 border-gray-200 text-gray-600 rounded-xl hover:bg-emerald-500 hover:border-emerald-500 hover:text-white transition-all duration-200 font-medium shadow-sm hover:shadow-md flex items-center justify-center"
-                                   title="Primera página">
-                                    <i class="fas fa-angles-left"></i>
-                                </a>
-                            }
-                            
-                            <!-- Previous -->
+                    @if (Model.TotalPages > 1)
+                    {
+                        <div class="flex justify-center items-center gap-2 mt-16">
                             @if (Model.HasPreviousPage)
                             {
-                                <a asp-action="Index" 
-                                   asp-route-page="@(Model.PageNumber - 1)" 
-                                   asp-route-categoriaId="@categoriaSeleccionada"
-                                   asp-route-busqueda="@busqueda"
-                                   class="w-12 h-12 bg-white border-2 border-gray-200 text-gray-600 rounded-xl hover:bg-emerald-500 hover:border-emerald-500 hover:text-white transition-all duration-200 font-medium shadow-sm hover:shadow-md flex items-center justify-center">
-                                    <i class="fas fa-chevron-left"></i>
+                                <a asp-action="Index" asp-route-page="@(Model.PageNumber - 1)" asp-route-categoriaId="@categoriaSeleccionada" asp-route-busqueda="@busqueda"
+                                   class="w-10 h-10 flex items-center justify-center border border-stone-200 text-stone-500 hover:border-emerald-900 hover:text-emerald-900 transition-colors">
+                                    <i class="fas fa-chevron-left text-xs"></i>
                                 </a>
                             }
 
-                            <!-- Page Numbers -->
-                            @{
-                                var startPage = Math.Max(1, Model.PageNumber - 2);
-                                var endPage = Math.Min(Model.TotalPages, Model.PageNumber + 2);
-                            }
-
-                            @for (var i = startPage; i <= endPage; i++)
+                            @for (var i = Math.Max(1, Model.PageNumber - 2); i <= Math.Min(Model.TotalPages, Model.PageNumber + 2); i++)
                             {
-                                @if (i == Model.PageNumber)
+                                if (i == Model.PageNumber)
                                 {
-                                    <span class="w-12 h-12 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl font-bold shadow-lg shadow-emerald-500/30 flex items-center justify-center">
-                                        @i
-                                    </span>
+                                    <span class="w-10 h-10 flex items-center justify-center bg-emerald-900 text-white font-serif">@i</span>
                                 }
                                 else
                                 {
                                     <a asp-action="Index" asp-route-page="@i" asp-route-categoriaId="@categoriaSeleccionada" asp-route-busqueda="@busqueda"
-                                       class="w-12 h-12 bg-white border-2 border-gray-200 text-gray-700 rounded-xl hover:bg-emerald-500 hover:border-emerald-500 hover:text-white transition-all duration-200 font-medium shadow-sm hover:shadow-md flex items-center justify-center">
+                                       class="w-10 h-10 flex items-center justify-center border border-stone-200 text-stone-500 hover:border-emerald-900 hover:text-emerald-900 transition-colors font-serif">
                                         @i
                                     </a>
                                 }
                             }
 
-                            <!-- Next -->
                             @if (Model.HasNextPage)
                             {
-                                <a asp-action="Index" 
-                                   asp-route-page="@(Model.PageNumber + 1)" 
-                                   asp-route-categoriaId="@categoriaSeleccionada"
-                                   asp-route-busqueda="@busqueda"
-                                   class="w-12 h-12 bg-white border-2 border-gray-200 text-gray-600 rounded-xl hover:bg-emerald-500 hover:border-emerald-500 hover:text-white transition-all duration-200 font-medium shadow-sm hover:shadow-md flex items-center justify-center">
-                                    <i class="fas fa-chevron-right"></i>
-                                </a>
-                            }
-                            
-                            <!-- Last page -->
-                            @if (Model.PageNumber < Model.TotalPages - 1)
-                            {
-                                <a asp-action="Index" asp-route-page="@Model.TotalPages" asp-route-categoriaId="@categoriaSeleccionada" asp-route-busqueda="@busqueda"
-                                   class="w-12 h-12 bg-white border-2 border-gray-200 text-gray-600 rounded-xl hover:bg-emerald-500 hover:border-emerald-500 hover:text-white transition-all duration-200 font-medium shadow-sm hover:shadow-md flex items-center justify-center"
-                                   title="Última página">
-                                    <i class="fas fa-angles-right"></i>
+                                <a asp-action="Index" asp-route-page="@(Model.PageNumber + 1)" asp-route-categoriaId="@categoriaSeleccionada" asp-route-busqueda="@busqueda"
+                                   class="w-10 h-10 flex items-center justify-center border border-stone-200 text-stone-500 hover:border-emerald-900 hover:text-emerald-900 transition-colors">
+                                    <i class="fas fa-chevron-right text-xs"></i>
                                 </a>
                             }
                         </div>
+                    }
+                }
+                else
+                {
+                    <div class="text-center py-24 px-6 border border-stone-200 bg-white">
+                        <i class="far fa-gem text-5xl text-stone-200 mb-6"></i>
+                        <h3 class="font-serif text-2xl text-stone-900 mb-3">Sin resultados</h3>
+                        <p class="text-stone-500 font-light mb-8 max-w-md mx-auto">
+                            No hemos encontrado joyas que coincidan con tu búsqueda. Prueba a explorar nuestras categorías principales.
+                        </p>
+                        <a asp-action="Index" class="inline-block px-8 py-3 bg-stone-900 text-white text-xs uppercase tracking-widest font-bold hover:bg-emerald-900 transition-colors">
+                            Ver todo el catálogo
+                        </a>
                     </div>
                 }
-            }
-            else
-            {
-                <!-- Empty State Mejorado -->
-                <div class="text-center py-20 bg-white rounded-3xl shadow-lg border border-gray-100">
-                    <div class="max-w-md mx-auto">
-                        <div class="w-32 h-32 bg-gradient-to-br from-emerald-100 to-teal-100 rounded-full flex items-center justify-center mx-auto mb-8">
-                            @if (!string.IsNullOrWhiteSpace(busqueda))
-                            {
-                                <i class="fas fa-search text-emerald-400 text-5xl"></i>
-                            }
-                            else
-                            {
-                                <i class="fas fa-gem text-emerald-400 text-5xl"></i>
-                            }
-                        </div>
-                        
-                        <h3 class="font-serif text-3xl font-bold text-gray-900 mb-4">
-                            @if (!string.IsNullOrWhiteSpace(busqueda))
-                            {
-                                <span>No encontramos resultados</span>
-                            }
-                            else
-                            {
-                                <span>Próximamente nuevas joyas</span>
-                            }
-                        </h3>
-                        
-                        <p class="text-gray-500 mb-8 text-lg leading-relaxed">
-                            @if (!string.IsNullOrWhiteSpace(busqueda))
-                            {
-                                <span>No hay joyas que coincidan con "<strong class="text-emerald-600">@busqueda</strong>". Prueba con otros términos.</span>
-                            }
-                            else
-                            {
-                                <span>Estamos preparando piezas exclusivas para ti. ¡Vuelve pronto!</span>
-                            }
-                        </p>
-                        
-                        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-                            <a asp-action="Index" class="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl font-bold hover:from-emerald-600 hover:to-emerald-700 transition-all duration-200 shadow-lg hover:shadow-emerald-500/30 transform hover:scale-105">
-                                <i class="fas fa-gem"></i>
-                                <span>Ver todas las joyas</span>
-                            </a>
-                            <a asp-controller="Home" asp-action="Index" class="inline-flex items-center gap-2 px-8 py-4 border-2 border-gray-300 text-gray-700 rounded-xl font-semibold hover:border-emerald-500 hover:text-emerald-600 transition-all duration-200">
-                                <i class="fas fa-home"></i>
-                                <span>Volver al inicio</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            }
+            </div>
         </div>
     </div>
 </div>
 
-<!-- Trust badges section -->
-<section class="bg-gradient-to-r from-gray-900 to-gray-800 py-12 mt-16">
-    <div class="container mx-auto px-6">
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            <div class="group">
-                <div class="w-16 h-16 bg-emerald-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-emerald-500/30 transition-colors">
-                    <i class="fas fa-gem text-emerald-400 text-2xl"></i>
-                </div>
-                <div class="text-white font-bold mb-1">Calidad Premium</div>
-                <div class="text-gray-400 text-sm">Materiales selectos</div>
-            </div>
-            <div class="group">
-                <div class="w-16 h-16 bg-blue-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-blue-500/30 transition-colors">
-                    <i class="fas fa-shield-alt text-blue-400 text-2xl"></i>
-                </div>
-                <div class="text-white font-bold mb-1">Compra Segura</div>
-                <div class="text-gray-400 text-sm">Pago 100% protegido</div>
-            </div>
-            <div class="group">
-                <div class="w-16 h-16 bg-purple-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-purple-500/30 transition-colors">
-                    <i class="fas fa-undo text-purple-400 text-2xl"></i>
-                </div>
-                <div class="text-white font-bold mb-1">30 Días</div>
-                <div class="text-gray-400 text-sm">Devolución gratis</div>
-            </div>
-            <div class="group">
-                <div class="w-16 h-16 bg-amber-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-amber-500/30 transition-colors">
-                    <i class="fas fa-certificate text-amber-400 text-2xl"></i>
-                </div>
-                <div class="text-white font-bold mb-1">Certificado</div>
-                <div class="text-gray-400 text-sm">Autenticidad garantizada</div>
-            </div>
-        </div>
-    </div>
-</section>
-
 @section Styles {
     <style>
-        .line-clamp-1 {
-            display: -webkit-box;
-            -webkit-line-clamp: 1;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
+        /* Fuentes */
+        .font-serif {
+            font-family: 'Playfair Display', serif;
         }
+
+        .font-sans {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Utilidad para truncar texto */
         .line-clamp-2 {
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
-        
-        @@keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        /* Smooth hover effects */
-        .group:hover img {
-            filter: brightness(1.05);
-        }
-        
-        /* Custom scrollbar for category sidebar on mobile */
-        .overflow-y-auto::-webkit-scrollbar {
-            width: 4px;
-        }
-        .overflow-y-auto::-webkit-scrollbar-track {
-            background: #f1f5f9;
-        }
-        .overflow-y-auto::-webkit-scrollbar-thumb {
-            background: #10b981;
-            border-radius: 2px;
-        }
-        
-        /* Ocultar elementos con x-cloak hasta que Alpine.js cargue */
+
         [x-cloak] {
             display: none !important;
         }
@@ -823,31 +382,20 @@
 
                 async buscar() {
                     const q = this.consulta.trim();
-                    
                     if (q.length < 2) {
                         this.sugerencias = [];
                         this.mostrarSugerencias = false;
                         return;
                     }
-
-                    // Cancelar petición anterior si existe
-                    if (this.controlador) {
-                        this.controlador.abort();
-                    }
+                    if (this.controlador) this.controlador.abort();
                     this.controlador = new AbortController();
-
                     this.cargando = true;
 
                     try {
                         let url = `/Productos/Buscar?q=${encodeURIComponent(q)}`;
-                        if (this.categoriaId) {
-                            url += `&categoriaId=${this.categoriaId}`;
-                        }
+                        if (this.categoriaId) url += `&categoriaId=${this.categoriaId}`;
 
-                        const response = await fetch(url, {
-                            signal: this.controlador.signal
-                        });
-
+                        const response = await fetch(url, { signal: this.controlador.signal });
                         if (response.ok) {
                             const data = await response.json();
                             this.sugerencias = data.sugerencias || [];
@@ -855,46 +403,31 @@
                             this.indiceActivo = -1;
                         }
                     } catch (error) {
-                        if (error.name !== 'AbortError') {
-                            console.error('Error en búsqueda:', error);
-                        }
+                        if (error.name !== 'AbortError') console.error(error);
                     } finally {
                         this.cargando = false;
                     }
                 },
-
                 cerrarSugerencias() {
                     this.mostrarSugerencias = false;
                     this.indiceActivo = -1;
                 },
-
                 navegarAbajo() {
                     if (!this.mostrarSugerencias) return;
-                    if (this.indiceActivo < this.sugerencias.length - 1) {
-                        this.indiceActivo++;
-                    } else {
-                        this.indiceActivo = 0;
-                    }
+                    if (this.indiceActivo < this.sugerencias.length - 1) this.indiceActivo++;
+                    else this.indiceActivo = 0;
                 },
-
                 navegarArriba() {
                     if (!this.mostrarSugerencias) return;
-                    if (this.indiceActivo > 0) {
-                        this.indiceActivo--;
-                    } else {
-                        this.indiceActivo = this.sugerencias.length - 1;
-                    }
+                    if (this.indiceActivo > 0) this.indiceActivo--;
+                    else this.indiceActivo = this.sugerencias.length - 1;
                 },
-
                 seleccionarActual(event) {
                     if (this.indiceActivo >= 0 && this.indiceActivo < this.sugerencias.length) {
                         event.preventDefault();
-                        const producto = this.sugerencias[this.indiceActivo];
-                        this.seleccionarProducto(producto);
+                        this.seleccionarProducto(this.sugerencias[this.indiceActivo]);
                     }
-                    // Si no hay selección activa, deja que el formulario se envíe normalmente
                 },
-
                 seleccionarProducto(producto) {
                     window.location.href = `/Productos/Detalle/${producto.id}`;
                 }
