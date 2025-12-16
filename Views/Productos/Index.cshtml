@@ -57,27 +57,101 @@
             Descubre piezas únicas que cuentan historias. Cada joya es una obra de arte diseñada para momentos inolvidables.
         </p>
         
-        <!-- Search Bar Mejorado -->
-        <form asp-action="Index" method="get" class="max-w-2xl mx-auto" x-data="{ focused: false }">
+        <!-- Search Bar Mejorado con Sugerencias Dinámicas -->
+        <form asp-action="Index" method="get" class="max-w-2xl mx-auto" 
+              x-data="buscadorProductos('@categoriaSeleccionada')" 
+              x-on:click.away="cerrarSugerencias()">
             <div class="relative group">
                 <input type="hidden" name="categoriaId" value="@categoriaSeleccionada" />
                 <div class="absolute inset-0 bg-gradient-to-r from-emerald-500/50 to-teal-500/50 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                <div class="relative flex items-center">
-                    <div class="absolute left-5 text-gray-400">
-                        <i class="fas fa-search text-lg"></i>
+                <div class="relative">
+                    <div class="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 z-10">
+                        <i class="fas fa-search text-lg" x-show="!cargando"></i>
+                        <i class="fas fa-spinner fa-spin text-lg text-emerald-400" x-show="cargando" x-cloak></i>
                     </div>
                     <input type="text" 
                            name="busqueda" 
                            value="@busqueda"
+                           x-model="consulta"
+                           x-on:input.debounce.300ms="buscar()"
+                           x-on:focus="mostrarSugerencias = sugerencias.length > 0"
+                           x-on:keydown.arrow-down.prevent="navegarAbajo()"
+                           x-on:keydown.arrow-up.prevent="navegarArriba()"
+                           x-on:keydown.enter="seleccionarActual($event)"
+                           x-on:keydown.escape="cerrarSugerencias()"
                            placeholder="¿Qué joya estás buscando?"
-                           @@focus="focused = true"
-                           @@blur="focused = false"
+                           autocomplete="off"
                            class="w-full pl-14 pr-36 py-5 text-lg bg-white/10 backdrop-blur-md border-2 border-white/20 text-white placeholder-gray-400 rounded-2xl focus:border-emerald-400 focus:bg-white/20 focus:ring-4 focus:ring-emerald-500/20 transition-all duration-300 outline-none" />
                     <button type="submit" 
-                            class="absolute right-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-emerald-600 hover:to-emerald-700 transition-all duration-300 shadow-lg hover:shadow-emerald-500/30 flex items-center gap-2">
+                            class="absolute right-2 top-1/2 -translate-y-1/2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-emerald-600 hover:to-emerald-700 transition-all duration-300 shadow-lg hover:shadow-emerald-500/30 flex items-center gap-2">
                         <span class="hidden sm:inline">Buscar</span>
                         <i class="fas fa-arrow-right"></i>
                     </button>
+                </div>
+                
+                <!-- Dropdown de sugerencias -->
+                <div x-show="mostrarSugerencias && sugerencias.length > 0"
+                     x-transition:enter="transition ease-out duration-200"
+                     x-transition:enter-start="opacity-0 -translate-y-2"
+                     x-transition:enter-end="opacity-100 translate-y-0"
+                     x-transition:leave="transition ease-in duration-150"
+                     x-transition:leave-start="opacity-100 translate-y-0"
+                     x-transition:leave-end="opacity-0 -translate-y-2"
+                     x-cloak
+                     class="absolute left-0 right-0 mt-2 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-50">
+                    
+                    <div class="p-2">
+                        <div class="text-xs text-gray-400 uppercase tracking-wider px-3 py-2 font-semibold">
+                            <i class="fas fa-gem mr-1 text-emerald-500"></i>
+                            Sugerencias
+                        </div>
+                        
+                        <template x-for="(producto, index) in sugerencias" :key="producto.id">
+                            <a :href="'/Productos/Detalle/' + producto.id"
+                               class="flex items-center gap-4 p-3 rounded-xl transition-all duration-200 cursor-pointer"
+                               :class="indiceActivo === index ? 'bg-emerald-50 border-l-4 border-emerald-500' : 'hover:bg-gray-50'"
+                               x-on:mouseenter="indiceActivo = index"
+                               x-on:click="seleccionarProducto(producto)">
+                                
+                                <!-- Imagen del producto -->
+                                <div class="w-14 h-14 rounded-xl overflow-hidden bg-gradient-to-br from-gray-100 to-gray-50 flex-shrink-0 border border-gray-100">
+                                    <template x-if="producto.tieneImagen">
+                                        <img :src="producto.imagen" 
+                                             :alt="producto.nombre"
+                                             class="w-full h-full object-cover"
+                                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                                    </template>
+                                    <div x-show="!producto.tieneImagen" class="w-full h-full flex items-center justify-center">
+                                        <i class="fas fa-gem text-emerald-300 text-xl"></i>
+                                    </div>
+                                </div>
+                                
+                                <!-- Info del producto -->
+                                <div class="flex-1 min-w-0">
+                                    <div class="font-semibold text-gray-900 truncate" x-text="producto.nombre"></div>
+                                    <div class="flex items-center gap-2 mt-1">
+                                        <span class="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full" x-text="producto.categoria"></span>
+                                    </div>
+                                </div>
+                                
+                                <!-- Precio -->
+                                <div class="text-right flex-shrink-0">
+                                    <div class="font-bold text-emerald-600" x-text="producto.precioFormateado"></div>
+                                    <div class="text-xs text-gray-400">Ver detalles</div>
+                                </div>
+                            </a>
+                        </template>
+                    </div>
+                    
+                    <!-- Footer del dropdown -->
+                    <div class="bg-gray-50 px-4 py-3 border-t border-gray-100">
+                        <button type="submit" 
+                                class="w-full text-center text-sm text-emerald-600 hover:text-emerald-700 font-semibold transition-colors flex items-center justify-center gap-2">
+                            <i class="fas fa-search"></i>
+                            <span>Ver todos los resultados para "<span x-text="consulta" class="font-bold"></span>"</span>
+                            <i class="fas fa-arrow-right text-xs"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
             @if (!string.IsNullOrWhiteSpace(busqueda))
@@ -727,5 +801,104 @@
             background: #10b981;
             border-radius: 2px;
         }
+        
+        /* Ocultar elementos con x-cloak hasta que Alpine.js cargue */
+        [x-cloak] {
+            display: none !important;
+        }
     </style>
+}
+
+@section Scripts {
+    <script>
+        function buscadorProductos(categoriaId) {
+            return {
+                consulta: '@busqueda',
+                sugerencias: [],
+                mostrarSugerencias: false,
+                cargando: false,
+                indiceActivo: -1,
+                categoriaId: categoriaId || null,
+                controlador: null,
+
+                async buscar() {
+                    const q = this.consulta.trim();
+                    
+                    if (q.length < 2) {
+                        this.sugerencias = [];
+                        this.mostrarSugerencias = false;
+                        return;
+                    }
+
+                    // Cancelar petición anterior si existe
+                    if (this.controlador) {
+                        this.controlador.abort();
+                    }
+                    this.controlador = new AbortController();
+
+                    this.cargando = true;
+
+                    try {
+                        let url = `/Productos/Buscar?q=${encodeURIComponent(q)}`;
+                        if (this.categoriaId) {
+                            url += `&categoriaId=${this.categoriaId}`;
+                        }
+
+                        const response = await fetch(url, {
+                            signal: this.controlador.signal
+                        });
+
+                        if (response.ok) {
+                            const data = await response.json();
+                            this.sugerencias = data.sugerencias || [];
+                            this.mostrarSugerencias = this.sugerencias.length > 0;
+                            this.indiceActivo = -1;
+                        }
+                    } catch (error) {
+                        if (error.name !== 'AbortError') {
+                            console.error('Error en búsqueda:', error);
+                        }
+                    } finally {
+                        this.cargando = false;
+                    }
+                },
+
+                cerrarSugerencias() {
+                    this.mostrarSugerencias = false;
+                    this.indiceActivo = -1;
+                },
+
+                navegarAbajo() {
+                    if (!this.mostrarSugerencias) return;
+                    if (this.indiceActivo < this.sugerencias.length - 1) {
+                        this.indiceActivo++;
+                    } else {
+                        this.indiceActivo = 0;
+                    }
+                },
+
+                navegarArriba() {
+                    if (!this.mostrarSugerencias) return;
+                    if (this.indiceActivo > 0) {
+                        this.indiceActivo--;
+                    } else {
+                        this.indiceActivo = this.sugerencias.length - 1;
+                    }
+                },
+
+                seleccionarActual(event) {
+                    if (this.indiceActivo >= 0 && this.indiceActivo < this.sugerencias.length) {
+                        event.preventDefault();
+                        const producto = this.sugerencias[this.indiceActivo];
+                        this.seleccionarProducto(producto);
+                    }
+                    // Si no hay selección activa, deja que el formulario se envíe normalmente
+                },
+
+                seleccionarProducto(producto) {
+                    window.location.href = `/Productos/Detalle/${producto.id}`;
+                }
+            };
+        }
+    </script>
 }

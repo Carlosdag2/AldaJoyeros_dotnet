@@ -175,5 +175,32 @@ namespace AldaJoyeros.Services.Implementations
             
             return productosDto;
         }
+
+        /// <summary>
+        /// Busca productos por término de búsqueda con filtro opcional de categoría
+        /// </summary>
+        public async Task<IEnumerable<ProductoDto>> BuscarAsync(string termino, long? categoriaId = null, int limite = 0)
+        {
+            if (string.IsNullOrWhiteSpace(termino))
+            {
+                return Enumerable.Empty<ProductoDto>();
+            }
+
+            var productos = categoriaId.HasValue
+                ? await GetByCategoriaAsync(categoriaId.Value)
+                : await GetAllAsync();
+
+            var resultados = productos.Where(p =>
+                p.Nombre.Contains(termino, StringComparison.OrdinalIgnoreCase) ||
+                (p.Descripcion != null && p.Descripcion.Contains(termino, StringComparison.OrdinalIgnoreCase)) ||
+                p.CategoriaNombre.Contains(termino, StringComparison.OrdinalIgnoreCase));
+
+            if (limite > 0)
+            {
+                resultados = resultados.Take(limite);
+            }
+
+            return resultados.ToList();
+        }
     }
 }

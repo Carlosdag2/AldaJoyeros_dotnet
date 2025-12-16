@@ -23,29 +23,53 @@ namespace AldaJoyeros.Controllers
             ViewBag.CategoriaSeleccionada = categoriaId;
             ViewBag.Busqueda = busqueda;
 
-            // GetAllAsync y GetByCategoriaAsync ya filtran productos eliminados
-            var productosQuery = categoriaId.HasValue
-                ? await _productoService.GetByCategoriaAsync(categoriaId.Value)
-                : await _productoService.GetAllAsync();
-
-            // Aplicar búsqueda si hay término
+            IEnumerable<DTOs.ProductoDto> productos;
+            
             if (!string.IsNullOrWhiteSpace(busqueda))
             {
-                productosQuery = productosQuery.Where(p => 
-                    p.Nombre.Contains(busqueda, StringComparison.OrdinalIgnoreCase) ||
-                    (p.Descripcion != null && p.Descripcion.Contains(busqueda, StringComparison.OrdinalIgnoreCase)) ||
-                    p.CategoriaNombre.Contains(busqueda, StringComparison.OrdinalIgnoreCase)
-                ).ToList();
+                productos = await _productoService.BuscarAsync(busqueda, categoriaId);
+            }
+            else
+            {
+                productos = categoriaId.HasValue
+                    ? await _productoService.GetByCategoriaAsync(categoriaId.Value)
+                    : await _productoService.GetAllAsync();
             }
 
-            var pagedResult = PagedResult<DTOs.ProductoDto>.Create(productosQuery, page, PageSize);
+            var pagedResult = PagedResult<DTOs.ProductoDto>.Create(productos, page, PageSize);
 
             return View(pagedResult);
         }
 
+        /// <summary>
+        /// Endpoint para búsqueda dinámica con sugerencias
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> Buscar(string q, long? categoriaId, int limite = 6)
+        {
+            if (string.IsNullOrWhiteSpace(q) || q.Length < 2)
+            {
+                return Json(new { sugerencias = Array.Empty<object>() });
+            }
+
+            var productos = await _productoService.BuscarAsync(q, categoriaId, limite);
+
+            var sugerencias = productos.Select(p => new
+            {
+                id = p.Id,
+                nombre = p.Nombre,
+                categoria = p.CategoriaNombre,
+                precio = p.Precio,
+                precioFormateado = p.Precio.ToString("C"),
+                imagen = p.ImagenPrincipal,
+                tieneImagen = p.TieneImagenes
+            }).ToList();
+
+            return Json(new { sugerencias });
+        }
+
         public async Task<IActionResult> Detalle(long id)
         {
-            // Usar GetByIdActiveAsync para no mostrar productos eliminados
             var producto = await _productoService.GetByIdActiveAsync(id);
             if (producto == null)
             {

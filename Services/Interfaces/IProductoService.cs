@@ -42,5 +42,14 @@ namespace AldaJoyeros.Services.Interfaces
         /// Hard delete: elimina permanentemente el producto y sus imágenes
         /// </summary>
         Task HardDeleteAsync(long id);
+        
+        /// <summary>
+        /// Busca productos por término de búsqueda con filtro opcional de categoría
+        /// </summary>
+        /// <param name="termino">Término de búsqueda</param>
+        /// <param name="categoriaId">ID de categoría opcional para filtrar</param>
+        /// <param name="limite">Número máximo de resultados (0 = sin límite)</param>
+        /// <returns>Lista de productos que coinciden con la búsqueda</returns>
+        Task<IEnumerable<ProductoDto>> BuscarAsync(string termino, long? categoriaId = null, int limite = 0);
     }
 }
