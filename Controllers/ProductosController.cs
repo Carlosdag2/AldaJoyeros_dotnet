@@ -45,7 +45,7 @@ namespace AldaJoyeros.Controllers
         /// Endpoint para búsqueda dinámica con sugerencias
         /// </summary>
         [HttpGet]
-        public async Task<IActionResult> Buscar(string q, long? categoriaId, int limite = 6)
+        public async Task<IActionResult> Buscar(string q, long? categoriaId, int limite = 5)
         {
             if (string.IsNullOrWhiteSpace(q) || q.Length < 2)
             {
@@ -64,6 +64,9 @@ namespace AldaJoyeros.Controllers
                 imagen = p.ImagenPrincipal,
                 tieneImagen = p.TieneImagenes
             }).ToList();
+
+            // Log para depuración (puedes quitar esto después)
+            System.Diagnostics.Debug.WriteLine($"Búsqueda: '{q}', Encontrados: {sugerencias.Count}, Límite: {limite}");
 
             return Json(new { sugerencias });
         }

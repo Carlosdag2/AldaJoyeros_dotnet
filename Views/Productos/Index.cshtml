@@ -1,7 +1,7 @@
-@model AldaJoyeros.Helpers.PagedResult<AldaJoyeros.DTOs.ProductoDto>
+﻿@model AldaJoyeros.Helpers.PagedResult<AldaJoyeros.DTOs.ProductoDto>
 
 @{
-    ViewData["Title"] = "Colecci�n Exclusiva";
+    ViewData["Title"] = "Colección Exclusiva";
     var categorias = ViewBag.Categorias as IEnumerable<AldaJoyeros.DTOs.CategoriaDto>;
     var categoriaSeleccionada = ViewBag.CategoriaSeleccionada as long?;
     var busqueda = ViewBag.Busqueda as string ?? "";
@@ -10,8 +10,8 @@
 
 <div class="min-h-screen bg-stone-50 font-sans text-stone-800 selection:bg-emerald-900 selection:text-white">
 
-    <section class="relative pt-32 pb-20 lg:pt-40 lg:pb-32 overflow-hidden bg-emerald-950">
-        <div class="absolute inset-0 z-0">
+    <section class="relative pt-32 pb-20 lg:pt-40 lg:pb-32 bg-emerald-950">
+        <div class="absolute inset-0 z-0 overflow-hidden">
             <img src="https://images.unsplash.com/photo-1573408301185-9146fe634ad0?q=80&w=2075&auto=format&fit=crop"
                  alt="Background"
                  class="w-full h-full object-cover opacity-20" />
@@ -22,7 +22,7 @@
             <nav class="flex items-center justify-center gap-3 text-xs uppercase tracking-[0.2em] text-stone-400 mb-8 font-medium">
                 <a asp-controller="Home" asp-action="Index" class="hover:text-white transition-colors">Inicio</a>
                 <span>/</span>
-                <span class="text-white">Cat�logo</span>
+                <span class="text-white">Catálogo</span>
                 @if (categoriaActual != null)
                 {
                     <span>/</span>
@@ -42,12 +42,13 @@
             </h1>
 
             <p class="text-stone-300 text-lg md:text-xl font-light max-w-2xl mx-auto mb-12 leading-relaxed">
-                Descubre la excelencia en cada detalle. Piezas dise�adas para capturar la esencia de tus momentos m�s preciados.
+                Descubre la excelencia en cada detalle. Piezas diseñadas para capturar la esencia de tus momentos más preciados.
             </p>
 
             <div class="max-w-xl mx-auto relative"
                  x-data="buscadorProductos('@categoriaSeleccionada')"
-                 x-on:click.away="cerrarSugerencias()">
+                 x-on:click.away="cerrarSugerencias()"
+                 style="z-index: 100;">
 
                 <form asp-action="Index" method="get" class="relative group">
                     <input type="hidden" name="categoriaId" value="@categoriaSeleccionada" />
@@ -78,26 +79,28 @@
                          x-transition:enter-start="opacity-0 translate-y-2"
                          x-transition:enter-end="opacity-100 translate-y-0"
                          x-cloak
-                         class="absolute left-0 right-0 top-full mt-2 bg-white rounded-sm shadow-2xl overflow-hidden z-50 text-left border border-stone-200">
+                         class="absolute left-0 right-0 top-full mt-2 bg-white rounded-sm shadow-2xl overflow-visible z-50 text-left border border-stone-200 max-h-96">
 
                         <div class="px-4 py-3 bg-stone-50 border-b border-stone-100 text-xs font-bold uppercase tracking-widest text-stone-500">
                             Resultados Sugeridos
                         </div>
 
-                        <ul>
+                        <ul class="max-h-80 overflow-y-auto">
                             <template x-for="(producto, index) in sugerencias" :key="producto.id">
                                 <li>
                                     <a :href="'/Productos/Detalle/' + producto.id"
-                                       class="flex items-center gap-4 px-4 py-3 transition-colors group"
-                                       :class="indiceActivo === index ? 'bg-stone-50' : 'hover:bg-stone-50'"
+                                       class="flex items-center gap-4 px-4 py-3 transition-colors group border-b border-stone-100 last:border-b-0"
+                                       :class="indiceActivo === index ? 'bg-stone-100' : 'hover:bg-stone-50'"
                                        x-on:mouseenter="indiceActivo = index"
                                        x-on:click="seleccionarProducto(producto)">
 
-                                        <div class="w-12 h-12 bg-stone-100 flex-shrink-0 flex items-center justify-center">
+                                        <div class="w-12 h-12 bg-stone-100 flex-shrink-0 flex items-center justify-center overflow-hidden">
                                             <template x-if="producto.tieneImagen">
-                                                <img :src="producto.imagen" class="w-full h-full object-cover mix-blend-multiply" alt="">
+                                                <img :src="producto.imagen" class="w-full h-full object-cover mix-blend-multiply" :alt="producto.nombre">
                                             </template>
-                                            <i x-show="!producto.tieneImagen" class="fas fa-gem text-stone-300"></i>
+                                            <template x-if="!producto.tieneImagen">
+                                                <i class="fas fa-gem text-stone-300"></i>
+                                            </template>
                                         </div>
 
                                         <div class="flex-1 min-w-0">
@@ -111,7 +114,7 @@
                             </template>
                         </ul>
 
-                        <a href="#" @@click.prevent ="$el.closest('form').submit()" class="block w-full text-center py-3 bg-stone-50 text-xs uppercase tracking-widest font-bold text-stone-600 hover:text-emerald-900 border-t border-stone-100 transition-colors">
+                        <a href="#" @@click.prevent="$el.closest('form').submit()" class="block w-full text-center py-3 bg-stone-50 text-xs uppercase tracking-widest font-bold text-stone-600 hover:text-emerald-900 border-t border-stone-100 transition-colors">
                             Ver todos los resultados
                         </a>
                     </div>
@@ -165,14 +168,14 @@
 
                     <div class="mt-12 p-8 bg-stone-100 text-center">
                         <i class="fas fa-shipping-fast text-2xl text-stone-400 mb-4"></i>
-                        <h4 class="font-serif text-lg text-stone-900 mb-2">Env�o Gratuito</h4>
-                        <p class="text-xs text-stone-500 leading-relaxed mb-4">Disfruta de env�o asegurado sin coste en pedidos superiores a 50�.</p>
+                        <h4 class="font-serif text-lg text-stone-900 mb-2">Envío Gratuito</h4>
+                        <p class="text-xs text-stone-500 leading-relaxed mb-4">Disfruta de envío asegurado sin coste en pedidos superiores a 50€.</p>
                     </div>
                 </div>
 
                 <div x-data="{ open: false }" class="lg:hidden">
                     <button @@click="open = !open" class="w-full flex items-center justify-between px-6 py-4 bg-white border border-stone-200 uppercase tracking-widest text-xs font-bold">
-                        <span>Filtrar Colecci�n</span>
+                        <span>Filtrar Colección</span>
                         <i class="fas fa-chevron-down transition-transform" :class="open ? 'rotate-180' : ''"></i>
                     </button>
                     <div x-show="open" class="bg-white border-x border-b border-stone-200 p-6 space-y-4" x-collapse>
@@ -233,7 +236,7 @@
                                             <form asp-controller="Carrito" asp-action="Agregar" method="post">
                                                 <input type="hidden" name="productoId" value="@producto.Id" />
                                                 <button type="submit" class="w-full py-3 bg-emerald-900 text-white text-xs uppercase tracking-widest font-bold hover:bg-black transition-colors">
-                                                    A�adir al carrito
+                                                    Añadir al carrito
                                                 </button>
                                             </form>
                                         </div>
@@ -331,10 +334,10 @@
                         <i class="far fa-gem text-5xl text-stone-200 mb-6"></i>
                         <h3 class="font-serif text-2xl text-stone-900 mb-3">Sin resultados</h3>
                         <p class="text-stone-500 font-light mb-8 max-w-md mx-auto">
-                            No hemos encontrado joyas que coincidan con tu b�squeda. Prueba a explorar nuestras categor�as principales.
+                            No hemos encontrado joyas que coincidan con tu búsqueda. Prueba a explorar nuestras categorías principales.
                         </p>
                         <a asp-action="Index" class="inline-block px-8 py-3 bg-stone-900 text-white text-xs uppercase tracking-widest font-bold hover:bg-emerald-900 transition-colors">
-                            Ver todo el cat�logo
+                            Ver todo el catálogo
                         </a>
                     </div>
                 }
@@ -382,11 +385,15 @@
 
                 async buscar() {
                     const q = this.consulta.trim();
+                    console.log('🔍 Buscando:', q);
+                    
                     if (q.length < 2) {
                         this.sugerencias = [];
                         this.mostrarSugerencias = false;
+                        console.log('❌ Búsqueda muy corta');
                         return;
                     }
+                    
                     if (this.controlador) this.controlador.abort();
                     this.controlador = new AbortController();
                     this.cargando = true;
@@ -395,15 +402,28 @@
                         let url = `/Productos/Buscar?q=${encodeURIComponent(q)}`;
                         if (this.categoriaId) url += `&categoriaId=${this.categoriaId}`;
 
+                        console.log('📡 Llamando a:', url);
+                        
                         const response = await fetch(url, { signal: this.controlador.signal });
+                        
+                        console.log('📥 Response status:', response.status);
+                        
                         if (response.ok) {
                             const data = await response.json();
+                            console.log('📦 Datos recibidos:', data);
+                            console.log('🔢 Número de sugerencias:', data.sugerencias?.length || 0);
+                            
                             this.sugerencias = data.sugerencias || [];
                             this.mostrarSugerencias = this.sugerencias.length > 0;
                             this.indiceActivo = -1;
+                            
+                            console.log('✅ Mostrar sugerencias:', this.mostrarSugerencias);
+                            console.log('📋 Sugerencias array:', this.sugerencias);
                         }
                     } catch (error) {
-                        if (error.name !== 'AbortError') console.error(error);
+                        if (error.name !== 'AbortError') {
+                            console.error('❌ Error en búsqueda:', error);
+                        }
                     } finally {
                         this.cargando = false;
                     }

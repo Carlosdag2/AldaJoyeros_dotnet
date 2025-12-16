@@ -190,17 +190,55 @@ namespace AldaJoyeros.Services.Implementations
                 ? await GetByCategoriaAsync(categoriaId.Value)
                 : await GetAllAsync();
 
-            var resultados = productos.Where(p =>
-                p.Nombre.Contains(termino, StringComparison.OrdinalIgnoreCase) ||
-                (p.Descripcion != null && p.Descripcion.Contains(termino, StringComparison.OrdinalIgnoreCase)) ||
-                p.CategoriaNombre.Contains(termino, StringComparison.OrdinalIgnoreCase));
+            // Normalizar el término de búsqueda
+            var terminoLower = termino.ToLower();
+            
+            // Búsqueda con scoring para mejores resultados
+            var resultadosConScore = productos.Select(p => new
+            {
+                Producto = p,
+                Score = CalcularScore(p, terminoLower)
+            })
+            .Where(x => x.Score > 0)
+            .OrderByDescending(x => x.Score)
+            .Select(x => x.Producto);
 
             if (limite > 0)
             {
-                resultados = resultados.Take(limite);
+                resultadosConScore = resultadosConScore.Take(limite);
             }
 
-            return resultados.ToList();
+            return resultadosConScore.ToList();
+        }
+
+        /// <summary>
+        /// Calcula un score de relevancia para ordenar los resultados de búsqueda
+        /// </summary>
+        private int CalcularScore(ProductoDto producto, string terminoLower)
+        {
+            int score = 0;
+
+            // Coincidencia exacta en el nombre (máxima prioridad)
+            if (producto.Nombre.Equals(terminoLower, StringComparison.OrdinalIgnoreCase))
+                score += 100;
+
+            // El nombre comienza con el término
+            if (producto.Nombre.StartsWith(terminoLower, StringComparison.OrdinalIgnoreCase))
+                score += 50;
+
+            // El nombre contiene el término
+            if (producto.Nombre.Contains(terminoLower, StringComparison.OrdinalIgnoreCase))
+                score += 30;
+
+            // La descripción contiene el término
+            if (producto.Descripcion != null && producto.Descripcion.Contains(terminoLower, StringComparison.OrdinalIgnoreCase))
+                score += 10;
+
+            // La categoría contiene el término
+            if (producto.CategoriaNombre.Contains(terminoLower, StringComparison.OrdinalIgnoreCase))
+                score += 20;
+
+            return score;
         }
     }
 }
