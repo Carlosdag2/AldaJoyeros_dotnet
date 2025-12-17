@@ -74,14 +74,14 @@ namespace AldaJoyeros.Services.Implementations
 
         public async Task SendPasswordResetEmailAsync(string to, string verifyLink, string code)
         {
-            var subject = "Código de verificación - Alda Joyeros";
+            var subject = "Código de verificación - Alda Joyeros 1962";
             var htmlBody = GetPasswordResetEmailTemplate(verifyLink, code);
             await SendEmailAsync(to, subject, htmlBody);
         }
 
         public async Task SendOrderConfirmationWithInvoiceAsync(string to, PedidoDto pedido, byte[] facturaPdf, string numeroFactura)
         {
-            var subject = $"Confirmación de pedido #{pedido.Id} - Alda Joyeros";
+            var subject = $"Confirmación de pedido #{pedido.Id} - Alda Joyeros 1962";
             var htmlBody = GetOrderConfirmationWithInvoiceEmailTemplate(pedido, numeroFactura);
             var attachmentName = $"Factura_{numeroFactura.Replace("/", "-")}.pdf";
             
@@ -90,7 +90,7 @@ namespace AldaJoyeros.Services.Implementations
 
         public async Task SendInvoiceEmailAsync(string to, PedidoDto pedido, byte[] facturaPdf, string numeroFactura)
         {
-            var subject = $"Factura {numeroFactura} - Alda Joyeros";
+            var subject = $"Factura {numeroFactura} - Alda Joyeros 1962";
             var htmlBody = GetInvoiceEmailTemplate(pedido, numeroFactura);
             var attachmentName = $"Factura_{numeroFactura.Replace("/", "-")}.pdf";
             
