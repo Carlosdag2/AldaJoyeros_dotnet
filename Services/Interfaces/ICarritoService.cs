@@ -10,5 +10,6 @@ namespace AldaJoyeros.Services.Interfaces
         Task DeleteItemAsync(long usuarioId, long itemId);
         Task ClearCarritoAsync(long usuarioId);
         Task<double> GetTotalAsync(long usuarioId);
+        Task<int> GetTotalItemsAsync(long usuarioId);
     }
 }

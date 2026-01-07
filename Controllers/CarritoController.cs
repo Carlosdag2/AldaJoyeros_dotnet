@@ -95,6 +95,50 @@ namespace AldaJoyeros.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> AgregarAjax(long productoId, int cantidad = 1)
+        {
+            if (cantidad < 1)
+            {
+                return Json(new { success = false, message = "La cantidad debe ser al menos 1" });
+            }
+
+            if (!IsAuthenticated)
+            {
+                return Json(new { success = false, requiresLogin = true, message = "Inicia sesión para añadir productos al carrito" });
+            }
+
+            try
+            {
+                var producto = await _productoService.GetByIdAsync(productoId);
+                if (producto == null)
+                {
+                    return Json(new { success = false, message = "El producto no existe" });
+                }
+
+                var carritoItemDto = new CarritoItemCreateDto
+                {
+                    ProductoId = productoId,
+                    Cantidad = cantidad
+                };
+
+                await _carritoService.AddItemAsync(CurrentUser!.Id, carritoItemDto);
+                
+                var totalItems = await _carritoService.GetTotalItemsAsync(CurrentUser.Id);
+
+                return Json(new { 
+                    success = true, 
+                    message = $"'{producto.Nombre}' añadido al carrito",
+                    productoNombre = producto.Nombre,
+                    totalItems = totalItems
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = $"No se pudo añadir al carrito: {ex.Message}" });
+            }
+        }
+
+        [HttpPost]
         [JwtAuthorize]
         public async Task<IActionResult> Actualizar(long itemId, int cantidad)
         {

@@ -142,14 +142,12 @@
                         var currentUser = ViewBag.CurrentUser as AldaJoyeros.DTOs.UsuarioDto;
 
                         <!-- Cart -->
-                        <a asp-controller="Carrito" asp-action="Index" class="relative text-gray-600 hover:text-gray-900 transition-colors">
-                            <i class="fas fa-shopping-bag"></i>
-                            @if (ViewBag.CarritoCount > 0)
-                            {
-                                <span class="absolute -top-2 -right-2 w-4 h-4 bg-emerald-600 text-white text-[10px] font-medium rounded-full flex items-center justify-center">
-                                    @ViewBag.CarritoCount
-                                </span>
-                            }
+                        <a asp-controller="Carrito" asp-action="Index" class="relative text-gray-600 hover:text-gray-900 transition-colors" data-carrito-link>
+                            <i class="fas fa-shopping-bag" data-carrito-icon></i>
+                            <span data-carrito-count 
+                                  class="absolute -top-2 -right-2 w-4 h-4 bg-emerald-600 text-white text-[10px] font-medium rounded-full flex items-center justify-center @(ViewBag.CarritoCount > 0 ? "" : "hidden")">
+                                @(ViewBag.CarritoCount ?? 0)
+                            </span>
                         </a>
 
                         <!-- Account Dropdown -->
@@ -190,10 +188,7 @@
 
                                 <a asp-controller="Carrito" asp-action="Index" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
                                     Mi Carrito
-                                    @if (ViewBag.CarritoCount > 0)
-                                    {
-                                        <span class="text-gray-400">(@ViewBag.CarritoCount)</span>
-                                    }
+                                    <span data-carrito-count-menu class="text-gray-400 @(ViewBag.CarritoCount > 0 ? "" : "hidden")">(<span data-carrito-count-value>@(ViewBag.CarritoCount ?? 0)</span>)</span>
                                 </a>
 
                                 <div class="border-t border-gray-100 my-1"></div>

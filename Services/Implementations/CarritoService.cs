@@ -92,5 +92,11 @@ namespace AldaJoyeros.Services.Implementations
             var items = await _carritoRepository.GetByUsuarioIdAsync(usuarioId);
             return items.Sum(i => i.Cantidad * i.Precio);
         }
+
+        public async Task<int> GetTotalItemsAsync(long usuarioId)
+        {
+            var items = await _carritoRepository.GetByUsuarioIdAsync(usuarioId);
+            return items.Sum(i => i.Cantidad);
+        }
     }
 }
