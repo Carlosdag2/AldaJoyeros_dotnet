@@ -1,0 +1,116 @@
+<!-- Modal de Confirmación para Admin -->
+<div id="confirmModal" class="fixed inset-0 z-50 hidden">
+    <!-- Backdrop -->
+    <div class="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity" onclick="closeModal()"></div>
+    
+    <!-- Modal Content -->
+    <div class="fixed inset-0 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full transform transition-all scale-95 opacity-0" id="modalContent">
+            <!-- Header -->
+            <div class="p-6 text-center">
+                <div id="modalIconContainer" class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i id="modalIcon" class="text-2xl"></i>
+                </div>
+                <h3 id="modalTitle" class="text-xl font-bold text-gray-900 mb-2">¿Estás seguro?</h3>
+                <p id="modalMessage" class="text-gray-500">Esta acción no se puede deshacer.</p>
+            </div>
+            
+            <!-- Actions -->
+            <div class="flex gap-3 p-6 pt-0">
+                <button type="button" onclick="closeModal()" 
+                        class="flex-1 px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl transition-colors">
+                    Cancelar
+                </button>
+                <button type="button" id="confirmBtn" 
+                        class="flex-1 px-4 py-3 font-semibold rounded-xl transition-colors">
+                    Confirmar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    #confirmModal.show #modalContent {
+        transform: scale(1);
+        opacity: 1;
+    }
+    #modalContent {
+        transition: transform 0.2s ease-out, opacity 0.2s ease-out;
+    }
+</style>
+
+<script>
+    function showModal(title, message, onConfirm, type = 'danger') {
+        const modal = document.getElementById('confirmModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalMessage = document.getElementById('modalMessage');
+        const modalIconContainer = document.getElementById('modalIconContainer');
+        const modalIcon = document.getElementById('modalIcon');
+        const confirmBtn = document.getElementById('confirmBtn');
+
+        modalTitle.textContent = title;
+        modalMessage.textContent = message;
+
+        // Configure styles based on type
+        if (type === 'danger') {
+            modalIconContainer.className = 'w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4';
+            modalIcon.className = 'fas fa-exclamation-triangle text-red-500 text-2xl';
+            confirmBtn.className = 'flex-1 px-4 py-3 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-xl transition-colors';
+        } else if (type === 'warning') {
+            modalIconContainer.className = 'w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4';
+            modalIcon.className = 'fas fa-trash text-amber-500 text-2xl';
+            confirmBtn.className = 'flex-1 px-4 py-3 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-xl transition-colors';
+        } else if (type === 'success') {
+            modalIconContainer.className = 'w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4';
+            modalIcon.className = 'fas fa-undo text-emerald-500 text-2xl';
+            confirmBtn.className = 'flex-1 px-4 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-xl transition-colors';
+        } else if (type === 'info') {
+            modalIconContainer.className = 'w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4';
+            modalIcon.className = 'fas fa-info-circle text-blue-500 text-2xl';
+            confirmBtn.className = 'flex-1 px-4 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-xl transition-colors';
+        }
+
+        // Remove old event listener and add new one
+        const newConfirmBtn = confirmBtn.cloneNode(true);
+        confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+        newConfirmBtn.id = 'confirmBtn';
+        newConfirmBtn.addEventListener('click', () => {
+            closeModal();
+            onConfirm();
+        });
+
+        modal.classList.remove('hidden');
+        setTimeout(() => modal.classList.add('show'), 10);
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+        const modal = document.getElementById('confirmModal');
+        modal.classList.remove('show');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+            document.body.style.overflow = '';
+        }, 200);
+    }
+
+    // Close modal with Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeModal();
+    });
+
+    // Generic confirm delete function
+    function confirmDelete(formId, itemName, isPermanent = false) {
+        const title = isPermanent ? '¿Eliminar permanentemente?' : '¿Eliminar?';
+        const message = isPermanent 
+            ? `"${itemName}" se eliminará de forma permanente. Esta acción NO se puede deshacer.`
+            : `¿Estás seguro de que deseas eliminar "${itemName}"?`;
+        const type = isPermanent ? 'danger' : 'warning';
+        
+        showModal(title, message, () => document.getElementById(formId).submit(), type);
+    }
+
+    function confirmAction(formId, title, message, type = 'warning') {
+        showModal(title, message, () => document.getElementById(formId).submit(), type);
+    }
+</script>

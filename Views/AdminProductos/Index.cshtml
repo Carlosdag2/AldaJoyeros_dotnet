@@ -7,6 +7,8 @@
     var totalProductos = (int)(ViewBag.TotalProductos ?? 0);
 }
 
+<partial name="_AdminConfirmModal" />
+
 <div class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
     <!-- Header -->
     <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
@@ -169,13 +171,13 @@
                                         <div class="flex items-center justify-center gap-1">
                                             @if(p.Eliminado)
                                             {
-                                                <form asp-action="Restaurar" asp-route-id="@p.Id" method="post" class="inline">
-                                                    <button type="submit" class="w-8 h-8 bg-emerald-100 hover:bg-emerald-500 text-emerald-600 hover:text-white rounded-lg transition-all flex items-center justify-center" title="Restaurar">
+                                                <form asp-action="Restaurar" asp-route-id="@p.Id" method="post" class="inline" id="restoreForm-@p.Id">
+                                                    <button type="button" onclick="confirmAction('restoreForm-@p.Id', '¿Restaurar producto?', 'El producto @nombreProducto volverá a estar activo.', 'success')" class="w-8 h-8 bg-emerald-100 hover:bg-emerald-500 text-emerald-600 hover:text-white rounded-lg transition-all flex items-center justify-center" title="Restaurar">
                                                         <i class="fas fa-undo text-xs"></i>
                                                     </button>
                                                 </form>
-                                                <form asp-action="EliminarPermanente" asp-route-id="@p.Id" method="post" class="inline" onsubmit="return confirm('¿Eliminar permanentemente? Esta acción NO se puede deshacer.');">
-                                                    <button type="submit" class="w-8 h-8 bg-red-100 hover:bg-red-500 text-red-600 hover:text-white rounded-lg transition-all flex items-center justify-center" title="Eliminar permanente">
+                                                <form asp-action="EliminarPermanente" asp-route-id="@p.Id" method="post" class="inline" id="deletePermanentForm-@p.Id">
+                                                    <button type="button" onclick="confirmDelete('deletePermanentForm-@p.Id', '@nombreProducto', true)" class="w-8 h-8 bg-red-100 hover:bg-red-500 text-red-600 hover:text-white rounded-lg transition-all flex items-center justify-center" title="Eliminar permanente">
                                                         <i class="fas fa-times text-xs"></i>
                                                     </button>
                                                 </form>
@@ -191,8 +193,8 @@
                                                 <a asp-action="Editar" asp-route-id="@p.Id" class="w-8 h-8 bg-emerald-100 hover:bg-emerald-500 text-emerald-600 hover:text-white rounded-lg transition-all flex items-center justify-center" title="Editar">
                                                     <i class="fas fa-edit text-xs"></i>
                                                 </a>
-                                                <form asp-action="Eliminar" asp-route-id="@p.Id" method="post" class="inline" onsubmit="return confirm('¿Mover a papelera?');">
-                                                    <button type="submit" class="w-8 h-8 bg-red-100 hover:bg-red-500 text-red-600 hover:text-white rounded-lg transition-all flex items-center justify-center" title="Eliminar">
+                                                <form asp-action="Eliminar" asp-route-id="@p.Id" method="post" class="inline" id="deleteForm-@p.Id">
+                                                    <button type="button" onclick="confirmAction('deleteForm-@p.Id', '¿Mover a papelera?', 'El producto @nombreProducto se moverá a la papelera.', 'warning')" class="w-8 h-8 bg-red-100 hover:bg-red-500 text-red-600 hover:text-white rounded-lg transition-all flex items-center justify-center" title="Eliminar">
                                                         <i class="fas fa-trash text-xs"></i>
                                                     </button>
                                                 </form>

@@ -8,6 +8,8 @@
     var totalEntregados = ViewBag.TotalEntregados ?? 0;
 }
 
+<partial name="_AdminConfirmModal" />
+
 <div class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
     <!-- Header -->
     <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
@@ -139,8 +141,8 @@
                                 <a asp-action="EditarEstado" asp-route-id="@p.Id" class="flex-1 md:flex-none flex items-center justify-center gap-1 px-3 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg transition-all text-sm font-medium">
                                     <i class="fas fa-edit text-xs"></i>Estado
                                 </a>
-                                <form asp-action="Eliminar" asp-route-id="@p.Id" method="post" onsubmit="return confirm('¿Eliminar este pedido?')" class="flex-1 md:flex-none">
-                                    <button type="submit" class="w-full flex items-center justify-center gap-1 px-3 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-all text-sm font-medium">
+                                <form asp-action="Eliminar" asp-route-id="@p.Id" method="post" class="flex-1 md:flex-none" id="deleteOrderForm-@p.Id">
+                                    <button type="button" onclick="confirmDelete('deleteOrderForm-@p.Id', 'Pedido #@p.Id')" class="w-full flex items-center justify-center gap-1 px-3 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-all text-sm font-medium">
                                         <i class="fas fa-trash text-xs"></i>Eliminar
                                     </button>
                                 </form>

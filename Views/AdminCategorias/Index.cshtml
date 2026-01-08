@@ -6,6 +6,8 @@
     var totalProductos = ViewBag.TotalProductos ?? 0;
 }
 
+<partial name="_AdminConfirmModal" />
+
 <div class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
     <!-- Header -->
     <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
@@ -144,9 +146,9 @@
                                        class="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-100 hover:bg-emerald-500 text-slate-600 hover:text-white rounded-xl transition-all font-medium text-sm">
                                         <i class="fas fa-edit"></i>Editar
                                     </a>
-                                    <form asp-action="Eliminar" asp-route-id="@categoria.Id" method="post" class="flex-1" 
-                                          onsubmit="return confirm('@(categoria.CantidadProductos > 0 ? $"Esta categoría tiene {categoria.CantidadProductos} producto(s). Al eliminarla, los productos serán movidos a Sin categoría. ¿Continuar?" : $"¿Eliminar la categoría {nombreCategoria}?")');">
-                                        <button type="submit" 
+                                    <form asp-action="Eliminar" asp-route-id="@categoria.Id" method="post" class="flex-1" id="deleteCategoryForm-@categoria.Id">
+                                        <button type="button" 
+                                                onclick="confirmAction('deleteCategoryForm-@categoria.Id', '¿Eliminar categoría?', '@(categoria.CantidadProductos > 0 ? $"Esta categoría tiene {categoria.CantidadProductos} producto(s). Al eliminarla, los productos serán movidos a Sin categoría." : $"¿Eliminar la categoría {nombreCategoria}?")', '@(categoria.CantidadProductos > 0 ? "warning" : "danger")')"
                                                 class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-100 hover:bg-red-500 text-slate-600 hover:text-white rounded-xl transition-all font-medium text-sm">
                                             <i class="fas fa-trash"></i>Eliminar
                                         </button>

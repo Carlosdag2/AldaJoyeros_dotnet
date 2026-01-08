@@ -3,6 +3,8 @@
     ViewData["Title"] = $"Pedido #{Model.Id}";
 }
 
+<partial name="_AdminConfirmModal" />
+
 <div class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
     <!-- Header -->
     <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
@@ -206,8 +208,8 @@
                         <a href="/Pedidos/@Model.Id/Factura" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-amber-500 hover:bg-amber-600 text-white rounded-xl font-medium transition-all">
                             <i class="fas fa-file-invoice"></i>Descargar Factura
                         </a>
-                        <form asp-action="Eliminar" asp-route-id="@Model.Id" method="post" onsubmit="return confirm('¿Eliminar este pedido?')">
-                            <button type="submit" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-xl font-medium transition-all">
+                        <form asp-action="Eliminar" asp-route-id="@Model.Id" method="post" id="deleteOrderForm">
+                            <button type="button" onclick="confirmDelete('deleteOrderForm', 'Pedido #@Model.Id')" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-xl font-medium transition-all">
                                 <i class="fas fa-trash"></i>Eliminar
                             </button>
                         </form>

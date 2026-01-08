@@ -51,9 +51,50 @@ namespace AldaJoyeros.Repositories.Implementations
 
         public async Task DeleteAsync(long id)
         {
-            var usuario = await _context.Usuarios.FindAsync(id);
+            var usuario = await _context.Usuarios
+                .Include(u => u.CarritoItems)
+                .Include(u => u.Direcciones)
+                .Include(u => u.Pedidos)
+                    .ThenInclude(p => p.LineasPedido)
+                .FirstOrDefaultAsync(u => u.Id == id);
+                
             if (usuario != null)
             {
+                // Eliminar items del carrito
+                if (usuario.CarritoItems != null && usuario.CarritoItems.Any())
+                {
+                    _context.CarritoItems.RemoveRange(usuario.CarritoItems);
+                }
+
+                // Eliminar líneas de pedido y pedidos
+                if (usuario.Pedidos != null && usuario.Pedidos.Any())
+                {
+                    foreach (var pedido in usuario.Pedidos)
+                    {
+                        if (pedido.LineasPedido != null && pedido.LineasPedido.Any())
+                        {
+                            _context.LineasPedido.RemoveRange(pedido.LineasPedido);
+                        }
+                    }
+                    _context.Pedidos.RemoveRange(usuario.Pedidos);
+                }
+
+                // Eliminar direcciones
+                if (usuario.Direcciones != null && usuario.Direcciones.Any())
+                {
+                    _context.Direcciones.RemoveRange(usuario.Direcciones);
+                }
+
+                // Eliminar tokens de reset de contraseña
+                var tokens = await _context.PasswordResetTokens
+                    .Where(t => t.UserId == id)
+                    .ToListAsync();
+                if (tokens.Any())
+                {
+                    _context.PasswordResetTokens.RemoveRange(tokens);
+                }
+
+                // Finalmente eliminar el usuario
                 _context.Usuarios.Remove(usuario);
                 await _context.SaveChangesAsync();
             }
