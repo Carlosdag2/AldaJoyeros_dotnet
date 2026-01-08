@@ -533,7 +533,11 @@
                             
                             this.activarNotificacion(`'${nombreProducto}' añadido al carrito`);
                         } else if (data.requiresLogin) {
-                            window.location.href = '/Auth/Login';
+                            // Producto guardado temporalmente, mostrar notificación y redirigir
+                            this.activarNotificacion('Producto guardado. Redirigiendo al login...');
+                            setTimeout(() => {
+                                window.location.href = '/Auth/Login?returnUrl=' + encodeURIComponent(window.location.pathname + window.location.search);
+                            }, 1500);
                         } else {
                             alert(data.message || 'Error al añadir al carrito');
                         }
@@ -543,6 +547,14 @@
                     } finally {
                         this.cargandoProducto = null;
                     }
+                },
+
+                activarNotificacion(mensaje) {
+                    this.mensajeNotificacion = mensaje;
+                    this.mostrarNotificacion = true;
+                    setTimeout(() => {
+                        this.mostrarNotificacion = false;
+                    }, 4000);
                 },
 
                 actualizarContadorCarrito(totalItems) {

@@ -449,7 +449,11 @@
                             
                             this.activarNotificacion(`'${nombreProducto}' añadido al carrito`);
                         } else if (data.requiresLogin) {
-                            window.location.href = '/Auth/Login';
+                            // Producto guardado temporalmente, mostrar notificación y redirigir
+                            this.activarNotificacion('Producto guardado. Redirigiendo al login...');
+                            setTimeout(() => {
+                                window.location.href = '/Auth/Login?returnUrl=' + encodeURIComponent(window.location.pathname);
+                            }, 1500);
                         } else {
                             alert(data.message || 'Error al añadir al carrito');
                         }
