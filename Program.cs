@@ -132,6 +132,12 @@ namespace AldaJoyeros
             // Registrar Servicio de Facturas
             builder.Services.AddScoped<IFacturaService, FacturaService>();
 
+            // Registrar Servicio de Métricas
+            builder.Services.AddScoped<IMetricasService, MetricasService>();
+
+            // Registrar Servicio de Tráfico (Singleton para mantener estado en memoria)
+            builder.Services.AddSingleton<ITraficoService, TraficoService>();
+
             // Registrar Servicio de Códigos Postales
             builder.Services.AddSingleton<ICodigoPostalService, CodigoPostalService>();
 
@@ -158,6 +164,9 @@ namespace AldaJoyeros
             app.UseRouting();
 
             app.UseSession();
+            
+            // Middleware de Tráfico (registra visitas)
+            app.UseTrafico();
             
             // Middleware JWT personalizado (establece ClaimsPrincipal)
             app.UseMiddleware<JwtMiddleware>();

@@ -1,0 +1,646 @@
+@model AldaJoyeros.DTOs.MetricasDto
+@{
+    ViewData["Title"] = "Métricas y Estadísticas";
+}
+
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
+    <!-- Header -->
+    <div class="relative overflow-hidden bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900">
+        <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\"60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%239C92AC\" fill-opacity=\"0.05\"%3E%3Cpath d=\"M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-40"></div>
+        <div class="absolute top-0 right-0 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+        
+        <div class="relative container mx-auto px-6 py-8">
+            <nav class="flex items-center gap-2 text-sm text-slate-400 mb-4">
+                <a asp-controller="Admin" asp-action="Index" class="hover:text-white transition-colors"><i class="fas fa-home"></i></a>
+                <i class="fas fa-chevron-right text-xs"></i>
+                <span class="text-white">Métricas</span>
+            </nav>
+            
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <div class="w-14 h-14 bg-gradient-to-br from-indigo-400 to-purple-600 rounded-2xl flex items-center justify-center shadow-xl shadow-indigo-500/25">
+                        <i class="fas fa-chart-line text-white text-2xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl md:text-3xl font-bold text-white">Métricas y Estadísticas</h1>
+                        <p class="text-slate-400 text-sm mt-1">Análisis completo de tu tienda</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="text-sm text-slate-400">
+                        <i class="fas fa-clock mr-1"></i>
+                        Actualizado: @DateTime.Now.ToString("dd/MM/yyyy HH:mm")
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mx-auto px-6 -mt-6 relative z-10 pb-12">
+        <!-- KPI Cards -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
+            <!-- Ventas Totales -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="w-12 h-12 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/20">
+                        <i class="fas fa-euro-sign text-white text-lg"></i>
+                    </div>
+                    <span class="text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">Total</span>
+                </div>
+                <div class="text-2xl font-bold text-slate-800 mb-1">@Model.VentasTotales.ToString("C")</div>
+                <div class="text-sm text-slate-500">Ventas Totales</div>
+            </div>
+
+            <!-- Ventas Mes -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
+                        <i class="fas fa-calendar-alt text-white text-lg"></i>
+                    </div>
+                    <span class="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded-full">30 días</span>
+                </div>
+                <div class="text-2xl font-bold text-slate-800 mb-1">@Model.VentasUltimos30Dias.ToString("C")</div>
+                <div class="text-sm text-slate-500">Ventas del Mes</div>
+            </div>
+
+            <!-- Ticket Promedio -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="w-12 h-12 bg-gradient-to-br from-amber-400 to-orange-500 rounded-xl flex items-center justify-center shadow-lg shadow-amber-500/20">
+                        <i class="fas fa-receipt text-white text-lg"></i>
+                    </div>
+                    <span class="text-xs font-medium text-amber-600 bg-amber-50 px-2 py-1 rounded-full">Promedio</span>
+                </div>
+                <div class="text-2xl font-bold text-slate-800 mb-1">@Model.TicketPromedio.ToString("C")</div>
+                <div class="text-sm text-slate-500">Ticket Promedio</div>
+            </div>
+
+            <!-- Tasa Completados -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="w-12 h-12 bg-gradient-to-br from-violet-400 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-violet-500/20">
+                        <i class="fas fa-check-double text-white text-lg"></i>
+                    </div>
+                    <span class="text-xs font-medium text-violet-600 bg-violet-50 px-2 py-1 rounded-full">Éxito</span>
+                </div>
+                <div class="text-2xl font-bold text-slate-800 mb-1">@Model.TasaCompletados.ToString("F1")%</div>
+                <div class="text-sm text-slate-500">Pedidos Completados</div>
+            </div>
+        </div>
+
+        <!-- Resumen de Período -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div class="bg-gradient-to-br from-emerald-500 to-green-600 rounded-2xl p-6 text-white">
+                <div class="flex items-center justify-between mb-4">
+                    <i class="fas fa-calendar-day text-2xl opacity-75"></i>
+                    <span class="text-xs font-medium bg-white/20 px-2 py-1 rounded-full">Hoy</span>
+                </div>
+                <div class="text-3xl font-bold mb-1">@Model.VentasHoy.ToString("C")</div>
+                <div class="text-emerald-100 text-sm">@Model.PedidosHoy pedido(s)</div>
+            </div>
+
+            <div class="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl p-6 text-white">
+                <div class="flex items-center justify-between mb-4">
+                    <i class="fas fa-calendar-week text-2xl opacity-75"></i>
+                    <span class="text-xs font-medium bg-white/20 px-2 py-1 rounded-full">7 días</span>
+                </div>
+                <div class="text-3xl font-bold mb-1">@Model.VentasUltimos7Dias.ToString("C")</div>
+                <div class="text-blue-100 text-sm">@Model.PedidosUltimos7Dias pedido(s)</div>
+            </div>
+
+            <div class="bg-gradient-to-br from-purple-500 to-violet-600 rounded-2xl p-6 text-white">
+                <div class="flex items-center justify-between mb-4">
+                    <i class="fas fa-calendar-alt text-2xl opacity-75"></i>
+                    <span class="text-xs font-medium bg-white/20 px-2 py-1 rounded-full">30 días</span>
+                </div>
+                <div class="text-3xl font-bold mb-1">@Model.VentasUltimos30Dias.ToString("C")</div>
+                <div class="text-purple-100 text-sm">@Model.PedidosUltimos30Dias pedido(s)</div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <!-- Gráfico de Ventas -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                <div class="px-6 py-5 border-b border-slate-100">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-gradient-to-br from-emerald-100 to-green-100 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-chart-area text-emerald-600"></i>
+                        </div>
+                        <div>
+                            <h2 class="font-semibold text-slate-800">Ventas Diarias</h2>
+                            <p class="text-xs text-slate-400">Últimos 30 días</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <canvas id="ventasChart" height="250"></canvas>
+                </div>
+            </div>
+
+            <!-- Gráfico de Pedidos -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                <div class="px-6 py-5 border-b border-slate-100">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-chart-bar text-blue-600"></i>
+                        </div>
+                        <div>
+                            <h2 class="font-semibold text-slate-800">Pedidos Diarios</h2>
+                            <p class="text-xs text-slate-400">Últimos 30 días</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <canvas id="pedidosChart" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <!-- Tráfico en Tiempo Real -->
+            <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl shadow-sm border border-slate-700 overflow-hidden text-white">
+                <div class="px-6 py-5 border-b border-slate-700">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-gradient-to-br from-green-400 to-emerald-500 rounded-xl flex items-center justify-center">
+                                <i class="fas fa-signal text-white"></i>
+                            </div>
+                            <div>
+                                <h2 class="font-semibold">Tráfico en Vivo</h2>
+                                <p class="text-xs text-slate-400">Visitantes activos ahora</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="relative flex h-3 w-3">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                            </span>
+                            <span class="text-xs text-slate-400">En vivo</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <div class="text-center mb-6">
+                        <div id="visitantesActivos" class="text-5xl font-bold text-green-400 mb-1">@ViewBag.VisitantesActivos</div>
+                        <div class="text-slate-400 text-sm">visitantes activos</div>
+                    </div>
+                    <div id="visitantesPorPagina" class="space-y-2">
+                        @{
+                            var visitantesPorPagina = ViewBag.VisitantesPorPagina as Dictionary<string, int> ?? new Dictionary<string, int>();
+                            var totalVisitantes = visitantesPorPagina.Values.Sum();
+                        }
+                        @if (visitantesPorPagina.Any())
+                        {
+                            @foreach (var pagina in visitantesPorPagina.OrderByDescending(p => p.Value))
+                            {
+                                var porcentaje = totalVisitantes > 0 ? (double)pagina.Value / totalVisitantes * 100 : 0;
+                                <div class="flex items-center justify-between text-sm">
+                                    <span class="text-slate-300">@pagina.Key</span>
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-20 bg-slate-700 rounded-full h-1.5">
+                                            <div class="bg-green-500 h-1.5 rounded-full" style="width: @porcentaje%"></div>
+                                        </div>
+                                        <span class="font-semibold text-green-400 w-6 text-right">@pagina.Value</span>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="text-center text-slate-500 py-4">
+                                <i class="fas fa-users text-2xl mb-2"></i>
+                                <p class="text-sm">Sin visitantes activos</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Estado de Pedidos (sin gráfico) -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                <div class="px-6 py-5 border-b border-slate-100">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-gradient-to-br from-amber-100 to-orange-100 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-tasks text-amber-600"></i>
+                        </div>
+                        <div>
+                            <h2 class="font-semibold text-slate-800">Estado de Pedidos</h2>
+                            <p class="text-xs text-slate-400">Distribución actual</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-6 space-y-3">
+                    <div class="flex items-center justify-between p-3 bg-yellow-50 rounded-lg border border-yellow-100">
+                        <span class="flex items-center gap-2 text-sm font-medium text-yellow-700">
+                            <span class="w-3 h-3 bg-yellow-500 rounded-full"></span>
+                            Pendientes
+                        </span>
+                        <span class="font-bold text-yellow-700">@Model.PedidosPendientes</span>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-100">
+                        <span class="flex items-center gap-2 text-sm font-medium text-blue-700">
+                            <span class="w-3 h-3 bg-blue-500 rounded-full"></span>
+                            En Proceso
+                        </span>
+                        <span class="font-bold text-blue-700">@Model.PedidosEnProceso</span>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-purple-50 rounded-lg border border-purple-100">
+                        <span class="flex items-center gap-2 text-sm font-medium text-purple-700">
+                            <span class="w-3 h-3 bg-purple-500 rounded-full"></span>
+                            Enviados
+                        </span>
+                        <span class="font-bold text-purple-700">@Model.PedidosEnviados</span>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-100">
+                        <span class="flex items-center gap-2 text-sm font-medium text-green-700">
+                            <span class="w-3 h-3 bg-green-500 rounded-full"></span>
+                            Entregados
+                        </span>
+                        <span class="font-bold text-green-700">@Model.PedidosEntregados</span>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-red-50 rounded-lg border border-red-100">
+                        <span class="flex items-center gap-2 text-sm font-medium text-red-700">
+                            <span class="w-3 h-3 bg-red-500 rounded-full"></span>
+                            Cancelados
+                        </span>
+                        <span class="font-bold text-red-700">@Model.PedidosCancelados</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Categorías Populares -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                <div class="px-6 py-5 border-b border-slate-100">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-gradient-to-br from-violet-100 to-purple-100 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-tags text-violet-600"></i>
+                        </div>
+                        <div>
+                            <h2 class="font-semibold text-slate-800">Categorías Populares</h2>
+                            <p class="text-xs text-slate-400">Por ventas totales</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-6">
+                    @if (Model.CategoriasMasPopulares.Any())
+                    {
+                        <div class="space-y-4">
+                            @foreach (var cat in Model.CategoriasMasPopulares)
+                            {
+                                var maxVentas = Model.CategoriasMasPopulares.Max(c => c.TotalVentas);
+                                var porcentaje = maxVentas > 0 ? (cat.TotalVentas / maxVentas) * 100 : 0;
+                                <div>
+                                    <div class="flex items-center justify-between mb-1">
+                                        <span class="text-sm font-medium text-slate-700">@cat.Nombre</span>
+                                        <span class="text-sm font-bold text-emerald-600">@cat.TotalVentas.ToString("C")</span>
+                                    </div>
+                                    <div class="w-full bg-slate-100 rounded-full h-2">
+                                        <div class="bg-gradient-to-r from-violet-500 to-purple-500 h-2 rounded-full" style="width: @porcentaje%"></div>
+                                    </div>
+                                    <div class="text-xs text-slate-400 mt-1">@cat.CantidadVendida unidades vendidas</div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-8 text-slate-400">
+                            <i class="fas fa-chart-pie text-3xl mb-2"></i>
+                            <p class="text-sm">Sin datos de categorías</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Productos Más Vendidos -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden mb-8">
+            <div class="px-6 py-5 border-b border-slate-100">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-gradient-to-br from-emerald-100 to-green-100 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-trophy text-emerald-600"></i>
+                        </div>
+                        <div>
+                            <h2 class="font-semibold text-slate-800">Productos Más Vendidos</h2>
+                            <p class="text-xs text-slate-400">Top 10 por unidades vendidas</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="overflow-x-auto">
+                @if (Model.ProductosMasVendidos.Any())
+                {
+                    <table class="w-full">
+                        <thead class="bg-slate-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">#</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Producto</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Categoría</th>
+                                <th class="px-6 py-3 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider">Vendidos</th>
+                                <th class="px-6 py-3 text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Ventas</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            @foreach (var (producto, index) in Model.ProductosMasVendidos.Select((p, i) => (p, i)))
+                            {
+                                <tr class="hover:bg-slate-50 transition-colors">
+                                    <td class="px-6 py-4">
+                                        @if (index == 0)
+                                        {
+                                            <span class="w-8 h-8 bg-yellow-100 text-yellow-600 rounded-full flex items-center justify-center font-bold">
+                                                <i class="fas fa-crown text-xs"></i>
+                                            </span>
+                                        }
+                                        else if (index == 1)
+                                        {
+                                            <span class="w-8 h-8 bg-slate-200 text-slate-600 rounded-full flex items-center justify-center font-bold text-sm">2</span>
+                                        }
+                                        else if (index == 2)
+                                        {
+                                            <span class="w-8 h-8 bg-amber-100 text-amber-700 rounded-full flex items-center justify-center font-bold text-sm">3</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="w-8 h-8 bg-slate-100 text-slate-500 rounded-full flex items-center justify-center font-medium text-sm">@(index + 1)</span>
+                                        }
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-12 h-12 bg-slate-100 rounded-lg overflow-hidden flex items-center justify-center">
+                                                @if (!string.IsNullOrEmpty(producto.ImagenPrincipal))
+                                                {
+                                                    <img src="@producto.ImagenPrincipal" alt="@producto.Nombre" class="w-full h-full object-cover"/>
+                                                }
+                                                else
+                                                {
+                                                    <i class="fas fa-gem text-slate-300"></i>
+                                                }
+                                            </div>
+                                            <div>
+                                                <a asp-controller="AdminProductos" asp-action="Editar" asp-route-id="@producto.Id" class="font-medium text-slate-800 hover:text-emerald-600">
+                                                    @producto.Nombre
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-violet-100 text-violet-700">
+                                            @producto.CategoriaNombre
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        <span class="font-bold text-slate-800">@producto.CantidadVendida</span>
+                                        <span class="text-slate-400 text-sm">uds</span>
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        <span class="font-bold text-emerald-600">@producto.TotalVentas.ToString("C")</span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <div class="text-center py-12 text-slate-400">
+                        <i class="fas fa-box-open text-4xl mb-3"></i>
+                        <p>No hay ventas registradas aún</p>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Mejores Clientes -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden mb-8">
+            <div class="px-6 py-5 border-b border-slate-100">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-star text-blue-600"></i>
+                    </div>
+                    <div>
+                        <h2 class="font-semibold text-slate-800">Mejores Clientes</h2>
+                        <p class="text-xs text-slate-400">Top 10 por gasto total</p>
+                    </div>
+                </div>
+            </div>
+            <div class="overflow-x-auto">
+                @if (Model.MejoresClientes.Any())
+                {
+                    <table class="w-full">
+                        <thead class="bg-slate-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">#</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Cliente</th>
+                                <th class="px-6 py-3 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider">Pedidos</th>
+                                <th class="px-6 py-3 text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Gastado</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            @foreach (var (cliente, index) in Model.MejoresClientes.Select((c, i) => (c, i)))
+                            {
+                                <tr class="hover:bg-slate-50 transition-colors">
+                                    <td class="px-6 py-4">
+                                        @if (index == 0)
+                                        {
+                                            <span class="w-8 h-8 bg-yellow-100 text-yellow-600 rounded-full flex items-center justify-center font-bold">
+                                                <i class="fas fa-medal text-xs"></i>
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="w-8 h-8 bg-slate-100 text-slate-500 rounded-full flex items-center justify-center font-medium text-sm">@(index + 1)</span>
+                                        }
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-10 h-10 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-full flex items-center justify-center text-white font-bold">
+                                                @cliente.Email[0].ToString().ToUpper()
+                                            </div>
+                                            <div>
+                                                <div class="font-medium text-slate-800">@cliente.Email</div>
+                                                <div class="text-xs text-slate-400">ID: #@cliente.Id</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-700">
+                                            @cliente.TotalPedidos
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        <span class="font-bold text-emerald-600 text-lg">@cliente.TotalGastado.ToString("C")</span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <div class="text-center py-12 text-slate-400">
+                        <i class="fas fa-users text-4xl mb-3"></i>
+                        <p>No hay clientes con pedidos aún</p>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="flex flex-wrap gap-3">
+            <a asp-controller="Admin" asp-action="Index" class="inline-flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-200 text-slate-600 hover:border-slate-300 rounded-xl transition-all font-medium">
+                <i class="fas fa-arrow-left"></i>Volver al Panel
+            </a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script>
+        // Esperar a que el DOM esté completamente cargado
+        document.addEventListener('DOMContentLoaded', function() {
+            // Datos para los gráficos
+            const ventasPorDia = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.VentasPorDia.Select(v => new { fecha = v.Fecha.ToString("dd/MM"), total = v.Total })));
+            const pedidosPorDia = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.PedidosPorDia.Select(p => new { fecha = p.Fecha.ToString("dd/MM"), cantidad = p.Cantidad })));
+
+            // Variables para almacenar las instancias de los gráficos
+            let ventasChart = null;
+            let pedidosChart = null;
+
+            // Función para destruir gráficos existentes
+            function destroyChart(chart) {
+                if (chart) {
+                    chart.destroy();
+                }
+                return null;
+            }
+
+            // Gráfico de Ventas
+            const ventasCanvas = document.getElementById('ventasChart');
+            if (ventasCanvas) {
+                const ventasCtx = ventasCanvas.getContext('2d');
+                ventasChart = new Chart(ventasCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ventasPorDia.map(v => v.fecha),
+                        datasets: [{
+                            label: 'Ventas (€)',
+                            data: ventasPorDia.map(v => v.total),
+                            borderColor: 'rgb(16, 185, 129)',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 2,
+                            pointHoverRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        animation: { duration: 750 },
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return value.toLocaleString('es-ES', { style: 'currency', currency: 'EUR' });
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Gráfico de Pedidos
+            const pedidosCanvas = document.getElementById('pedidosChart');
+            if (pedidosCanvas) {
+                const pedidosCtx = pedidosCanvas.getContext('2d');
+                pedidosChart = new Chart(pedidosCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: pedidosPorDia.map(p => p.fecha),
+                        datasets: [{
+                            label: 'Pedidos',
+                            data: pedidosPorDia.map(p => p.cantidad),
+                            backgroundColor: 'rgba(99, 102, 241, 0.8)',
+                            borderRadius: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        animation: { duration: 750 },
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: { stepSize: 1 }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Actualizar tráfico en tiempo real cada 10 segundos
+            async function actualizarTrafico() {
+                try {
+                    const response = await fetch('/Admin/ObtenerTrafico');
+                    if (response.ok) {
+                        const data = await response.json();
+                        
+                        // Actualizar contador de visitantes
+                        const contadorEl = document.getElementById('visitantesActivos');
+                        if (contadorEl) {
+                            contadorEl.textContent = data.visitantesActivos;
+                        }
+                        
+                        // Actualizar lista de páginas
+                        const listaEl = document.getElementById('visitantesPorPagina');
+                        if (listaEl && data.visitantesPorPagina) {
+                            const paginas = Object.entries(data.visitantesPorPagina).sort((a, b) => b[1] - a[1]);
+                            const total = paginas.reduce((sum, [, count]) => sum + count, 0);
+                            
+                            if (paginas.length > 0) {
+                                listaEl.innerHTML = paginas.map(([pagina, count]) => {
+                                    const porcentaje = total > 0 ? (count / total * 100) : 0;
+                                    return `
+                                        <div class="flex items-center justify-between text-sm">
+                                            <span class="text-slate-300">${pagina}</span>
+                                            <div class="flex items-center gap-2">
+                                                <div class="w-20 bg-slate-700 rounded-full h-1.5">
+                                                    <div class="bg-green-500 h-1.5 rounded-full" style="width: ${porcentaje}%"></div>
+                                                </div>
+                                                <span class="font-semibold text-green-400 w-6 text-right">${count}</span>
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('');
+                            } else {
+                                listaEl.innerHTML = `
+                                    <div class="text-center text-slate-500 py-4">
+                                        <i class="fas fa-users text-2xl mb-2"></i>
+                                        <p class="text-sm">Sin visitantes activos</p>
+                                    </div>
+                                `;
+                            }
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error al actualizar tráfico:', error);
+                }
+            }
+
+            // Actualizar cada 10 segundos
+            setInterval(actualizarTrafico, 10000);
+
+            // Limpiar gráficos cuando se sale de la página
+            window.addEventListener('beforeunload', function() {
+                ventasChart = destroyChart(ventasChart);
+                pedidosChart = destroyChart(pedidosChart);
+            });
+        });
+    </script>
+}
