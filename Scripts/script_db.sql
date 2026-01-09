@@ -107,6 +107,26 @@ CREATE TABLE `linea_pedido` (
   CONSTRAINT `FKoi533vfp5jf0jgf9dws0s0pw4` FOREIGN KEY (`pedido_id`) REFERENCES `pedido` (`id`)
 );
 
+-- Inserts para las categorías
+INSERT INTO categoría (id, nombre) VALUES
+(1, 'Smartwatch'),
+(2, 'Reloj Acero Hombre'),
+(3, 'Reloj Acero Mujer'),
+(4, 'Reloj Acero Niño'),
+(5, 'Reloj Acero Niña'),
+(6, 'Reloj Bolsillo Hombre'),
+(7, 'Reloj Bolsillo Mujer'),
+(8, 'Collar Plata'),
+(9, 'Pendientes Plata'),
+(10, 'Pulsera Plata'),
+(11, 'Anillo Plata'),
+(12, 'Pendientes Acero'),
+(13, 'Pulsera Acero Mujer'),
+(14, 'Anillo Acero'),
+(15, 'Collar Acero Mujer'),
+(16, 'Collar Acero Hombre'),
+(17, 'Pulsera Acero Hombre');
+
 -- Inserts para los productos
 INSERT INTO producto (id, descripcion, nombre, precio, categoria_id) VALUES
 (1, 'RELOJ SMART PLATEADO CORREA VERDE MM', 'HS2005-10', 49.00, 1),
