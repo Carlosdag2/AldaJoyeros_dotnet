@@ -1,4 +1,4 @@
-using AutoMapper;
+ï»¿using AutoMapper;
 using AldaJoyeros.DTOs;
 using AldaJoyeros.Entities;
 using AldaJoyeros.Repositories.Interfaces;
@@ -48,11 +48,11 @@ namespace AldaJoyeros.Services.Implementations
             var carritoItems = await _carritoRepository.GetByUsuarioIdAsync(usuarioId);
             if (!carritoItems.Any())
             {
-                throw new InvalidOperationException("El carrito está vacío");
+                throw new InvalidOperationException("El carrito estÃ¡ vacÃ­o");
             }
 
-            // Crear dirección de envío para el pedido (SIN asociar al usuario)
-            // Esto permite múltiples pedidos con diferentes direcciones
+            // Crear direcciÃ³n de envÃ­o para el pedido (SIN asociar al usuario)
+            // Esto permite mÃºltiples pedidos con diferentes direcciones
             var direccionPedido = new Direccion
             {
                 Calle = pedidoCreateDto.Direccion.Calle,
@@ -61,9 +61,9 @@ namespace AldaJoyeros.Services.Implementations
                 CodigoPostal = pedidoCreateDto.Direccion.CodigoPostal,
                 Ciudad = pedidoCreateDto.Direccion.Ciudad,
                 Provincia = pedidoCreateDto.Direccion.Provincia,
-                UsuarioId = null // NO asociar al usuario - es dirección del pedido
+                UsuarioId = null // NO asociar al usuario - es direcciÃ³n del pedido
             };
-            
+
             var createdDireccion = await _direccionRepository.CreateAsync(direccionPedido);
 
             var pedido = new Pedido
@@ -97,7 +97,7 @@ namespace AldaJoyeros.Services.Implementations
             }
 
             pedido.Estado = pedidoUpdateEstadoDto.Estado;
-            
+
             if (pedidoUpdateEstadoDto.Estado == EstadoPedido.ENTREGADO && pedidoUpdateEstadoDto.FechaEntregaReal.HasValue)
             {
                 pedido.FechaEntregaReal = pedidoUpdateEstadoDto.FechaEntregaReal;

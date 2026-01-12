@@ -223,5 +223,146 @@ namespace AldaJoyeros.Controllers
 
             return RedirectToAction("Index");
         }
+
+        #region API AJAX
+
+        /// <summary>
+        /// Actualizar cantidad de un item via AJAX
+        /// </summary>
+        [HttpPost]
+        [JwtAuthorize]
+        public async Task<IActionResult> ActualizarAjax(long itemId, int cantidad)
+        {
+            try
+            {
+                if (cantidad < 1)
+                {
+                    return Json(new { success = false, message = "La cantidad mínima es 1" });
+                }
+
+                if (cantidad > 99)
+                {
+                    return Json(new { success = false, message = "La cantidad máxima es 99" });
+                }
+
+                var updateDto = new CarritoItemUpdateDto { Cantidad = cantidad };
+                await _carritoService.UpdateItemAsync(CurrentUser!.Id, itemId, updateDto);
+
+                // Obtener datos actualizados
+                var items = await _carritoService.GetByUsuarioIdAsync(CurrentUser.Id);
+                var item = items.FirstOrDefault(i => i.Id == itemId);
+                var total = await _carritoService.GetTotalAsync(CurrentUser.Id);
+                var totalItems = await _carritoService.GetTotalItemsAsync(CurrentUser.Id);
+
+                return Json(new
+                {
+                    success = true,
+                    message = "Cantidad actualizada",
+                    subtotal = item?.Subtotal ?? 0,
+                    subtotalFormateado = (item?.Subtotal ?? 0).ToString("C"),
+                    total = total,
+                    totalFormateado = total.ToString("C"),
+                    totalItems = totalItems
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Eliminar item del carrito via AJAX
+        /// </summary>
+        [HttpPost]
+        [JwtAuthorize]
+        public async Task<IActionResult> EliminarAjax(long itemId)
+        {
+            try
+            {
+                await _carritoService.DeleteItemAsync(CurrentUser!.Id, itemId);
+
+                var total = await _carritoService.GetTotalAsync(CurrentUser.Id);
+                var totalItems = await _carritoService.GetTotalItemsAsync(CurrentUser.Id);
+
+                return Json(new
+                {
+                    success = true,
+                    message = "Producto eliminado del carrito",
+                    total = total,
+                    totalFormateado = total.ToString("C"),
+                    totalItems = totalItems,
+                    carritoVacio = totalItems == 0
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Vaciar carrito via AJAX
+        /// </summary>
+        [HttpPost]
+        [JwtAuthorize]
+        public async Task<IActionResult> VaciarAjax()
+        {
+            try
+            {
+                await _carritoService.ClearCarritoAsync(CurrentUser!.Id);
+
+                return Json(new
+                {
+                    success = true,
+                    message = "Carrito vaciado",
+                    totalItems = 0
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Obtener resumen del carrito via AJAX
+        /// </summary>
+        [HttpGet]
+        [JwtAuthorize]
+        public async Task<IActionResult> GetResumenAjax()
+        {
+            try
+            {
+                var items = await _carritoService.GetByUsuarioIdAsync(CurrentUser!.Id);
+                var total = await _carritoService.GetTotalAsync(CurrentUser.Id);
+                var totalItems = await _carritoService.GetTotalItemsAsync(CurrentUser.Id);
+
+                var itemsData = items.Select(i => new
+                {
+                    id = i.Id,
+                    productoId = i.ProductoId,
+                    nombre = i.ProductoNombre,
+                    precio = i.Precio,
+                    cantidad = i.Cantidad,
+                    subtotal = i.Subtotal
+                });
+
+                return Json(new
+                {
+                    success = true,
+                    items = itemsData,
+                    total = total,
+                    totalFormateado = total.ToString("C"),
+                    totalItems = totalItems
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        #endregion
     }
 }

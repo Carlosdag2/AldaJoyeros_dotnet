@@ -1,0 +1,174 @@
+@model AldaJoyeros.Helpers.PagedResult<AldaJoyeros.DTOs.ProductoDto>
+
+<!-- Info de resultados -->
+<div class="flex flex-col sm:flex-row justify-between items-center mb-10 pb-4 border-b border-stone-200">
+    <p class="text-stone-500 text-sm italic mb-4 sm:mb-0">
+        Mostrando <span class="font-bold text-stone-900" id="rangoProductos">@Model.StartItem-@Model.EndItem</span> de <span id="totalProductos">@Model.TotalItems</span> joyas
+    </p>
+
+    <div class="flex items-center gap-4">
+        <span class="text-xs uppercase tracking-widest text-stone-400">Vista:</span>
+        <button @@click="viewMode = 'grid'" :class="viewMode === 'grid' ? 'text-emerald-900' : 'text-stone-300 hover:text-stone-500'" class="transition-colors">
+            <i class="fas fa-th-large text-lg"></i>
+        </button>
+        <button @@click="viewMode = 'list'" :class="viewMode === 'list' ? 'text-emerald-900' : 'text-stone-300 hover:text-stone-500'" class="transition-colors">
+            <i class="fas fa-list text-lg"></i>
+        </button>
+    </div>
+</div>
+
+@if (Model.Items != null && Model.Items.Any())
+{
+    <!-- Vista Grid -->
+    <div x-show="viewMode === 'grid'"
+         class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-x-8 gap-y-12"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100">
+
+        @foreach (var producto in Model.Items)
+        {
+            <div class="group relative flex flex-col producto-card" data-producto-id="@producto.Id">
+                <div class="relative aspect-[4/5] bg-white overflow-hidden mb-4 border border-stone-100">
+                    <a href="/Productos/Detalle/@producto.Id" class="block w-full h-full">
+                        @if (producto.TieneImagenes)
+                        {
+                            <img src="@producto.ImagenPrincipal"
+                                 alt="@producto.Nombre"
+                                 loading="lazy"
+                                 class="w-full h-full object-cover object-center transform transition-transform duration-700 group-hover:scale-105" />
+                        }
+                        else
+                        {
+                            <div class="w-full h-full flex items-center justify-center bg-stone-50 text-stone-200">
+                                <i class="fas fa-gem text-4xl"></i>
+                            </div>
+                        }
+                    </a>
+
+                    <div class="absolute inset-x-0 bottom-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-t from-white/90 to-transparent">
+                        <button type="button"
+                                onclick="window.carritoApp?.agregarAlCarrito(@producto.Id, '@producto.Nombre.Replace("'", "\\'").Replace("\"", "\\\"")', event)"
+                                class="btn-agregar-carrito w-full py-3 bg-emerald-900 text-white text-xs uppercase tracking-widest font-bold hover:bg-black transition-colors flex items-center justify-center gap-2">
+                            <span class="btn-texto">Añadir al carrito</span>
+                            <span class="btn-loading hidden"><i class="fas fa-circle-notch fa-spin"></i> Añadiendo...</span>
+                        </button>
+                    </div>
+
+                    <div class="absolute top-3 left-3 flex flex-col gap-2">
+                        <span class="px-2 py-1 bg-white/90 backdrop-blur text-[10px] uppercase tracking-wider font-bold text-stone-900">
+                            @producto.CategoriaNombre
+                        </span>
+                    </div>
+                </div>
+
+                <div class="text-center space-y-1">
+                    <h3 class="font-serif text-lg text-stone-900 group-hover:text-emerald-800 transition-colors">
+                        <a href="/Productos/Detalle/@producto.Id">@producto.Nombre</a>
+                    </h3>
+                    <div class="font-serif text-emerald-800">@producto.Precio.ToString("C")</div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Vista Lista -->
+    <div x-show="viewMode === 'list'" class="space-y-6" x-cloak
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100">
+        @foreach (var producto in Model.Items)
+        {
+            <div class="group flex flex-col sm:flex-row bg-white border border-stone-100 hover:border-emerald-900/20 transition-all duration-300 producto-card" data-producto-id="@producto.Id">
+                <div class="w-full sm:w-48 aspect-square flex-shrink-0 bg-stone-50 relative overflow-hidden">
+                    <a href="/Productos/Detalle/@producto.Id">
+                        @if (producto.TieneImagenes)
+                        {
+                            <img src="@producto.ImagenPrincipal" alt="@producto.Nombre" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                        }
+                        else
+                        {
+                            <div class="w-full h-full flex items-center justify-center text-stone-300"><i class="fas fa-gem text-3xl"></i></div>
+                        }
+                    </a>
+                </div>
+                <div class="p-6 flex-1 flex flex-col justify-center">
+                    <div class="text-xs uppercase tracking-widest text-emerald-800 mb-2">@producto.CategoriaNombre</div>
+                    <h3 class="font-serif text-xl text-stone-900 mb-2">
+                        <a href="/Productos/Detalle/@producto.Id">@producto.Nombre</a>
+                    </h3>
+                    <p class="text-sm text-stone-500 mb-4 line-clamp-2">@producto.Descripcion</p>
+                    <div class="flex items-center justify-between mt-auto gap-4">
+                        <span class="font-serif text-2xl text-stone-900">@producto.Precio.ToString("C")</span>
+                        <div class="flex items-center gap-3">
+                            <button type="button"
+                                    onclick="window.carritoApp?.agregarAlCarrito(@producto.Id, '@producto.Nombre.Replace("'", "\\'").Replace("\"", "\\\"")', event)"
+                                    class="btn-agregar-carrito px-4 py-2 bg-emerald-900 text-white text-xs uppercase tracking-widest font-bold hover:bg-black transition-colors flex items-center gap-2">
+                                <i class="fas fa-shopping-bag btn-icon"></i>
+                                <i class="fas fa-circle-notch fa-spin btn-loading hidden"></i>
+                                <span class="hidden sm:inline btn-texto">Añadir</span>
+                            </button>
+                            <a href="/Productos/Detalle/@producto.Id" class="text-xs uppercase tracking-widest font-bold text-stone-900 border-b border-stone-900 pb-0.5 hover:text-emerald-800 hover:border-emerald-800 transition-colors">
+                                Ver Detalles
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Paginación AJAX -->
+    @if (Model.TotalPages > 1)
+    {
+        <div class="flex justify-center items-center gap-2 mt-16" id="paginacion">
+            @if (Model.HasPreviousPage)
+            {
+                <button type="button" 
+                        onclick="window.productosApp?.cambiarPagina(@(Model.PageNumber - 1))"
+                        class="w-10 h-10 flex items-center justify-center border border-stone-200 text-stone-500 hover:border-emerald-900 hover:text-emerald-900 transition-colors">
+                    <i class="fas fa-chevron-left text-xs"></i>
+                </button>
+            }
+
+            @for (var i = Math.Max(1, Model.PageNumber - 2); i <= Math.Min(Model.TotalPages, Model.PageNumber + 2); i++)
+            {
+                var pageNum = i;
+                if (i == Model.PageNumber)
+                {
+                    <span class="w-10 h-10 flex items-center justify-center bg-emerald-900 text-white font-serif">@i</span>
+                }
+                else
+                {
+                    <button type="button"
+                            onclick="window.productosApp?.cambiarPagina(@pageNum)"
+                            class="w-10 h-10 flex items-center justify-center border border-stone-200 text-stone-500 hover:border-emerald-900 hover:text-emerald-900 transition-colors font-serif">
+                        @i
+                    </button>
+                }
+            }
+
+            @if (Model.HasNextPage)
+            {
+                <button type="button"
+                        onclick="window.productosApp?.cambiarPagina(@(Model.PageNumber + 1))"
+                        class="w-10 h-10 flex items-center justify-center border border-stone-200 text-stone-500 hover:border-emerald-900 hover:text-emerald-900 transition-colors">
+                    <i class="fas fa-chevron-right text-xs"></i>
+                </button>
+            }
+        </div>
+    }
+}
+else
+{
+    <div class="text-center py-24 px-6 border border-stone-200 bg-white">
+        <i class="far fa-gem text-5xl text-stone-200 mb-6"></i>
+        <h3 class="font-serif text-2xl text-stone-900 mb-3">Sin resultados</h3>
+        <p class="text-stone-500 font-light mb-8 max-w-md mx-auto">
+            No hemos encontrado joyas que coincidan con tu búsqueda. Prueba a explorar nuestras categorías principales.
+        </p>
+        <button type="button" onclick="window.productosApp?.limpiarFiltros()" class="inline-block px-8 py-3 bg-stone-900 text-white text-xs uppercase tracking-widest font-bold hover:bg-emerald-900 transition-colors">
+            Ver todo el catálogo
+        </button>
+    </div>
+}

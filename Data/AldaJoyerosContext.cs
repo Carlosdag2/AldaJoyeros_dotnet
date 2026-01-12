@@ -22,20 +22,20 @@ namespace AldaJoyeros.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // Configuraci�n Usuario
+            // Configuración Usuario
             modelBuilder.Entity<Usuario>(entity =>
             {
                 entity.HasIndex(e => e.Email).IsUnique();
                 entity.Property(e => e.Rol).HasMaxLength(20);
             });
 
-            // Configuraci�n Categoria
+            // Configuración Categoria
             modelBuilder.Entity<Categoria>(entity =>
             {
                 entity.HasIndex(e => e.Nombre).IsUnique();
             });
 
-            // Configuraci�n Producto
+            // Configuración Producto
             modelBuilder.Entity<Producto>(entity =>
             {
                 entity.HasOne(p => p.Categoria)
@@ -44,7 +44,7 @@ namespace AldaJoyeros.Data
                     .OnDelete(DeleteBehavior.Restrict);
             });
 
-            // Configuraci�n CarritoItem
+            // Configuración CarritoItem
             modelBuilder.Entity<CarritoItem>(entity =>
             {
                 entity.HasOne(ci => ci.Usuario)
@@ -58,7 +58,7 @@ namespace AldaJoyeros.Data
                     .OnDelete(DeleteBehavior.Cascade);
             });
 
-            // Configuraci�n Direccion
+            // Configuración Direccion
             modelBuilder.Entity<Direccion>(entity =>
             {
                 entity.HasOne(d => d.Usuario)
@@ -67,7 +67,7 @@ namespace AldaJoyeros.Data
                     .OnDelete(DeleteBehavior.Cascade);
             });
 
-            // Configuraci�n Pedido
+            // Configuración Pedido
             modelBuilder.Entity<Pedido>(entity =>
             {
                 entity.HasOne(p => p.Usuario)
