@@ -163,6 +163,23 @@ namespace AldaJoyeros
             app.UseHttpsRedirection();
             app.UseRouting();
 
+            // Middleware para exponer headers personalizados en AJAX
+            app.Use(async (context, next) =>
+            {
+                context.Response.OnStarting(() =>
+                {
+                    if (context.Request.Headers.XRequestedWith == "XMLHttpRequest")
+                    {
+                        context.Response.Headers.Append("Access-Control-Expose-Headers", 
+                            "X-Stats-Activos, X-Stats-Eliminados, X-Stats-Total, X-Stats-Pagina, " +
+                            "X-Stats-Pendientes, X-Stats-EnProceso, X-Stats-Enviados, X-Stats-Entregados, " +
+                            "X-Stats-Admins, X-Stats-Clientes");
+                    }
+                    return Task.CompletedTask;
+                });
+                await next();
+            });
+
             app.UseSession();
             
             // Middleware de Tráfico (registra visitas)

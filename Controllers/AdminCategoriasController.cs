@@ -155,5 +155,80 @@ namespace AldaJoyeros.Controllers
 
             return RedirectToAction("Index");
         }
+
+        #region API AJAX
+
+        /// <summary>
+        /// Eliminar categoría via AJAX
+        /// </summary>
+        [HttpPost]
+        public async Task<IActionResult> EliminarAjax(long id)
+        {
+            try
+            {
+                var categoria = await _categoriaService.GetByIdAsync(id);
+                if (categoria == null)
+                {
+                    return Json(new { success = false, message = "Categoría no encontrada" });
+                }
+
+                if (await _categoriaService.IsDefaultCategoryAsync(id))
+                {
+                    return Json(new { success = false, message = "No se puede eliminar la categoría por defecto" });
+                }
+
+                var nombreCategoria = categoria.Nombre;
+                var cantidadProductos = categoria.CantidadProductos;
+                
+                await _categoriaService.DeleteAsync(id);
+
+                var mensaje = cantidadProductos > 0 
+                    ? $"'{nombreCategoria}' eliminada. {cantidadProductos} producto(s) movidos a 'Sin categoría'."
+                    : $"'{nombreCategoria}' eliminada";
+                
+                return Json(new { 
+                    success = true, 
+                    message = mensaje,
+                    productosMovidos = cantidadProductos
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Obtener todas las categorías via AJAX
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> ListarAjax()
+        {
+            try
+            {
+                var categorias = await _categoriaService.GetAllAsync();
+                
+                var categoriasData = categorias.Select(c => new
+                {
+                    id = c.Id,
+                    nombre = c.Nombre,
+                    cantidadProductos = c.CantidadProductos,
+                    esDefault = c.Nombre == "Sin categoría"
+                });
+
+                return Json(new
+                {
+                    success = true,
+                    categorias = categoriasData,
+                    totalProductos = categorias.Sum(c => c.CantidadProductos)
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        #endregion
     }
 }

@@ -26,8 +26,11 @@ namespace AldaJoyeros.Controllers
             var todosProductos = productos.ToList();
             
             // Estadísticas
-            ViewBag.TotalProductos = todosProductos.Count(p => !p.Eliminado);
-            ViewBag.TotalEliminados = todosProductos.Count(p => p.Eliminado);
+            var totalActivos = todosProductos.Count(p => !p.Eliminado);
+            var totalEliminados = todosProductos.Count(p => p.Eliminado);
+            
+            ViewBag.TotalProductos = totalActivos;
+            ViewBag.TotalEliminados = totalEliminados;
             
             // Aplicar filtro de estado
             IEnumerable<ProductoDto> productosFiltrados = filtro switch
@@ -46,16 +49,21 @@ namespace AldaJoyeros.Controllers
                     p.CategoriaNombre.Contains(busqueda, StringComparison.OrdinalIgnoreCase) ||
                     p.Id.ToString().Contains(busqueda)
                 ).ToList();
-                
-                if (!productosFiltrados.Any())
-                {
-                    TempData["Info"] = $"No se encontraron productos con '{busqueda}'";
-                }
             }
 
             var pagedResult = PagedResult<ProductoDto>.Create(productosFiltrados, page, PageSize);
             ViewBag.Busqueda = busqueda;
             ViewBag.Filtro = filtro;
+
+            // Si es petición AJAX, devolver partial con datos de estadísticas en el response header
+            if (Request.Headers.XRequestedWith == "XMLHttpRequest")
+            {
+                Response.Headers.Append("X-Stats-Activos", totalActivos.ToString());
+                Response.Headers.Append("X-Stats-Eliminados", totalEliminados.ToString());
+                Response.Headers.Append("X-Stats-Total", pagedResult.TotalItems.ToString());
+                Response.Headers.Append("X-Stats-Pagina", $"{pagedResult.PageNumber}/{pagedResult.TotalPages}");
+                return PartialView("_ProductosList", pagedResult);
+            }
 
             return View(pagedResult);
         }
@@ -230,5 +238,149 @@ namespace AldaJoyeros.Controllers
 
             return RedirectToAction("Index", new { filtro = "eliminados" });
         }
+
+        #region API AJAX
+
+        /// <summary>
+        /// Eliminar producto via AJAX (soft delete)
+        /// </summary>
+        [HttpPost]
+        public async Task<IActionResult> EliminarAjax(long id)
+        {
+            try
+            {
+                var producto = await _productoService.GetByIdAsync(id);
+                if (producto == null)
+                {
+                    return Json(new { success = false, message = "Producto no encontrado" });
+                }
+
+                await _productoService.DeleteAsync(id);
+                
+                return Json(new { 
+                    success = true, 
+                    message = $"'{producto.Nombre}' movido a la papelera",
+                    productoNombre = producto.Nombre
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Restaurar producto via AJAX
+        /// </summary>
+        [HttpPost]
+        public async Task<IActionResult> RestaurarAjax(long id)
+        {
+            try
+            {
+                var producto = await _productoService.GetByIdAsync(id);
+                if (producto == null)
+                {
+                    return Json(new { success = false, message = "Producto no encontrado" });
+                }
+
+                await _productoService.RestoreAsync(id);
+                
+                return Json(new { 
+                    success = true, 
+                    message = $"'{producto.Nombre}' restaurado",
+                    productoNombre = producto.Nombre
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Eliminar permanentemente via AJAX
+        /// </summary>
+        [HttpPost]
+        public async Task<IActionResult> EliminarPermanenteAjax(long id)
+        {
+            try
+            {
+                var producto = await _productoService.GetByIdAsync(id);
+                if (producto == null)
+                {
+                    return Json(new { success = false, message = "Producto no encontrado" });
+                }
+
+                if (!producto.Eliminado)
+                {
+                    return Json(new { success = false, message = "El producto debe estar en la papelera primero" });
+                }
+
+                await _productoService.HardDeleteAsync(id);
+                
+                return Json(new { 
+                    success = true, 
+                    message = $"'{producto.Nombre}' eliminado permanentemente"
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Buscar productos via AJAX
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> BuscarAjax(string busqueda = "", string filtro = "activos", int page = 1)
+        {
+            var productos = await _productoService.GetAllIncludingDeletedAsync();
+            var todosProductos = productos.ToList();
+            
+            IEnumerable<ProductoDto> productosFiltrados = filtro switch
+            {
+                "eliminados" => todosProductos.Where(p => p.Eliminado),
+                "todos" => todosProductos,
+                _ => todosProductos.Where(p => !p.Eliminado)
+            };
+            
+            if (!string.IsNullOrWhiteSpace(busqueda))
+            {
+                productosFiltrados = productosFiltrados.Where(p => 
+                    p.Nombre.Contains(busqueda, StringComparison.OrdinalIgnoreCase) ||
+                    (p.Descripcion != null && p.Descripcion.Contains(busqueda, StringComparison.OrdinalIgnoreCase)) ||
+                    p.CategoriaNombre.Contains(busqueda, StringComparison.OrdinalIgnoreCase) ||
+                    p.Id.ToString().Contains(busqueda)
+                ).ToList();
+            }
+
+            var pagedResult = PagedResult<ProductoDto>.Create(productosFiltrados, page, PageSize);
+
+            var productosData = pagedResult.Items.Select(p => new
+            {
+                id = p.Id,
+                nombre = p.Nombre,
+                precio = p.Precio,
+                precioFormateado = p.Precio.ToString("C"),
+                categoria = p.CategoriaNombre,
+                imagen = p.ImagenPrincipal,
+                tieneImagenes = p.TieneImagenes,
+                eliminado = p.Eliminado
+            });
+
+            return Json(new
+            {
+                success = true,
+                productos = productosData,
+                currentPage = pagedResult.PageNumber,
+                totalPages = pagedResult.TotalPages,
+                totalItems = pagedResult.TotalItems,
+                totalActivos = todosProductos.Count(p => !p.Eliminado),
+                totalEliminados = todosProductos.Count(p => p.Eliminado)
+            });
+        }
+
+        #endregion
     }
 }

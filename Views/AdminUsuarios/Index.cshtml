@@ -38,146 +38,51 @@
         </div>
     </div>
 
+
     <div class="container mx-auto px-6 -mt-6 relative z-10 pb-12">
         <!-- Filters & Stats -->
         <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 mb-6">
-            <!-- Filter Tabs -->
-            <div class="flex flex-wrap gap-2 mb-5">
-                <a asp-action="Index" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all @(string.IsNullOrEmpty(rolFiltro) ? "bg-emerald-500 text-white shadow-md" : "bg-slate-100 text-slate-600 hover:bg-slate-200")">
+            <!-- Filter Tabs AJAX -->
+            <div class="flex flex-wrap gap-2 mb-5" id="filtrosUsuarios">
+                <button type="button" onclick="adminUsuarios.filtrar('')" 
+                        class="filtro-btn inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all @(string.IsNullOrEmpty(rolFiltro) ? "bg-emerald-500 text-white shadow-md" : "bg-slate-100 text-slate-600 hover:bg-slate-200")" data-rol="">
                     <i class="fas fa-th-large"></i>Todos
-                </a>
-                <a asp-action="Index" asp-route-rol="ADMIN" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all @(rolFiltro == "ADMIN" ? "bg-red-500 text-white shadow-md" : "bg-slate-100 text-slate-600 hover:bg-slate-200")">
+                </button>
+                <button type="button" onclick="adminUsuarios.filtrar('ADMIN')" 
+                        class="filtro-btn inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all @(rolFiltro == "ADMIN" ? "bg-red-500 text-white shadow-md" : "bg-slate-100 text-slate-600 hover:bg-slate-200")" data-rol="ADMIN">
                     <i class="fas fa-user-shield"></i>Administradores
-                </a>
-                <a asp-action="Index" asp-route-rol="USER" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all @(rolFiltro == "USER" ? "bg-blue-500 text-white shadow-md" : "bg-slate-100 text-slate-600 hover:bg-slate-200")">
+                </button>
+                <button type="button" onclick="adminUsuarios.filtrar('USER')" 
+                        class="filtro-btn inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all @(rolFiltro == "USER" ? "bg-blue-500 text-white shadow-md" : "bg-slate-100 text-slate-600 hover:bg-slate-200")" data-rol="USER">
                     <i class="fas fa-user"></i>Clientes
-                </a>
+                </button>
             </div>
 
             <!-- Stats -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 pt-5 border-t border-slate-100">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 pt-5 border-t border-slate-100" id="statsUsuarios">
                 <div class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-3 text-center border border-slate-200">
-                    <div class="text-2xl font-bold text-slate-700">@Model.TotalItems</div>
+                    <div id="statTotal" class="text-2xl font-bold text-slate-700">@Model.TotalItems</div>
                     <div class="text-xs text-slate-500">Total</div>
                 </div>
                 <div class="bg-gradient-to-br from-red-50 to-rose-50 rounded-xl p-3 text-center border border-red-200">
-                    <div class="text-2xl font-bold text-red-600">@totalAdministradores</div>
+                    <div id="statAdmins" class="text-2xl font-bold text-red-600">@totalAdministradores</div>
                     <div class="text-xs text-slate-500">Administradores</div>
                 </div>
                 <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-3 text-center border border-blue-200">
-                    <div class="text-2xl font-bold text-blue-600">@totalClientes</div>
+                    <div id="statClientes" class="text-2xl font-bold text-blue-600">@totalClientes</div>
                     <div class="text-xs text-slate-500">Clientes</div>
                 </div>
                 <div class="bg-gradient-to-br from-violet-50 to-purple-50 rounded-xl p-3 text-center border border-violet-200">
-                    <div class="text-2xl font-bold text-violet-600">@Model.PageNumber/@Model.TotalPages</div>
+                    <div id="statPagina" class="text-2xl font-bold text-violet-600">@Model.PageNumber/@Model.TotalPages</div>
                     <div class="text-xs text-slate-500">Página</div>
                 </div>
             </div>
         </div>
 
-        @if(Model.Items != null && Model.Items.Any())
-        {
-            <!-- Users Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-6">
-                @foreach(var u in Model.Items)
-                {
-                    var userEmail = u.Email.Replace("'", "\\'");
-                    <div class="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-slate-100 hover:border-blue-200">
-                        <!-- Header -->
-                        <div class="@(u.Rol == "ADMIN" ? "bg-gradient-to-br from-red-500 to-rose-600" : "bg-gradient-to-br from-blue-500 to-indigo-600") p-5 relative overflow-hidden">
-                            <div class="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full -mr-10 -mt-10"></div>
-                            <div class="relative flex items-center gap-3">
-                                <div class="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-                                    <i class="@(u.Rol == "ADMIN" ? "fas fa-user-shield" : "fas fa-user") text-white text-xl"></i>
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <div class="font-bold text-white truncate">@u.Email</div>
-                                    <div class="text-white/70 text-sm">ID #@u.Id</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Body -->
-                        <div class="p-5">
-                            <div class="flex items-center justify-between mb-4 bg-slate-50 rounded-xl p-4 border border-slate-100">
-                                <div>
-                                    <div class="text-xs text-slate-400 mb-1">Rol</div>
-                                    @if(u.Rol == "ADMIN")
-                                    {
-                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700">
-                                            <i class="fas fa-user-shield mr-1"></i>Admin
-                                        </span>
-                                    }
-                                    else
-                                    {
-                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
-                                            <i class="fas fa-user mr-1"></i>Cliente
-                                        </span>
-                                    }
-                                </div>
-                                <div class="text-right">
-                                    <div class="text-xs text-slate-400 mb-1">Pedidos</div>
-                                    <div class="text-xl font-bold text-emerald-600">@u.CantidadPedidos</div>
-                                </div>
-                            </div>
-
-                            <div class="flex gap-2">
-                                <a asp-action="Editar" asp-route-id="@u.Id" class="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-100 hover:bg-emerald-500 text-slate-600 hover:text-white rounded-xl transition-all font-medium text-sm">
-                                    <i class="fas fa-edit"></i>Editar
-                                </a>
-                                <form asp-action="Eliminar" asp-route-id="@u.Id" method="post" class="flex-1" id="deleteUserForm-@u.Id">
-                                    <button type="button" onclick="confirmDelete('deleteUserForm-@u.Id', '@userEmail')" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-100 hover:bg-red-500 text-slate-600 hover:text-white rounded-xl transition-all font-medium text-sm">
-                                        <i class="fas fa-trash"></i>Eliminar
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                }
-            </div>
-
-            <!-- Pagination -->
-            @if(Model.TotalPages > 1)
-            {
-                <div class="flex justify-center items-center gap-2 flex-wrap">
-                    @if(Model.HasPreviousPage)
-                    {
-                        <a asp-action="Index" asp-route-page="@(Model.PageNumber-1)" asp-route-rol="@rolFiltro" class="px-3 py-2 bg-white border border-slate-200 text-slate-600 rounded-lg hover:bg-emerald-500 hover:border-emerald-500 hover:text-white transition-all">
-                            <i class="fas fa-chevron-left text-xs"></i>
-                        </a>
-                    }
-                    @{var startPage = Math.Max(1, Model.PageNumber - 2); var endPage = Math.Min(Model.TotalPages, Model.PageNumber + 2);}
-                    @for(var i = startPage; i <= endPage; i++)
-                    {
-                        @if(i == Model.PageNumber)
-                        {
-                            <span class="px-3 py-2 bg-emerald-500 text-white rounded-lg font-medium">@i</span>
-                        }
-                        else
-                        {
-                            <a asp-action="Index" asp-route-page="@i" asp-route-rol="@rolFiltro" class="px-3 py-2 bg-white border border-slate-200 text-slate-600 rounded-lg hover:bg-emerald-500 hover:border-emerald-500 hover:text-white transition-all">@i</a>
-                        }
-                    }
-                    @if(Model.HasNextPage)
-                    {
-                        <a asp-action="Index" asp-route-page="@(Model.PageNumber+1)" asp-route-rol="@rolFiltro" class="px-3 py-2 bg-white border border-slate-200 text-slate-600 rounded-lg hover:bg-emerald-500 hover:border-emerald-500 hover:text-white transition-all">
-                            <i class="fas fa-chevron-right text-xs"></i>
-                        </a>
-                    }
-                </div>
-            }
-        }
-        else
-        {
-            <!-- Empty State -->
-            <div class="bg-white rounded-2xl p-12 text-center shadow-sm border border-slate-100">
-                <div class="w-20 h-20 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <i class="fas fa-users text-blue-500 text-3xl"></i>
-                </div>
-                <h3 class="text-xl font-bold text-slate-800 mb-2">No hay usuarios</h3>
-                <p class="text-slate-500">@(string.IsNullOrEmpty(rolFiltro) ? "Crea el primer usuario" : $"No hay usuarios con rol {rolFiltro}")</p>
-            </div>
-        }
+        <!-- Contenedor dinámico para la lista de usuarios -->
+        <div id="usuariosContainer">
+            <partial name="_UsuariosList" model="Model" />
+        </div>
 
         <!-- Navigation -->
         <div class="mt-8">
@@ -187,3 +92,209 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        const adminUsuarios = {
+            rolActual: '@rolFiltro',
+            paginaActual: @Model.PageNumber,
+            cargando: false,
+
+            // Filtrar por rol
+            async filtrar(rol) {
+                if (this.cargando) return;
+                this.rolActual = rol;
+                this.paginaActual = 1;
+                await this.cargarDatos();
+                this.actualizarBotonesFiltro(rol);
+                this.actualizarURL();
+            },
+
+            // Cargar página específica
+            async cargarPagina(pagina) {
+                if (this.cargando) return;
+                this.paginaActual = pagina;
+                await this.cargarDatos();
+                this.actualizarURL();
+                document.getElementById('usuariosContainer').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            },
+
+            // Cargar datos via AJAX
+            async cargarDatos() {
+                this.cargando = true;
+                const container = document.getElementById('usuariosContainer');
+                
+                container.style.opacity = '0.5';
+                container.style.pointerEvents = 'none';
+
+                try {
+                    const params = new URLSearchParams();
+                    if (this.rolActual) params.append('rol', this.rolActual);
+                    params.append('page', this.paginaActual);
+
+                    const response = await fetch(`/AdminUsuarios/Index?${params.toString()}`, {
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                    });
+
+                    if (response.ok) {
+                        const html = await response.text();
+                        container.innerHTML = html;
+                        container.style.opacity = '1';
+                        container.style.pointerEvents = '';
+                        
+                        // Actualizar estadísticas desde los headers
+                        this.actualizarEstadisticas(response);
+                    } else {
+                        throw new Error('Error al cargar');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    AldaToast.error('Error al cargar los usuarios');
+                    container.style.opacity = '1';
+                    container.style.pointerEvents = '';
+                } finally {
+                    this.cargando = false;
+                }
+            },
+
+            // Actualizar estadísticas desde response headers
+            actualizarEstadisticas(response) {
+                const admins = response.headers.get('X-Stats-Admins');
+                const clientes = response.headers.get('X-Stats-Clientes');
+                const total = response.headers.get('X-Stats-Total');
+                const pagina = response.headers.get('X-Stats-Pagina');
+
+                if (admins) document.getElementById('statAdmins').textContent = admins;
+                if (clientes) document.getElementById('statClientes').textContent = clientes;
+                if (total) document.getElementById('statTotal').textContent = total;
+                if (pagina) document.getElementById('statPagina').textContent = pagina;
+            },
+
+            // Actualizar botones de filtro
+            actualizarBotonesFiltro(rolActivo) {
+                const botones = document.querySelectorAll('#filtrosUsuarios .filtro-btn');
+                const colores = {
+                    '': { activo: 'bg-emerald-500 text-white shadow-md', inactivo: 'bg-slate-100 text-slate-600 hover:bg-slate-200' },
+                    'ADMIN': { activo: 'bg-red-500 text-white shadow-md', inactivo: 'bg-slate-100 text-slate-600 hover:bg-slate-200' },
+                    'USER': { activo: 'bg-blue-500 text-white shadow-md', inactivo: 'bg-slate-100 text-slate-600 hover:bg-slate-200' }
+                };
+
+                botones.forEach(btn => {
+                    const rol = btn.dataset.rol;
+                    const esActivo = rol === rolActivo;
+                    
+                    // Remover clases de color/estado previas
+                    btn.classList.remove(
+                        'bg-emerald-500', 'bg-red-500', 'bg-blue-500',
+                        'bg-slate-100', 'text-white', 'text-slate-600', 'shadow-md', 'hover:bg-slate-200'
+                    );
+                    
+                    // Añadir clases correspondientes
+                    const clases = esActivo ? colores[rol].activo : colores[rol].inactivo;
+                    btn.classList.add(...clases.split(' '));
+                });
+            },
+
+            // Actualizar URL
+            actualizarURL() {
+                const params = new URLSearchParams();
+                if (this.rolActual) params.append('rol', this.rolActual);
+                if (this.paginaActual > 1) params.append('page', this.paginaActual);
+                
+                const newUrl = params.toString() 
+                    ? `${window.location.pathname}?${params.toString()}`
+                    : window.location.pathname;
+                    
+                history.pushState({ rol: this.rolActual, page: this.paginaActual }, '', newUrl);
+            },
+
+            // Eliminar usuario
+            async eliminar(id, email) {
+                const confirmar = await AldaConfirm.show({
+                    title: '¿Eliminar usuario?',
+                    message: `El usuario "${email}" será eliminado permanentemente.`,
+                    type: 'danger',
+                    confirmText: 'Eliminar'
+                });
+
+                if (!confirmar) return;
+
+                try {
+                    const response = await fetch('/AdminUsuarios/EliminarAjax', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: `id=${id}`
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        this.animarUsuarioEliminado(id);
+                        AldaToast.success(data.message);
+                        setTimeout(() => this.cargarDatos(), 500);
+                    } else {
+                        AldaToast.error(data.message);
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    AldaToast.error('Error de conexión');
+                }
+            },
+
+            // Cambiar rol
+            async cambiarRol(id, email, nuevoRol) {
+                const confirmar = await AldaConfirm.show({
+                    title: '¿Cambiar rol?',
+                    message: `El usuario "${email}" pasará a ser ${nuevoRol === 'ADMIN' ? 'Administrador' : 'Cliente'}.`,
+                    type: 'warning',
+                    confirmText: 'Cambiar rol'
+                });
+
+                if (!confirmar) return;
+
+                try {
+                    const response = await fetch('/AdminUsuarios/CambiarRolAjax', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: `id=${id}&nuevoRol=${nuevoRol}`
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        AldaToast.success(data.message);
+                        setTimeout(() => this.cargarDatos(), 500);
+                    } else {
+                        AldaToast.error(data.message);
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    AldaToast.error('Error de conexión');
+                }
+            },
+
+            // Animar usuario al eliminarlo
+            animarUsuarioEliminado(id) {
+                const card = document.querySelector(`[data-usuario-id="${id}"]`);
+                if (card) {
+                    card.style.transition = 'all 0.4s ease';
+                    card.style.transform = 'scale(0.9)';
+                    card.style.opacity = '0';
+                    setTimeout(() => card.remove(), 400);
+                }
+            }
+        };
+
+        // Manejar botón atrás del navegador
+        window.addEventListener('popstate', (event) => {
+            if (event.state) {
+                adminUsuarios.rolActual = event.state.rol || '';
+                adminUsuarios.paginaActual = event.state.page || 1;
+                adminUsuarios.cargarDatos();
+                adminUsuarios.actualizarBotonesFiltro(adminUsuarios.rolActual);
+            }
+        });
+
+        window.adminUsuarios = adminUsuarios;
+    </script>
+}

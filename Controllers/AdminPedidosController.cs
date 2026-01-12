@@ -27,24 +27,36 @@ namespace AldaJoyeros.Controllers
             var pedidosQuery = await _pedidoService.GetAllAsync();
             
             var todosPedidos = pedidosQuery.ToList();
-            ViewBag.TotalPendientes = todosPedidos.Count(p => p.Estado == "PENDIENTE");
-            ViewBag.TotalEnProceso = todosPedidos.Count(p => p.Estado == "EN_PROCESO");
-            ViewBag.TotalEnviados = todosPedidos.Count(p => p.Estado == "ENVIADO");
-            ViewBag.TotalEntregados = todosPedidos.Count(p => p.Estado == "ENTREGADO");
-            ViewBag.TotalCancelados = todosPedidos.Count(p => p.Estado == "CANCELADO");
+            var totalPendientes = todosPedidos.Count(p => p.Estado == "PENDIENTE");
+            var totalEnProceso = todosPedidos.Count(p => p.Estado == "EN_PROCESO");
+            var totalEnviados = todosPedidos.Count(p => p.Estado == "ENVIADO");
+            var totalEntregados = todosPedidos.Count(p => p.Estado == "ENTREGADO");
+            var totalCancelados = todosPedidos.Count(p => p.Estado == "CANCELADO");
+            
+            ViewBag.TotalPendientes = totalPendientes;
+            ViewBag.TotalEnProceso = totalEnProceso;
+            ViewBag.TotalEnviados = totalEnviados;
+            ViewBag.TotalEntregados = totalEntregados;
+            ViewBag.TotalCancelados = totalCancelados;
             
             if (!string.IsNullOrEmpty(estado))
             {
                 pedidosQuery = pedidosQuery.Where(p => p.Estado == estado).ToList();
-                
-                if (!pedidosQuery.Any())
-                {
-                    TempData["Info"] = $"No hay pedidos con estado '{GetEstadoDisplay(estado)}'";
-                }
             }
 
             var pagedResult = PagedResult<PedidoDto>.Create(pedidosQuery, page, PageSize);
             ViewBag.EstadoFiltro = estado;
+
+            // Si es petición AJAX, devolver partial con estadísticas en headers
+            if (Request.Headers.XRequestedWith == "XMLHttpRequest")
+            {
+                Response.Headers.Append("X-Stats-Pendientes", totalPendientes.ToString());
+                Response.Headers.Append("X-Stats-EnProceso", totalEnProceso.ToString());
+                Response.Headers.Append("X-Stats-Enviados", totalEnviados.ToString());
+                Response.Headers.Append("X-Stats-Entregados", totalEntregados.ToString());
+                Response.Headers.Append("X-Stats-Total", pagedResult.TotalItems.ToString());
+                return PartialView("_PedidosList", pagedResult);
+            }
 
             return View(pagedResult);
         }

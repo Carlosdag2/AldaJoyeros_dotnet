@@ -8,8 +8,6 @@
     var totalEntregados = ViewBag.TotalEntregados ?? 0;
 }
 
-<partial name="_AdminConfirmModal" />
-
 <div class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
     <!-- Header -->
     <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
@@ -38,162 +36,63 @@
     <div class="container mx-auto px-6 -mt-6 relative z-10 pb-12">
         <!-- Filters & Stats -->
         <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 mb-6">
-            <!-- Filter Tabs -->
-            <div class="flex flex-wrap gap-2 mb-5">
-                <a asp-action="Index" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all @(string.IsNullOrEmpty(estadoFiltro) ? "bg-emerald-500 text-white shadow-md" : "bg-slate-100 text-slate-600 hover:bg-slate-200")">
+            <!-- Filter Tabs AJAX -->
+            <div class="flex flex-wrap gap-2 mb-5" id="filtrosPedidos">
+                <button type="button" onclick="adminPedidos.filtrar('')" 
+                        class="filtro-btn inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all @(string.IsNullOrEmpty(estadoFiltro) ? "bg-emerald-500 text-white shadow-md active" : "bg-slate-100 text-slate-600 hover:bg-slate-200")" data-estado="">
                     <i class="fas fa-th-large"></i>Todos
-                </a>
-                <a asp-action="Index" asp-route-estado="PENDIENTE" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all @(estadoFiltro == "PENDIENTE" ? "bg-yellow-500 text-white shadow-md" : "bg-slate-100 text-slate-600 hover:bg-slate-200")">
+                </button>
+                <button type="button" onclick="adminPedidos.filtrar('PENDIENTE')" 
+                        class="filtro-btn inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all @(estadoFiltro == "PENDIENTE" ? "bg-yellow-500 text-white shadow-md active" : "bg-slate-100 text-slate-600 hover:bg-slate-200")" data-estado="PENDIENTE">
                     <i class="fas fa-clock"></i>Pendientes
-                </a>
-                <a asp-action="Index" asp-route-estado="EN_PROCESO" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all @(estadoFiltro == "EN_PROCESO" ? "bg-blue-500 text-white shadow-md" : "bg-slate-100 text-slate-600 hover:bg-slate-200")">
+                </button>
+                <button type="button" onclick="adminPedidos.filtrar('EN_PROCESO')" 
+                        class="filtro-btn inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all @(estadoFiltro == "EN_PROCESO" ? "bg-blue-500 text-white shadow-md active" : "bg-slate-100 text-slate-600 hover:bg-slate-200")" data-estado="EN_PROCESO">
                     <i class="fas fa-sync-alt"></i>En Proceso
-                </a>
-                <a asp-action="Index" asp-route-estado="ENVIADO" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all @(estadoFiltro == "ENVIADO" ? "bg-purple-500 text-white shadow-md" : "bg-slate-100 text-slate-600 hover:bg-slate-200")">
+                </button>
+                <button type="button" onclick="adminPedidos.filtrar('ENVIADO')" 
+                        class="filtro-btn inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all @(estadoFiltro == "ENVIADO" ? "bg-purple-500 text-white shadow-md active" : "bg-slate-100 text-slate-600 hover:bg-slate-200")" data-estado="ENVIADO">
                     <i class="fas fa-shipping-fast"></i>Enviados
-                </a>
-                <a asp-action="Index" asp-route-estado="ENTREGADO" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all @(estadoFiltro == "ENTREGADO" ? "bg-green-500 text-white shadow-md" : "bg-slate-100 text-slate-600 hover:bg-slate-200")">
+                </button>
+                <button type="button" onclick="adminPedidos.filtrar('ENTREGADO')" 
+                        class="filtro-btn inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all @(estadoFiltro == "ENTREGADO" ? "bg-green-500 text-white shadow-md active" : "bg-slate-100 text-slate-600 hover:bg-slate-200")" data-estado="ENTREGADO">
                     <i class="fas fa-check-circle"></i>Entregados
-                </a>
-                <a asp-action="Index" asp-route-estado="CANCELADO" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all @(estadoFiltro == "CANCELADO" ? "bg-red-500 text-white shadow-md" : "bg-slate-100 text-slate-600 hover:bg-slate-200")">
+                </button>
+                <button type="button" onclick="adminPedidos.filtrar('CANCELADO')" 
+                        class="filtro-btn inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all @(estadoFiltro == "CANCELADO" ? "bg-red-500 text-white shadow-md active" : "bg-slate-100 text-slate-600 hover:bg-slate-200")" data-estado="CANCELADO">
                     <i class="fas fa-times-circle"></i>Cancelados
-                </a>
+                </button>
             </div>
 
             <!-- Stats -->
-            <div class="grid grid-cols-2 md:grid-cols-5 gap-3 pt-5 border-t border-slate-100">
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-3 pt-5 border-t border-slate-100" id="statsPedidos">
                 <div class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-3 text-center border border-slate-200">
-                    <div class="text-2xl font-bold text-slate-700">@Model.TotalItems</div>
+                    <div id="statTotal" class="text-2xl font-bold text-slate-700">@Model.TotalItems</div>
                     <div class="text-xs text-slate-500">Total</div>
                 </div>
                 <div class="bg-gradient-to-br from-yellow-50 to-amber-50 rounded-xl p-3 text-center border border-yellow-200">
-                    <div class="text-2xl font-bold text-yellow-600">@totalPendientes</div>
+                    <div id="statPendientes" class="text-2xl font-bold text-yellow-600">@totalPendientes</div>
                     <div class="text-xs text-slate-500">Pendientes</div>
                 </div>
                 <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-3 text-center border border-blue-200">
-                    <div class="text-2xl font-bold text-blue-600">@totalEnProceso</div>
+                    <div id="statEnProceso" class="text-2xl font-bold text-blue-600">@totalEnProceso</div>
                     <div class="text-xs text-slate-500">En Proceso</div>
                 </div>
                 <div class="bg-gradient-to-br from-purple-50 to-violet-50 rounded-xl p-3 text-center border border-purple-200">
-                    <div class="text-2xl font-bold text-purple-600">@totalEnviados</div>
+                    <div id="statEnviados" class="text-2xl font-bold text-purple-600">@totalEnviados</div>
                     <div class="text-xs text-slate-500">Enviados</div>
                 </div>
                 <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-3 text-center border border-green-200">
-                    <div class="text-2xl font-bold text-green-600">@totalEntregados</div>
+                    <div id="statEntregados" class="text-2xl font-bold text-green-600">@totalEntregados</div>
                     <div class="text-xs text-slate-500">Entregados</div>
                 </div>
             </div>
         </div>
 
-        @if(Model.Items != null && Model.Items.Any())
-        {
-            <!-- Orders List -->
-            <div class="space-y-4 mb-6">
-                @foreach(var p in Model.Items)
-                {
-                    <div class="bg-white rounded-2xl shadow-sm hover:shadow-md transition-all overflow-hidden border border-slate-100">
-                        <div class="flex flex-col md:flex-row">
-                            <div class="flex-1 p-5">
-                                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                                    <div>
-                                        <div class="text-xs text-slate-400 mb-1">Nº Pedido</div>
-                                        <div class="font-bold text-slate-800">#@p.Id</div>
-                                    </div>
-                                    <div>
-                                        <div class="text-xs text-slate-400 mb-1">Cliente</div>
-                                        <div class="font-medium text-slate-700 truncate">@p.UsuarioEmail</div>
-                                    </div>
-                                    <div>
-                                        <div class="text-xs text-slate-400 mb-1">Fecha</div>
-                                        <div class="font-medium text-slate-700">@p.Fecha?.ToString("dd/MM/yyyy")</div>
-                                    </div>
-                                    <div>
-                                        <div class="text-xs text-slate-400 mb-1">Total</div>
-                                        <div class="text-lg font-bold text-emerald-600">@p.Total.ToString("C")</div>
-                                    </div>
-                                </div>
-                                <div class="flex items-center gap-3">
-                                    @switch(p.Estado)
-                                    {
-                                        case "PENDIENTE":
-                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700"><i class="fas fa-clock mr-1"></i>Pendiente</span>
-                                            break;
-                                        case "EN_PROCESO":
-                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700"><i class="fas fa-sync-alt mr-1"></i>En Proceso</span>
-                                            break;
-                                        case "ENVIADO":
-                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-700"><i class="fas fa-shipping-fast mr-1"></i>Enviado</span>
-                                            break;
-                                        case "ENTREGADO":
-                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700"><i class="fas fa-check-circle mr-1"></i>Entregado</span>
-                                            break;
-                                        case "CANCELADO":
-                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700"><i class="fas fa-times-circle mr-1"></i>Cancelado</span>
-                                            break;
-                                    }
-                                    <span class="text-sm text-slate-500">@p.LineasPedido.Count producto@(p.LineasPedido.Count != 1 ? "s" : "")</span>
-                                </div>
-                            </div>
-                            <div class="bg-slate-50 p-5 md:w-44 flex flex-row md:flex-col justify-center gap-2 border-t md:border-t-0 md:border-l border-slate-100">
-                                <a asp-action="Detalle" asp-route-id="@p.Id" class="flex-1 md:flex-none flex items-center justify-center gap-1 px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-all text-sm font-medium">
-                                    <i class="fas fa-eye text-xs"></i>Ver
-                                </a>
-                                <a asp-action="EditarEstado" asp-route-id="@p.Id" class="flex-1 md:flex-none flex items-center justify-center gap-1 px-3 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg transition-all text-sm font-medium">
-                                    <i class="fas fa-edit text-xs"></i>Estado
-                                </a>
-                                <form asp-action="Eliminar" asp-route-id="@p.Id" method="post" class="flex-1 md:flex-none" id="deleteOrderForm-@p.Id">
-                                    <button type="button" onclick="confirmDelete('deleteOrderForm-@p.Id', 'Pedido #@p.Id')" class="w-full flex items-center justify-center gap-1 px-3 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-all text-sm font-medium">
-                                        <i class="fas fa-trash text-xs"></i>Eliminar
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                }
-            </div>
-
-            <!-- Pagination -->
-            @if(Model.TotalPages > 1)
-            {
-                <div class="flex justify-center items-center gap-2 flex-wrap">
-                    @if(Model.HasPreviousPage)
-                    {
-                        <a asp-action="Index" asp-route-page="@(Model.PageNumber-1)" asp-route-estado="@estadoFiltro" class="px-3 py-2 bg-white border border-slate-200 text-slate-600 rounded-lg hover:bg-emerald-500 hover:border-emerald-500 hover:text-white transition-all">
-                            <i class="fas fa-chevron-left text-xs"></i>
-                        </a>
-                    }
-                    @{var startPage = Math.Max(1, Model.PageNumber - 2); var endPage = Math.Min(Model.TotalPages, Model.PageNumber + 2);}
-                    @for(var i = startPage; i <= endPage; i++)
-                    {
-                        @if(i == Model.PageNumber)
-                        {
-                            <span class="px-3 py-2 bg-emerald-500 text-white rounded-lg font-medium">@i</span>
-                        }
-                        else
-                        {
-                            <a asp-action="Index" asp-route-page="@i" asp-route-estado="@estadoFiltro" class="px-3 py-2 bg-white border border-slate-200 text-slate-600 rounded-lg hover:bg-emerald-500 hover:border-emerald-500 hover:text-white transition-all">@i</a>
-                        }
-                    }
-                    @if(Model.HasNextPage)
-                    {
-                        <a asp-action="Index" asp-route-page="@(Model.PageNumber+1)" asp-route-estado="@estadoFiltro" class="px-3 py-2 bg-white border border-slate-200 text-slate-600 rounded-lg hover:bg-emerald-500 hover:border-emerald-500 hover:text-white transition-all">
-                            <i class="fas fa-chevron-right text-xs"></i>
-                        </a>
-                    }
-                </div>
-            }
-        }
-        else
-        {
-            <!-- Empty State -->
-            <div class="bg-white rounded-2xl p-12 text-center shadow-sm border border-slate-100">
-                <div class="w-20 h-20 bg-gradient-to-br from-amber-100 to-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <i class="fas fa-box-open text-amber-500 text-3xl"></i>
-                </div>
-                <h3 class="text-xl font-bold text-slate-800 mb-2">No hay pedidos</h3>
-                <p class="text-slate-500">@(string.IsNullOrEmpty(estadoFiltro) ? "Aún no se han realizado pedidos" : $"No hay pedidos con estado {estadoFiltro}")</p>
-            </div>
-        }
+        <!-- Contenedor dinámico para la lista de pedidos -->
+        <div id="pedidosContainer">
+            <partial name="_PedidosList" model="Model" />
+        </div>
 
         <!-- Navigation -->
         <div class="mt-8">
@@ -203,3 +102,163 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        const adminPedidos = {
+            estadoActual: '@estadoFiltro',
+            paginaActual: @Model.PageNumber,
+            cargando: false,
+
+            // Filtrar por estado
+            async filtrar(estado) {
+                if (this.cargando) return;
+                this.estadoActual = estado;
+                this.paginaActual = 1;
+                await this.cargarDatos();
+                this.actualizarBotonesFiltro(estado);
+                this.actualizarURL();
+            },
+
+            // Cargar página específica
+            async cargarPagina(pagina) {
+                if (this.cargando) return;
+                this.paginaActual = pagina;
+                await this.cargarDatos();
+                this.actualizarURL();
+                // Scroll suave hacia arriba
+                document.getElementById('pedidosContainer').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            },
+
+            // Cargar datos via AJAX
+            async cargarDatos() {
+                this.cargando = true;
+                const container = document.getElementById('pedidosContainer');
+                
+                // Mostrar loading
+                container.style.opacity = '0.5';
+                container.style.pointerEvents = 'none';
+
+                try {
+                    const params = new URLSearchParams();
+                    if (this.estadoActual) params.append('estado', this.estadoActual);
+                    params.append('page', this.paginaActual);
+
+                    const response = await fetch(`/AdminPedidos/Index?${params.toString()}`, {
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                    });
+
+                    if (response.ok) {
+                        const html = await response.text();
+                        container.innerHTML = html;
+                        container.style.opacity = '1';
+                        container.style.pointerEvents = '';
+                        
+                        // Actualizar estadísticas desde los headers
+                        this.actualizarEstadisticas(response);
+                    } else {
+                        throw new Error('Error al cargar');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    AldaToast.error('Error al cargar los pedidos');
+                    container.style.opacity = '1';
+                    container.style.pointerEvents = '';
+                } finally {
+                    this.cargando = false;
+                }
+            },
+
+            // Actualizar estadísticas desde response headers
+            actualizarEstadisticas(response) {
+                const pendientes = response.headers.get('X-Stats-Pendientes');
+                const enProceso = response.headers.get('X-Stats-EnProceso');
+                const enviados = response.headers.get('X-Stats-Enviados');
+                const entregados = response.headers.get('X-Stats-Entregados');
+                const total = response.headers.get('X-Stats-Total');
+
+                if (pendientes) document.getElementById('statPendientes').textContent = pendientes;
+                if (enProceso) document.getElementById('statEnProceso').textContent = enProceso;
+                if (enviados) document.getElementById('statEnviados').textContent = enviados;
+                if (entregados) document.getElementById('statEntregados').textContent = entregados;
+                if (total) document.getElementById('statTotal').textContent = total;
+            },
+
+            // Actualizar botones de filtro activo
+            actualizarBotonesFiltro(estadoActivo) {
+                const botones = document.querySelectorAll('#filtrosPedidos .filtro-btn');
+                const colores = {
+                    '': { activo: 'bg-emerald-500 text-white shadow-md', inactivo: 'bg-slate-100 text-slate-600 hover:bg-slate-200' },
+                    'PENDIENTE': { activo: 'bg-yellow-500 text-white shadow-md', inactivo: 'bg-slate-100 text-slate-600 hover:bg-slate-200' },
+                    'EN_PROCESO': { activo: 'bg-blue-500 text-white shadow-md', inactivo: 'bg-slate-100 text-slate-600 hover:bg-slate-200' },
+                    'ENVIADO': { activo: 'bg-purple-500 text-white shadow-md', inactivo: 'bg-slate-100 text-slate-600 hover:bg-slate-200' },
+                    'ENTREGADO': { activo: 'bg-green-500 text-white shadow-md', inactivo: 'bg-slate-100 text-slate-600 hover:bg-slate-200' },
+                    'CANCELADO': { activo: 'bg-red-500 text-white shadow-md', inactivo: 'bg-slate-100 text-slate-600 hover:bg-slate-200' }
+                };
+
+                botones.forEach(btn => {
+                    const estado = btn.dataset.estado;
+                    const esActivo = estado === estadoActivo;
+                    
+                    // Remover clases de color/estado previas
+                    btn.classList.remove(
+                        'bg-emerald-500', 'bg-yellow-500', 'bg-blue-500', 'bg-purple-500', 'bg-green-500', 'bg-red-500',
+                        'bg-slate-100', 'text-white', 'text-slate-600', 'shadow-md', 'hover:bg-slate-200'
+                    );
+                    
+                    // Añadir clases correspondientes
+                    const clases = esActivo ? colores[estado].activo : colores[estado].inactivo;
+                    btn.classList.add(...clases.split(' '));
+                });
+            },
+
+            // Actualizar URL sin recargar
+            actualizarURL() {
+                const params = new URLSearchParams();
+                if (this.estadoActual) params.append('estado', this.estadoActual);
+                if (this.paginaActual > 1) params.append('page', this.paginaActual);
+                
+                const newUrl = params.toString() 
+                    ? `${window.location.pathname}?${params.toString()}`
+                    : window.location.pathname;
+                    
+                history.pushState({ estado: this.estadoActual, page: this.paginaActual }, '', newUrl);
+            },
+
+            // Eliminar pedido
+            async eliminar(id) {
+                const confirmar = await AldaConfirm.show({
+                    title: '¿Eliminar pedido?',
+                    message: `El pedido #${id} será eliminado permanentemente.`,
+                    type: 'danger',
+                    confirmText: 'Eliminar'
+                });
+
+                if (!confirmar) return;
+
+                try {
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = `/AdminPedidos/Eliminar/${id}`;
+                    document.body.appendChild(form);
+                    form.submit();
+                } catch (error) {
+                    console.error('Error:', error);
+                    AldaToast.error('Error al eliminar');
+                }
+            }
+        };
+
+        // Manejar botón atrás del navegador
+        window.addEventListener('popstate', (event) => {
+            if (event.state) {
+                adminPedidos.estadoActual = event.state.estado || '';
+                adminPedidos.paginaActual = event.state.page || 1;
+                adminPedidos.cargarDatos();
+                adminPedidos.actualizarBotonesFiltro(adminPedidos.estadoActual);
+            }
+        });
+
+        window.adminPedidos = adminPedidos;
+    </script>
+}

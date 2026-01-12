@@ -91,7 +91,7 @@
                     var isDefaultCategory = categoria.Nombre == "Sin categoría";
                     var nombreCategoria = categoria.Nombre.Replace("'", "\\'");
                     
-                    <div class="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-slate-100 hover:border-violet-200">
+                    <div data-categoria-id="@categoria.Id" class="categoria-card group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-slate-100 hover:border-violet-200">
                         <!-- Header -->
                         <div class="@(isDefaultCategory ? "bg-gradient-to-br from-slate-600 to-slate-700" : "bg-gradient-to-br from-violet-500 to-purple-600") p-5 relative overflow-hidden">
                             <div class="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full -mr-10 -mt-10"></div>
@@ -146,13 +146,11 @@
                                        class="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-100 hover:bg-emerald-500 text-slate-600 hover:text-white rounded-xl transition-all font-medium text-sm">
                                         <i class="fas fa-edit"></i>Editar
                                     </a>
-                                    <form asp-action="Eliminar" asp-route-id="@categoria.Id" method="post" class="flex-1" id="deleteCategoryForm-@categoria.Id">
-                                        <button type="button" 
-                                                onclick="confirmAction('deleteCategoryForm-@categoria.Id', '¿Eliminar categoría?', '@(categoria.CantidadProductos > 0 ? $"Esta categoría tiene {categoria.CantidadProductos} producto(s). Al eliminarla, los productos serán movidos a Sin categoría." : $"¿Eliminar la categoría {nombreCategoria}?")', '@(categoria.CantidadProductos > 0 ? "warning" : "danger")')"
-                                                class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-100 hover:bg-red-500 text-slate-600 hover:text-white rounded-xl transition-all font-medium text-sm">
-                                            <i class="fas fa-trash"></i>Eliminar
-                                        </button>
-                                    </form>
+                                    <button type="button" 
+                                            onclick="adminCategorias.eliminar(@categoria.Id, '@nombreCategoria', @categoria.CantidadProductos)"
+                                            class="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-100 hover:bg-red-500 text-slate-600 hover:text-white rounded-xl transition-all font-medium text-sm">
+                                        <i class="fas fa-trash"></i>Eliminar
+                                    </button>
                                 </div>
                             }
                         </div>
@@ -205,3 +203,62 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        const adminCategorias = {
+            // Eliminar categoría
+            async eliminar(id, nombre, cantidadProductos) {
+                const mensaje = cantidadProductos > 0
+                    ? `"${nombre}" tiene ${cantidadProductos} producto(s). Al eliminarla, serán movidos a "Sin categoría".`
+                    : `¿Eliminar la categoría "${nombre}"?`;
+
+                const confirmar = await AldaConfirm.show({
+                    title: '¿Eliminar categoría?',
+                    message: mensaje,
+                    type: cantidadProductos > 0 ? 'warning' : 'danger',
+                    confirmText: 'Eliminar'
+                });
+
+                if (!confirmar) return;
+
+                try {
+                    const response = await fetch('/AdminCategorias/EliminarAjax', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: `id=${id}`
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        this.animarCategoriaEliminada(id);
+                        AldaToast.success(data.message);
+                    } else {
+                        AldaToast.error(data.message);
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    AldaToast.error('Error de conexión');
+                }
+            },
+
+            // Animar categoría al eliminarla
+            animarCategoriaEliminada(id) {
+                const card = document.querySelector(`[data-categoria-id="${id}"]`);
+                if (card) {
+                    card.style.transition = 'all 0.4s ease';
+                    card.style.transform = 'scale(0.9)';
+                    card.style.opacity = '0';
+                    setTimeout(() => {
+                        card.remove();
+                        // Recargar para actualizar contadores
+                        setTimeout(() => location.reload(), 300);
+                    }, 400);
+                }
+            }
+        };
+
+        window.adminCategorias = adminCategorias;
+    </script>
+}
