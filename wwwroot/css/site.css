@@ -265,6 +265,11 @@ html[data-theme="high-contrast"] body {
             font-weight: bold !important;
         }
 
+        /* Span con fondo blanco (ej. separadores "O", "¿Eres nuevo aquí?") */
+        html[data-theme="high-contrast"] span.bg-white {
+            background-color: #000000 !important;
+        }
+
         /* Progreso del pedido */
         html[data-theme="high-contrast"] .bg-gray-200.h-0\.5,
         html[data-theme="high-contrast"] .bg-emerald-500.h-0\.5 {
