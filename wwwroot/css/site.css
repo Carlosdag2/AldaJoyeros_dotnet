@@ -252,7 +252,12 @@ html[data-theme="high-contrast"] body {
         /* Spans/badges específicos para Categoría de Productos en el Grid e Index */
         html[data-theme="high-contrast"] span.bg-white\/90,
         html[data-theme="high-contrast"] span.bg-emerald-100,
-        html[data-theme="high-contrast"] span.bg-emerald-50 {
+        html[data-theme="high-contrast"] span.bg-emerald-50,
+        html[data-theme="high-contrast"] span.bg-amber-100,
+        html[data-theme="high-contrast"] span.bg-blue-100,
+        html[data-theme="high-contrast"] span.bg-purple-100,
+        html[data-theme="high-contrast"] span.bg-red-100,
+        html[data-theme="high-contrast"] span.bg-gray-100 {
             background-color: #000000 !important;
             color: #ffffff !important;
             border: 2px solid #ffffff !important;
@@ -260,9 +265,30 @@ html[data-theme="high-contrast"] body {
             font-weight: bold !important;
         }
 
+        /* Progreso del pedido */
+        html[data-theme="high-contrast"] .bg-gray-200.h-0\.5,
+        html[data-theme="high-contrast"] .bg-emerald-500.h-0\.5 {
+            background-color: #ffffff !important;
+            height: 4px !important;
+            border: 1px solid #000 !important;
+        }
+
+        html[data-theme="high-contrast"] .rounded-full.bg-emerald-500 {
+            background-color: #ffffff !important;
+            color: #000000 !important;
+            border: 2px solid #000000 !important;
+        }
+
+        html[data-theme="high-contrast"] .rounded-full.bg-gray-200 {
+            background-color: #000000 !important;
+            color: #ffffff !important;
+            border: 2px dashed #ffffff !important;
+        }
+
         /* Enlaces y botones (acciones) resaltados en amarillo */
         html[data-theme="high-contrast"] button,
         html[data-theme="high-contrast"] a.btn,
+        html[data-theme="high-contrast"] a.inline-flex,
         html[data-theme="high-contrast"] [type="submit"] {
             background-color: #000000 !important;
             color: #ffff00 !important;
@@ -271,6 +297,7 @@ html[data-theme="high-contrast"] body {
         }
 
             html[data-theme="high-contrast"] button *,
+            html[data-theme="high-contrast"] a.inline-flex *,
             html[data-theme="high-contrast"] a.btn * {
                 color: #ffff00 !important;
             }
