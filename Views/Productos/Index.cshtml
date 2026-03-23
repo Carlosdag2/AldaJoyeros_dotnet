@@ -9,43 +9,11 @@
 }
 
 <div class="min-h-screen bg-stone-50 font-sans text-stone-800 selection:bg-emerald-900 selection:text-white"
-     x-data="carritoNotificacion()">
+ x-data="carritoNotificacion()">
 
-    <!-- Elemento que vuela al carrito -->
-    <div x-show="animando"
-         x-ref="flyingItem"
-         class="fixed z-[9999] pointer-events-none"
-         style="display: none;">
-        <div class="w-12 h-12 bg-emerald-900 rounded-full flex items-center justify-center shadow-xl">
-            <i class="fas fa-gem text-white text-lg"></i>
-        </div>
-    </div>
+<partial name="_CarritoNotificacion" />
 
-    <!-- Notificación de producto añadido -->
-    <div x-show="mostrarNotificacion"
-         x-transition:enter="transition ease-out duration-300"
-         x-transition:enter-start="opacity-0 translate-y-2"
-         x-transition:enter-end="opacity-100 translate-y-0"
-         x-transition:leave="transition ease-in duration-200"
-         x-transition:leave-start="opacity-100 translate-y-0"
-         x-transition:leave-end="opacity-0 translate-y-2"
-         class="fixed bottom-6 right-6 z-50 bg-emerald-900 text-white px-6 py-4 rounded-sm shadow-2xl flex items-center gap-4 max-w-sm"
-         x-cloak>
-        <div class="w-10 h-10 bg-emerald-800 rounded-full flex items-center justify-center flex-shrink-0">
-            <i class="fas fa-check text-lg"></i>
-        </div>
-        <div class="flex-1">
-            <p class="font-serif text-sm" x-text="mensajeNotificacion"></p>
-            <a href="/Carrito" class="text-xs text-emerald-200 hover:text-white transition-colors mt-1 inline-block">
-                Ver carrito <i class="fas fa-arrow-right ml-1"></i>
-            </a>
-        </div>
-        <button @@click="mostrarNotificacion = false" class="text-emerald-300 hover:text-white transition-colores">
-            <i class="fas fa-times"></i>
-        </button>
-    </div>
-
-    <section class="relative pt-32 pb-20 lg:pt-40 lg:pb-32 bg-emerald-950">
+<section class="relative pt-32 pb-20 lg:pt-40 lg:pb-32 bg-emerald-950">
         <div class="absolute inset-0 z-0 overflow-hidden">
             <img src="https://images.unsplash.com/photo-1573408301185-9146fe634ad0?q=80&w=2075&auto=format&fit=crop"
                  alt="Background"
@@ -288,12 +256,10 @@
 
                 async buscar() {
                     const q = this.consulta.trim();
-                    console.log('🔍 Buscando:', q);
                     
                     if (q.length < 2) {
                         this.sugerencias = [];
                         this.mostrarSugerencias = false;
-                        console.log('❌ Búsqueda muy corta');
                         return;
                     }
                     
@@ -304,18 +270,11 @@
                     try {
                         let url = `/Productos/Buscar?q=${encodeURIComponent(q)}`;
                         if (this.categoriaId) url += `&categoriaId=${this.categoriaId}`;
-
-                        console.log('📡 Llamando a:', url);
                         
                         const response = await fetch(url, { signal: this.controlador.signal });
                         
-                        console.log('📥 Response status:', response.status);
-                        
                         if (response.ok) {
                             const data = await response.json();
-                            console.log('📦 Datos recibidos:', data);
-                            console.log('🔢 Número de sugerencias:', data.sugerencias?.length || 0);
-                            
 
                             this.sugerencias = data.sugerencias || [];
                             this.mostrarSugerencias = this.sugerencias.length > 0;
@@ -479,184 +438,6 @@
                     } else {
                         history.pushState(state, '', url);
                     }
-                }
-            };
-        }
-
-        // ========================================
-        // CARRITO Y NOTIFICACIONES
-        // ========================================
-        function carritoNotificacion() {
-            return {
-                mostrarNotificacion: false,
-                mensajeNotificacion: '',
-                cargandoProducto: null,
-                animando: false,
-
-                init() {
-                    // Guardar referencia global para los botones del partial
-                    window.carritoApp = this;
-                },
-
-                async agregarAlCarrito(productoId, nombreProducto, event) {
-                    this.cargandoProducto = productoId;
-                    
-                    try {
-                        const response = await fetch('/Carrito/AgregarAjax', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/x-www-form-urlencoded',
-                            },
-                            body: `productoId=${productoId}&cantidad=1`
-                        });
-
-                        const data = await response.json();
-
-                        if (data.success) {
-                            await this.animarVueloAlCarrito(event);
-                            this.actualizarContadorCarrito(data.totalItems);
-                            this.activarNotificacion(`'${nombreProducto}' añadido al carrito`);
-                        } else if (data.requiresLogin) {
-                            this.activarNotificacion('Producto guardado. Redirigiendo al login...');
-                            setTimeout(() => {
-                                window.location.href = '/Auth/Login?returnUrl=' + encodeURIComponent(window.location.pathname + window.location.search);
-                            }, 1500);
-                        } else {
-                            alert(data.message || 'Error al añadir al carrito');
-                        }
-                    } catch (error) {
-                        console.error('Error:', error);
-                        alert('Error al añadir al carrito');
-                    } finally {
-                        this.cargandoProducto = null;
-                    }
-                },
-
-                activarNotificacion(mensaje) {
-                    this.mensajeNotificacion = mensaje;
-                    this.mostrarNotificacion = true;
-                    setTimeout(() => {
-                        this.mostrarNotificacion = false;
-                    }, 4000);
-                },
-
-                actualizarContadorCarrito(totalItems) {
-                    const carritoContador = document.querySelector('[data-carrito-count]');
-                    if (carritoContador) {
-                        carritoContador.textContent = totalItems;
-                        if (totalItems > 0) {
-                            carritoContador.classList.remove('hidden');
-                        } else {
-                            carritoContador.classList.add('hidden');
-                        }
-                        // Animación de rebote
-                        carritoContador.classList.add('animate-bounce');
-                        setTimeout(() => carritoContador.classList.remove('animate-bounce'), 500);
-                    }
-
-                    // Actualizar el contador en el menú dropdown
-                    const carritoContadorMenu = document.querySelector('[data-carrito-count-menu]');
-                    const carritoContadorValue = document.querySelector('[data-carrito-count-value]');
-                    if (carritoContadorMenu && carritoContadorValue) {
-                        carritoContadorValue.textContent = totalItems;
-                        if (totalItems > 0) {
-                            carritoContadorMenu.classList.remove('hidden');
-                        } else {
-                            carritoContadorMenu.classList.add('hidden');
-                        }
-                    }
-
-                    // Animar el icono del carrito
-                    const carritoIcono = document.querySelector('[data-carrito-icon]');
-                    if (carritoIcono) {
-                        carritoIcono.classList.add('animate-bounce');
-                        setTimeout(() => carritoIcono.classList.remove('animate-bounce'), 600);
-                    }
-                },
-
-                async animarVueloAlCarrito(event) {
-                    return new Promise((resolve) => {
-                        const flyingItem = this.$refs.flyingItem;
-                        if (!flyingItem) {
-                            resolve();
-                            return;
-                        }
-
-                        // Obtener posición del botón clickeado
-                        const button = event.target.closest('button');
-                        const buttonRect = button.getBoundingClientRect();
-                        
-                        // Buscar el icono del carrito en el header
-                        const carritoLink = document.querySelector('[data-carrito-link]') || document.querySelector('a[href*="Carrito"]');
-                        let endX, endY;
-                        
-                        if (carritoLink) {
-                            const carritoRect = carritoLink.getBoundingClientRect();
-                            endX = carritoRect.left + carritoRect.width / 2;
-                            endY = carritoRect.top + carritoRect.height / 2;
-                        } else {
-                            // Si no encuentra el carrito, volar hacia arriba a la derecha
-                            endX = window.innerWidth - 60;
-                            endY = 30;
-                        }
-
-                        // Posición inicial (centro del botón)
-                        const startX = buttonRect.left + buttonRect.width / 2;
-                        const startY = buttonRect.top + buttonRect.height / 2;
-
-                        // Configurar posición inicial
-                        flyingItem.style.left = startX + 'px';
-                        flyingItem.style.top = startY + 'px';
-                        flyingItem.style.transform = 'translate(-50%, -50%) scale(1)';
-                        flyingItem.style.opacity = '1';
-                        flyingItem.style.display = 'block';
-                        this.animando = true;
-
-                        // Animar con una curva parabólica
-                        const duration = 600;
-                        const startTime = performance.now();
-
-                        const animate = (currentTime) => {
-                            const elapsed = currentTime - startTime;
-                            const progress = Math.min(elapsed / duration, 1);
-                            
-                            // Función de easing (ease-out cubic)
-                            const easeOut = 1 - Math.pow(1 - progress, 3);
-                            
-                            // Calcular posición con curva parabólica
-                            const currentX = startX + (endX - startX) * easeOut;
-                            const arcHeight = -100 * Math.sin(progress * Math.PI); // Arco hacia arriba
-                            const currentY = startY + (endY - startY) * easeOut + arcHeight;
-                            
-                            // Escala que disminuye
-                            const scale = 1 - (progress * 0.5);
-                            
-                            flyingItem.style.left = currentX + 'px';
-                            flyingItem.style.top = currentY + 'px';
-                            flyingItem.style.transform = `translate(-50%, -50%) scale(${scale}) rotate(${progress * 360}deg)`;
-                            flyingItem.style.opacity = 1 - (progress * 0.3);
-
-                            if (progress < 1) {
-                                requestAnimationFrame(animate);
-                            } else {
-                                // Finalizar animación
-                                flyingItem.style.display = 'none';
-                                this.animando = false;
-                                resolve();
-                            }
-                        };
-
-                        requestAnimationFrame(animate);
-                    });
-                },
-
-                activarNotificacion(mensaje) {
-                    this.mensajeNotificacion = mensaje;
-                    this.mostrarNotificacion = true;
-
-                    setTimeout(() => {
-                        this.mostrarNotificacion = false;
-                    }, 4000);
                 }
             };
         }

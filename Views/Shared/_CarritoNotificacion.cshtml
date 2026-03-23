@@ -1,0 +1,33 @@
+@* Elemento que vuela al carrito *@
+<div x-show="animando"
+     x-ref="flyingItem"
+     class="fixed z-[9999] pointer-events-none"
+     style="display: none;">
+    <div class="w-12 h-12 bg-emerald-600 rounded-full flex items-center justify-center shadow-xl">
+        <i class="fas fa-gem text-white text-lg"></i>
+    </div>
+</div>
+
+@* Notificación de producto añadido *@
+<div x-show="mostrarNotificacion"
+     x-transition:enter="transition ease-out duration-300"
+     x-transition:enter-start="opacity-0 translate-y-2"
+     x-transition:enter-end="opacity-100 translate-y-0"
+     x-transition:leave="transition ease-in duration-200"
+     x-transition:leave-start="opacity-100 translate-y-0"
+     x-transition:leave-end="opacity-0 translate-y-2"
+     class="fixed bottom-6 right-6 z-50 bg-emerald-900 text-white px-6 py-4 rounded-sm shadow-2xl flex items-center gap-4 max-w-sm"
+     x-cloak>
+    <div class="w-10 h-10 bg-emerald-800 rounded-full flex items-center justify-center flex-shrink-0">
+        <i class="fas fa-check text-lg"></i>
+    </div>
+    <div class="flex-1">
+        <p class="font-serif text-sm" x-text="mensajeNotificacion"></p>
+        <a href="/Carrito" class="text-xs text-emerald-200 hover:text-white transition-colors mt-1 inline-block">
+            Ver carrito <i class="fas fa-arrow-right ml-1"></i>
+        </a>
+    </div>
+    <button @@click="mostrarNotificacion = false" class="text-emerald-300 hover:text-white transition-colors">
+        <i class="fas fa-times"></i>
+    </button>
+</div>

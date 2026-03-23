@@ -42,8 +42,7 @@ namespace AldaJoyeros.Controllers
 
             try
             {
-                var items = await carritoService.GetByUsuarioIdAsync(CurrentUserId.Value);
-                return items.Sum(i => i.Cantidad);
+                return await carritoService.GetTotalItemsAsync(CurrentUserId.Value);
             }
             catch
             {

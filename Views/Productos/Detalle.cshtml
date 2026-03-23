@@ -279,12 +279,11 @@
 @section Scripts {
     <script>
         function carritoDetalle() {
+            const base = carritoNotificacion();
             return {
+                ...base,
                 cantidad: 1,
-                mostrarNotificacion: false,
-                mensajeNotificacion: '',
                 cargando: false,
-                animando: false,
 
                 async agregarAlCarrito(productoId, nombreProducto, event) {
                     this.cargando = true;
@@ -292,128 +291,27 @@
                     try {
                         const response = await fetch('/Carrito/AgregarAjax', {
                             method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/x-www-form-urlencoded',
-                            },
+                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                             body: `productoId=${productoId}&cantidad=${this.cantidad}`
                         });
 
                         const data = await response.json();
 
                         if (data.success) {
-                            // Ejecutar animación de vuelo al carrito
                             await this.animarVueloAlCarrito(event);
-                            
-                            // Actualizar todos los contadores del carrito
                             this.actualizarContadorCarrito(data.totalItems);
-                            
                             this.activarNotificacion(`'${nombreProducto}' añadido al carrito`);
                         } else if (data.requiresLogin) {
-                            // Producto guardado temporalmente, mostrar notificación y redirigir
-                            this.activarNotificacion('Producto guardado. Redirigiendo al login...');
-                            setTimeout(() => {
-                                window.location.href = '/Auth/Login?returnUrl=' + encodeURIComponent(window.location.pathname);
-                            }, 1500);
+                            window.location.href = '/Auth/Login';
                         } else {
-                            alert(data.message || 'Error al añadir al carrito');
+                            this.activarNotificacion(data.message || 'Error al añadir al carrito');
                         }
                     } catch (error) {
-                        console.error('Error:', error);
-                        alert('Error al añadir al carrito');
+                        console.error('Error al añadir al carrito:', error);
+                        this.activarNotificacion('Error al añadir al carrito');
                     } finally {
                         this.cargando = false;
                     }
-                },
-
-                activarNotificacion(mensaje) {
-                    this.mensajeNotificacion = mensaje;
-                    this.mostrarNotificacion = true;
-                    setTimeout(() => {
-                        this.mostrarNotificacion = false;
-                    }, 4000);
-                },
-
-                actualizarContadorCarrito(totalItems) {
-                    const carritoContador = document.querySelector('[data-carrito-count]');
-                    if (carritoContador) {
-                        carritoContador.textContent = totalItems;
-                        if (totalItems > 0) {
-                            carritoContador.classList.remove('hidden');
-                        } else {
-                            carritoContador.classList.add('hidden');
-                        }
-                        carritoContador.classList.add('animate-bounce');
-                        setTimeout(() => carritoContador.classList.remove('animate-bounce'), 500);
-                    }
-
-                    const carritoContadorMenu = document.querySelector('[data-carrito-count-menu]');
-                    const carritoContadorValue = document.querySelector('[data-carrito-count-value]');
-                    if (carritoContadorMenu && carritoContadorValue) {
-                        carritoContadorValue.textContent = totalItems;
-                        if (totalItems > 0) {
-                            carritoContadorMenu.classList.remove('hidden');
-                        } else {
-                            carritoContadorMenu.classList.add('hidden');
-                        }
-                    }
-
-                    const carritoIcono = document.querySelector('[data-carrito-icon]');
-                    if (carritoIcono) {
-                        carritoIcono.classList.add('animate-bounce');
-                        setTimeout(() => carritoIcono.classList.remove('animate-bounce'), 600);
-                    }
-                },
-
-                async animarVueloAlCarrito(event) {
-                    return new Promise((resolve) => {
-                        const flyingItem = this.$refs.flyingItem;
-                        if (!flyingItem) {
-                            resolve();
-                            return;
-                        }
-
-                        const button = event.target.closest('button');
-                        const buttonRect = button.getBoundingClientRect();
-                        
-                        const carritoLink = document.querySelector('[data-carrito-link]') || document.querySelector('a[href*="Carrito"]');
-                        let endX, endY;
-                        
-                        if (carritoLink) {
-                            const carritoRect = carritoLink.getBoundingClientRect();
-                            endX = carritoRect.left + carritoRect.width / 2;
-                            endY = carritoRect.top + carritoRect.height / 2;
-                        } else {
-                            endX = window.innerWidth - 50;
-                            endY = 30;
-                        }
-
-                        const startX = buttonRect.left + buttonRect.width / 2;
-                        const startY = buttonRect.top + buttonRect.height / 2;
-
-                        flyingItem.style.left = startX + 'px';
-                        flyingItem.style.top = startY + 'px';
-                        flyingItem.style.transform = 'translate(-50%, -50%) scale(1)';
-                        flyingItem.style.opacity = '1';
-                        flyingItem.style.display = 'block';
-                        
-                        this.animando = true;
-
-                        flyingItem.style.transition = 'all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-                        
-                        requestAnimationFrame(() => {
-                            flyingItem.style.left = endX + 'px';
-                            flyingItem.style.top = endY + 'px';
-                            flyingItem.style.transform = 'translate(-50%, -50%) scale(0.3)';
-                            flyingItem.style.opacity = '0';
-                        });
-
-                        setTimeout(() => {
-                            this.animando = false;
-                            flyingItem.style.display = 'none';
-                            flyingItem.style.transition = '';
-                            resolve();
-                        }, 600);
-                    });
                 }
             }
         }

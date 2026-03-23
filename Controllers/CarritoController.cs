@@ -104,21 +104,10 @@ namespace AldaJoyeros.Controllers
 
             if (!IsAuthenticated)
             {
-                // Guardar el producto temporalmente en la sesión
-                TempCarritoHelper.AddItem(HttpContext, productoId, cantidad);
-                
-                // Guardar la URL actual para redirigir después del login
-                var returnUrl = Request.Headers["Referer"].ToString();
-                if (!string.IsNullOrEmpty(returnUrl))
-                {
-                    HttpContext.Session.SetString("ReturnUrl", returnUrl);
-                }
-                
                 return Json(new { 
                     success = false, 
                     requiresLogin = true, 
-                    message = "Producto guardado. Inicia sesión para completar tu compra.",
-                    savedToTemp = true
+                    message = "Inicia sesión para añadir productos al carrito."
                 });
             }
 
@@ -143,8 +132,7 @@ namespace AldaJoyeros.Controllers
                 return Json(new { 
                     success = true, 
                     message = $"'{producto.Nombre}' añadido al carrito",
-                    productoNombre = producto.Nombre,
-                    totalItems = totalItems
+                    totalItems
                 });
             }
             catch (Exception ex)
