@@ -351,6 +351,10 @@ html[data-theme="high-contrast"] body {
         filter: grayscale(100%) contrast(120%);
     }
 
+    html[data-theme="high-contrast"] .mix-blend-multiply {
+        mix-blend-mode: normal !important;
+    }
+
         html[data-theme="high-contrast"] img[alt*="Logo"],
         html[data-theme="high-contrast"] img[src*="logo"] {
             /* Invertimos el logo si es oscuro, sino lo dejamos blanco resplandeciente */
