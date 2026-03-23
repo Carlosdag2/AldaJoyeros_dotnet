@@ -209,8 +209,17 @@ html[data-theme="high-contrast"] body {
     html[data-theme="high-contrast"] section,
     html[data-theme="high-contrast"] aside,
     html[data-theme="high-contrast"] nav,
+    html[data-theme="high-contrast"] table,
+    html[data-theme="high-contrast"] thead,
+    html[data-theme="high-contrast"] tbody,
+    html[data-theme="high-contrast"] tr,
+    html[data-theme="high-contrast"] th,
+    html[data-theme="high-contrast"] td,
     html[data-theme="high-contrast"] .dropdown-menu,
     html[data-theme="high-contrast"] div.absolute:not(.inset-0), /* Fix del Dropdowns para q el div de background funcione */
+    html[data-theme="high-contrast"] div.bg-white,
+    html[data-theme="high-contrast"] div[class*="bg-slate-"],
+    html[data-theme="high-contrast"] div[class*="bg-gradient-"],
     html[data-theme="high-contrast"] div:not(.absolute):not(.relative):not(.bg-gradient-to-b) {
         background-color: #000000 !important;
         background-image: none !important;
@@ -250,19 +259,14 @@ html[data-theme="high-contrast"] body {
         }
 
         /* Spans/badges específicos para Categoría de Productos en el Grid e Index */
-        html[data-theme="high-contrast"] span.bg-white\/90,
-        html[data-theme="high-contrast"] span.bg-emerald-100,
-        html[data-theme="high-contrast"] span.bg-emerald-50,
-        html[data-theme="high-contrast"] span.bg-amber-100,
-        html[data-theme="high-contrast"] span.bg-blue-100,
-        html[data-theme="high-contrast"] span.bg-purple-100,
-        html[data-theme="high-contrast"] span.bg-red-100,
-        html[data-theme="high-contrast"] span.bg-gray-100 {
+        html[data-theme="high-contrast"] span[class*="bg-"] {
             background-color: #000000 !important;
             color: #ffffff !important;
             border: 2px solid #ffffff !important;
             text-transform: uppercase !important;
             font-weight: bold !important;
+            box-sizing: border-box !important;
+            line-height: normal !important;
         }
 
         /* Span con fondo blanco (ej. separadores "O", "¿Eres nuevo aquí?") */
@@ -294,9 +298,12 @@ html[data-theme="high-contrast"] body {
         html[data-theme="high-contrast"] button,
         html[data-theme="high-contrast"] a.btn,
         html[data-theme="high-contrast"] a.inline-flex,
+        html[data-theme="high-contrast"] a.flex,
+        html[data-theme="high-contrast"] a[class*="bg-"],
         html[data-theme="high-contrast"] a.block.w-full,
         html[data-theme="high-contrast"] [type="submit"] {
             background-color: #000000 !important;
+            background-image: none !important;
             color: #ffff00 !important;
             border: 2px solid #ffff00 !important;
             box-shadow: none !important;
@@ -304,6 +311,8 @@ html[data-theme="high-contrast"] body {
 
             html[data-theme="high-contrast"] button *,
             html[data-theme="high-contrast"] a.inline-flex *,
+            html[data-theme="high-contrast"] a.flex *,
+            html[data-theme="high-contrast"] a[class*="bg-"] *,
             html[data-theme="high-contrast"] a.block.w-full *,
             html[data-theme="high-contrast"] a.btn * {
                 color: #ffff00 !important;
