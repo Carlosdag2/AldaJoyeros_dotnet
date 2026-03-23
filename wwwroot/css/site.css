@@ -1,192 +1,351 @@
 html {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+    html {
+        font-size: 16px;
+    }
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
 }
 
 body {
-  margin-bottom: 60px;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin-bottom: 60px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 /* Navbar personalizado */
 .navbar-brand {
-  font-weight: bold;
-  font-size: 1.5rem;
+    font-weight: bold;
+    font-size: 1.5rem;
 }
 
 /* Cards con efecto hover */
 .card {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0,0,0,0.15);
-}
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+    }
 
 /* Footer pegajoso */
 footer {
-  margin-top: auto;
+    margin-top: auto;
 }
 
 /* Jumbotron personalizado */
 .jumbotron {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 4rem 2rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 4rem 2rem;
 }
 
 /* Badges de estado */
 .badge {
-  padding: 0.5em 0.75em;
-  font-weight: 500;
+    padding: 0.5em 0.75em;
+    font-weight: 500;
 }
 
 /* Botones con iconos */
 .btn i {
-  margin-right: 0.3rem;
+    margin-right: 0.3rem;
 }
 
 /* Alertas personalizadas */
 .alert {
-  border-left: 4px solid;
+    border-left: 4px solid;
 }
 
 .alert-success {
-  border-left-color: #28a745;
+    border-left-color: #28a745;
 }
 
 .alert-danger {
-  border-left-color: #dc3545;
+    border-left-color: #dc3545;
 }
 
 .alert-info {
-  border-left-color: #17a2b8;
+    border-left-color: #17a2b8;
 }
 
 .alert-warning {
-  border-left-color: #ffc107;
+    border-left-color: #ffc107;
 }
 
 /* Tablas responsivas */
 .table-responsive {
-  border-radius: 0.5rem;
+    border-radius: 0.5rem;
 }
 
 /* Breadcrumb personalizado */
 .breadcrumb {
-  background-color: #f8f9fa;
-  padding: 0.75rem 1rem;
-  border-radius: 0.5rem;
+    background-color: #f8f9fa;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
 }
 
 /* Animación de carga */
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .card {
-  animation: fadeIn 0.5s ease;
+    animation: fadeIn 0.5s ease;
 }
 
 /* Estilos para el carrito */
 .carrito-item {
-  transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease;
 }
 
-.carrito-item:hover {
-  background-color: #f8f9fa;
-}
+    .carrito-item:hover {
+        background-color: #f8f9fa;
+    }
 
 /* Precio destacado */
 .text-primary {
-  color: #667eea !important;
+    color: #667eea !important;
 }
 
 /* Sombras suaves */
 .shadow-sm {
-  box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.075) !important;
+    box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.075) !important;
 }
 
 .shadow {
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
 }
 
 /* Iconos de Font Awesome con margen */
 .fa, .fas, .far, .fab {
-  margin-right: 0.25rem;
+    margin-right: 0.25rem;
 }
 
 /* Producto destacado */
 .producto-destacado {
-  border: 2px solid #667eea;
-  position: relative;
-  overflow: hidden;
+    border: 2px solid #667eea;
+    position: relative;
+    overflow: hidden;
 }
 
-.producto-destacado::before {
-  content: "DESTACADO";
-  position: absolute;
-  top: 10px;
-  right: -35px;
-  background: #667eea;
-  color: white;
-  padding: 5px 40px;
-  transform: rotate(45deg);
-  font-size: 0.75rem;
-  font-weight: bold;
-}
+    .producto-destacado::before {
+        content: "DESTACADO";
+        position: absolute;
+        top: 10px;
+        right: -35px;
+        background: #667eea;
+        color: white;
+        padding: 5px 40px;
+        transform: rotate(45deg);
+        font-size: 0.75rem;
+        font-weight: bold;
+    }
 
 /* Formularios mejorados */
 .form-control:focus {
-  border-color: #667eea;
-  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
 }
 
 .form-select:focus {
-  border-color: #667eea;
-  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
 }
 
 /* Botones personalizados */
 .btn-primary {
-  background-color: #667eea;
-  border-color: #667eea;
+    background-color: #667eea;
+    border-color: #667eea;
 }
 
-.btn-primary:hover {
-  background-color: #5568d3;
-  border-color: #5568d3;
-}
+    .btn-primary:hover {
+        background-color: #5568d3;
+        border-color: #5568d3;
+    }
 
 /* Card del panel admin */
 .admin-card {
-  transition: all 0.3s ease;
-  cursor: pointer;
+    transition: all 0.3s ease;
+    cursor: pointer;
 }
 
-.admin-card:hover {
-  transform: scale(1.05);
-  box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.2);
+    .admin-card:hover {
+        transform: scale(1.05);
+        box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.2);
+    }
+
+/* ==========================================================================
+   Modo de Alto Contraste (WCAG 2.1 Nivel AAA)
+   ========================================================================== */
+
+/* Tema de Alto Contraste (Activado por atributo data) */
+html[data-theme="high-contrast"],
+html[data-theme="high-contrast"] body {
+    background-color: #000000 !important;
+    color: #ffffff !important;
 }
+
+    html[data-theme="high-contrast"] main,
+    html[data-theme="high-contrast"] header,
+    html[data-theme="high-contrast"] footer,
+    html[data-theme="high-contrast"] section,
+    html[data-theme="high-contrast"] aside,
+    html[data-theme="high-contrast"] nav,
+    html[data-theme="high-contrast"] .dropdown-menu,
+    html[data-theme="high-contrast"] div.absolute:not(.inset-0), /* Fix del Dropdowns para q el div de background funcione */
+    html[data-theme="high-contrast"] div:not(.absolute):not(.relative):not(.bg-gradient-to-b) {
+        background-color: #000000 !important;
+        background-image: none !important;
+        border-color: #ffffff !important;
+        box-shadow: none !important;
+    }
+
+    html[data-theme="high-contrast"] *:not(button):not(a):not(input):not(select):not(textarea):not(i):not(svg):not(img):not(img.object-cover):not(.absolute) {
+        color: #ffffff !important;
+        border-color: #ffffff !important;
+    }
+
+    /* Forzar color de texto para clases de utilidades bg / states para asegurar visibilidad */
+    html[data-theme="high-contrast"] a,
+    html[data-theme="high-contrast"] a *,
+    html[data-theme="high-contrast"] i.fas,
+    html[data-theme="high-contrast"] i.fab,
+    html[data-theme="high-contrast"] span:not(.animate-ping),
+    html[data-theme="high-contrast"] p,
+    html[data-theme="high-contrast"] h1,
+    html[data-theme="high-contrast"] h2,
+    html[data-theme="high-contrast"] h3,
+    html[data-theme="high-contrast"] h4,
+    html[data-theme="high-contrast"] h5,
+    html[data-theme="high-contrast"] h6,
+    html[data-theme="high-contrast"] label,
+    html[data-theme="high-contrast"] li {
+        color: #ffffff !important;
+    }
+
+        html[data-theme="high-contrast"] a.categoria-link span {
+            color: #ffffff !important;
+        }
+
+        html[data-theme="high-contrast"] a.categoria-link:hover span {
+            color: #000000 !important;
+        }
+
+        /* Spans/badges específicos para Categoría de Productos en el Grid e Index */
+        html[data-theme="high-contrast"] span.bg-white\/90 {
+            background-color: #000000 !important;
+            color: #ffffff !important;
+            border: 2px solid #ffffff !important;
+        }
+
+        /* Enlaces y botones (acciones) resaltados en amarillo */
+        html[data-theme="high-contrast"] button,
+        html[data-theme="high-contrast"] a.btn,
+        html[data-theme="high-contrast"] [type="submit"] {
+            background-color: #000000 !important;
+            color: #ffff00 !important;
+            border: 2px solid #ffff00 !important;
+            box-shadow: none !important;
+        }
+
+            html[data-theme="high-contrast"] button *,
+            html[data-theme="high-contrast"] a.btn * {
+                color: #ffff00 !important;
+            }
+
+            html[data-theme="high-contrast"] a:hover,
+            html[data-theme="high-contrast"] button:hover {
+                color: #000000 !important;
+                background-color: #ffff00 !important;
+                text-decoration: none !important;
+            }
+
+                html[data-theme="high-contrast"] a:hover *,
+                html[data-theme="high-contrast"] button:hover * {
+                    color: #000000 !important;
+                }
+
+            /* Categorias y Aside lateral */
+            html[data-theme="high-contrast"] button.categoria-link {
+                border-color: transparent !important; /* Mantenemos borde invis para no sobrecargar si no está activo */
+                border-bottom: 1px solid #ffffff !important;
+                border-left: 0 !important;
+            }
+
+                html[data-theme="high-contrast"] button.categoria-link:hover {
+                    border-color: #ffff00 !important; /* Mantenemos borde invis para no sobrecargar si no está activo */
+                }
+
+
+    /* Inputs y Formularios */
+    html[data-theme="high-contrast"] input,
+    html[data-theme="high-contrast"] select,
+    html[data-theme="high-contrast"] textarea {
+        background-color: #000000 !important;
+        color: #ffffff !important;
+        border: 2px solid #ffffff !important;
+    }
+
+        html[data-theme="high-contrast"] input::placeholder,
+        html[data-theme="high-contrast"] textarea::placeholder {
+            color: #cccccc !important;
+        }
+
+    /* Fix para imágenes e iconos (El logo ahora será blanco) */
+    html[data-theme="high-contrast"] img {
+        border: 2px solid #ffffff !important;
+        filter: grayscale(100%) contrast(120%);
+    }
+
+        html[data-theme="high-contrast"] img[alt*="Logo"],
+        html[data-theme="high-contrast"] img[src*="logo"] {
+            /* Invertimos el logo si es oscuro, sino lo dejamos blanco resplandeciente */
+            filter: grayscale(100%) invert(100%) brightness(200%) contrast(200%);
+            border: none !important;
+        }
+
+    html[data-theme="high-contrast"] svg,
+    html[data-theme="high-contrast"] svg path {
+        fill: currentColor !important;
+    }
+
+    /* ESTADOS ACCESIBLES: Hover y Focus */
+    html[data-theme="high-contrast"] *:focus-visible {
+        outline: 4px solid #00ffff !important;
+        outline-offset: 4px !important;
+        border-radius: 0 !important;
+    }
+
+    /* Fix específico del dropdown del NAV y submenus en hover para que destaque en HC */
+    html[data-theme="high-contrast"] .bg-white.absolute {
+        border: 3px solid #ffffff !important;
+    }
+
+/* Detección de Preferencia del Sistema Operativo */
+@media (prefers-contrast: more) {
+    html:not([data-theme="normal"]),
+    html:not([data-theme="normal"]) body {
+        background-color: #000000 !important;
+        color: #ffffff !important;
+    }
+}
+
+/* FIN MODO ALTO CONTRASTE */
