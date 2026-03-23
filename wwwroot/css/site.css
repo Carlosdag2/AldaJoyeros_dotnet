@@ -294,6 +294,7 @@ html[data-theme="high-contrast"] body {
         html[data-theme="high-contrast"] button,
         html[data-theme="high-contrast"] a.btn,
         html[data-theme="high-contrast"] a.inline-flex,
+        html[data-theme="high-contrast"] a.block.w-full,
         html[data-theme="high-contrast"] [type="submit"] {
             background-color: #000000 !important;
             color: #ffff00 !important;
@@ -303,6 +304,7 @@ html[data-theme="high-contrast"] body {
 
             html[data-theme="high-contrast"] button *,
             html[data-theme="high-contrast"] a.inline-flex *,
+            html[data-theme="high-contrast"] a.block.w-full *,
             html[data-theme="high-contrast"] a.btn * {
                 color: #ffff00 !important;
             }
