@@ -250,10 +250,14 @@ html[data-theme="high-contrast"] body {
         }
 
         /* Spans/badges específicos para Categoría de Productos en el Grid e Index */
-        html[data-theme="high-contrast"] span.bg-white\/90 {
+        html[data-theme="high-contrast"] span.bg-white\/90,
+        html[data-theme="high-contrast"] span.bg-emerald-100,
+        html[data-theme="high-contrast"] span.bg-emerald-50 {
             background-color: #000000 !important;
             color: #ffffff !important;
             border: 2px solid #ffffff !important;
+            text-transform: uppercase !important;
+            font-weight: bold !important;
         }
 
         /* Enlaces y botones (acciones) resaltados en amarillo */
