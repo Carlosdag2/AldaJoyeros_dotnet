@@ -1,0 +1,65 @@
+@{
+    ViewData["Title"] = "Política de Cookies";
+}
+
+<div class="bg-gray-50 min-h-screen py-12">
+    <div class="container mx-auto px-4 sm:px-6 max-w-4xl">
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 md:p-12">
+
+            <div class="mb-10 text-center">
+                <div class="w-16 h-16 bg-amber-50 text-amber-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-cookie-bite text-2xl"></i>
+                </div>
+                <h1 class="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-amber-600 to-yellow-500">Política de Cookies</h1>
+                <p class="text-gray-500 mt-3">Última actualización: @DateTime.Now.ToString("dd MMMM yyyy")</p>
+            </div>
+
+            <div class="prose prose-amber max-w-none text-gray-600 space-y-6">
+                <p class="lead text-lg text-gray-700">En Alda Joyeros utilizamos cookies y otras tecnologías para mejorar y personalizar su experiencia de navegación.</p>
+
+                <h2 class="text-xl font-bold text-gray-800 mt-8 mb-4 flex items-center gap-2">
+                    <i class="fas fa-cookie text-amber-500"></i>
+                    1. ¿Qué son las Cookies?
+                </h2>
+                <p>Las cookies son pequeños archivos de texto que se almacenan en su dispositivo (ordenador, tablet, o móvil) cuando visita sitios web. Se utilizan para que las plataformas en línea funcionen de manera eficiente y proporcionen información a los dueños de la web.</p>
+
+                <h2 class="text-xl font-bold text-gray-800 mt-8 mb-4 flex items-center gap-2">
+                    <i class="fas fa-layer-group text-amber-500"></i>
+                    2. Tipos de Cookies que empleamos
+                </h2>
+                <ul class="list-disc pl-5 space-y-2">
+                    <li><strong>Cookies Esenciales:</strong> Necesarias para las funciones básicas del sitio web. Permiten navegar y usar las principales funcionalidades.</li>
+                    <li><strong>Cookies de Análisis (Rendimiento):</strong> Nos ayudan a comprender cómo las personas utilizan nuestra tienda en línea para poder mejorarla.</li>
+                    <li><strong>Cookies de Funcionalidad:</strong> Recuerdan sus preferencias de productos (como el idioma o país) para darle una mejor experiencia.</li>
+                    <li><strong>Cookies de Marketing:</strong> Empleadas en anuncios que puedan ser relevantes y de su interés.</li>
+                </ul>
+
+                <h2 class="text-xl font-bold text-gray-800 mt-8 mb-4 flex items-center gap-2">
+                    <i class="fas fa-user-shield text-amber-500"></i>
+                    3. Gestionar y desactivar Cookies
+                </h2>
+                <p>Puede cambiar sus preferencias sobre cómo su navegador trata las cookies desde la configuración del mismo. Para su comodidad, le proporcionamos instrucciones generales en los siguientes enlaces (los enlaces externos pueden variar):</p>
+                <ul class="list-disc pl-5 space-y-2">
+                    <li><a href="#" class="text-amber-600 hover:text-amber-700 underline">Google Chrome</a></li>
+                    <li><a href="#" class="text-amber-600 hover:text-amber-700 underline">Mozilla Firefox</a></li>
+                    <li><a href="#" class="text-amber-600 hover:text-amber-700 underline">Apple Safari</a></li>
+                    <li><a href="#" class="text-amber-600 hover:text-amber-700 underline">Microsoft Edge</a></li>
+                </ul>
+                <p class="text-sm mt-4"><em>Aviso: Tenga en cuenta que si desactiva las cookies esenciales, es posible que algunas funciones importantes de la tienda no trabajen apropiadamente, como por ejemplo, añadir productos al carrito de compras.</em></p>
+
+                <h2 class="text-xl font-bold text-gray-800 mt-8 mb-4 flex items-center gap-2">
+                    <i class="fas fa-question-circle text-amber-500"></i>
+                    4. ¿Más dudas o preguntas?
+                </h2>
+                <p>Si necesita más información respecto a nuestro manejo y políticas de uso de cookies, contáctenos en <strong>aldajoyeros1962@gmail.com</strong> o consulte nuestra completa <a asp-action="Privacy" class="text-amber-600 hover:text-amber-700 underline">Política de Privacidad</a>.</p>
+            </div>
+
+            <div class="mt-12 text-center">
+                <a asp-action="Index" class="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 hover:bg-gray-800 text-white font-medium rounded-xl transition-colors">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Volver a la tienda</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

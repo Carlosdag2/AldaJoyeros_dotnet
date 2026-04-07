@@ -382,11 +382,11 @@
             <div class="pt-6 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-500">
                 <p>&copy; @DateTime.Now.Year Alda Joyeros 1962. Todos los derechos reservados.</p>
                 <div class="flex gap-4">
-                    <a href="#" class="hover:text-emerald-400 transition-colors">Privacidad</a>
+                    <a asp-controller="Home" asp-action="Privacy" class="hover:text-emerald-400 transition-colors">Privacidad</a>
                     <span>•</span>
-                    <a href="#" class="hover:text-emerald-400 transition-colors">Términos</a>
+                    <a asp-controller="Home" asp-action="Terminos" class="hover:text-emerald-400 transition-colors">Términos</a>
                     <span>•</span>
-                    <a href="#" class="hover:text-emerald-400 transition-colors">Cookies</a>
+                    <a asp-controller="Home" asp-action="Cookies" class="hover:text-emerald-400 transition-colors">Cookies</a>
                 </div>
             </div>
         </div>

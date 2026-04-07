@@ -1,6 +1,64 @@
-﻿@{
-    ViewData["Title"] = "Privacy Policy";
+@{
+    ViewData["Title"] = "Política de Privacidad";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<div class="bg-gray-50 min-h-screen py-12">
+    <div class="container mx-auto px-4 sm:px-6 max-w-4xl">
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 md:p-12">
+
+            <div class="mb-10 text-center">
+                <div class="w-16 h-16 bg-emerald-50 text-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-shield-alt text-2xl"></i>
+                </div>
+                <h1 class="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 to-teal-500">Política de Privacidad</h1>
+                <p class="text-gray-500 mt-3">Última actualización: @DateTime.Now.ToString("dd MMMM yyyy")</p>
+            </div>
+
+            <div class="prose prose-emerald max-w-none text-gray-600 space-y-6">
+                <p class="lead text-lg text-gray-700">En Alda Joyeros, respetamos su privacidad y estamos comprometidos a proteger la información personal que comparte con nosotros.</p>
+
+                <h2 class="text-xl font-bold text-gray-800 mt-8 mb-4 flex items-center gap-2">
+                    <i class="fas fa-info-circle text-emerald-500"></i>
+                    1. Información que recopilamos
+                </h2>
+                <p>Podemos recopilar la siguiente información cuando interactúa en nuestro sitio web:</p>
+                <ul class="list-disc pl-5 space-y-2">
+                    <li>Información de contacto (nombre, correo electrónico, número de teléfono).</li>
+                    <li>Información de envío y facturación para sus pedidos.</li>
+                    <li>Información de cuenta y credenciales si decide registrarse en nuestra plataforma.</li>
+                </ul>
+
+                <h2 class="text-xl font-bold text-gray-800 mt-8 mb-4 flex items-center gap-2">
+                    <i class="fas fa-cogs text-emerald-500"></i>
+                    2. Cómo usamos la información
+                </h2>
+                <p>Utilizamos la información recopilada para:</p>
+                <ul class="list-disc pl-5 space-y-2">
+                    <li>Procesar y gestionar sus pedidos y devoluciones de manera eficaz.</li>
+                    <li>Proporcionar asistencia al cliente y soporte técnico.</li>
+                    <li>Mejorar nuestra tienda, personalizando su experiencia de usuario.</li>
+                    <li>Enviar notificaciones sobre sus compras y actualizaciones relevantes del servicio.</li>
+                </ul>
+
+                <h2 class="text-xl font-bold text-gray-800 mt-8 mb-4 flex items-center gap-2">
+                    <i class="fas fa-lock text-emerald-500"></i>
+                    3. Protección de Datos
+                </h2>
+                <p>Implementamos medidas de seguridad físicas y electrónicas para salvaguardar sus datos personales contra acceso no autorizado, alteración o divulgación.</p>
+
+                <h2 class="text-xl font-bold text-gray-800 mt-8 mb-4 flex items-center gap-2">
+                    <i class="fas fa-envelope text-emerald-500"></i>
+                    4. Contáctenos
+                </h2>
+                <p>Si tiene alguna pregunta sobre nuestra política de privacidad, no dude en contactarnos a <strong>aldajoyeros1962@gmail.com</strong>.</p>
+            </div>
+
+            <div class="mt-12 text-center">
+                <a asp-action="Index" class="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 hover:bg-gray-800 text-white font-medium rounded-xl transition-colors">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Volver a la tienda</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

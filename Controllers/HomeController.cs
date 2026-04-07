@@ -30,6 +30,16 @@ namespace AldaJoyeros.Controllers
             return View();
         }
 
+        public IActionResult Terminos()
+        {
+            return View();
+        }
+
+        public IActionResult Cookies()
+        {
+            return View();
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

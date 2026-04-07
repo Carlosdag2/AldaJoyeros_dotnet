@@ -1,0 +1,59 @@
+@{
+    ViewData["Title"] = "Términos y Condiciones";
+}
+
+<div class="bg-gray-50 min-h-screen py-12">
+    <div class="container mx-auto px-4 sm:px-6 max-w-4xl">
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 md:p-12">
+
+            <div class="mb-10 text-center">
+                <div class="w-16 h-16 bg-blue-50 text-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-file-contract text-2xl"></i>
+                </div>
+                <h1 class="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-500">Términos y Condiciones</h1>
+                <p class="text-gray-500 mt-3">Última actualización: @DateTime.Now.ToString("dd MMMM yyyy")</p>
+            </div>
+
+            <div class="prose prose-blue max-w-none text-gray-600 space-y-6">
+                <p class="lead text-lg text-gray-700">Por favor, lea estos Términos y Condiciones ("Términos") cuidadosamente antes de utilizar los servicios y el sitio web de Alda Joyeros.</p>
+
+                <h2 class="text-xl font-bold text-gray-800 mt-8 mb-4 flex items-center gap-2">
+                    <i class="fas fa-check-circle text-blue-500"></i>
+                    1. Aceptación de los Términos
+                </h2>
+                <p>Al acceder, navegar o utilizar este sitio de cualquier manera, indica que comprende y acepta estos Términos. Si no está de acuerdo, por favor absténgase de utilizar nuestros servicios.</p>
+
+                <h2 class="text-xl font-bold text-gray-800 mt-8 mb-4 flex items-center gap-2">
+                    <i class="fas fa-gem text-blue-500"></i>
+                    2. Productos y Servicios
+                </h2>
+                <p>En Alda Joyeros, intentamos mostrar los colores e imágenes de nuestros productos con la mayor precisión posible. No obstante, no podemos garantizar que la pantalla de su monitor refleje el color exacto del artículo real.</p>
+                <ul class="list-disc pl-5 space-y-2">
+                    <li>Los precios están sujetos a cambios sin previo aviso.</li>
+                    <li>Nos reservamos el derecho de limitar las ventas de productos u ofrecer promociones por tiempos limitados.</li>
+                    <li>Podemos descontinuar cualquier producto en cualquier momento de nuestro catálogo.</li>
+                </ul>
+
+                <h2 class="text-xl font-bold text-gray-800 mt-8 mb-4 flex items-center gap-2">
+                    <i class="fas fa-truck text-blue-500"></i>
+                    3. Pagos y Envíos
+                </h2>
+                <p>El cliente es responsable de asegurarse de proporcionar información precisa al tramitar el pago. Todos los pedidos realizados son sujetos a aprobación y disponibilidad.</p>
+                <p>Las tarifas de envío y tiempos estimados se proporcionarán al final de la compra. Alda Joyeros no se hace responsable por demoras que ocurran debido a causas ajenas o de fuerza mayor durante el transporte y proceso de aduana.</p>
+
+                <h2 class="text-xl font-bold text-gray-800 mt-8 mb-4 flex items-center gap-2">
+                    <i class="fas fa-undo-alt text-blue-500"></i>
+                    4. Devoluciones y Reembolsos
+                </h2>
+                <p>Ofrecemos una política de devoluciones sujeta a ciertas restricciones. Los anillos personalizados, bisutería grabada, u ofertas especiales pueden ser artículos no retornables o de venta final.</p>
+            </div>
+
+            <div class="mt-12 text-center">
+                <a asp-action="Index" class="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 hover:bg-gray-800 text-white font-medium rounded-xl transition-colors">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Volver a la tienda</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
