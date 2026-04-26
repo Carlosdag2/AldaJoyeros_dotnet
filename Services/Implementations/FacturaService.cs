@@ -40,8 +40,8 @@ namespace AldaJoyeros.Services.Implementations
 
         public string GenerarNumeroFactura(long pedidoId)
         {
-            var año = DateTime.Now.Year;
-            return $"{_empresaSettings.PrefijoFactura}-{año}-{pedidoId:D6}";
+            var ano = DateTime.Now.Year;
+            return $"{_empresaSettings.PrefijoFactura}-{ano}-{pedidoId:D6}";
         }
 
         public FacturaDto ObtenerDatosFactura(PedidoDto pedido, string emailCliente, string nombreCliente)
