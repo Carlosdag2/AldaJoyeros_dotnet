@@ -1,0 +1,12 @@
+# Local application configuration (may contain secrets)
+/appsettings.json
+/appsettings.Local.json
+/appsettings.*.local.json
+
+# .NET build output
+bin/
+obj/
+
+# IDE and user-specific files
+.idea/
+*.csproj.user
