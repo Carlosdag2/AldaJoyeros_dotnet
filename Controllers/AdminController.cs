@@ -34,7 +34,7 @@ namespace AldaJoyeros.Controllers
         {
             // Obtener estadísticas
             var categorias = await _categoriaService.GetAllAsync();
-            var productos = await _productoService.GetAllAsync();
+            var productos = await _productoService.GetAllAsync(cargarImagenes: false);
             var pedidos = await _pedidoService.GetAllAsync();
             var usuarios = await _usuarioService.GetAllAsync();
 

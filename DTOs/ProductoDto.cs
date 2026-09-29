@@ -2,6 +2,13 @@ using System.ComponentModel.DataAnnotations;
 
 namespace AldaJoyeros.DTOs
 {
+    public class CaracteristicaProductoDto
+    {
+        public string Grupo { get; set; } = string.Empty;
+        public string Nombre { get; set; } = string.Empty;
+        public string Valor { get; set; } = string.Empty;
+    }
+
     public class ProductoDto
     {
         public long Id { get; set; }
@@ -21,6 +28,11 @@ namespace AldaJoyeros.DTOs
         /// </summary>
         public DateTime? FechaEliminado { get; set; }
         
+        public string? Marca { get; set; }
+        public string? Coleccion { get; set; }
+        public string? DescripcionCompleta { get; set; }
+        public List<CaracteristicaProductoDto> Caracteristicas { get; set; } = new();
+
         // Imágenes del producto (ahora en Base64)
         public List<ProductoImagenDto> Imagenes { get; set; } = new List<ProductoImagenDto>();
         

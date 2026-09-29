@@ -11,6 +11,9 @@ using AldaJoyeros.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.Text.Encodings.Web;
+using System.Text.Unicode;
+using Microsoft.Extensions.WebEncoders;
 
 namespace AldaJoyeros
 {
@@ -19,6 +22,13 @@ namespace AldaJoyeros
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            // Configuración UTF-8 para caracteres especiales (tildes, ñ)
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            builder.Services.Configure<WebEncoderOptions>(options =>
+            {
+                options.TextEncoderSettings = new TextEncoderSettings(UnicodeRanges.All);
+            });
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
@@ -192,6 +202,25 @@ namespace AldaJoyeros
             app.UseAuthorization();
 
             app.MapStaticAssets();
+
+            app.Use(async (context, next) =>
+            {
+                context.Response.OnStarting(() =>
+                {
+                    if (context.Response.ContentType != null &&
+                        context.Response.ContentType.Contains("text/html") &&
+                        !context.Response.ContentType.Contains("charset"))
+                    {
+                        context.Response.ContentType = "text/html; charset=utf-8";
+                        context.Response.ContentType = "application/javascript; charset=utf-8";
+                    }
+
+                    return Task.CompletedTask;
+                });
+
+                await next();
+            });
+
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}")

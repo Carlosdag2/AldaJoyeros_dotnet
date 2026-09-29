@@ -38,10 +38,18 @@ namespace AldaJoyeros.Data
             // Configuración Producto
             modelBuilder.Entity<Producto>(entity =>
             {
+                entity.Property(e => e.Nombre).UseCollation("utf8mb4_0900_as_ci");
                 entity.HasOne(p => p.Categoria)
                     .WithMany(c => c.Productos)
                     .HasForeignKey(p => p.CategoriaId)
                     .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<ProductoProveedor>(entity =>
+            {
+                entity.HasKey(p => new { p.Proveedor, p.ReferenciaExterna });
+                entity.HasOne(p => p.Producto).WithMany(p => p.Proveedores)
+                    .HasForeignKey(p => p.ProductoId).OnDelete(DeleteBehavior.Cascade);
             });
 
             // Configuración CarritoItem

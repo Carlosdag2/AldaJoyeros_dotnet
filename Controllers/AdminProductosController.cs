@@ -22,7 +22,7 @@ namespace AldaJoyeros.Controllers
         public async Task<IActionResult> Index(string busqueda = "", string filtro = "activos", int page = 1)
         {
             // Obtener todos los productos incluyendo eliminados para admin
-            var productos = await _productoService.GetAllIncludingDeletedAsync();
+            var productos = await _productoService.GetAllIncludingDeletedAsync(cargarImagenes: false);
             var todosProductos = productos.ToList();
             
             // Estadísticas
@@ -52,6 +52,7 @@ namespace AldaJoyeros.Controllers
             }
 
             var pagedResult = PagedResult<ProductoDto>.Create(productosFiltrados, page, PageSize);
+            await _productoService.CargarImagenesAsync(pagedResult.Items);
             ViewBag.Busqueda = busqueda;
             ViewBag.Filtro = filtro;
 
@@ -335,7 +336,7 @@ namespace AldaJoyeros.Controllers
         [HttpGet]
         public async Task<IActionResult> BuscarAjax(string busqueda = "", string filtro = "activos", int page = 1)
         {
-            var productos = await _productoService.GetAllIncludingDeletedAsync();
+            var productos = await _productoService.GetAllIncludingDeletedAsync(cargarImagenes: false);
             var todosProductos = productos.ToList();
             
             IEnumerable<ProductoDto> productosFiltrados = filtro switch
@@ -356,6 +357,7 @@ namespace AldaJoyeros.Controllers
             }
 
             var pagedResult = PagedResult<ProductoDto>.Create(productosFiltrados, page, PageSize);
+            await _productoService.CargarImagenesAsync(pagedResult.Items);
 
             var productosData = pagedResult.Items.Select(p => new
             {

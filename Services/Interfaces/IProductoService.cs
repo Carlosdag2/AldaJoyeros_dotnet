@@ -7,12 +7,12 @@ namespace AldaJoyeros.Services.Interfaces
         /// <summary>
         /// Obtiene todos los productos activos (no eliminados)
         /// </summary>
-        Task<IEnumerable<ProductoDto>> GetAllAsync();
+        Task<IEnumerable<ProductoDto>> GetAllAsync(bool cargarImagenes = true);
         
         /// <summary>
         /// Obtiene todos los productos incluyendo eliminados (para administración)
         /// </summary>
-        Task<IEnumerable<ProductoDto>> GetAllIncludingDeletedAsync();
+        Task<IEnumerable<ProductoDto>> GetAllIncludingDeletedAsync(bool cargarImagenes = true);
         
         /// <summary>
         /// Obtiene un producto por ID (incluyendo eliminados)
@@ -24,7 +24,8 @@ namespace AldaJoyeros.Services.Interfaces
         /// </summary>
         Task<ProductoDto?> GetByIdActiveAsync(long id);
         
-        Task<IEnumerable<ProductoDto>> GetByCategoriaAsync(long categoriaId);
+        Task<IEnumerable<ProductoDto>> GetByCategoriaAsync(long categoriaId, bool cargarImagenes = true);
+        Task CargarImagenesAsync(IEnumerable<ProductoDto> productos);
         Task<ProductoDto> CreateAsync(ProductoCreateDto productoCreateDto);
         Task<ProductoDto> UpdateAsync(long id, ProductoUpdateDto productoUpdateDto);
         
@@ -50,6 +51,6 @@ namespace AldaJoyeros.Services.Interfaces
         /// <param name="categoriaId">ID de categoría opcional para filtrar</param>
         /// <param name="limite">Número máximo de resultados (0 = sin límite)</param>
         /// <returns>Lista de productos que coinciden con la búsqueda</returns>
-        Task<IEnumerable<ProductoDto>> BuscarAsync(string termino, long? categoriaId = null, int limite = 0);
+        Task<IEnumerable<ProductoDto>> BuscarAsync(string termino, long? categoriaId = null, int limite = 0, bool cargarImagenes = true);
     }
 }
