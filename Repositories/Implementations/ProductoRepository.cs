@@ -42,6 +42,7 @@ namespace AldaJoyeros.Repositories.Implementations
         {
             return await _context.Productos
                 .Include(p => p.Categoria)
+                .Include(p => p.Proveedores)
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
 
@@ -52,6 +53,7 @@ namespace AldaJoyeros.Repositories.Implementations
         {
             return await _context.Productos
                 .Include(p => p.Categoria)
+                .Include(p => p.Proveedores)
                 .FirstOrDefaultAsync(p => p.Id == id && !p.Eliminado);
         }
 

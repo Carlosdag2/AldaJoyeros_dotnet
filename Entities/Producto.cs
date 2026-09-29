@@ -46,6 +46,8 @@ namespace AldaJoyeros.Entities
         public virtual ICollection<CarritoItem> CarritoItems { get; set; } = new List<CarritoItem>();
         public virtual ICollection<LineaPedido> LineasPedido { get; set; } = new List<LineaPedido>();
 
+        public virtual ICollection<ProductoProveedor> Proveedores { get; set; } = new List<ProductoProveedor>();
+
         // Propiedad para imágenes (se cargan desde MongoDB)
         [NotMapped]
         public List<DTOs.ProductoImagenDto> Imagenes { get; set; } = new List<DTOs.ProductoImagenDto>();

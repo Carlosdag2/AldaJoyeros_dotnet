@@ -18,7 +18,8 @@ namespace AldaJoyeros.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var productos = await _productoService.GetAllAsync();
+            var productos = (await _productoService.GetAllAsync(cargarImagenes: false)).Take(8).ToList();
+            await _productoService.CargarImagenesAsync(productos);
             var categorias = await _categoriaService.GetAllAsync();
             
             ViewBag.Categorias = categorias;

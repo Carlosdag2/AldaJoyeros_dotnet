@@ -24,16 +24,12 @@ namespace AldaJoyeros.Services.Implementations
         /// <summary>
         /// Obtiene todos los productos activos (no eliminados)
         /// </summary>
-        public async Task<IEnumerable<ProductoDto>> GetAllAsync()
+        public async Task<IEnumerable<ProductoDto>> GetAllAsync(bool cargarImagenes = true)
         {
             var productos = await _productoRepository.GetAllAsync();
-            var productosDto = _mapper.Map<IEnumerable<ProductoDto>>(productos);
+            var productosDto = _mapper.Map<IEnumerable<ProductoDto>>(productos).ToList();
             
-            foreach (var productoDto in productosDto)
-            {
-                var imagenes = await _imagenService.GetByProductoIdAsync(productoDto.Id);
-                productoDto.Imagenes = imagenes.ToList();
-            }
+            if (cargarImagenes) await CargarImagenesAsync(productosDto);
             
             return productosDto;
         }
@@ -41,16 +37,12 @@ namespace AldaJoyeros.Services.Implementations
         /// <summary>
         /// Obtiene todos los productos incluyendo eliminados (para administración)
         /// </summary>
-        public async Task<IEnumerable<ProductoDto>> GetAllIncludingDeletedAsync()
+        public async Task<IEnumerable<ProductoDto>> GetAllIncludingDeletedAsync(bool cargarImagenes = true)
         {
             var productos = await _productoRepository.GetAllIncludingDeletedAsync();
-            var productosDto = _mapper.Map<IEnumerable<ProductoDto>>(productos);
+            var productosDto = _mapper.Map<IEnumerable<ProductoDto>>(productos).ToList();
             
-            foreach (var productoDto in productosDto)
-            {
-                var imagenes = await _imagenService.GetByProductoIdAsync(productoDto.Id);
-                productoDto.Imagenes = imagenes.ToList();
-            }
+            if (cargarImagenes) await CargarImagenesAsync(productosDto);
             
             return productosDto;
         }
@@ -61,6 +53,7 @@ namespace AldaJoyeros.Services.Implementations
             if (producto == null) return null;
             
             var productoDto = _mapper.Map<ProductoDto>(producto);
+            CompletarDatosProveedor(producto, productoDto);
             
             var imagenes = await _imagenService.GetByProductoIdAsync(id);
             productoDto.Imagenes = imagenes.ToList();
@@ -77,6 +70,7 @@ namespace AldaJoyeros.Services.Implementations
             if (producto == null) return null;
             
             var productoDto = _mapper.Map<ProductoDto>(producto);
+            CompletarDatosProveedor(producto, productoDto);
             
             var imagenes = await _imagenService.GetByProductoIdAsync(id);
             productoDto.Imagenes = imagenes.ToList();
@@ -162,16 +156,12 @@ namespace AldaJoyeros.Services.Implementations
             await _productoRepository.HardDeleteAsync(id);
         }
 
-        public async Task<IEnumerable<ProductoDto>> GetByCategoriaAsync(long categoriaId)
+        public async Task<IEnumerable<ProductoDto>> GetByCategoriaAsync(long categoriaId, bool cargarImagenes = true)
         {
             var productos = await _productoRepository.GetByCategoriaAsync(categoriaId);
-            var productosDto = _mapper.Map<IEnumerable<ProductoDto>>(productos);
+            var productosDto = _mapper.Map<IEnumerable<ProductoDto>>(productos).ToList();
             
-            foreach (var productoDto in productosDto)
-            {
-                var imagenes = await _imagenService.GetByProductoIdAsync(productoDto.Id);
-                productoDto.Imagenes = imagenes.ToList();
-            }
+            if (cargarImagenes) await CargarImagenesAsync(productosDto);
             
             return productosDto;
         }
@@ -179,7 +169,7 @@ namespace AldaJoyeros.Services.Implementations
         /// <summary>
         /// Busca productos por término de búsqueda con filtro opcional de categoría
         /// </summary>
-        public async Task<IEnumerable<ProductoDto>> BuscarAsync(string termino, long? categoriaId = null, int limite = 0)
+        public async Task<IEnumerable<ProductoDto>> BuscarAsync(string termino, long? categoriaId = null, int limite = 0, bool cargarImagenes = true)
         {
             if (string.IsNullOrWhiteSpace(termino))
             {
@@ -187,8 +177,8 @@ namespace AldaJoyeros.Services.Implementations
             }
 
             var productos = categoriaId.HasValue
-                ? await GetByCategoriaAsync(categoriaId.Value)
-                : await GetAllAsync();
+                ? await GetByCategoriaAsync(categoriaId.Value, cargarImagenes: false)
+                : await GetAllAsync(cargarImagenes: false);
 
             // Normalizar el término de búsqueda
             var terminoLower = termino.ToLower();
@@ -208,12 +198,53 @@ namespace AldaJoyeros.Services.Implementations
                 resultadosConScore = resultadosConScore.Take(limite);
             }
 
-            return resultadosConScore.ToList();
+            var resultados = resultadosConScore.ToList();
+            if (cargarImagenes) await CargarImagenesAsync(resultados);
+            return resultados;
         }
 
         /// <summary>
         /// Calcula un score de relevancia para ordenar los resultados de búsqueda
         /// </summary>
+        public static void CompletarDatosProveedor(Entities.Producto producto, ProductoDto dto)
+        {
+            var proveedor = producto.Proveedores.FirstOrDefault(p => p.Proveedor == "Munreco" && p.Estado == "completo");
+            if (proveedor == null) return;
+            dto.Marca = proveedor.Marca;
+            dto.Coleccion = proveedor.Coleccion;
+            if (proveedor.CreadoPorImportacion && !string.IsNullOrWhiteSpace(proveedor.DescripcionCompleta)) dto.DescripcionCompleta = proveedor.DescripcionCompleta;
+            using var json = System.Text.Json.JsonDocument.Parse(proveedor.CaracteristicasJson);
+            static IEnumerable<System.Text.Json.JsonElement> Valores(System.Text.Json.JsonElement node)
+            {
+                if (node.ValueKind == System.Text.Json.JsonValueKind.Object)
+                    return node.EnumerateObject().Select(p => p.Value).ToArray();
+                if (node.ValueKind == System.Text.Json.JsonValueKind.Array)
+                    return node.EnumerateArray().ToArray();
+                return Array.Empty<System.Text.Json.JsonElement>();
+            }
+            foreach (var grupo in Valores(json.RootElement))
+            {
+                if (!grupo.TryGetProperty("attribute", out var atributos)) continue;
+                var nombreGrupo = grupo.TryGetProperty("name", out var nombre) ? nombre.GetString() ?? "" : "";
+                foreach (var atributo in Valores(atributos))
+                {
+                    if (!atributo.TryGetProperty("name", out var etiqueta) || !atributo.TryGetProperty("text", out var valor)) continue;
+                    dto.Caracteristicas.Add(new CaracteristicaProductoDto
+                    {
+                        Grupo = nombreGrupo, Nombre = etiqueta.GetString() ?? "", Valor = valor.GetString() ?? ""
+                    });
+                }
+            }
+        }
+
+        public async Task CargarImagenesAsync(IEnumerable<ProductoDto> productos)
+        {
+            foreach (var producto in productos)
+            {
+                producto.Imagenes = (await _imagenService.GetByProductoIdAsync(producto.Id)).ToList();
+            }
+        }
+
         private int CalcularScore(ProductoDto producto, string terminoLower)
         {
             int score = 0;

@@ -152,11 +152,31 @@
 
                 <div class="prose prose-sm text-gray-600 font-sans leading-relaxed mb-8">
                     <p>
-                        @(string.IsNullOrEmpty(Model.Descripcion)
+                        @(string.IsNullOrEmpty(Model.DescripcionCompleta ?? Model.Descripcion)
                                                 ? "Una pieza atemporal que combina elegancia y sofisticación. Diseñada con los materiales de la más alta calidad, esta joya es el complemento perfecto para momentos inolvidables." 
-                                                        : Model.Descripcion)
+                                                        : (Model.DescripcionCompleta ?? Model.Descripcion))
                     </p>
                 </div>
+
+                @if (Model.Caracteristicas.Any())
+                {
+                    <section class="mb-8 border-t border-gray-100 pt-6">
+                        <h2 class="font-serif text-xl text-dark-900 mb-4">Características</h2>
+                        @if (!string.IsNullOrWhiteSpace(Model.Marca))
+                        {
+                            <p class="text-sm text-gray-600 mb-4">@Model.Marca @(!string.IsNullOrWhiteSpace(Model.Coleccion) ? " · " + Model.Coleccion : "")</p>
+                        }
+                        <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-sm">
+                            @foreach (var caracteristica in Model.Caracteristicas)
+                            {
+                                <div>
+                                    <dt class="font-semibold text-gray-700">@caracteristica.Nombre</dt>
+                                    <dd class="text-gray-600">@caracteristica.Valor</dd>
+                                </div>
+                            }
+                        </dl>
+                    </section>
+                }
 
                 <div class="space-y-6">
                     <div>

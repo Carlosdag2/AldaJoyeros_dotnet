@@ -35,16 +35,17 @@ namespace AldaJoyeros.Controllers
             
             if (!string.IsNullOrWhiteSpace(busqueda))
             {
-                productos = await _productoService.BuscarAsync(busqueda, categoriaId);
+                productos = await _productoService.BuscarAsync(busqueda, categoriaId, cargarImagenes: false);
             }
             else
             {
                 productos = categoriaId.HasValue
-                    ? await _productoService.GetByCategoriaAsync(categoriaId.Value)
-                    : await _productoService.GetAllAsync();
+                    ? await _productoService.GetByCategoriaAsync(categoriaId.Value, cargarImagenes: false)
+                    : await _productoService.GetAllAsync(cargarImagenes: false);
             }
 
             var pagedResult = PagedResult<DTOs.ProductoDto>.Create(productos, page, PageSize);
+            await _productoService.CargarImagenesAsync(pagedResult.Items);
 
             // Si es petición AJAX, devolver solo el partial
             if (Request.Headers.XRequestedWith == "XMLHttpRequest")
@@ -65,16 +66,17 @@ namespace AldaJoyeros.Controllers
             
             if (!string.IsNullOrWhiteSpace(busqueda))
             {
-                productos = await _productoService.BuscarAsync(busqueda, categoriaId);
+                productos = await _productoService.BuscarAsync(busqueda, categoriaId, cargarImagenes: false);
             }
             else
             {
                 productos = categoriaId.HasValue
-                    ? await _productoService.GetByCategoriaAsync(categoriaId.Value)
-                    : await _productoService.GetAllAsync();
+                    ? await _productoService.GetByCategoriaAsync(categoriaId.Value, cargarImagenes: false)
+                    : await _productoService.GetAllAsync(cargarImagenes: false);
             }
 
             var pagedResult = PagedResult<DTOs.ProductoDto>.Create(productos, page, PageSize);
+            await _productoService.CargarImagenesAsync(pagedResult.Items);
 
             return Json(new
             {
@@ -123,7 +125,7 @@ namespace AldaJoyeros.Controllers
                 return Json(new { sugerencias = Array.Empty<object>() });
             }
 
-            var productos = await _productoService.BuscarAsync(q, categoriaId, limite);
+            var productos = await _productoService.BuscarAsync(q, categoriaId, Math.Clamp(limite, 1, 20));
 
             var sugerencias = productos.Select(p => new
             {
