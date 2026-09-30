@@ -1,0 +1,119 @@
+@model AldaJoyeros.Services.PerezMora.PerezMoraDashboard
+@using AldaJoyeros.Services.Munreco
+@using System.Text.Json
+@{
+    ViewData["Title"]="Catálogo de Pérez Mora";
+    var active=Model.Jobs.FirstOrDefault(x=>x.Active);
+    var last=Model.Jobs.FirstOrDefault(x=>x.State=="completed");
+    string[] days=["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"];
+}
+<div class="min-h-screen bg-slate-50 pb-12">
+    <div class="bg-slate-900 text-white"><div class="container mx-auto px-6 py-10">
+        <a asp-controller="Admin" asp-action="Index" class="text-sm text-slate-300">← Panel de administración</a>
+        <h1 class="text-3xl font-bold mt-5">Catálogo de Pérez Mora</h1>
+        <p class="text-slate-300 mt-2">Importa su Excel y mantén al día las novedades, existencias y reposiciones.</p>
+    </div></div>
+    <div class="container mx-auto px-6 pt-8 space-y-6">
+        <div class="grid md:grid-cols-3 gap-4">
+            <div class="bg-white rounded-2xl border p-5"><p class="text-sm text-slate-500">Descarga del proveedor</p><p class="font-semibold mt-2">@(Model.Connected?"Enlace guardado":"Pendiente de conectar")</p></div>
+            <div class="bg-white rounded-2xl border p-5"><p class="text-sm text-slate-500">Última actualización correcta</p><p class="font-semibold mt-2">@MunrecoSchedule.Format(last?.EndedUtc)</p></div>
+            <div class="bg-white rounded-2xl border p-5"><p class="text-sm text-slate-500">Próxima actualización semanal</p><p class="font-semibold mt-2">@(Model.Schedule.Enabled?MunrecoSchedule.Format(Model.Schedule.NextUtc):"Desactivada")</p><p class="text-xs text-slate-500 mt-2">Hora de Madrid</p></div>
+        </div>
+        @if(!Model.WorkerEnabled){<p class="bg-amber-50 border border-amber-200 rounded-xl p-4">El proceso de actualización está desactivado en este servidor.</p>}
+        <section class="bg-white border rounded-2xl p-6" id="pricing-section">
+            <h2 class="text-xl font-semibold">Precio de venta de Pérez Mora</h2>
+            <p class="text-sm text-slate-600 mt-2">El PRECIO del Excel es el coste del proveedor. El PVP se calcula como coste × coeficiente y se redondea a dos decimales.</p>
+            <p class="text-sm mt-3">Coeficiente guardado: <strong id="saved-coefficient">@Model.Coefficient.ToString("0.####",System.Globalization.CultureInfo.GetCultureInfo("es-ES"))</strong></p>
+            <form asp-action="Precios" method="post" class="mt-5 space-y-4">
+                <label class="block text-sm font-medium" for="pricing-coefficient">Coeficiente para calcular el PVP</label>
+                <input id="pricing-coefficient" name="coeficiente" type="number" min="0.01" max="100" step="0.0001" required
+                       value="@((Model.PricePreview?.Coefficient??Model.Coefficient).ToString("0.####",System.Globalization.CultureInfo.InvariantCulture))"
+                       class="w-full sm:w-48 rounded-lg border border-slate-300 px-3 py-2" />
+                <p class="text-sm text-slate-500">Ejemplo: un coste de 10 € con coeficiente 2,5 da un PVP de 25 €. El coeficiente no añade impuestos por separado.</p>
+                <div class="flex flex-wrap gap-3">
+                    <button name="aplicar" value="false" disabled="@(active!=null)" class="px-4 py-2 rounded-lg border font-semibold disabled:opacity-40">Previsualizar precios</button>
+                    <button name="aplicar" value="true" disabled="@(active!=null)" class="px-4 py-2 rounded-lg bg-emerald-700 text-white font-semibold disabled:opacity-40">Guardar y aplicar coeficiente</button>
+                </div>
+                <p class="text-sm text-slate-500">Se aplica a los productos existentes de Pérez Mora y a las próximas importaciones, incluso las programadas. Los precios cambiados manualmente se conservan. El coste original permanece guardado y el coeficiente siempre se aplica sobre ese coste.</p>
+            </form>
+            @if(Model.PricePreview is { } pricing)
+            {
+                <div class="mt-5 rounded-xl bg-slate-50 p-4" id="pricing-preview">
+                    <p class="font-semibold">Previsualización: @pricing.Updated precios cambiarían; @pricing.Protected precios manuales se conservarían.</p>
+                    <p class="text-sm text-slate-500 mt-1">Esta previsualización no ha cambiado ningún precio ni el coeficiente guardado.</p>
+                    <div class="overflow-x-auto mt-4"><table class="w-full text-sm text-left">
+                        <thead><tr><th class="p-2">Referencia</th><th class="p-2">Coste</th><th class="p-2">PVP actual</th><th class="p-2">Nuevo PVP</th></tr></thead>
+                        <tbody>@foreach(var item in pricing.Examples){<tr class="border-t"><td class="p-2">@item.Reference @(item.Manual?"(manual)":"")</td><td class="p-2">@item.Cost.ToString("N2") €</td><td class="p-2">@item.CurrentPrice.ToString("N2") €</td><td class="p-2">@item.NewPrice.ToString("N2") €</td></tr>}</tbody>
+                    </table></div>
+                </div>
+            }
+        </section>
+        <section class="bg-white border rounded-2xl p-6">
+            <h2 class="text-xl font-semibold">Actualizar desde el proveedor</h2>
+            <p class="text-sm text-slate-600 mt-2">Consulta el Excel actual, añade productos nuevos, oculta agotados y retirados, y reactiva reposiciones. Los cambios que hayas hecho manualmente en tus productos se conservan.</p>
+            <div class="flex flex-wrap gap-3 mt-5">
+                <form asp-action="Comparar" method="post"><button id="preview-button" disabled="@(active!=null||!Model.Connected||!Model.WorkerEnabled)" class="px-5 py-3 rounded-xl border font-semibold disabled:opacity-40">Comprobar cambios</button></form>
+                <form asp-action="Actualizar" method="post"><button id="update-button" disabled="@(active!=null||!Model.Connected||!Model.WorkerEnabled)" class="px-5 py-3 rounded-xl bg-emerald-700 text-white font-semibold disabled:opacity-40">Actualizar ahora</button></form>
+            </div>
+            @if(active!=null){<div class="mt-5 rounded-xl bg-emerald-50 p-4" role="status" aria-live="polite"><strong>@active.Label</strong><p id="job-progress" class="mt-1">@active.Progress</p><p class="text-sm mt-2">Puedes cerrar el panel. El proceso seguirá mientras la web esté en funcionamiento.</p></div>}
+        </section>
+        <div class="grid lg:grid-cols-2 gap-6">
+            <section class="bg-white border rounded-2xl p-6">
+                <h2 class="text-xl font-semibold">Subir un Excel</h2>
+                <p class="text-sm text-slate-600 mt-2">También puedes utilizar un archivo descargado de Pérez Mora. Se conservarán las referencias completas, incluidas sus tallas.</p>
+                <form asp-action="Subir" method="post" enctype="multipart/form-data" class="mt-5 space-y-4">
+                    <label class="block text-sm">Excel del proveedor (.xls)<input type="file" name="archivo" accept=".xls" required class="block mt-2 w-full max-w-full text-sm" /></label>
+                    <label class="flex items-start gap-3"><input type="checkbox" name="aplicar" value="true" class="mt-1 h-4 w-4" /><span>Aplicar los cambios a mi catálogo<br /><span class="text-sm text-slate-500">Si no lo marcas, solo se prepara una comparación.</span></span></label>
+                    <button disabled="@(active!=null||!Model.WorkerEnabled)" class="px-4 py-2 rounded-lg bg-slate-900 text-white disabled:opacity-40">Procesar Excel</button>
+                </form>
+            </section>
+            <section class="bg-white border rounded-2xl p-6">
+                <h2 class="text-xl font-semibold">Programación semanal</h2>
+                <form asp-action="Programar" method="post" class="mt-5 space-y-4">
+                    <label class="flex items-center gap-3"><input type="checkbox" name="Enabled" value="true" checked="@Model.Schedule.Enabled" class="h-4 w-4" />Actualizar automáticamente cada semana</label>
+                    <div class="flex flex-wrap gap-4">
+                        <label class="block text-sm">Día<select name="Day" class="block mt-1 border rounded-lg px-3 py-2">@for(var d=1;d<=7;d++){<option value="@d" selected="@(d==Model.Schedule.Day)">@days[d-1]</option>}</select></label>
+                        <label class="block text-sm">Hora (Madrid)<select name="Hour" class="block mt-1 border rounded-lg px-3 py-2">@for(var h=0;h<24;h++){<option value="@h" selected="@(h==Model.Schedule.Hour)">@h.ToString("00"):00</option>}</select></label>
+                    </div>
+                    <p class="text-sm text-slate-500">Se descargará un Excel nuevo en cada revisión. Si la web estaba apagada, realizará una revisión pendiente cuando arranque.</p>
+                    <button class="px-4 py-2 rounded-lg bg-slate-900 text-white">Guardar programación</button>
+                </form>
+            </section>
+        </div>
+        <section class="bg-white border rounded-2xl p-6">
+            <h2 class="text-xl font-semibold">Conectar la descarga de tu cuenta</h2>
+            <p class="text-sm text-slate-600 mt-2">Entra en Pérez Mora, abre «Descargas» y copia la dirección del botón de descarga del Excel. El enlace se guardará cifrado. No necesitas introducir aquí tu contraseña.</p>
+            <form asp-action="Conectar" method="post" class="mt-5 space-y-4" id="connect-form">
+                <label class="block text-sm">Enlace de descarga<input name="DownloadUrl" type="password" autocomplete="off" maxlength="1000" required class="block mt-1 w-full border rounded-lg px-3 py-2" /></label>
+                <button class="px-4 py-2 rounded-lg bg-slate-900 text-white">Validar y guardar enlace</button>
+            </form>
+        </section>
+        <section class="bg-white border rounded-2xl p-6">
+            <h2 class="text-xl font-semibold">Historial de actualizaciones</h2>
+            <p class="text-sm text-slate-500 mt-1">Los productos sin imágenes, categoría o coste válido quedan ocultos para revisión. Las coincidencias con referencias de otros productos se muestran en el informe.</p>
+            @if(Model.Jobs.Count==0){<p class="py-8 text-slate-500">Todavía no se ha procesado ningún catálogo de Pérez Mora.</p>}
+            else{<div class="overflow-x-auto mt-5"><table class="w-full text-sm text-left"><thead><tr class="border-b text-slate-500"><th class="p-3">Fecha</th><th class="p-3">Origen</th><th class="p-3">Estado</th><th class="p-3">Cambios</th><th class="p-3">Informe</th></tr></thead><tbody>
+                @foreach(var job in Model.Jobs){<tr class="border-b align-top"><td class="p-3 whitespace-nowrap">@MunrecoSchedule.Format(job.CreatedUtc)</td><td class="p-3">@(job.Trigger=="weekly"?"Semanal":job.Trigger.EndsWith("_upload")?"Excel subido":"Manual")</td><td class="p-3"><strong>@job.Label</strong><p class="mt-1 text-slate-500 max-w-md">@job.Progress</p></td><td class="p-3">
+                    @if(job.ResultJson!=null){using var result=JsonDocument.Parse(job.ResultJson);var r=result.RootElement;
+                        <p>@r.GetProperty("added").GetInt32() nuevos · @r.GetProperty("restocked").GetInt32() reposiciones</p><p>@r.GetProperty("soldOut").GetInt32() agotados · @r.GetProperty("removed").GetInt32() retirados</p><p>@r.GetProperty("modified").GetInt32() modificados · @r.GetProperty("needsReview").GetInt32() para revisar</p><p>@r.GetProperty("collisions").GetInt32() coincidencias pendientes</p>
+                    }else{<span>—</span>}
+                    </td><td class="p-3">@if(job.State is "completed" or "previewed"){
+                        if(job.State=="completed"){
+                            <a asp-action="Informe" asp-route-id="@job.Id" class="text-emerald-700 underline block">Resultado</a>
+                            <a asp-action="Informe" asp-route-id="@job.Id" asp-route-tipo="revision" class="text-emerald-700 underline block mt-2">Productos ocultos y revisión</a>
+                        }
+                        <a asp-action="Informe" asp-route-id="@job.Id" asp-route-tipo="comparacion" class="text-emerald-700 underline block mt-2">Referencias afectadas</a>
+                    }else if(job.State=="failed"){<a asp-action="Informe" asp-route-id="@job.Id" asp-route-tipo="error" class="text-emerald-700 underline">Incidencia</a>}</td></tr>}
+            </tbody></table></div>}
+        </section>
+    </div>
+</div>
+@section Scripts{
+<script>
+(() => {
+    document.querySelector('#connect-form').addEventListener('submit', e => { const b=e.target.querySelector('button');b.disabled=true;b.textContent='Validando…'; });
+    const id='@(active?.Id??"")';if(!id)return;
+    const poll=async()=>{try{const response=await fetch('@Url.Action("Estado")',{cache:'no-store'});if(!response.ok||!response.headers.get('content-type')?.includes('application/json'))return;const job=(await response.json()).find(x=>x.id===id);if(!job||!job.active){location.reload();return;}document.querySelector('#job-progress').textContent=job.progress;}catch{}setTimeout(poll,5000);};setTimeout(poll,5000);
+})();
+</script>
+}

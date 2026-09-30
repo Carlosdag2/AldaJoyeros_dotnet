@@ -82,7 +82,7 @@ static partial class ImportRunner {
         foreach(var a in p["attributes"]!.AsArray())attrs[a!["name"]!.ToString()]=a["value"]!.ToString();
         string Attr(string name)=>attrs.GetValueOrDefault(name,"");
         var title=p["title"]!.ToString();var isWatch=p["sectionId"]!.ToString() is "11" or "13";
-        if(isWatch && (title.Contains("smart",StringComparison.OrdinalIgnoreCase)||Attr("Tipo Reloj").Contains("smart",StringComparison.OrdinalIgnoreCase)))return "Smartwatch";
+        if(isWatch && (title.Contains("smart",StringComparison.OrdinalIgnoreCase)||Attr("Tipo Reloj").Contains("smart",StringComparison.OrdinalIgnoreCase)))return "Smartwatches";
         var piece=isWatch?"Reloj":Attr("Tipo Pieza");
         if(piece.Length==0) {
             piece=Regex.Match(title,@"\b(pulsera|collar|pendientes|anillo|gemelos|llavero|tobillera|abalorio)\b",RegexOptions.IgnoreCase).Value;
@@ -103,6 +103,6 @@ static partial class ImportRunner {
         var full=gender.Length>0?basis+" "+gender:basis;
         var match=existing.FirstOrDefault(x=>x.Name.Equals(full,StringComparison.OrdinalIgnoreCase))
             ?? existing.FirstOrDefault(x=>x.Name.Equals(basis,StringComparison.OrdinalIgnoreCase));
-        return match?.Name ?? full;
+        return AldaJoyeros.Catalog.CatalogTaxonomy.Normalize(match?.Name ?? full);
     }
 }

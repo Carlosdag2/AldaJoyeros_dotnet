@@ -16,6 +16,7 @@ using System.Text.Unicode;
 using Microsoft.Extensions.WebEncoders;
 using Microsoft.AspNetCore.DataProtection;
 using AldaJoyeros.Services.Munreco;
+using AldaJoyeros.Services.PerezMora;
 
 namespace AldaJoyeros
 {
@@ -32,6 +33,10 @@ namespace AldaJoyeros
             builder.Services.AddSingleton<MunrecoStore>();
             builder.Services.AddSingleton<MunrecoSession>();
             builder.Services.AddHostedService<MunrecoWorker>();
+            builder.Services.Configure<PerezMoraOptions>(builder.Configuration.GetSection("PerezMora"));
+            builder.Services.AddSingleton<PerezMoraStore>();
+            builder.Services.AddSingleton<PerezMoraSource>();
+            builder.Services.AddHostedService<PerezMoraWorker>();
 
             // Configuración UTF-8 para caracteres especiales (tildes, ñ)
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);

@@ -9,9 +9,10 @@
   <ItemGroup>
     <Compile Remove="Tools/**/*.cs;Tests/**/*.cs" />
     <Content Remove="Tools/**;Tests/**;App_Data/**;appsettings.Local.json" />
-    <None Remove="App_Data/**" />
+    <None Remove="Tools/**;Tests/**;App_Data/**" />
     <Content Update="appsettings.json" CopyToPublishDirectory="Never" />
-    <ProjectReference Include="Tools/MunrecoSync/MunrecoSync.csproj" ReferenceOutputAssembly="false" />
+    <ProjectReference Include="Tools/MunrecoSync/MunrecoSync.csproj" ReferenceOutputAssembly="false" Private="false" />
+    <ProjectReference Include="Tools/PerezMoraSync/PerezMoraSync.csproj" ReferenceOutputAssembly="false" Private="false" />
     <PackageReference Include="MySqlConnector" Version="2.6.2" />
     <PackageReference Include="MailKit" Version="4.14.1" />
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0" />
@@ -33,5 +34,13 @@
   <Target Name="PublishMunrecoRunner" AfterTargets="Publish">
     <ItemGroup><MunrecoPublishFiles Include="$(OutDir)MunrecoRunner/**/*" /></ItemGroup>
     <Copy SourceFiles="@(MunrecoPublishFiles)" DestinationFiles="@(MunrecoPublishFiles->'$(PublishDir)MunrecoRunner/%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+  </Target>
+  <Target Name="CopyPerezMoraRunner" AfterTargets="Build">
+    <ItemGroup><PerezMoraRunnerFiles Include="Tools/PerezMoraSync/bin/$(Configuration)/net10.0/**/*" /></ItemGroup>
+    <Copy SourceFiles="@(PerezMoraRunnerFiles)" DestinationFiles="@(PerezMoraRunnerFiles->'$(OutDir)PerezMoraRunner/%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+  </Target>
+  <Target Name="PublishPerezMoraRunner" AfterTargets="Publish">
+    <ItemGroup><PerezMoraPublishFiles Include="$(OutDir)PerezMoraRunner/**/*" /></ItemGroup>
+    <Copy SourceFiles="@(PerezMoraPublishFiles)" DestinationFiles="@(PerezMoraPublishFiles->'$(PublishDir)PerezMoraRunner/%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
   </Target>
 </Project>

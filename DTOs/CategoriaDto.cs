@@ -7,6 +7,7 @@ namespace AldaJoyeros.DTOs
         public long Id { get; set; }
         public string Nombre { get; set; } = string.Empty;
         public int CantidadProductos { get; set; }
+        public string Grupo => AldaJoyeros.Catalog.CatalogTaxonomy.Group(Nombre);
     }
 
     public class CategoriaCreateDto
