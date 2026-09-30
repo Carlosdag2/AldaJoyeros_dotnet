@@ -1,0 +1,93 @@
+@model AldaJoyeros.Services.Munreco.MunrecoDashboard
+@using AldaJoyeros.Services.Munreco
+@using System.Text.Json
+@{
+    ViewData["Title"] = "Sincronización de Munreco";
+    var active = Model.Jobs.FirstOrDefault(x => x.Active);
+    var last = Model.Jobs.FirstOrDefault(x => x.State == "completed");
+    var latest = Model.Jobs.FirstOrDefault();
+    var needsLogin = latest?.State == "needs_login" && (!Model.SessionUpdatedUtc.HasValue || Model.SessionUpdatedUtc <= latest.EndedUtc);
+}
+<div class="min-h-screen bg-slate-50 pb-12">
+    <div class="bg-slate-900 text-white"><div class="container mx-auto px-6 py-10">
+        <a asp-controller="Admin" asp-action="Index" class="text-sm text-slate-300 hover:text-white">← Panel de administración</a>
+        <h1 class="text-3xl font-bold mt-5">Catálogo de Munreco</h1>
+        <p class="text-slate-300 mt-2">Mantén al día las novedades, reposiciones y disponibilidad de tu proveedor.</p>
+    </div></div>
+    <div class="container mx-auto px-6 pt-8 space-y-6">
+        <div class="grid md:grid-cols-3 gap-4">
+            <div class="bg-white rounded-2xl border p-5"><p class="text-sm text-slate-500">Acceso B2B</p><p class="font-semibold mt-2">@(needsLogin ? "Necesita renovación" : Model.Connected ? "Sesión guardada" : "Pendiente de conectar")</p><p class="text-xs text-slate-500 mt-2">El acceso se comprueba al iniciar cada actualización.</p></div>
+            <div class="bg-white rounded-2xl border p-5"><p class="text-sm text-slate-500">Última actualización correcta</p><p class="font-semibold mt-2">@MunrecoSchedule.Format(last?.EndedUtc)</p></div>
+            <div class="bg-white rounded-2xl border p-5"><p class="text-sm text-slate-500">Próxima actualización mensual</p><p class="font-semibold mt-2">@(Model.Schedule.Enabled ? MunrecoSchedule.Format(Model.Schedule.NextUtc) : "Desactivada")</p><p class="text-xs text-slate-500 mt-2">Hora de Madrid</p></div>
+        </div>
+        @if (!Model.WorkerEnabled) {<div class="bg-amber-50 border border-amber-200 rounded-xl p-4">El proceso de actualización está desactivado en este servidor.</div>}
+        <section class="bg-white border rounded-2xl p-6" aria-labelledby="actualizar-title">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-5">
+                <div><h2 id="actualizar-title" class="text-xl font-semibold">Actualizar el catálogo</h2><p class="text-sm text-slate-600 mt-2">Añade novedades, oculta agotados y retirados, y reactiva reposiciones. Conserva tus precios y las decisiones manuales.</p></div>
+                <div class="flex flex-wrap gap-3">
+                    <form asp-action="Comparar" method="post"><button id="preview-button" type="submit" disabled="@(active != null || !Model.Connected || !Model.WorkerEnabled)" class="px-5 py-3 rounded-xl border border-slate-300 font-semibold disabled:opacity-40 whitespace-nowrap">Comprobar cambios</button></form>
+                    <form asp-action="Actualizar" method="post"><button id="update-button" type="submit" disabled="@(active != null || !Model.Connected || !Model.WorkerEnabled)" class="px-5 py-3 rounded-xl bg-emerald-700 text-white font-semibold disabled:opacity-40 whitespace-nowrap">Actualizar ahora</button></form>
+                </div>
+            </div>
+            @if (active != null) {<div class="mt-5 rounded-xl bg-emerald-50 p-4" role="status" aria-live="polite"><strong>@active.Label</strong><p id="job-progress" class="mt-1">@active.Progress</p><p class="text-sm mt-2">Puedes cerrar esta página. El proceso seguirá mientras la web esté en funcionamiento.</p></div>}
+        </section>
+        <div class="grid lg:grid-cols-2 gap-6">
+            <section class="bg-white border rounded-2xl p-6">
+                <h2 class="text-xl font-semibold">Programación mensual</h2>
+                <form asp-action="Programar" method="post" class="mt-5 space-y-4">
+                    <label class="flex items-center gap-3"><input type="checkbox" name="Enabled" value="true" checked="@Model.Schedule.Enabled" class="h-4 w-4" /> Actualizar automáticamente cada mes</label>
+                    <div class="flex flex-wrap gap-4">
+                        <label class="block text-sm">Día del mes<input type="number" name="Day" value="@Model.Schedule.Day" min="1" max="28" required class="block mt-1 w-24 border rounded-lg px-3 py-2" /></label>
+                        <label class="block text-sm">Hora (Madrid)<select name="Hour" class="block mt-1 border rounded-lg px-3 py-2">@for(var h=0;h<24;h++){<option value="@h" selected="@(h==Model.Schedule.Hour)">@h.ToString("00"):00</option>}</select></label>
+                    </div>
+                    <p class="text-sm text-slate-500">Si la web está apagada a esa hora, se ejecutará una revisión pendiente cuando vuelva a iniciarse. No hace falta mantener abierto el panel.</p>
+                    <button class="px-4 py-2 rounded-lg bg-slate-900 text-white" type="submit">Guardar programación</button>
+                </form>
+            </section>
+            <section class="bg-white border rounded-2xl p-6">
+                <h2 class="text-xl font-semibold">Conectar con Munreco</h2>
+                <p class="text-sm text-slate-600 mt-2">Utiliza tu cuenta de distribuidor para conectar o renovar el acceso. La contraseña se usa para iniciar sesión y no se guarda.</p>
+                <form asp-action="Conectar" method="post" class="mt-5 space-y-4" id="connect-form">
+                    <label class="block text-sm">Usuario B2B<input name="Username" autocomplete="username" maxlength="200" required class="block mt-1 w-full border rounded-lg px-3 py-2" /></label>
+                    <label class="block text-sm">Contraseña B2B<input name="Password" type="password" autocomplete="current-password" maxlength="500" required class="block mt-1 w-full border rounded-lg px-3 py-2" /></label>
+                    <button class="px-4 py-2 rounded-lg bg-slate-900 text-white" type="submit">Conectar cuenta</button>
+                </form>
+            </section>
+        </div>
+        <section class="bg-white border rounded-2xl p-6">
+            <h2 class="text-xl font-semibold">Historial de actualizaciones</h2><p class="text-sm text-slate-500 mt-1">Las últimas 30 ejecuciones realizadas desde la web.</p>
+            @if(Model.Jobs.Count==0){<p class="py-8 text-slate-500">Todavía no se ha solicitado una actualización desde el panel.</p>}
+            else {
+                <div class="overflow-x-auto mt-5"><table class="w-full text-sm text-left"><thead><tr class="border-b text-slate-500"><th class="p-3">Fecha</th><th class="p-3">Origen</th><th class="p-3">Resultado</th><th class="p-3">Cambios</th><th class="p-3">Informe</th></tr></thead><tbody>
+                @foreach(var job in Model.Jobs) {
+                    <tr class="border-b align-top"><td class="p-3 whitespace-nowrap">@MunrecoSchedule.Format(job.CreatedUtc)</td><td class="p-3">@(job.Trigger=="monthly"?"Mensual":"Manual")</td><td class="p-3"><strong>@job.Label</strong><p class="mt-1 text-slate-500 max-w-md">@job.Progress</p></td><td class="p-3">
+                    @if(job.ResultJson!=null){using var result=JsonDocument.Parse(job.ResultJson);var r=result.RootElement;
+                        <p>@r.GetProperty("added").GetInt32() nuevos · @r.GetProperty("restocked").GetInt32() reposiciones</p><p>@r.GetProperty("soldOut").GetInt32() agotados · @r.GetProperty("removed").GetInt32() retirados</p><p>@r.GetProperty("modified").GetInt32() fichas modificadas</p>
+                    }else{<span>—</span>}
+                    </td><td class="p-3">@if(job.State is "completed" or "previewed"){if(job.State=="completed"){<a asp-action="Informe" asp-route-id="@job.Id" class="text-emerald-700 underline block">Resultado</a>}<a asp-action="Informe" asp-route-id="@job.Id" asp-route-tipo="comparacion" class="text-emerald-700 underline block mt-2">Referencias afectadas</a>}</td></tr>
+                }
+                </tbody></table></div>
+            }
+        </section>
+    </div>
+</div>
+@section Scripts {
+<script>
+(() => {
+    document.querySelector('#connect-form').addEventListener('submit', event => { const button = event.target.querySelector('button'); button.disabled = true; button.textContent = 'Conectando…'; });
+    const activeId = '@(active?.Id ?? "")';
+    if (!activeId) return;
+    const poll = async () => {
+        try {
+            const response = await fetch('@Url.Action("Estado")', {headers: {'X-Requested-With': 'XMLHttpRequest'}, cache: 'no-store'});
+            if (!response.ok || !response.headers.get('content-type')?.includes('application/json')) return;
+            const job = (await response.json()).find(x => x.id === activeId);
+            if (!job || !job.active) { location.reload(); return; }
+            document.querySelector('#job-progress').textContent = job.progress;
+        } catch { }
+        setTimeout(poll, 5000);
+    };
+    setTimeout(poll, 5000);
+})();
+</script>
+}
