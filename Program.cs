@@ -14,6 +14,8 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
 using Microsoft.Extensions.WebEncoders;
+using Microsoft.AspNetCore.DataProtection;
+using AldaJoyeros.Services.Munreco;
 
 namespace AldaJoyeros
 {
@@ -22,6 +24,14 @@ namespace AldaJoyeros
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            builder.Configuration.AddJsonFile("appsettings.Local.json",optional:true,reloadOnChange:false).AddEnvironmentVariables().AddCommandLine(args);
+            builder.Services.AddDataProtection().PersistKeysToFileSystem(new DirectoryInfo(
+                builder.Configuration["DataProtection:KeysPath"] ?? Path.Combine(builder.Environment.ContentRootPath,"App_Data","DataProtectionKeys")));
+            builder.Services.Configure<MunrecoOptions>(builder.Configuration.GetSection("Munreco"));
+            builder.Services.AddSingleton<MunrecoPaths>();
+            builder.Services.AddSingleton<MunrecoStore>();
+            builder.Services.AddSingleton<MunrecoSession>();
+            builder.Services.AddHostedService<MunrecoWorker>();
 
             // Configuración UTF-8 para caracteres especiales (tildes, ñ)
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);

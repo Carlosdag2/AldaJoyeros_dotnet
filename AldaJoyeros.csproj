@@ -7,6 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Tools/**/*.cs;Tests/**/*.cs" />
+    <Content Remove="Tools/**;Tests/**;App_Data/**;appsettings.Local.json" />
+    <None Remove="App_Data/**" />
+    <Content Update="appsettings.json" CopyToPublishDirectory="Never" />
+    <ProjectReference Include="Tools/MunrecoSync/MunrecoSync.csproj" ReferenceOutputAssembly="false" />
+    <PackageReference Include="MySqlConnector" Version="2.6.2" />
     <PackageReference Include="MailKit" Version="4.14.1" />
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0" />
@@ -20,4 +26,12 @@
     <PackageReference Include="QuestPDF" Version="2024.10.3" />
   </ItemGroup>
 
+  <Target Name="CopyMunrecoRunner" AfterTargets="Build">
+    <ItemGroup><MunrecoRunnerFiles Include="Tools/MunrecoSync/bin/$(Configuration)/net10.0/**/*" /></ItemGroup>
+    <Copy SourceFiles="@(MunrecoRunnerFiles)" DestinationFiles="@(MunrecoRunnerFiles->'$(OutDir)MunrecoRunner/%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+  </Target>
+  <Target Name="PublishMunrecoRunner" AfterTargets="Publish">
+    <ItemGroup><MunrecoPublishFiles Include="$(OutDir)MunrecoRunner/**/*" /></ItemGroup>
+    <Copy SourceFiles="@(MunrecoPublishFiles)" DestinationFiles="@(MunrecoPublishFiles->'$(PublishDir)MunrecoRunner/%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+  </Target>
 </Project>

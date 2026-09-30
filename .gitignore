@@ -10,3 +10,9 @@ obj/
 # IDE and user-specific files
 .idea/
 *.csproj.user
+
+# Private provider sessions, cache and execution reports
+App_Data/
+.vs/
+**/bin/
+**/obj/
