@@ -8,7 +8,7 @@ namespace AldaJoyeros.Repositories.Implementations
     public class CategoriaRepository : ICategoriaRepository
     {
         private readonly AldaJoyerosContext _context;
-        private const string DEFAULT_CATEGORY_NAME = "Sin categoría";
+        private const string DEFAULT_CATEGORY_NAME = "Sin categorÃ­a";
 
         public CategoriaRepository(AldaJoyerosContext context)
         {
@@ -19,6 +19,7 @@ namespace AldaJoyeros.Repositories.Implementations
         {
             return await _context.Categorias
                 .Include(c => c.Productos.Where(p => !p.Eliminado)) // Solo contar productos activos
+                .OrderBy(c => c.Nombre)
                 .ToListAsync();
         }
 
@@ -71,7 +72,7 @@ namespace AldaJoyeros.Repositories.Implementations
         }
 
         /// <summary>
-        /// Obtiene o crea la categoría "Sin categoría" para productos huérfanos
+        /// Obtiene o crea la categorÃ­a "Sin categorÃ­a" para productos huÃ©rfanos
         /// </summary>
         public async Task<Categoria> GetOrCreateDefaultCategoryAsync()
         {
@@ -92,7 +93,7 @@ namespace AldaJoyeros.Repositories.Implementations
         }
 
         /// <summary>
-        /// Reasigna todos los productos de una categoría a otra
+        /// Reasigna todos los productos de una categorÃ­a a otra
         /// </summary>
         public async Task ReassignProductsAsync(long fromCategoriaId, long toCategoriaId)
         {

@@ -35,7 +35,7 @@ namespace AldaJoyeros.Services.Implementations
         }
 
         /// <summary>
-        /// Obtiene todos los productos incluyendo eliminados (para administraciÛn)
+        /// Obtiene todos los productos incluyendo eliminados (para administraci√≥n)
         /// </summary>
         public async Task<IEnumerable<ProductoDto>> GetAllIncludingDeletedAsync(bool cargarImagenes = true)
         {
@@ -62,7 +62,7 @@ namespace AldaJoyeros.Services.Implementations
         }
 
         /// <summary>
-        /// Obtiene un producto solo si est· activo (para el cat·logo p˙blico)
+        /// Obtiene un producto solo si est√° activo (para el cat√°logo p√∫blico)
         /// </summary>
         public async Task<ProductoDto?> GetByIdActiveAsync(long id)
         {
@@ -116,7 +116,7 @@ namespace AldaJoyeros.Services.Implementations
                 throw new KeyNotFoundException("Producto no encontrado");
             }
 
-            // NO eliminamos las im·genes - se mantienen por si se restaura el producto
+            // NO eliminamos las im√°genes - se mantienen por si se restaura el producto
             // Solo marcamos el producto como eliminado
             await _productoRepository.DeleteAsync(id);
         }
@@ -136,7 +136,7 @@ namespace AldaJoyeros.Services.Implementations
         }
 
         /// <summary>
-        /// Elimina permanentemente un producto y sus im·genes
+        /// Elimina permanentemente un producto y sus im√°genes
         /// </summary>
         public async Task HardDeleteAsync(long id)
         {
@@ -146,7 +146,7 @@ namespace AldaJoyeros.Services.Implementations
                 throw new KeyNotFoundException("Producto no encontrado");
             }
 
-            // Eliminar im·genes de MongoDB
+            // Eliminar im√°genes de MongoDB
             var imagenes = await _imagenService.GetByProductoIdAsync(id);
             foreach (var imagen in imagenes)
             {
@@ -167,7 +167,7 @@ namespace AldaJoyeros.Services.Implementations
         }
 
         /// <summary>
-        /// Busca productos por tÈrmino de b˙squeda con filtro opcional de categorÌa
+        /// Busca productos por t√©rmino de b√∫squeda con filtro opcional de categor√≠a
         /// </summary>
         public async Task<IEnumerable<ProductoDto>> BuscarAsync(string termino, long? categoriaId = null, int limite = 0, bool cargarImagenes = true)
         {
@@ -180,10 +180,10 @@ namespace AldaJoyeros.Services.Implementations
                 ? await GetByCategoriaAsync(categoriaId.Value, cargarImagenes: false)
                 : await GetAllAsync(cargarImagenes: false);
 
-            // Normalizar el tÈrmino de b˙squeda
+            // Normalizar el t√©rmino de b√∫squeda
             var terminoLower = termino.ToLower();
             
-            // B˙squeda con scoring para mejores resultados
+            // B√∫squeda con scoring para mejores resultados
             var resultadosConScore = productos.Select(p => new
             {
                 Producto = p,
@@ -204,15 +204,17 @@ namespace AldaJoyeros.Services.Implementations
         }
 
         /// <summary>
-        /// Calcula un score de relevancia para ordenar los resultados de b˙squeda
+        /// Calcula un score de relevancia para ordenar los resultados de b√∫squeda
         /// </summary>
         public static void CompletarDatosProveedor(Entities.Producto producto, ProductoDto dto)
         {
-            var proveedor = producto.Proveedores.FirstOrDefault(p => p.Proveedor == "Munreco" && p.Estado == "completo");
+            var proveedor = producto.Proveedores.FirstOrDefault(p => (p.Proveedor == "Munreco" || p.Proveedor == "PerezMora") && p.Estado == "completo");
             if (proveedor == null) return;
             dto.Marca = proveedor.Marca;
             dto.Coleccion = proveedor.Coleccion;
-            if (proveedor.CreadoPorImportacion && !string.IsNullOrWhiteSpace(proveedor.DescripcionCompleta)) dto.DescripcionCompleta = proveedor.DescripcionCompleta;
+            if (proveedor.CreadoPorImportacion && !string.IsNullOrWhiteSpace(proveedor.DescripcionCompleta))
+                dto.DescripcionCompleta = proveedor.Proveedor == "PerezMora" && producto.Descripcion != proveedor.DescripcionCompleta
+                    ? producto.Descripcion ?? "" : proveedor.DescripcionCompleta;
             using var json = System.Text.Json.JsonDocument.Parse(proveedor.CaracteristicasJson);
             static IEnumerable<System.Text.Json.JsonElement> Valores(System.Text.Json.JsonElement node)
             {
@@ -249,23 +251,23 @@ namespace AldaJoyeros.Services.Implementations
         {
             int score = 0;
 
-            // Coincidencia exacta en el nombre (m·xima prioridad)
+            // Coincidencia exacta en el nombre (m√°xima prioridad)
             if (producto.Nombre.Equals(terminoLower, StringComparison.OrdinalIgnoreCase))
                 score += 100;
 
-            // El nombre comienza con el tÈrmino
+            // El nombre comienza con el t√©rmino
             if (producto.Nombre.StartsWith(terminoLower, StringComparison.OrdinalIgnoreCase))
                 score += 50;
 
-            // El nombre contiene el tÈrmino
+            // El nombre contiene el t√©rmino
             if (producto.Nombre.Contains(terminoLower, StringComparison.OrdinalIgnoreCase))
                 score += 30;
 
-            // La descripciÛn contiene el tÈrmino
+            // La descripci√≥n contiene el t√©rmino
             if (producto.Descripcion != null && producto.Descripcion.Contains(terminoLower, StringComparison.OrdinalIgnoreCase))
                 score += 10;
 
-            // La categorÌa contiene el tÈrmino
+            // La categor√≠a contiene el t√©rmino
             if (producto.CategoriaNombre.Contains(terminoLower, StringComparison.OrdinalIgnoreCase))
                 score += 20;
 

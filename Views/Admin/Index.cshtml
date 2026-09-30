@@ -9,7 +9,7 @@
 <div class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
     <!-- Hero Header -->
     <div class="relative overflow-hidden bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900">
-        <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\"60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%239C92AC\" fill-opacity=\"0.05\"%3E%3Cpath d=\"M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-40"></div>
+        <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=%2260%22 height=%2260%22 viewBox=%220 0 60 60%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cg fill=%22none%22 fill-rule=%22evenodd%22%3E%3Cg fill=%22%239C92AC%22 fill-opacity=%220.05%22%3E%3Cpath d=%22M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-40"></div>
         <div class="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
         <div class="absolute bottom-0 left-0 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
         
@@ -131,6 +131,10 @@
         </div>
 
         <!-- Main Content Grid -->
+        <a asp-controller="AdminPerezMora" asp-action="Index" class="flex items-center justify-between gap-4 bg-white rounded-2xl p-6 shadow-sm border border-amber-200 mb-6 hover:shadow-lg transition-all">
+            <div><h2 class="font-semibold text-slate-800">Catálogo de Pérez Mora</h2><p class="text-sm text-slate-500 mt-1">Importar el Excel, revisar reposiciones y programar actualizaciones semanales.</p></div>
+            <i class="fas fa-arrow-right text-amber-600" aria-hidden="true"></i>
+        </a>
         <a asp-controller="AdminMunreco" asp-action="Index" class="flex items-center justify-between gap-4 bg-white rounded-2xl p-6 shadow-sm border border-emerald-200 mb-6 hover:shadow-lg transition-all">
             <div><h2 class="font-semibold text-slate-800">Catálogo de Munreco</h2><p class="text-sm text-slate-500 mt-1">Actualizar productos, programar la revisión mensual y consultar el historial.</p></div>
             <i class="fas fa-sync-alt text-emerald-600 text-xl" aria-hidden="true"></i>

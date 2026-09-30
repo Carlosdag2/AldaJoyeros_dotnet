@@ -1,8 +1,8 @@
 @model IEnumerable<AldaJoyeros.DTOs.CategoriaDto>
 @{
-    ViewData["Title"] = "Gestión de Categorías";
+    ViewData["Title"] = "GestiÃ³n de CategorÃ­as";
     var totalCategorias = Model?.Count() ?? 0;
-    var categoriasPersonalizadas = Model?.Count(c => c.Nombre != "Sin categoría") ?? 0;
+    var categoriasPersonalizadas = Model?.Count(c => c.Nombre != "Sin categorÃ­a") ?? 0;
     var totalProductos = ViewBag.TotalProductos ?? 0;
 }
 
@@ -20,7 +20,7 @@
                     <i class="fas fa-home"></i>
                 </a>
                 <i class="fas fa-chevron-right text-xs"></i>
-                <span class="text-white">Categorías</span>
+                <span class="text-white">CategorÃ­as</span>
             </nav>
             
             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -29,14 +29,14 @@
                         <i class="fas fa-tags text-white text-2xl"></i>
                     </div>
                     <div>
-                        <h1 class="text-2xl md:text-3xl font-bold text-white">Gestión de Categorías</h1>
-                        <p class="text-slate-400 text-sm mt-1">Organiza y administra las categorías de productos</p>
+                        <h1 class="text-2xl md:text-3xl font-bold text-white">GestiÃ³n de CategorÃ­as</h1>
+                        <p class="text-slate-400 text-sm mt-1">Organiza y administra las categorÃ­as de productos</p>
                     </div>
                 </div>
                 <a asp-action="Crear" 
                    class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold rounded-xl transition-all shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40">
                     <i class="fas fa-plus"></i>
-                    Nueva Categoría
+                    Nueva CategorÃ­a
                 </a>
             </div>
         </div>
@@ -52,7 +52,7 @@
                     </div>
                     <div>
                         <div class="text-2xl font-bold text-slate-800">@totalCategorias</div>
-                        <div class="text-sm text-slate-500">Total Categorías</div>
+                        <div class="text-sm text-slate-500">Total CategorÃ­as</div>
                     </div>
                 </div>
             </div>
@@ -86,9 +86,9 @@
         {
             <!-- Categories Grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-8">
-                @foreach (var categoria in Model.OrderBy(c => c.Nombre == "Sin categoría" ? 1 : 0).ThenBy(c => c.Nombre))
+                @foreach (var categoria in Model.OrderBy(c => AldaJoyeros.Catalog.CatalogTaxonomy.GroupOrder(c.Grupo)).ThenBy(c => c.Nombre))
                 {
-                    var isDefaultCategory = categoria.Nombre == "Sin categoría";
+                    var isDefaultCategory = categoria.Nombre == "Sin categorÃ­a";
                     var nombreCategoria = categoria.Nombre.Replace("'", "\\'");
                     
                     <div data-categoria-id="@categoria.Id" class="categoria-card group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-slate-100 hover:border-violet-200">
@@ -112,7 +112,7 @@
                                     </div>
                                     <div>
                                         <h3 class="font-bold text-white text-lg">@categoria.Nombre</h3>
-                                        <div class="text-white/70 text-sm">ID #@categoria.Id</div>
+                                        <div class="text-white/70 text-sm">@categoria.Grupo</div>
                                     </div>
                                 </div>
                             </div>
@@ -135,7 +135,7 @@
                                 <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-sm text-amber-700">
                                     <div class="flex items-start gap-2">
                                         <i class="fas fa-info-circle mt-0.5 text-amber-500"></i>
-                                        <span>Categoría del sistema para productos sin asignar.</span>
+                                        <span>CategorÃ­a del sistema para productos sin asignar.</span>
                                     </div>
                                 </div>
                             }
@@ -165,12 +165,12 @@
                 <div class="w-20 h-20 bg-gradient-to-br from-violet-100 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
                     <i class="fas fa-tags text-violet-500 text-3xl"></i>
                 </div>
-                <h3 class="text-xl font-bold text-slate-800 mb-2">No hay categorías</h3>
-                <p class="text-slate-500 mb-6">Crea tu primera categoría para organizar los productos</p>
+                <h3 class="text-xl font-bold text-slate-800 mb-2">No hay categorÃ­as</h3>
+                <p class="text-slate-500 mb-6">Crea tu primera categorÃ­a para organizar los productos</p>
                 <a asp-action="Crear" 
                    class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold rounded-xl hover:shadow-lg transition-all">
                     <i class="fas fa-plus"></i>
-                    Crear Primera Categoría
+                    Crear Primera CategorÃ­a
                 </a>
             </div>
         }
@@ -183,7 +183,7 @@
                 </div>
                 <div>
                     <h3 class="font-semibold text-slate-800 mb-1">Consejo</h3>
-                    <p class="text-sm text-slate-600">Las categorías ayudan a organizar tu catálogo. Al eliminar una, los productos se moverán a "Sin categoría".</p>
+                    <p class="text-sm text-slate-600">Las categorÃ­as ayudan a organizar tu catÃ¡logo. Al eliminar una, los productos se moverÃ¡n a "Sin categorÃ­a".</p>
                 </div>
             </div>
         </div>
@@ -207,14 +207,14 @@
 @section Scripts {
     <script>
         const adminCategorias = {
-            // Eliminar categoría
+            // Eliminar categorÃ­a
             async eliminar(id, nombre, cantidadProductos) {
                 const mensaje = cantidadProductos > 0
-                    ? `"${nombre}" tiene ${cantidadProductos} producto(s). Al eliminarla, serán movidos a "Sin categoría".`
-                    : `¿Eliminar la categoría "${nombre}"?`;
+                    ? `"${nombre}" tiene ${cantidadProductos} producto(s). Al eliminarla, serÃ¡n movidos a "Sin categorÃ­a".`
+                    : `Â¿Eliminar la categorÃ­a "${nombre}"?`;
 
                 const confirmar = await AldaConfirm.show({
-                    title: '¿Eliminar categoría?',
+                    title: 'Â¿Eliminar categorÃ­a?',
                     message: mensaje,
                     type: cantidadProductos > 0 ? 'warning' : 'danger',
                     confirmText: 'Eliminar'
@@ -239,11 +239,11 @@
                     }
                 } catch (error) {
                     console.error('Error:', error);
-                    AldaToast.error('Error de conexión');
+                    AldaToast.error('Error de conexiÃ³n');
                 }
             },
 
-            // Animar categoría al eliminarla
+            // Animar categorÃ­a al eliminarla
             animarCategoriaEliminada(id) {
                 const card = document.querySelector(`[data-categoria-id="${id}"]`);
                 if (card) {

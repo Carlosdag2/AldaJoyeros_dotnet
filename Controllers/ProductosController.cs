@@ -27,7 +27,8 @@ namespace AldaJoyeros.Controllers
         public async Task<IActionResult> Index(long? categoriaId, string busqueda = "", int page = 1)
         {
             var categorias = await _categoriaService.GetAllAsync();
-            ViewBag.Categorias = categorias;
+            ViewBag.Categorias = categorias.Where(c => c.CantidadProductos > 0 && c.Grupo != "Pendientes de organizar")
+                .OrderBy(c => AldaJoyeros.Catalog.CatalogTaxonomy.GroupOrder(c.Grupo)).ThenBy(c => c.Nombre).ToArray();
             ViewBag.CategoriaSeleccionada = categoriaId;
             ViewBag.Busqueda = busqueda;
 
@@ -47,7 +48,7 @@ namespace AldaJoyeros.Controllers
             var pagedResult = PagedResult<DTOs.ProductoDto>.Create(productos, page, PageSize);
             await _productoService.CargarImagenesAsync(pagedResult.Items);
 
-            // Si es petición AJAX, devolver solo el partial
+            // Si es peticiÃ³n AJAX, devolver solo el partial
             if (Request.Headers.XRequestedWith == "XMLHttpRequest")
             {
                 return PartialView("_ProductosGrid", pagedResult);
@@ -115,7 +116,7 @@ namespace AldaJoyeros.Controllers
         }
 
         /// <summary>
-        /// Endpoint para búsqueda dinámica con sugerencias
+        /// Endpoint para bÃºsqueda dinÃ¡mica con sugerencias
         /// </summary>
         [HttpGet]
         public async Task<IActionResult> Buscar(string q, long? categoriaId, int limite = 5)
@@ -138,8 +139,8 @@ namespace AldaJoyeros.Controllers
                 tieneImagen = p.TieneImagenes
             }).ToList();
 
-            // Log para depuración (puedes quitar esto después)
-            System.Diagnostics.Debug.WriteLine($"Búsqueda: '{q}', Encontrados: {sugerencias.Count}, Límite: {limite}");
+            // Log para depuraciÃ³n (puedes quitar esto despuÃ©s)
+            System.Diagnostics.Debug.WriteLine($"BÃºsqueda: '{q}', Encontrados: {sugerencias.Count}, LÃ­mite: {limite}");
 
             return Json(new { sugerencias });
         }
@@ -149,7 +150,7 @@ namespace AldaJoyeros.Controllers
             var producto = await _productoService.GetByIdActiveAsync(id);
             if (producto == null)
             {
-                TempData["Error"] = "Este producto no está disponible";
+                TempData["Error"] = "Este producto no estÃ¡ disponible";
                 return RedirectToAction("Index");
             }
 

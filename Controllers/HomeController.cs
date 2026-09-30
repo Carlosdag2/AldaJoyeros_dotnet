@@ -22,7 +22,8 @@ namespace AldaJoyeros.Controllers
             await _productoService.CargarImagenesAsync(productos);
             var categorias = await _categoriaService.GetAllAsync();
             
-            ViewBag.Categorias = categorias;
+            ViewBag.Categorias = categorias.Where(c => c.CantidadProductos > 0 && c.Grupo != "Pendientes de organizar")
+                .OrderBy(c => AldaJoyeros.Catalog.CatalogTaxonomy.GroupOrder(c.Grupo)).ThenBy(c => c.Nombre).ToArray();
             return View(productos);
         }
 
