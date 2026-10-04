@@ -84,7 +84,7 @@ Check(PerezMoraSchedule.Next(new DateTime(2026,12,31,12,0,0),1,10)==new DateTime
 Check(PerezMoraSchedule.Next(new DateTime(2027,3,22,0,0,0),7,2)==new DateTime(2027,3,28,1,0,0),"Weekly schedule handles nonexistent DST hour");
 Check(!PerezMoraSource.ValidUrl("https://127.0.0.1/exporta_excel/1/ES/0")&&!PerezMoraSource.ValidUrl("https://perezmorajewelry.com.evil.invalid/exporta_excel/1/ES/0"),"Private addresses and lookalike domains rejected");
 if(args.Contains("--parser-only")){Console.WriteLine("ALL "+passed+" CHECKS PASSED");return;}
-if(args.Contains("--web")||args.Contains("--pricing-web")) {
+if(args.Contains("--web")||args.Contains("--pricing-web")||args.Contains("--pagination-web")) {
     await Web();Console.WriteLine("ALL "+passed+" CHECKS PASSED");
     await File.WriteAllTextAsync(Path.Combine(output,"panel-checks.json"),JsonSerializer.Serialize(new{passed,at=DateTime.UtcNow}));return;
 }
@@ -204,7 +204,7 @@ async Task Web() {
             {"nameid","1"},{"userId","1"},{"email","local-verification@example.invalid"},{"role",role},{"rol",role}}));
         var data=head+"."+body;using var hmac=new HMACSHA256(Encoding.ASCII.GetBytes(config["JwtSettings:Secret"]!));return data+"."+B64(hmac.ComputeHash(Encoding.ASCII.GetBytes(data)));
     }
-    var url=args.Contains("--pricing-web")?"http://127.0.0.1:5093":"http://127.0.0.1:5091";
+    var url=args.Contains("--pagination-web")?"http://127.0.0.1:5094":args.Contains("--pricing-web")?"http://127.0.0.1:5093":"http://127.0.0.1:5091";
     using var pw=await Playwright.CreateAsync();await using var browser=await pw.Chromium.LaunchAsync(new(){Channel="msedge",Headless=true});
     await using var context=await browser.NewContextAsync(new(){ViewportSize=new(){Width=1440,Height=1000}});
     var page=await context.NewPageAsync();var errors=new List<string>();page.PageError+=(_,e)=>errors.Add(e);
@@ -213,6 +213,52 @@ async Task Web() {
     Check((await context.APIRequest.GetAsync(url+"/AdminPerezMora")).Status==403,"Non-admin cannot open Perez Mora panel");
     await context.AddCookiesAsync([new(){Name="jwt_token",Value=Token("ADMIN"),Url=url}]);
     Check((await page.GotoAsync(url+"/AdminPerezMora"))?.Status==200,"Admin panel renders");
+    if(args.Contains("--pagination-web")) {
+        var low=AldaJoyeros.Helpers.PagedResult<int>.Create(Enumerable.Range(1,31),0,12);
+        var high=AldaJoyeros.Helpers.PagedResult<int>.Create(Enumerable.Range(1,31),int.MaxValue,12);
+        var empty=AldaJoyeros.Helpers.PagedResult<int>.Create(Array.Empty<int>(),20,12);
+        Check(low.PageNumber==1&&high.PageNumber==3&&high.Items.Count==7&&empty.StartItem==0,"Server clamps invalid page numbers and handles empty lists");
+        await page.GotoAsync(url+"/Productos?categoriaId=11");
+        await page.Locator("#paginacion [data-page-rail] button").First.WaitForAsync();
+        Check(await page.Locator("form[data-page-jump]").CountAsync()==0,"Separate page input removed");
+        var viewport=page.Locator("#paginacion [data-page-viewport]");
+        await viewport.ScrollIntoViewIfNeededAsync();
+        var box=(await viewport.BoundingBoxAsync())!;
+        var beforeDrag=page.Url;
+        await page.Mouse.MoveAsync(box.X+box.Width-20,box.Y+15);await page.Mouse.DownAsync();
+        await page.Mouse.MoveAsync(box.X+20,box.Y+15,new(){Steps=10});await page.Mouse.UpAsync();
+        Check(await viewport.EvaluateAsync<double>("el => el.scrollLeft")>0&&page.Url==beforeDrag,"Dragging the number row scrolls without changing the page");
+        await page.WaitForTimeoutAsync(350);
+        var total=int.Parse((await page.Locator("#paginacion").GetAttributeAsync("data-total-pages"))!);
+        async Task CatalogPage(int number) {
+            await page.Locator("#paginacion [data-page-viewport]").EvaluateAsync(" (el, n) => el.scrollLeft = (n-1)*48",number);
+            var button=page.Locator("#paginacion [data-page-rail] button[data-page='"+number+"']");
+            await button.WaitForAsync();
+            await page.RunAndWaitForResponseAsync(async()=>await button.ClickAsync(),r=>r.Url.Contains("/Productos/Filtrar"));
+            await page.WaitForFunctionAsync("n => document.querySelector('#paginacion')?.dataset.currentPage === String(n)",number);
+        }
+        await CatalogPage(Math.Min(200,total));
+        Check(page.Url.Contains("categoriaId=11"),"Clicking a distant page preserves the category");
+        await CatalogPage(total);
+        Check(await page.Locator("#paginacion [aria-label='Página siguiente']").IsDisabledAsync(),"Last page reachable by sliding the same row");
+        await CatalogPage(3);
+        Check(await page.Locator("#paginacion [data-page-rail] button").CountAsync()<30,"Thousands of page numbers do not create thousands of DOM elements");
+        await page.GotoAsync(url+"/AdminProductos?filtro=todos");
+        await page.Locator("#paginacionProductos [data-page-rail] button").First.WaitForAsync();
+        await page.Locator("#paginacionProductos [data-page-viewport]").EvaluateAsync("el => el.scrollLeft = 19*48");
+        var adminButton=page.Locator("#paginacionProductos [data-page-rail] button[data-page='20']");
+        await adminButton.WaitForAsync();
+        await page.RunAndWaitForResponseAsync(async()=>await adminButton.ClickAsync(),r=>r.Url.Contains("/AdminProductos")&&r.Request.Method=="GET");
+        await page.WaitForFunctionAsync("() => document.querySelector('#paginacionProductos')?.dataset.currentPage === '20'");
+        await page.WaitForURLAsync(u=>u.Contains("page=20"));
+        Check(page.Url.Contains("filtro=todos"),"Admin row preserves selected filter");
+        foreach(var route in new[]{"AdminUsuarios","AdminPedidos"})Check((await page.GotoAsync(url+"/"+route))?.Status==200,"Pagination view renders: "+route);
+        await page.SetViewportSizeAsync(390,844);await page.GotoAsync(url+"/Productos?categoriaId=11&page=200");
+        await page.Locator("#paginacion [aria-current='page']").WaitForAsync();
+        Check(await page.EvaluateAsync<bool>("document.documentElement.scrollWidth<=innerWidth"),"Scrollable row fits mobile viewport");
+        await page.Locator("#paginacion").ScreenshotAsync(new(){Path=Path.Combine(output,"paginado-deslizable.png")});
+        Check(errors.Count==0,"Pagination has no JavaScript errors");return;
+    }
     if(args.Contains("--pricing-web")) {
         async Task<string> PricesHash() {
             await using var sql=new MySqlConnection(config.GetConnectionString("DefaultConnection"));await sql.OpenAsync();

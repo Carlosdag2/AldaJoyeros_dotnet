@@ -1,0 +1,22 @@
+@model (int CurrentPage, int TotalPages, string Callback, string Id, bool Public)
+@{
+    var normal=Model.Public?"border border-stone-200 text-stone-500 hover:border-emerald-900 hover:text-emerald-900 font-serif":"bg-white border border-slate-200 text-slate-600 rounded-lg hover:bg-emerald-500 hover:border-emerald-500 hover:text-white";
+    var active=Model.Public?"bg-emerald-900 text-white font-serif":"bg-emerald-500 text-white rounded-lg font-medium";
+}
+<nav id="@Model.Id" aria-label="Paginación" class="flex items-center gap-2 max-w-md mx-auto @(Model.Public?"mt-16":"mt-4")"
+     data-scroll-pagination data-current-page="@Model.CurrentPage" data-total-pages="@Model.TotalPages"
+     data-page-class="@normal" data-active-class="@active"
+     onclick="window.aldaPaginacion.elegir(event, this, pagina => @(Model.Callback)(pagina))">
+    <button type="button" data-page="@(Model.CurrentPage-1)" disabled="@(Model.CurrentPage<=1)" aria-label="Página anterior"
+            class="w-10 h-10 shrink-0 flex items-center justify-center @normal disabled:opacity-30 disabled:cursor-default">
+        <i class="fas fa-chevron-left text-xs" aria-hidden="true"></i>
+    </button>
+    <div data-page-viewport tabindex="0" aria-label="Números de página: desliza para elegir. Inicio y Fin llevan a los extremos."
+         class="min-w-0 flex-1 overflow-x-auto overscroll-x-contain" style="scrollbar-width:thin;touch-action:pan-x pan-y">
+        <div data-page-rail style="position:relative;height:44px;width:@((long)Model.TotalPages*48)px"></div>
+    </div>
+    <button type="button" data-page="@(Model.CurrentPage+1)" disabled="@(Model.CurrentPage>=Model.TotalPages)" aria-label="Página siguiente"
+            class="w-10 h-10 shrink-0 flex items-center justify-center @normal disabled:opacity-30 disabled:cursor-default">
+        <i class="fas fa-chevron-right text-xs" aria-hidden="true"></i>
+    </button>
+</nav>
