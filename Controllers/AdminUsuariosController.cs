@@ -17,7 +17,7 @@ namespace AldaJoyeros.Controllers
             _usuarioService = usuarioService;
         }
 
-        public async Task<IActionResult> Index(string rol = "", int page = 1)
+        public async Task<IActionResult> Index(string rol = "", int page = 1, string busqueda = "")
         {
             var usuariosQuery = await _usuarioService.GetAllAsync();
             
@@ -33,10 +33,17 @@ namespace AldaJoyeros.Controllers
                 usuariosQuery = usuariosQuery.Where(u => u.Rol == rol).ToList();
             }
 
+            busqueda = (busqueda ?? "").Trim();
+            ViewBag.Busqueda = busqueda;
+            if (!string.IsNullOrEmpty(busqueda))
+            {
+                usuariosQuery = usuariosQuery.Where(u => u.Email.Contains(busqueda, StringComparison.OrdinalIgnoreCase) || u.Id.ToString() == busqueda).ToList();
+            }
+
             var pagedResult = PagedResult<UsuarioDto>.Create(usuariosQuery, page, PageSize);
             ViewBag.RolFiltro = rol;
 
-            // Si es peticiÛn AJAX, devolver partial con estadÌsticas en headers
+            // Si es petici√≥n AJAX, devolver partial con estad√≠sticas en headers
             if (Request.Headers.XRequestedWith == "XMLHttpRequest")
             {
                 Response.Headers.Append("X-Stats-Admins", totalAdmins.ToString());
@@ -90,7 +97,7 @@ namespace AldaJoyeros.Controllers
             // Verificar si intenta editar su propia cuenta
             if (CurrentUser != null && CurrentUser.Id == id)
             {
-                TempData["Warning"] = "Est·s editando tu propia cuenta. Ten cuidado al cambiar el rol.";
+                TempData["Warning"] = "Est√°s editando tu propia cuenta. Ten cuidado al cambiar el rol.";
             }
 
             var updateDto = new UsuarioUpdateDto
@@ -116,7 +123,7 @@ namespace AldaJoyeros.Controllers
 
             try
             {
-                // Verificar si est· quit·ndose el rol de admin a sÌ mismo
+                // Verificar si est√° quit√°ndose el rol de admin a s√≠ mismo
                 if (CurrentUser != null && CurrentUser.Id == id && usuarioDto.Rol != "ADMIN")
                 {
                     TempData["Error"] = "No puedes quitarte el rol de administrador a ti mismo";
@@ -141,7 +148,7 @@ namespace AldaJoyeros.Controllers
         {
             try
             {
-                // No permitir eliminarse a sÌ mismo
+                // No permitir eliminarse a s√≠ mismo
                 if (CurrentUser != null && CurrentUser.Id == id)
                 {
                     TempData["Error"] = "No puedes eliminar tu propia cuenta";

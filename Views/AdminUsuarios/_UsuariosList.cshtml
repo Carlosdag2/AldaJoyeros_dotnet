@@ -1,87 +1,27 @@
 @model AldaJoyeros.Helpers.PagedResult<AldaJoyeros.DTOs.UsuarioDto>
-@{
-    var rolFiltro = ViewBag.RolFiltro as string ?? "";
-}
-
-@if(Model.Items != null && Model.Items.Any())
+<div data-current-page="@Model.PageNumber">
+@if (Model.Items.Any())
 {
-    <!-- Users Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-6">
-        @foreach(var u in Model.Items)
-        {
-            var userEmail = u.Email.Replace("'", "\\'");
-            <div data-usuario-id="@u.Id" class="usuario-card group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-slate-100 hover:border-blue-200">
-                <!-- Header -->
-                <div class="@(u.Rol == "ADMIN" ? "bg-gradient-to-br from-red-500 to-rose-600" : "bg-gradient-to-br from-blue-500 to-indigo-600") p-5 relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full -mr-10 -mt-10"></div>
-                    <div class="relative flex items-center gap-3">
-                        <div class="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-                            <i class="@(u.Rol == "ADMIN" ? "fas fa-user-shield" : "fas fa-user") text-white text-xl"></i>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <div class="font-bold text-white truncate">@u.Email</div>
-                            <div class="text-white/70 text-sm">ID #@u.Id</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Body -->
-                <div class="p-5">
-                    <div class="flex items-center justify-between mb-4 bg-slate-50 rounded-xl p-4 border border-slate-100">
-                        <div>
-                            <div class="text-xs text-slate-400 mb-1">Rol</div>
-                            @if(u.Rol == "ADMIN")
-                            {
-                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700">
-                                    <i class="fas fa-user-shield mr-1"></i>Admin
-                                </span>
-                            }
-                            else
-                            {
-                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
-                                    <i class="fas fa-user mr-1"></i>Cliente
-                                </span>
-                            }
-                        </div>
-                        <div class="text-right">
-                            <div class="text-xs text-slate-400 mb-1">Pedidos</div>
-                            <div class="text-xl font-bold text-emerald-600">@u.CantidadPedidos</div>
-                        </div>
-                    </div>
-
-                    <div class="flex gap-2">
-                        <a href="/AdminUsuarios/Editar/@u.Id" class="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-100 hover:bg-emerald-500 text-slate-600 hover:text-white rounded-xl transition-all font-medium text-sm">
-                            <i class="fas fa-edit"></i>Editar
-                        </a>
-                        <button type="button" 
-                                onclick="adminUsuarios.eliminar(@u.Id, '@userEmail')"
-                                class="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-100 hover:bg-red-500 text-slate-600 hover:text-white rounded-xl transition-all font-medium text-sm">
-                            <i class="fas fa-trash"></i>Eliminar
-                        </button>
-                    </div>
-                </div>
-            </div>
-        }
-    </div>
-
-    <!-- Pagination AJAX -->
-    @if(Model.TotalPages > 1)
-    {
-        @await Html.PartialAsync("_Pagination", (Model.PageNumber, Model.TotalPages, "adminUsuarios.cargarPagina", "paginacionUsuarios", false))
-    }
-    <!-- Info de paginación -->
-    <div class="text-center text-sm text-slate-500 mt-4">
-        Mostrando @Model.StartItem-@Model.EndItem de @Model.TotalItems usuarios
-    </div>
+<div class="admin-list overflow-hidden rounded-xl border border-slate-200 bg-white">
+<div class="admin-list-header md:grid md:grid-cols-[minmax(0,1fr)_140px_90px_205px] hidden items-center gap-5 border-b border-slate-200 bg-slate-50 px-5 py-4 text-[11px] font-bold uppercase tracking-wide text-slate-500" aria-hidden="true"><span>Usuario</span><span>Rol</span><span>Pedidos</span><span class="text-right">Acciones</span></div>
+@foreach (var u in Model.Items)
+{
+<div class="admin-row usuario-card grid-cols-[minmax(0,1fr)_auto] md:grid-cols-[minmax(0,1fr)_140px_90px_205px] grid min-w-0 items-center gap-3.5 border-b border-slate-100 p-4 text-sm last:border-b-0 hover:bg-slate-50 md:gap-5 md:px-5" data-usuario-id="@u.Id">
+<div class="admin-identity col-span-2 md:col-span-1 flex min-w-0 items-center gap-3 [&>div]:min-w-0"><span class="admin-avatar flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-500"><i class="fas fa-user" aria-hidden="true"></i></span><div><span class="admin-name block font-semibold [overflow-wrap:anywhere]">@u.Email</span><span class="admin-sub mt-1 block text-xs text-slate-500 [overflow-wrap:anywhere]">Usuario #@u.Id</span></div></div>
+<div><span class="admin-mobile-label mb-1 block text-[11px] text-slate-500 md:hidden">Rol</span><span class="admin-badge inline-flex w-fit items-center gap-1.5 rounded-md px-2 py-1 text-[11px] font-semibold @(u.Rol == "ADMIN" ? "bg-violet-50 text-violet-700" : "bg-blue-50 text-blue-700")">@(u.Rol == "ADMIN" ? "Administrador" : "Cliente")</span></div>
+<div><span class="admin-mobile-label mb-1 block text-[11px] text-slate-500 md:hidden">Pedidos</span><strong>@u.CantidadPedidos</strong></div>
+<div class="admin-actions col-span-2 justify-start md:col-span-1 md:justify-end flex flex-wrap gap-1.5"><a asp-action="Editar" asp-route-id="@u.Id" class="admin-btn inline-flex min-h-10 items-center justify-center gap-2 whitespace-nowrap rounded-lg border px-3 py-2 text-sm font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-400 border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-100"><i class="fas fa-pen" aria-hidden="true"></i>Editar</a><button type="button" class="admin-btn inline-flex min-h-10 items-center justify-center gap-2 whitespace-nowrap rounded-lg border px-3 py-2 text-sm font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-400 border-transparent bg-transparent text-red-700 hover:border-red-200 hover:bg-red-50" data-delete-record="@u.Id" data-email="@u.Email" aria-label="Eliminar usuario @u.Email"><i class="fas fa-trash-alt" aria-hidden="true"></i>Eliminar</button></div>
+</div>
+}
+</div>
 }
 else
 {
-    <!-- Empty State -->
-    <div class="bg-white rounded-2xl p-12 text-center shadow-sm border border-slate-100">
-        <div class="w-20 h-20 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <i class="fas fa-users text-blue-500 text-3xl"></i>
-        </div>
-        <h3 class="text-xl font-bold text-slate-800 mb-2">No hay usuarios</h3>
-        <p class="text-slate-500">@(string.IsNullOrEmpty(rolFiltro) ? "Crea el primer usuario" : $"No hay usuarios con rol {rolFiltro}")</p>
-    </div>
+<div class="admin-empty rounded-xl border border-dashed border-slate-300 bg-white px-5 py-12 text-center text-slate-500 [&_h2]:mb-1.5 [&_h2]:mt-2.5 [&_h2]:text-lg [&_h2]:font-semibold [&_h2]:text-slate-700"><i class="fas fa-users" aria-hidden="true"></i><h2>No hay usuarios que coincidan</h2><p>Prueba otro correo, ID o rol, o limpia los filtros.</p></div>
 }
+@if (Model.TotalPages > 1)
+{
+@await Html.PartialAsync("_Pagination", (Model.PageNumber, Model.TotalPages, "adminUsuarios.cargarPagina", "paginacionUsuarios", false))
+}
+<p class="admin-results mt-4 text-center text-xs text-slate-500">Mostrando @Model.StartItem–@Model.EndItem de @Model.TotalItems usuarios</p>
+</div>

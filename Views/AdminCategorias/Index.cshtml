@@ -1,209 +1,50 @@
 @model IEnumerable<AldaJoyeros.DTOs.CategoriaDto>
 @{
-    ViewData["Title"] = "Gestión de Categorías";
-    var totalCategorias = Model?.Count() ?? 0;
-    var categoriasPersonalizadas = Model?.Count(c => c.Nombre != "Sin categoría") ?? 0;
-    var totalProductos = ViewBag.TotalProductos ?? 0;
+ViewData["Title"] = "Gestión de Categorías";
+var categorias = (Model ?? Enumerable.Empty<AldaJoyeros.DTOs.CategoriaDto>()).ToList();
+var grupos = categorias.GroupBy(c => c.Grupo).OrderBy(g => AldaJoyeros.Catalog.CatalogTaxonomy.GroupOrder(g.Key)).ToList();
 }
-
 <partial name="_AdminConfirmModal" />
-
-<div class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
-    <!-- Header -->
-    <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
-        <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\"60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%239C92AC\" fill-opacity=\"0.05\"%3E%3Cpath d=\"M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-40"></div>
-        <div class="absolute top-0 right-0 w-96 h-96 bg-violet-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
-        
-        <div class="relative container mx-auto px-6 py-8">
-            <nav class="flex items-center gap-2 text-sm text-slate-400 mb-4">
-                <a asp-controller="Admin" asp-action="Index" class="hover:text-white transition-colors">
-                    <i class="fas fa-home"></i>
-                </a>
-                <i class="fas fa-chevron-right text-xs"></i>
-                <span class="text-white">Categorías</span>
-            </nav>
-            
-            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                <div class="flex items-center gap-4">
-                    <div class="w-14 h-14 bg-gradient-to-br from-violet-400 to-violet-600 rounded-2xl flex items-center justify-center shadow-xl shadow-violet-500/25">
-                        <i class="fas fa-tags text-white text-2xl"></i>
-                    </div>
-                    <div>
-                        <h1 class="text-2xl md:text-3xl font-bold text-white">Gestión de Categorías</h1>
-                        <p class="text-slate-400 text-sm mt-1">Organiza y administra las categorías de productos</p>
-                    </div>
-                </div>
-                <a asp-action="Crear" 
-                   class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold rounded-xl transition-all shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40">
-                    <i class="fas fa-plus"></i>
-                    Nueva Categoría
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <div class="container mx-auto px-6 -mt-6 relative z-10 pb-12">
-        <!-- Stats Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-            <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 hover:shadow-md transition-all">
-                <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 bg-gradient-to-br from-violet-400 to-violet-600 rounded-xl flex items-center justify-center shadow-lg shadow-violet-500/20">
-                        <i class="fas fa-tags text-white"></i>
-                    </div>
-                    <div>
-                        <div class="text-2xl font-bold text-slate-800">@totalCategorias</div>
-                        <div class="text-sm text-slate-500">Total Categorías</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 hover:shadow-md transition-all">
-                <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/20">
-                        <i class="fas fa-check-circle text-white"></i>
-                    </div>
-                    <div>
-                        <div class="text-2xl font-bold text-slate-800">@categoriasPersonalizadas</div>
-                        <div class="text-sm text-slate-500">Personalizadas</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 hover:shadow-md transition-all">
-                <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
-                        <i class="fas fa-gem text-white"></i>
-                    </div>
-                    <div>
-                        <div class="text-2xl font-bold text-slate-800">@totalProductos</div>
-                        <div class="text-sm text-slate-500">Productos Totales</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        @if (Model != null && Model.Any())
-        {
-            <!-- Categories Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-8">
-                @foreach (var categoria in Model.OrderBy(c => AldaJoyeros.Catalog.CatalogTaxonomy.GroupOrder(c.Grupo)).ThenBy(c => c.Nombre))
-                {
-                    var isDefaultCategory = categoria.Nombre == "Sin categoría";
-                    var nombreCategoria = categoria.Nombre.Replace("'", "\\'");
-                    
-                    <div data-categoria-id="@categoria.Id" class="categoria-card group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-slate-100 hover:border-violet-200">
-                        <!-- Header -->
-                        <div class="@(isDefaultCategory ? "bg-gradient-to-br from-slate-600 to-slate-700" : "bg-gradient-to-br from-violet-500 to-purple-600") p-5 relative overflow-hidden">
-                            <div class="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full -mr-10 -mt-10"></div>
-                            
-                            @if(isDefaultCategory)
-                            {
-                                <div class="absolute top-3 right-3">
-                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-white/20 text-white">
-                                        <i class="fas fa-lock mr-1 text-[10px]"></i>Sistema
-                                    </span>
-                                </div>
-                            }
-                            
-                            <div class="relative flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-                                        <i class="fas @(isDefaultCategory ? "fa-folder" : "fa-tag") text-white text-xl"></i>
-                                    </div>
-                                    <div>
-                                        <h3 class="font-bold text-white text-lg">@categoria.Nombre</h3>
-                                        <div class="text-white/70 text-sm">@categoria.Grupo</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Body -->
-                        <div class="p-5">
-                            <div class="flex items-center justify-between mb-4 bg-gradient-to-r @(isDefaultCategory ? "from-slate-50 to-slate-100" : "from-violet-50 to-purple-50") rounded-xl p-4 border @(isDefaultCategory ? "border-slate-200" : "border-violet-200")">
-                                <div class="flex items-center gap-2">
-                                    <div class="w-8 h-8 @(isDefaultCategory ? "bg-slate-500" : "bg-violet-500") rounded-lg flex items-center justify-center">
-                                        <i class="fas fa-gem text-white text-xs"></i>
-                                    </div>
-                                    <span class="font-bold text-slate-800">@categoria.CantidadProductos</span>
-                                </div>
-                                <span class="text-sm text-slate-500">producto@(categoria.CantidadProductos != 1 ? "s" : "")</span>
-                            </div>
-
-                            @if(isDefaultCategory)
-                            {
-                                <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-sm text-amber-700">
-                                    <div class="flex items-start gap-2">
-                                        <i class="fas fa-info-circle mt-0.5 text-amber-500"></i>
-                                        <span>Categoría del sistema para productos sin asignar.</span>
-                                    </div>
-                                </div>
-                            }
-                            else
-                            {
-                                <div class="flex gap-2">
-                                    <a asp-action="Editar" asp-route-id="@categoria.Id" 
-                                       class="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-100 hover:bg-emerald-500 text-slate-600 hover:text-white rounded-xl transition-all font-medium text-sm">
-                                        <i class="fas fa-edit"></i>Editar
-                                    </a>
-                                    <button type="button" 
-                                            onclick="adminCategorias.eliminar(@categoria.Id, '@nombreCategoria', @categoria.CantidadProductos)"
-                                            class="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-100 hover:bg-red-500 text-slate-600 hover:text-white rounded-xl transition-all font-medium text-sm">
-                                        <i class="fas fa-trash"></i>Eliminar
-                                    </button>
-                                </div>
-                            }
-                        </div>
-                    </div>
-                }
-            </div>
-        }
-        else
-        {
-            <!-- Empty State -->
-            <div class="bg-white rounded-2xl p-12 text-center shadow-sm border border-slate-100 mb-8">
-                <div class="w-20 h-20 bg-gradient-to-br from-violet-100 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <i class="fas fa-tags text-violet-500 text-3xl"></i>
-                </div>
-                <h3 class="text-xl font-bold text-slate-800 mb-2">No hay categorías</h3>
-                <p class="text-slate-500 mb-6">Crea tu primera categoría para organizar los productos</p>
-                <a asp-action="Crear" 
-                   class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold rounded-xl hover:shadow-lg transition-all">
-                    <i class="fas fa-plus"></i>
-                    Crear Primera Categoría
-                </a>
-            </div>
-        }
-
-        <!-- Info Banner -->
-        <div class="bg-gradient-to-r from-violet-50 to-purple-50 border-l-4 border-violet-500 rounded-r-xl p-5 mb-8">
-            <div class="flex items-start gap-4">
-                <div class="w-10 h-10 bg-violet-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <i class="fas fa-lightbulb text-white"></i>
-                </div>
-                <div>
-                    <h3 class="font-semibold text-slate-800 mb-1">Consejo</h3>
-                    <p class="text-sm text-slate-600">Las categorías ayudan a organizar tu catálogo. Al eliminar una, los productos se moverán a "Sin categoría".</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Navigation -->
-        <div class="flex flex-wrap gap-3">
-            <a asp-controller="Admin" asp-action="Index" 
-               class="inline-flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50 rounded-xl transition-all font-medium">
-                <i class="fas fa-arrow-left"></i>
-                Volver al Panel
-            </a>
-            <a asp-controller="AdminProductos" asp-action="Index" 
-               class="inline-flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-200 text-slate-600 hover:border-emerald-300 hover:text-emerald-600 rounded-xl transition-all font-medium">
-                <i class="fas fa-gem"></i>
-                Ver Productos
-            </a>
-        </div>
-    </div>
+<main class="admin-workspace admin-categories min-h-[70vh] bg-slate-50 px-4 py-6 pb-10 text-slate-800 md:px-6 md:py-8 md:pb-14 [&_[hidden]]:!hidden" data-admin-list="categorias"><div class="admin-shell mx-auto max-w-7xl">
+<div class="admin-breadcrumb mb-5 flex items-center gap-2 text-xs text-slate-500 [&_a:hover]:text-green-800"><a asp-controller="Admin" asp-action="Index">Panel de administración</a><span aria-hidden="true">/</span><span>Categorías</span></div><header class="admin-heading mb-6 flex flex-col items-start justify-between gap-4 md:flex-row md:items-center [&_h1]:mb-1.5 [&_h1]:text-2xl [&_h1]:font-bold [&_h1]:tracking-tight md:[&_h1]:text-3xl [&_p]:text-sm [&_p]:text-slate-500"><div><h1>Categorías</h1><p>Organiza el catálogo por familias y encuentra cada categoría de un vistazo.</p></div><a asp-action="Crear" class="admin-btn inline-flex min-h-10 items-center justify-center gap-2 whitespace-nowrap rounded-lg border px-3 py-2 text-sm font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-400 border-green-800 bg-green-800 text-white hover:border-green-900 hover:bg-green-900"><i class="fas fa-plus" aria-hidden="true"></i>Nueva categoría</a></header>
+<div class="admin-stats mb-6 grid grid-cols-2 gap-3 md:grid-cols-[repeat(auto-fit,minmax(145px,1fr))]">
+<div class="admin-stat rounded-xl border border-slate-200 bg-white p-4 md:p-5 [&_span]:mb-1.5 [&_span]:block [&_span]:text-xs [&_span]:text-slate-500 [&_strong]:text-2xl [&_strong]:font-bold"><span>Categorías</span><strong >@categorias.Count</strong></div>
+<div class="admin-stat rounded-xl border border-slate-200 bg-white p-4 md:p-5 [&_span]:mb-1.5 [&_span]:block [&_span]:text-xs [&_span]:text-slate-500 [&_strong]:text-2xl [&_strong]:font-bold"><span>Grupos del catálogo</span><strong >@grupos.Count</strong></div>
+<div class="admin-stat rounded-xl border border-slate-200 bg-white p-4 md:p-5 [&_span]:mb-1.5 [&_span]:block [&_span]:text-xs [&_span]:text-slate-500 [&_strong]:text-2xl [&_strong]:font-bold"><span>Productos visibles</span><strong >@ViewBag.TotalProductos</strong></div>
+<div class="admin-stat rounded-xl border border-slate-200 bg-white p-4 md:p-5 [&_span]:mb-1.5 [&_span]:block [&_span]:text-xs [&_span]:text-slate-500 [&_strong]:text-2xl [&_strong]:font-bold"><span>Categorías sin productos</span><strong >@categorias.Count(c => c.CantidadProductos == 0)</strong></div>
 </div>
-
+<div class="admin-toolbar mb-5 rounded-xl border border-slate-200 bg-white p-4 md:p-5"><form class="admin-search flex flex-wrap items-end gap-2.5 [&>button]:flex-1 md:[&>button]:flex-none" data-admin-search>
+<div class="admin-field min-w-full flex-1 md:min-w-[180px] [&_label]:mb-1.5 [&_label]:block [&_label]:text-xs [&_label]:font-semibold [&_label]:text-slate-600"><label for="buscarCategorias">Buscar categoría</label><input id="buscarCategorias" name="busqueda" type="search" placeholder="Escribe el nombre de la categoría" / class="min-h-10 w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-400"></div>
+<div class="admin-field min-w-full flex-1 md:min-w-[180px] [&_label]:mb-1.5 [&_label]:block [&_label]:text-xs [&_label]:font-semibold [&_label]:text-slate-600"><label for="grupoCategorias">Grupo del catálogo</label><select id="grupoCategorias" name="grupo" class="min-h-10 w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-400"><option value="">Todos los grupos</option>@foreach(var grupo in grupos) { <option value="@grupo.Key">@grupo.Key</option> }</select></div>
+<button class="admin-btn inline-flex min-h-10 items-center justify-center gap-2 whitespace-nowrap rounded-lg border px-3 py-2 text-sm font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-400 border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-100" type="button" data-clear-search>Limpiar filtros</button>
+</form></div>
+<p class="admin-status my-2 min-h-5 text-xs text-slate-500" data-admin-status role="status" aria-live="polite"></p>
+@foreach (var grupo in grupos)
+{
+<details open class="admin-list admin-category-group overflow-hidden rounded-xl border border-slate-200 bg-white group mb-5" data-category-group="@grupo.Key">
+<summary class="flex cursor-pointer list-none items-center gap-3 bg-slate-50 px-4 py-4 text-sm font-semibold md:px-5 [&::-webkit-details-marker]:hidden focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-400">@grupo.Key <span class="mr-auto text-xs font-normal text-slate-500" data-group-count>@grupo.Count() categorías</span><span aria-hidden="true" class="text-slate-500 group-open:hidden">+</span><span aria-hidden="true" class="hidden text-slate-500 group-open:block">−</span></summary>
+@foreach (var categoria in grupo.OrderBy(c => c.Nombre))
+{
+var predeterminada = categoria.Nombre == "Sin categoría";
+<div class="admin-row categoria-card grid-cols-[minmax(0,1fr)_auto] md:grid-cols-[minmax(0,1fr)_110px_205px] grid min-w-0 items-center gap-3.5 border-b border-slate-100 p-4 text-sm last:border-b-0 hover:bg-slate-50 md:gap-5 md:px-5" data-categoria-id="@categoria.Id" data-nombre="@categoria.Nombre">
+<div class="admin-identity flex min-w-0 items-center gap-3 [&>div]:min-w-0"><span class="admin-avatar flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-500"><i class="fas fa-tag" aria-hidden="true"></i></span><div><span class="admin-name block font-semibold [overflow-wrap:anywhere]">@categoria.Nombre</span><span class="admin-sub mt-1 block text-xs text-slate-500 [overflow-wrap:anywhere]">@(predeterminada ? "Categoría del sistema" : "Categoría #" + categoria.Id)</span></div></div>
+<div><span class="admin-mobile-label mb-1 block text-[11px] text-slate-500 md:hidden">Productos</span><span class="admin-badge bg-slate-100 text-slate-600 inline-flex w-fit items-center gap-1.5 rounded-md px-2 py-1 text-[11px] font-semibold">@categoria.CantidadProductos productos</span></div>
+<div class="admin-actions col-span-2 justify-start md:col-span-1 md:justify-end flex flex-wrap gap-1.5">
+@if (predeterminada)
+{ <span class="admin-badge bg-slate-100 text-slate-600 inline-flex w-fit items-center gap-1.5 rounded-md px-2 py-1 text-[11px] font-semibold"><i class="fas fa-lock" aria-hidden="true"></i>Protegida</span> }
+else
+{
+<a asp-action="Editar" asp-route-id="@categoria.Id" class="admin-btn inline-flex min-h-10 items-center justify-center gap-2 whitespace-nowrap rounded-lg border px-3 py-2 text-sm font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-400 border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-100"><i class="fas fa-pen" aria-hidden="true"></i>Editar</a>
+<button type="button" class="admin-btn inline-flex min-h-10 items-center justify-center gap-2 whitespace-nowrap rounded-lg border px-3 py-2 text-sm font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-400 border-transparent bg-transparent text-red-700 hover:border-red-200 hover:bg-red-50" data-delete-category="@categoria.Id" data-nombre="@categoria.Nombre" data-productos="@categoria.CantidadProductos" aria-label="Eliminar categoría @categoria.Nombre"><i class="fas fa-trash-alt" aria-hidden="true"></i>Eliminar</button>
+}
+</div></div>
+}
+</details>
+}
+<div class="admin-empty rounded-xl border border-dashed border-slate-300 bg-white px-5 py-12 text-center text-slate-500 [&_h2]:mb-1.5 [&_h2]:mt-2.5 [&_h2]:text-lg [&_h2]:font-semibold [&_h2]:text-slate-700" data-no-results hidden><i class="fas fa-tags" aria-hidden="true"></i><h2>No hay categorías que coincidan</h2><p>Prueba otro nombre o selecciona otro grupo.</p></div>
+<p class="admin-note my-5 text-sm leading-relaxed text-slate-500"><i class="fas fa-info-circle" aria-hidden="true"></i> Al eliminar una categoría, sus productos pasan a «Sin categoría». Los contadores muestran los productos visibles de la tienda.</p>
+<div class="admin-actions flex flex-wrap justify-start gap-1.5"><a asp-controller="Admin" asp-action="Index" class="admin-btn inline-flex min-h-10 items-center justify-center gap-2 whitespace-nowrap rounded-lg border px-3 py-2 text-sm font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-400 border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-100"><i class="fas fa-arrow-left" aria-hidden="true"></i>Volver al panel</a><a asp-controller="AdminProductos" asp-action="Index" class="admin-btn inline-flex min-h-10 items-center justify-center gap-2 whitespace-nowrap rounded-lg border px-3 py-2 text-sm font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-400 border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-100">Ver productos</a></div>
+</div></main>
 @section Scripts {
     <script>
         const adminCategorias = {
@@ -261,4 +102,5 @@
 
         window.adminCategorias = adminCategorias;
     </script>
+    <script src="~/js/admin-listas.js" asp-append-version="true"></script>
 }
