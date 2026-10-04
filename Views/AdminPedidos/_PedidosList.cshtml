@@ -14,7 +14,7 @@
                     <div class="flex-1 p-5">
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
                             <div>
-                                <div class="text-xs text-slate-400 mb-1">Nº Pedido</div>
+                                <div class="text-xs text-slate-400 mb-1">NÂº Pedido</div>
                                 <div class="font-bold text-slate-800">#@p.Id</div>
                             </div>
                             <div>
@@ -73,44 +73,9 @@
     <!-- Pagination AJAX -->
     @if(Model.TotalPages > 1)
     {
-        <div class="flex justify-center items-center gap-2 flex-wrap" id="paginacionPedidos">
-            @if(Model.HasPreviousPage)
-            {
-                <button type="button" 
-                        onclick="adminPedidos.cargarPagina(@(Model.PageNumber-1))"
-                        class="px-3 py-2 bg-white border border-slate-200 text-slate-600 rounded-lg hover:bg-emerald-500 hover:border-emerald-500 hover:text-white transition-all">
-                    <i class="fas fa-chevron-left text-xs"></i>
-                </button>
-            }
-            @{var startPage = Math.Max(1, Model.PageNumber - 2); var endPage = Math.Min(Model.TotalPages, Model.PageNumber + 2);}
-            @for(var i = startPage; i <= endPage; i++)
-            {
-                var pageNum = i;
-                @if(i == Model.PageNumber)
-                {
-                    <span class="px-3 py-2 bg-emerald-500 text-white rounded-lg font-medium">@i</span>
-                }
-                else
-                {
-                    <button type="button"
-                            onclick="adminPedidos.cargarPagina(@pageNum)"
-                            class="px-3 py-2 bg-white border border-slate-200 text-slate-600 rounded-lg hover:bg-emerald-500 hover:border-emerald-500 hover:text-white transition-all">
-                        @i
-                    </button>
-                }
-            }
-            @if(Model.HasNextPage)
-            {
-                <button type="button"
-                        onclick="adminPedidos.cargarPagina(@(Model.PageNumber+1))"
-                        class="px-3 py-2 bg-white border border-slate-200 text-slate-600 rounded-lg hover:bg-emerald-500 hover:border-emerald-500 hover:text-white transition-all">
-                    <i class="fas fa-chevron-right text-xs"></i>
-                </button>
-            }
-        </div>
+        @await Html.PartialAsync("_Pagination", (Model.PageNumber, Model.TotalPages, "adminPedidos.cargarPagina", "paginacionPedidos", false))
     }
-
-    <!-- Info de paginación -->
+    <!-- Info de paginaciÃ³n -->
     <div class="text-center text-sm text-slate-500 mt-4">
         Mostrando @Model.StartItem-@Model.EndItem de @Model.TotalItems pedidos
     </div>
@@ -123,6 +88,6 @@ else
             <i class="fas fa-box-open text-amber-500 text-3xl"></i>
         </div>
         <h3 class="text-xl font-bold text-slate-800 mb-2">No hay pedidos</h3>
-        <p class="text-slate-500">@(string.IsNullOrEmpty(estadoFiltro) ? "Aún no se han realizado pedidos" : $"No hay pedidos con estado {estadoFiltro}")</p>
+        <p class="text-slate-500">@(string.IsNullOrEmpty(estadoFiltro) ? "AÃºn no se han realizado pedidos" : $"No hay pedidos con estado {estadoFiltro}")</p>
     </div>
 }
