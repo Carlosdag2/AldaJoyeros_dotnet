@@ -1,264 +1,30 @@
 @model AldaJoyeros.Helpers.PagedResult<AldaJoyeros.DTOs.PedidoDto>
-@{
-    ViewData["Title"] = "GestiÛn de Pedidos";
-    var estadoFiltro = ViewBag.EstadoFiltro as string ?? "";
-    var totalPendientes = ViewBag.TotalPendientes ?? 0;
-    var totalEnProceso = ViewBag.TotalEnProceso ?? 0;
-    var totalEnviados = ViewBag.TotalEnviados ?? 0;
-    var totalEntregados = ViewBag.TotalEntregados ?? 0;
-}
-
-<div class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
-    <!-- Header -->
-    <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
-        <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\"60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%239C92AC\" fill-opacity=\"0.05\"%3E%3Cpath d=\"M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-40"></div>
-        <div class="absolute top-0 right-0 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
-        
-        <div class="relative container mx-auto px-6 py-8">
-            <nav class="flex items-center gap-2 text-sm text-slate-400 mb-4">
-                <a asp-controller="Admin" asp-action="Index" class="hover:text-white transition-colors"><i class="fas fa-home"></i></a>
-                <i class="fas fa-chevron-right text-xs"></i>
-                <span class="text-white">Pedidos</span>
-            </nav>
-            
-            <div class="flex items-center gap-4">
-                <div class="w-14 h-14 bg-gradient-to-br from-amber-400 to-orange-500 rounded-2xl flex items-center justify-center shadow-xl shadow-amber-500/25">
-                    <i class="fas fa-shopping-bag text-white text-2xl"></i>
-                </div>
-                <div>
-                    <h1 class="text-2xl md:text-3xl font-bold text-white">GestiÛn de Pedidos</h1>
-                    <p class="text-slate-400 text-sm mt-1">Administra todos los pedidos de la tienda</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="container mx-auto px-6 -mt-6 relative z-10 pb-12">
-        <!-- Filters & Stats -->
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 mb-6">
-            <!-- Filter Tabs AJAX -->
-            <div class="flex flex-wrap gap-2 mb-5" id="filtrosPedidos">
-                <button type="button" onclick="adminPedidos.filtrar('')" 
-                        class="filtro-btn inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all @(string.IsNullOrEmpty(estadoFiltro) ? "bg-emerald-500 text-white shadow-md active" : "bg-slate-100 text-slate-600 hover:bg-slate-200")" data-estado="">
-                    <i class="fas fa-th-large"></i>Todos
-                </button>
-                <button type="button" onclick="adminPedidos.filtrar('PENDIENTE')" 
-                        class="filtro-btn inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all @(estadoFiltro == "PENDIENTE" ? "bg-yellow-500 text-white shadow-md active" : "bg-slate-100 text-slate-600 hover:bg-slate-200")" data-estado="PENDIENTE">
-                    <i class="fas fa-clock"></i>Pendientes
-                </button>
-                <button type="button" onclick="adminPedidos.filtrar('EN_PROCESO')" 
-                        class="filtro-btn inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all @(estadoFiltro == "EN_PROCESO" ? "bg-blue-500 text-white shadow-md active" : "bg-slate-100 text-slate-600 hover:bg-slate-200")" data-estado="EN_PROCESO">
-                    <i class="fas fa-sync-alt"></i>En Proceso
-                </button>
-                <button type="button" onclick="adminPedidos.filtrar('ENVIADO')" 
-                        class="filtro-btn inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all @(estadoFiltro == "ENVIADO" ? "bg-purple-500 text-white shadow-md active" : "bg-slate-100 text-slate-600 hover:bg-slate-200")" data-estado="ENVIADO">
-                    <i class="fas fa-shipping-fast"></i>Enviados
-                </button>
-                <button type="button" onclick="adminPedidos.filtrar('ENTREGADO')" 
-                        class="filtro-btn inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all @(estadoFiltro == "ENTREGADO" ? "bg-green-500 text-white shadow-md active" : "bg-slate-100 text-slate-600 hover:bg-slate-200")" data-estado="ENTREGADO">
-                    <i class="fas fa-check-circle"></i>Entregados
-                </button>
-                <button type="button" onclick="adminPedidos.filtrar('CANCELADO')" 
-                        class="filtro-btn inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all @(estadoFiltro == "CANCELADO" ? "bg-red-500 text-white shadow-md active" : "bg-slate-100 text-slate-600 hover:bg-slate-200")" data-estado="CANCELADO">
-                    <i class="fas fa-times-circle"></i>Cancelados
-                </button>
-            </div>
-
-            <!-- Stats -->
-            <div class="grid grid-cols-2 md:grid-cols-5 gap-3 pt-5 border-t border-slate-100" id="statsPedidos">
-                <div class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-3 text-center border border-slate-200">
-                    <div id="statTotal" class="text-2xl font-bold text-slate-700">@Model.TotalItems</div>
-                    <div class="text-xs text-slate-500">Total</div>
-                </div>
-                <div class="bg-gradient-to-br from-yellow-50 to-amber-50 rounded-xl p-3 text-center border border-yellow-200">
-                    <div id="statPendientes" class="text-2xl font-bold text-yellow-600">@totalPendientes</div>
-                    <div class="text-xs text-slate-500">Pendientes</div>
-                </div>
-                <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-3 text-center border border-blue-200">
-                    <div id="statEnProceso" class="text-2xl font-bold text-blue-600">@totalEnProceso</div>
-                    <div class="text-xs text-slate-500">En Proceso</div>
-                </div>
-                <div class="bg-gradient-to-br from-purple-50 to-violet-50 rounded-xl p-3 text-center border border-purple-200">
-                    <div id="statEnviados" class="text-2xl font-bold text-purple-600">@totalEnviados</div>
-                    <div class="text-xs text-slate-500">Enviados</div>
-                </div>
-                <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-3 text-center border border-green-200">
-                    <div id="statEntregados" class="text-2xl font-bold text-green-600">@totalEntregados</div>
-                    <div class="text-xs text-slate-500">Entregados</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Contenedor din·mico para la lista de pedidos -->
-        <div id="pedidosContainer">
-            <partial name="_PedidosList" model="Model" />
-        </div>
-
-        <!-- Navigation -->
-        <div class="mt-8">
-            <a asp-controller="Admin" asp-action="Index" class="inline-flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-200 text-slate-600 hover:border-slate-300 rounded-xl transition-all font-medium">
-                <i class="fas fa-arrow-left"></i>Volver al Panel
-            </a>
-        </div>
-    </div>
+@{ ViewData["Title"] = "Gesti√≥n de Pedidos"; }
+<partial name="_AdminConfirmModal" />
+<main class="admin-workspace admin-orders min-h-[70vh] bg-slate-50 px-4 py-6 pb-10 text-slate-800 md:px-6 md:py-8 md:pb-14 [&_[hidden]]:!hidden" data-admin-list="pedidos"><div class="admin-shell mx-auto max-w-7xl">
+<div class="admin-breadcrumb mb-5 flex items-center gap-2 text-xs text-slate-500 [&_a:hover]:text-green-800"><a asp-controller="Admin" asp-action="Index">Panel de administraci√≥n</a><span aria-hidden="true">/</span><span>Pedidos</span></div><header class="admin-heading mb-6 flex flex-col items-start justify-between gap-4 md:flex-row md:items-center [&_h1]:mb-1.5 [&_h1]:text-2xl [&_h1]:font-bold [&_h1]:tracking-tight md:[&_h1]:text-3xl [&_p]:text-sm [&_p]:text-slate-500"><div><h1>Pedidos</h1><p>Revisa las compras y sigue el estado de cada pedido.</p></div></header>
+<div class="admin-stats mb-6 grid grid-cols-2 gap-3 md:grid-cols-[repeat(auto-fit,minmax(145px,1fr))]"><div class="admin-stat rounded-xl border border-slate-200 bg-white p-4 md:p-5 [&_span]:mb-1.5 [&_span]:block [&_span]:text-xs [&_span]:text-slate-500 [&_strong]:text-2xl [&_strong]:font-bold"><span>Resultados</span><strong id="statTotal">@Model.TotalItems</strong></div>
+<div class="admin-stat rounded-xl border border-slate-200 bg-white p-4 md:p-5 [&_span]:mb-1.5 [&_span]:block [&_span]:text-xs [&_span]:text-slate-500 [&_strong]:text-2xl [&_strong]:font-bold"><span>Pendientes</span><strong id="statPendientes">@ViewBag.TotalPendientes</strong></div>
+<div class="admin-stat rounded-xl border border-slate-200 bg-white p-4 md:p-5 [&_span]:mb-1.5 [&_span]:block [&_span]:text-xs [&_span]:text-slate-500 [&_strong]:text-2xl [&_strong]:font-bold"><span>En proceso</span><strong id="statEnProceso">@ViewBag.TotalEnProceso</strong></div>
+<div class="admin-stat rounded-xl border border-slate-200 bg-white p-4 md:p-5 [&_span]:mb-1.5 [&_span]:block [&_span]:text-xs [&_span]:text-slate-500 [&_strong]:text-2xl [&_strong]:font-bold"><span>Enviados</span><strong id="statEnviados">@ViewBag.TotalEnviados</strong></div>
+<div class="admin-stat rounded-xl border border-slate-200 bg-white p-4 md:p-5 [&_span]:mb-1.5 [&_span]:block [&_span]:text-xs [&_span]:text-slate-500 [&_strong]:text-2xl [&_strong]:font-bold"><span>Entregados</span><strong id="statEntregados">@ViewBag.TotalEntregados</strong></div></div>
+<div class="admin-toolbar mb-5 rounded-xl border border-slate-200 bg-white p-4 md:p-5">
+<form asp-action="Index" method="get" class="admin-search flex flex-wrap items-end gap-2.5 [&>button]:flex-1 md:[&>button]:flex-none" data-admin-search>
+<div class="admin-field min-w-full flex-1 md:min-w-[180px] [&_label]:mb-1.5 [&_label]:block [&_label]:text-xs [&_label]:font-semibold [&_label]:text-slate-600"><label for="buscarPedidos">Buscar pedidos</label><input id="buscarPedidos" type="search" name="busqueda" value="@ViewBag.Busqueda" placeholder="N√∫mero de pedido o correo del cliente" maxlength="200" / class="min-h-10 w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-400"></div>
+<input type="hidden" name="estado" value="@(ViewBag.EstadoFiltro)" />
+<button type="submit" class="admin-btn inline-flex min-h-10 items-center justify-center gap-2 whitespace-nowrap rounded-lg border px-3 py-2 text-sm font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-400 border-green-800 bg-green-800 text-white hover:border-green-900 hover:bg-green-900"><i class="fas fa-search" aria-hidden="true"></i>Buscar</button>
+<button type="button" class="admin-btn inline-flex min-h-10 items-center justify-center gap-2 whitespace-nowrap rounded-lg border px-3 py-2 text-sm font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-400 border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-100" data-clear-search>Limpiar filtros</button>
+</form>
+<div class="admin-tabs mt-4 flex flex-wrap gap-1.5 border-t border-slate-100 pt-4 md:gap-2" aria-label="Filtrar por estado"><button type="button" class="admin-tab rounded-lg border border-transparent bg-slate-100 px-3 py-2 text-xs font-semibold text-slate-500 hover:bg-slate-200 aria-pressed:border-green-200 aria-pressed:bg-green-50 aria-pressed:text-green-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-400" data-filter="" aria-pressed="false">Todos</button>
+<button type="button" class="admin-tab rounded-lg border border-transparent bg-slate-100 px-3 py-2 text-xs font-semibold text-slate-500 hover:bg-slate-200 aria-pressed:border-green-200 aria-pressed:bg-green-50 aria-pressed:text-green-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-400" data-filter="PENDIENTE" aria-pressed="false">Pendientes</button>
+<button type="button" class="admin-tab rounded-lg border border-transparent bg-slate-100 px-3 py-2 text-xs font-semibold text-slate-500 hover:bg-slate-200 aria-pressed:border-green-200 aria-pressed:bg-green-50 aria-pressed:text-green-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-400" data-filter="EN_PROCESO" aria-pressed="false">En proceso</button>
+<button type="button" class="admin-tab rounded-lg border border-transparent bg-slate-100 px-3 py-2 text-xs font-semibold text-slate-500 hover:bg-slate-200 aria-pressed:border-green-200 aria-pressed:bg-green-50 aria-pressed:text-green-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-400" data-filter="ENVIADO" aria-pressed="false">Enviados</button>
+<button type="button" class="admin-tab rounded-lg border border-transparent bg-slate-100 px-3 py-2 text-xs font-semibold text-slate-500 hover:bg-slate-200 aria-pressed:border-green-200 aria-pressed:bg-green-50 aria-pressed:text-green-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-400" data-filter="ENTREGADO" aria-pressed="false">Entregados</button>
+<button type="button" class="admin-tab rounded-lg border border-transparent bg-slate-100 px-3 py-2 text-xs font-semibold text-slate-500 hover:bg-slate-200 aria-pressed:border-green-200 aria-pressed:bg-green-50 aria-pressed:text-green-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-400" data-filter="CANCELADO" aria-pressed="false">Cancelados</button></div>
 </div>
-
-@section Scripts {
-    <script>
-        const adminPedidos = {
-            estadoActual: '@estadoFiltro',
-            paginaActual: @Model.PageNumber,
-            cargando: false,
-
-            // Filtrar por estado
-            async filtrar(estado) {
-                if (this.cargando) return;
-                this.estadoActual = estado;
-                this.paginaActual = 1;
-                await this.cargarDatos();
-                this.actualizarBotonesFiltro(estado);
-                this.actualizarURL();
-            },
-
-            // Cargar p·gina especÌfica
-            async cargarPagina(pagina) {
-                if (this.cargando) return;
-                this.paginaActual = pagina;
-                await this.cargarDatos();
-                this.actualizarURL();
-                // Scroll suave hacia arriba
-                document.getElementById('pedidosContainer').scrollIntoView({ behavior: 'smooth', block: 'start' });
-            },
-
-            // Cargar datos via AJAX
-            async cargarDatos() {
-                this.cargando = true;
-                const container = document.getElementById('pedidosContainer');
-                
-                // Mostrar loading
-                container.style.opacity = '0.5';
-                container.style.pointerEvents = 'none';
-
-                try {
-                    const params = new URLSearchParams();
-                    if (this.estadoActual) params.append('estado', this.estadoActual);
-                    params.append('page', this.paginaActual);
-
-                    const response = await fetch(`/AdminPedidos/Index?${params.toString()}`, {
-                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
-                    });
-
-                    if (response.ok) {
-                        const html = await response.text();
-                        container.innerHTML = html;
-                        container.style.opacity = '1';
-                        container.style.pointerEvents = '';
-                        
-                        // Actualizar estadÌsticas desde los headers
-                        this.actualizarEstadisticas(response);
-                    } else {
-                        throw new Error('Error al cargar');
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
-                    AldaToast.error('Error al cargar los pedidos');
-                    container.style.opacity = '1';
-                    container.style.pointerEvents = '';
-                } finally {
-                    this.cargando = false;
-                }
-            },
-
-            // Actualizar estadÌsticas desde response headers
-            actualizarEstadisticas(response) {
-                const pendientes = response.headers.get('X-Stats-Pendientes');
-                const enProceso = response.headers.get('X-Stats-EnProceso');
-                const enviados = response.headers.get('X-Stats-Enviados');
-                const entregados = response.headers.get('X-Stats-Entregados');
-                const total = response.headers.get('X-Stats-Total');
-
-                if (pendientes) document.getElementById('statPendientes').textContent = pendientes;
-                if (enProceso) document.getElementById('statEnProceso').textContent = enProceso;
-                if (enviados) document.getElementById('statEnviados').textContent = enviados;
-                if (entregados) document.getElementById('statEntregados').textContent = entregados;
-                if (total) document.getElementById('statTotal').textContent = total;
-            },
-
-            // Actualizar botones de filtro activo
-            actualizarBotonesFiltro(estadoActivo) {
-                const botones = document.querySelectorAll('#filtrosPedidos .filtro-btn');
-                const colores = {
-                    '': { activo: 'bg-emerald-500 text-white shadow-md', inactivo: 'bg-slate-100 text-slate-600 hover:bg-slate-200' },
-                    'PENDIENTE': { activo: 'bg-yellow-500 text-white shadow-md', inactivo: 'bg-slate-100 text-slate-600 hover:bg-slate-200' },
-                    'EN_PROCESO': { activo: 'bg-blue-500 text-white shadow-md', inactivo: 'bg-slate-100 text-slate-600 hover:bg-slate-200' },
-                    'ENVIADO': { activo: 'bg-purple-500 text-white shadow-md', inactivo: 'bg-slate-100 text-slate-600 hover:bg-slate-200' },
-                    'ENTREGADO': { activo: 'bg-green-500 text-white shadow-md', inactivo: 'bg-slate-100 text-slate-600 hover:bg-slate-200' },
-                    'CANCELADO': { activo: 'bg-red-500 text-white shadow-md', inactivo: 'bg-slate-100 text-slate-600 hover:bg-slate-200' }
-                };
-
-                botones.forEach(btn => {
-                    const estado = btn.dataset.estado;
-                    const esActivo = estado === estadoActivo;
-                    
-                    // Remover clases de color/estado previas
-                    btn.classList.remove(
-                        'bg-emerald-500', 'bg-yellow-500', 'bg-blue-500', 'bg-purple-500', 'bg-green-500', 'bg-red-500',
-                        'bg-slate-100', 'text-white', 'text-slate-600', 'shadow-md', 'hover:bg-slate-200'
-                    );
-                    
-                    // AÒadir clases correspondientes
-                    const clases = esActivo ? colores[estado].activo : colores[estado].inactivo;
-                    btn.classList.add(...clases.split(' '));
-                });
-            },
-
-            // Actualizar URL sin recargar
-            actualizarURL() {
-                const params = new URLSearchParams();
-                if (this.estadoActual) params.append('estado', this.estadoActual);
-                if (this.paginaActual > 1) params.append('page', this.paginaActual);
-                
-                const newUrl = params.toString() 
-                    ? `${window.location.pathname}?${params.toString()}`
-                    : window.location.pathname;
-                    
-                history.pushState({ estado: this.estadoActual, page: this.paginaActual }, '', newUrl);
-            },
-
-            // Eliminar pedido
-            async eliminar(id) {
-                const confirmar = await AldaConfirm.show({
-                    title: 'øEliminar pedido?',
-                    message: `El pedido #${id} ser· eliminado permanentemente.`,
-                    type: 'danger',
-                    confirmText: 'Eliminar'
-                });
-
-                if (!confirmar) return;
-
-                try {
-                    const form = document.createElement('form');
-                    form.method = 'POST';
-                    form.action = `/AdminPedidos/Eliminar/${id}`;
-                    document.body.appendChild(form);
-                    form.submit();
-                } catch (error) {
-                    console.error('Error:', error);
-                    AldaToast.error('Error al eliminar');
-                }
-            }
-        };
-
-        // Manejar botÛn atr·s del navegador
-        window.addEventListener('popstate', (event) => {
-            if (event.state) {
-                adminPedidos.estadoActual = event.state.estado || '';
-                adminPedidos.paginaActual = event.state.page || 1;
-                adminPedidos.cargarDatos();
-                adminPedidos.actualizarBotonesFiltro(adminPedidos.estadoActual);
-            }
-        });
-
-        window.adminPedidos = adminPedidos;
-    </script>
-}
+<p class="admin-status my-2 min-h-5 text-xs text-slate-500" data-admin-status role="status" aria-live="polite"></p>
+<div id="pedidosContainer" data-admin-results aria-busy="false"><partial name="_PedidosList" model="Model" /></div>
+<p class="admin-note my-5 text-sm leading-relaxed text-slate-500">Abre el detalle para consultar los art√≠culos, la direcci√≥n de entrega y el resumen del pedido.</p>
+<a asp-controller="Admin" asp-action="Index" class="admin-btn inline-flex min-h-10 items-center justify-center gap-2 whitespace-nowrap rounded-lg border px-3 py-2 text-sm font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-400 border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-100"><i class="fas fa-arrow-left" aria-hidden="true"></i>Volver al panel</a>
+</div></main>
+@section Scripts { <script src="~/js/admin-listas.js" asp-append-version="true"></script> }

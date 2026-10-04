@@ -22,7 +22,7 @@ namespace AldaJoyeros.Controllers
             _imagenService = imagenService;
         }
 
-        public async Task<IActionResult> Index(string estado = "", int page = 1)
+        public async Task<IActionResult> Index(string estado = "", int page = 1, string busqueda = "")
         {
             var pedidosQuery = await _pedidoService.GetAllAsync();
             
@@ -44,10 +44,17 @@ namespace AldaJoyeros.Controllers
                 pedidosQuery = pedidosQuery.Where(p => p.Estado == estado).ToList();
             }
 
+            busqueda = (busqueda ?? "").Trim();
+            ViewBag.Busqueda = busqueda;
+            if (!string.IsNullOrEmpty(busqueda))
+            {
+                pedidosQuery = pedidosQuery.Where(p => (p.UsuarioEmail?.Contains(busqueda, StringComparison.OrdinalIgnoreCase) ?? false) || p.Id.ToString() == busqueda.TrimStart('#')).ToList();
+            }
+
             var pagedResult = PagedResult<PedidoDto>.Create(pedidosQuery, page, PageSize);
             ViewBag.EstadoFiltro = estado;
 
-            // Si es petición AJAX, devolver partial con estadísticas en headers
+            // Si es peticiÃ³n AJAX, devolver partial con estadÃ­sticas en headers
             if (Request.Headers.XRequestedWith == "XMLHttpRequest")
             {
                 Response.Headers.Append("X-Stats-Pendientes", totalPendientes.ToString());
@@ -107,7 +114,7 @@ namespace AldaJoyeros.Controllers
         {
             if (!ModelState.IsValid)
             {
-                TempData["Warning"] = "Por favor, selecciona un estado válido";
+                TempData["Warning"] = "Por favor, selecciona un estado vÃ¡lido";
                 ViewBag.PedidoId = id;
                 return View(pedidoDto);
             }
@@ -121,7 +128,7 @@ namespace AldaJoyeros.Controllers
                 
                 var mensaje = pedidoDto.Estado switch
                 {
-                    EstadoPedido.EN_PROCESO => "El pedido está ahora en proceso de preparación",
+                    EstadoPedido.EN_PROCESO => "El pedido estÃ¡ ahora en proceso de preparaciÃ³n",
                     EstadoPedido.ENVIADO => "El pedido ha sido marcado como enviado",
                     EstadoPedido.ENTREGADO => "El pedido ha sido marcado como entregado",
                     EstadoPedido.CANCELADO => "El pedido ha sido cancelado",
@@ -146,10 +153,10 @@ namespace AldaJoyeros.Controllers
             {
                 var pedido = await _pedidoService.GetByIdAsync(id);
                 
-                // Advertir si el pedido está en proceso o enviado
+                // Advertir si el pedido estÃ¡ en proceso o enviado
                 if (pedido != null && (pedido.Estado == "EN_PROCESO" || pedido.Estado == "ENVIADO"))
                 {
-                    TempData["Warning"] = "Has eliminado un pedido que estaba en proceso o enviado. Asegúrate de notificar al cliente.";
+                    TempData["Warning"] = "Has eliminado un pedido que estaba en proceso o enviado. AsegÃºrate de notificar al cliente.";
                 }
                 
                 await _pedidoService.DeleteAsync(id);
