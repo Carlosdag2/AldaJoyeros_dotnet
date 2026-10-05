@@ -95,7 +95,7 @@ namespace AldaJoyeros.Controllers
                     return RedirectToAction("Index", "Admin");
                 }
 
-                if (TempCarritoHelper.HasItems(HttpContext))
+                if (HttpContext.Items[AldaJoyeros.Services.StoreModeStore.ContextKey] is true && TempCarritoHelper.HasItems(HttpContext))
                 {
                     return RedirectToAction("Index", "Carrito");
                 }
@@ -174,7 +174,7 @@ namespace AldaJoyeros.Controllers
                     return Redirect(returnUrl);
                 }
 
-                if (TempCarritoHelper.HasItems(HttpContext))
+                if (HttpContext.Items[AldaJoyeros.Services.StoreModeStore.ContextKey] is true && TempCarritoHelper.HasItems(HttpContext))
                 {
                     TempData["Success"] = "¡Cuenta creada! Ahora puedes completar tu compra.";
                     return RedirectToAction("Index", "Carrito");
@@ -472,6 +472,7 @@ namespace AldaJoyeros.Controllers
 
         private async Task ProcessTempCarrito(long usuarioId)
         {
+            if (HttpContext.Items[AldaJoyeros.Services.StoreModeStore.ContextKey] is not true) return;
             var tempItems = TempCarritoHelper.GetItems(HttpContext);
             
             if (tempItems.Any())

@@ -37,6 +37,7 @@ namespace AldaJoyeros
             builder.Services.AddSingleton<PerezMoraStore>();
             builder.Services.AddSingleton<PerezMoraSource>();
             builder.Services.AddSingleton<FeaturedProductsStore>();
+            builder.Services.AddSingleton<StoreModeStore>();
             builder.Services.AddHostedService<PerezMoraWorker>();
 
             // Configuración UTF-8 para caracteres especiales (tildes, ñ)
@@ -47,7 +48,7 @@ namespace AldaJoyeros
             });
 
             // Add services to the container.
-            builder.Services.AddControllersWithViews();
+            builder.Services.AddControllersWithViews(options => options.Filters.Add<AldaJoyeros.Filters.StoreModeFilter>());
 
             // Configurar DbContext con MySQL (para productos, usuarios, etc.)
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");

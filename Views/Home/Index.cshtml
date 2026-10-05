@@ -1,4 +1,4 @@
-﻿@model IEnumerable<AldaJoyeros.DTOs.ProductoDto>
+@model IEnumerable<AldaJoyeros.DTOs.ProductoDto>
 
 @{
     ViewData["Title"] = "Inicio";
@@ -6,7 +6,10 @@
 
 <div x-data="carritoNotificacion()">
 
-<partial name="_CarritoNotificacion" />
+@if (ViewBag.EcommerceEnabled == true)
+{
+    <partial name="_CarritoNotificacion" />
+}
 
 <!-- Hero Section -->
     <section class="relative h-screen w-full overflow-hidden">
@@ -66,8 +69,8 @@
                     <div class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
                         <i class="fas fa-shipping-fast text-2xl text-emerald-600"></i>
                     </div>
-                    <h3 class="font-serif text-xl font-bold text-gray-900 mb-2">Envío Gratis</h3>
-                    <p class="text-gray-600 text-sm">En compras superiores a 50€. Entrega en 3-5 días laborables.</p>
+                    <h3 class="font-serif text-xl font-bold text-gray-900 mb-2">@(ViewBag.EcommerceEnabled == true ? "Envío Gratis" : "Visítanos")</h3>
+                    <p class="text-gray-600 text-sm">@(ViewBag.EcommerceEnabled == true ? "En compras superiores a 50€. Entrega en 3-5 días laborables." : "Descubre nuestras piezas y recibe asesoramiento en nuestra tienda de Illescas.")</p>
                 </div>
 
                 <!-- Feature 2 -->
@@ -138,17 +141,20 @@
 
                                 <!-- Quick Add Button -->
                                 <div class="absolute inset-x-0 bottom-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-                                    <button type="button"
-                                            @@click="agregarAlCarrito(@producto.Id, '@producto.Nombre.Replace("'", "\\'").Replace("\"", "\\\"")', $event)"
-                                            class="w-full bg-emerald-600 text-white py-3 text-xs uppercase tracking-widest hover:bg-emerald-700 transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                                            :disabled="cargandoProducto === @producto.Id">
-                                        <span x-show="cargandoProducto !== @producto.Id">
-                                            <i class="fas fa-cart-plus mr-2"></i>Añadir al Carrito
-                                        </span>
-                                        <span x-show="cargandoProducto === @producto.Id" class="flex items-center gap-2">
-                                            <i class="fas fa-circle-notch fa-spin"></i> Añadiendo...
-                                        </span>
-                                    </button>
+                                    @if (ViewBag.EcommerceEnabled == true)
+                                    {
+                                        <button type="button"
+                                                @@click="agregarAlCarrito(@producto.Id, '@producto.Nombre.Replace("'", "\\'").Replace("\"", "\\\"")', $event)"
+                                                class="w-full bg-emerald-600 text-white py-3 text-xs uppercase tracking-widest hover:bg-emerald-700 transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                                :disabled="cargandoProducto === @producto.Id">
+                                            <span x-show="cargandoProducto !== @producto.Id">
+                                                <i class="fas fa-cart-plus mr-2"></i>Añadir al Carrito
+                                            </span>
+                                            <span x-show="cargandoProducto === @producto.Id" class="flex items-center gap-2">
+                                                <i class="fas fa-circle-notch fa-spin"></i> Añadiendo...
+                                            </span>
+                                        </button>
+                                    }
                                 </div>
                             </div>
 
@@ -307,19 +313,19 @@
                     <div class="text-3xl font-bold text-emerald-600 mb-2">
                         <i class="fas fa-shield-alt"></i>
                     </div>
-                    <p class="text-sm text-gray-600 uppercase tracking-wider">Compra Segura</p>
+                    <p class="text-sm text-gray-600 uppercase tracking-wider">@(ViewBag.EcommerceEnabled == true ? "Compra Segura" : "Asesoramiento Personal")</p>
                 </div>
                 <div>
                     <div class="text-3xl font-bold text-emerald-600 mb-2">
                         <i class="fas fa-undo"></i>
                     </div>
-                    <p class="text-sm text-gray-600 uppercase tracking-wider">30 Días Devolución</p>
+                    <p class="text-sm text-gray-600 uppercase tracking-wider">@(ViewBag.EcommerceEnabled == true ? "30 Días Devolución" : "Atención en Tienda")</p>
                 </div>
                 <div>
                     <div class="text-3xl font-bold text-emerald-600 mb-2">
                         <i class="fas fa-gift"></i>
                     </div>
-                    <p class="text-sm text-gray-600 uppercase tracking-wider">Envío Premium</p>
+                    <p class="text-sm text-gray-600 uppercase tracking-wider">@(ViewBag.EcommerceEnabled == true ? "Envío Premium" : "Presentación Cuidada")</p>
                 </div>
             </div>
         </div>

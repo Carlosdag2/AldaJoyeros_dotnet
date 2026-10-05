@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es" class="scroll-smooth">
 <head>
     <meta charset="utf-8" />
@@ -155,13 +155,16 @@
                         var currentUser = ViewBag.CurrentUser as AldaJoyeros.DTOs.UsuarioDto;
 
                         <!-- Cart -->
-                        <a asp-controller="Carrito" asp-action="Index" class="relative text-gray-600 hover:text-gray-900 transition-colors" data-carrito-link>
-                            <i class="fas fa-shopping-bag" data-carrito-icon></i>
-                            <span data-carrito-count 
-                                  class="absolute -top-2 -right-2 w-4 h-4 bg-emerald-600 text-white text-[10px] font-medium rounded-full flex items-center justify-center @(ViewBag.CarritoCount > 0 ? "" : "hidden")">
-                                @(ViewBag.CarritoCount ?? 0)
-                            </span>
-                        </a>
+                        @if (ViewBag.EcommerceEnabled == true)
+                        {
+                            <a asp-controller="Carrito" asp-action="Index" class="relative text-gray-600 hover:text-gray-900 transition-colors" data-carrito-link>
+                                <i class="fas fa-shopping-bag" data-carrito-icon></i>
+                                <span data-carrito-count
+                                      class="absolute -top-2 -right-2 w-4 h-4 bg-emerald-600 text-white text-[10px] font-medium rounded-full flex items-center justify-center @(ViewBag.CarritoCount > 0 ? "" : "hidden")">
+                                    @(ViewBag.CarritoCount ?? 0)
+                                </span>
+                            </a>
+                        }
 
                         <!-- Account Dropdown -->
                         <div x-data="{ open: false }" class="relative">
@@ -195,14 +198,20 @@
                                     <div class="border-t border-gray-100 my-1"></div>
                                 }
 
-                                <a asp-controller="Pedidos" asp-action="Index" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                                    Mis Pedidos
-                                </a>
+                                @if (ViewBag.EcommerceEnabled == true)
+                                {
+                                    <a asp-controller="Pedidos" asp-action="Index" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                        Mis Pedidos
+                                    </a>
+                                }
 
-                                <a asp-controller="Carrito" asp-action="Index" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                                    Mi Carrito
-                                    <span data-carrito-count-menu class="text-gray-400 @(ViewBag.CarritoCount > 0 ? "" : "hidden")">(<span data-carrito-count-value>@(ViewBag.CarritoCount ?? 0)</span>)</span>
-                                </a>
+                                @if (ViewBag.EcommerceEnabled == true)
+                                {
+                                    <a asp-controller="Carrito" asp-action="Index" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                        Mi Carrito
+                                        <span data-carrito-count-menu class="text-gray-400 @(ViewBag.CarritoCount > 0 ? "" : "hidden")">(<span data-carrito-count-value>@(ViewBag.CarritoCount ?? 0)</span>)</span>
+                                    </a>
+                                }
 
                                 <div class="border-t border-gray-100 my-1"></div>
 
@@ -257,16 +266,22 @@
 
                 @if (ViewBag.IsAuthenticated == true)
                 {
-                    <a asp-controller="Carrito" asp-action="Index" class="block py-2 text-gray-700 hover:text-gray-900">
-                        Carrito
-                        @if (ViewBag.CarritoCount > 0)
-                        {
-                            <span class="ml-1 text-xs bg-emerald-600 text-white px-1.5 py-0.5 rounded">@ViewBag.CarritoCount</span>
-                        }
-                    </a>
-                    <a asp-controller="Pedidos" asp-action="Index" class="block py-2 text-gray-700 hover:text-gray-900">
-                        Mis Pedidos
-                    </a>
+                    @if (ViewBag.EcommerceEnabled == true)
+                    {
+                        <a asp-controller="Carrito" asp-action="Index" class="block py-2 text-gray-700 hover:text-gray-900">
+                            Carrito
+                            @if (ViewBag.CarritoCount > 0)
+                            {
+                                <span class="ml-1 text-xs bg-emerald-600 text-white px-1.5 py-0.5 rounded">@ViewBag.CarritoCount</span>
+                            }
+                        </a>
+                    }
+                    @if (ViewBag.EcommerceEnabled == true)
+                    {
+                        <a asp-controller="Pedidos" asp-action="Index" class="block py-2 text-gray-700 hover:text-gray-900">
+                            Mis Pedidos
+                        </a>
+                    }
 
                     @if (ViewBag.IsAdmin == true)
                     {
@@ -300,6 +315,13 @@
         @* Sistema de notificaciones global *@
         <partial name="_Notifications" />
 
+        @if (ViewBag.EcommerceEnabled != true)
+        {
+            <div class="bg-emerald-50 border-b border-emerald-100 px-6 py-3 text-center text-sm text-emerald-900">
+                Descubre nuestro catálogo y consulta disponibilidad en la tienda.
+                <a href="tel:+34925541227" class="font-semibold underline underline-offset-4 ml-2">Contactar</a>
+            </div>
+        }
         @RenderBody()
     </main>
 
@@ -333,8 +355,14 @@
                     <ul class="space-y-3 text-sm">
                         <li><a asp-controller="Home" asp-action="Index" class="text-gray-400 hover:text-white transition-colors flex items-center gap-2"><i class="fas fa-chevron-right text-xs text-emerald-500"></i>Inicio</a></li>
                         <li><a asp-controller="Productos" asp-action="Index" class="text-gray-400 hover:text-white transition-colors flex items-center gap-2"><i class="fas fa-chevron-right text-xs text-emerald-500"></i>Catálogo</a></li>
-                        <li><a asp-controller="Carrito" asp-action="Index" class="text-gray-400 hover:text-white transition-colors flex items-center gap-2"><i class="fas fa-chevron-right text-xs text-emerald-500"></i>Mi Carrito</a></li>
-                        <li><a asp-controller="Pedidos" asp-action="Index" class="text-gray-400 hover:text-white transition-colors flex items-center gap-2"><i class="fas fa-chevron-right text-xs text-emerald-500"></i>Mis Pedidos</a></li>
+                        @if (ViewBag.EcommerceEnabled == true)
+                        {
+                            <li><a asp-controller="Carrito" asp-action="Index" class="text-gray-400 hover:text-white transition-colors flex items-center gap-2"><i class="fas fa-chevron-right text-xs text-emerald-500"></i>Mi Carrito</a></li>
+                        }
+                        @if (ViewBag.EcommerceEnabled == true)
+                        {
+                            <li><a asp-controller="Pedidos" asp-action="Index" class="text-gray-400 hover:text-white transition-colors flex items-center gap-2"><i class="fas fa-chevron-right text-xs text-emerald-500"></i>Mis Pedidos</a></li>
+                        }
                     </ul>
                 </div>
 
