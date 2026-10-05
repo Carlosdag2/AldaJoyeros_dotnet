@@ -1,0 +1,50 @@
+@model AldaJoyeros.Models.FeaturedProductsViewModel
+@{ ViewData["Title"] = "Productos destacados"; }
+<main class="min-h-screen bg-slate-50 px-4 py-8 text-slate-800 md:px-6"><div class="mx-auto max-w-7xl">
+<nav class="mb-5 flex gap-2 text-xs text-slate-500"><a asp-controller="Admin" asp-action="Index">Panel de administración</a><span>/</span><span>Productos destacados</span></nav>
+<header class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"><div><h1 class="text-2xl font-bold md:text-3xl">Productos destacados</h1><p class="mt-2 text-sm text-slate-500">Elige hasta ocho productos y ordena cómo aparecen en el inicio. Cada cambio se guarda al instante.</p></div><a asp-controller="Home" asp-action="Index" asp-fragment="productos-destacados" target="_blank" rel="noopener" class="rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold">Ver inicio</a></header>
+<section class="mb-8 rounded-xl border border-slate-200 bg-white p-4 md:p-6" aria-labelledby="seleccionTitulo">
+<div class="mb-5 flex justify-between gap-3"><h2 id="seleccionTitulo" class="text-lg font-semibold">Tu selección</h2><span class="rounded-lg bg-emerald-50 px-3 py-1 text-sm font-semibold text-emerald-800">@Model.Selected.Count / 8</span></div>
+@if (Model.Selected.Count == 0) { <p class="p-6 text-sm text-slate-500">Todavía no hay destacados. Añade productos desde el catálogo de abajo.</p> }
+<ol class="space-y-3" id="seleccionDestacados">
+@for (var index = 0; index < Model.Selected.Count; index++)
+{
+var item = Model.Selected[index];
+<li data-featured-id="@item.Id" class="flex flex-col gap-3 rounded-lg border border-slate-200 p-3 md:flex-row md:items-center">
+<div class="flex min-w-0 flex-1 items-center gap-3"><span class="w-5 shrink-0 text-sm font-bold text-slate-400">@(index + 1)</span>
+@if (item.Product?.TieneImagenes == true) { <img src="@item.Product.ImagenPrincipal" alt="" class="h-14 w-14 shrink-0 rounded-lg bg-slate-50 object-contain" /> }
+else { <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-400"><i class="fas fa-gem" aria-hidden="true"></i></span> }
+<div class="min-w-0"><span class="block break-words text-sm font-semibold">@(item.Product?.Nombre ?? "Producto no disponible")</span><span class="text-xs text-slate-500">#@item.Id · @(item.Product?.CategoriaNombre ?? "Sin categoría")</span>
+@if (item.Product == null || item.Product.Eliminado) { <p class="mt-1 text-xs font-semibold text-amber-700">Oculto: no aparece en el inicio. Puedes quitarlo de la selección.</p> }
+</div></div>
+<form asp-action="Cambiar" method="post" class="flex shrink-0 flex-wrap gap-2">
+<input type="hidden" name="id" value="@item.Id" /><input type="hidden" name="busqueda" value="@Model.Search" /><input type="hidden" name="page" value="@Model.Candidates.PageNumber" />
+<button name="accion" value="subir" disabled="@(index == 0)" class="rounded-lg border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50 disabled:opacity-40" aria-label="Subir producto @item.Id"><i class="fas fa-arrow-up" aria-hidden="true"></i></button>
+<button name="accion" value="bajar" disabled="@(index == Model.Selected.Count - 1)" class="rounded-lg border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50 disabled:opacity-40" aria-label="Bajar producto @item.Id"><i class="fas fa-arrow-down" aria-hidden="true"></i></button>
+<button name="accion" value="quitar" class="rounded-lg border border-red-100 px-3 py-2 text-sm font-semibold text-red-700 hover:bg-red-50">Quitar del inicio</button>
+</form></li>
+}
+</ol><p class="mt-4 text-xs text-slate-500">Quitar un destacado no elimina el producto del catálogo. Los productos ocultos nunca se muestran al público.</p></section>
+<section aria-labelledby="catalogoTitulo"><h2 id="catalogoTitulo" class="mb-4 text-lg font-semibold">Añadir desde el catálogo</h2>
+<form asp-action="Index" method="get" class="mb-5 flex flex-col gap-3 rounded-xl border border-slate-200 bg-white p-4 sm:flex-row sm:items-end">
+<div class="min-w-0 flex-1"><label for="buscarDestacados" class="mb-2 block text-xs font-semibold text-slate-600">Buscar producto</label><input id="buscarDestacados" name="busqueda" value="@Model.Search" type="search" placeholder="Nombre, categoría o ID" class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-100" /></div>
+<button class="rounded-lg bg-emerald-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-emerald-800">Buscar</button><a asp-action="Index" class="rounded-lg border border-slate-200 px-4 py-2.5 text-center text-sm font-semibold">Limpiar</a></form>
+<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+@foreach (var product in Model.Candidates.Items)
+{
+var selected = Model.Selected.Any(p => p.Id == product.Id);
+<article class="flex flex-col rounded-xl border border-slate-200 bg-white p-4" data-candidate-id="@product.Id">
+@if (product.TieneImagenes) { <img src="@product.ImagenPrincipal" alt="@product.Nombre" loading="lazy" class="mb-3 h-36 w-full rounded-lg bg-slate-50 object-contain" /> }
+else { <div class="mb-3 flex h-36 items-center justify-center rounded-lg bg-slate-50 text-3xl text-slate-300"><i class="fas fa-gem" aria-hidden="true"></i></div> }
+<h3 class="break-words text-sm font-semibold">@product.Nombre</h3><p class="mt-1 text-xs text-slate-500">#@product.Id · @product.CategoriaNombre</p><p class="mb-4 mt-2 font-semibold">@product.Precio.ToString("C")</p>
+<form asp-action="Cambiar" method="post" class="mt-auto"><input type="hidden" name="id" value="@product.Id" /><input type="hidden" name="busqueda" value="@Model.Search" /><input type="hidden" name="page" value="@Model.Candidates.PageNumber" />
+<button name="accion" value="@(selected ? "quitar" : "añadir")" disabled="@(!selected && Model.Selected.Count >= 8)" class="w-full rounded-lg border px-3 py-2.5 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-40 @(selected ? "border-emerald-200 bg-emerald-50 text-emerald-800" : "border-slate-200 text-slate-700 hover:bg-slate-50")">@(selected ? "Destacado · Quitar" : "Añadir al inicio")</button></form></article>
+}
+</div>
+@if (Model.Candidates.TotalItems == 0) { <p class="rounded-xl border border-dashed border-slate-300 bg-white p-8 text-center text-slate-500">No hay productos que coincidan. Prueba otra búsqueda.</p> }
+@if (Model.Candidates.TotalPages > 1) { @await Html.PartialAsync("_Pagination", (Model.Candidates.PageNumber, Model.Candidates.TotalPages, "destacadosPagina", "paginacionDestacados", false)) }
+<p class="my-5 text-center text-xs text-slate-500">Mostrando @Model.Candidates.StartItem–@Model.Candidates.EndItem de @Model.Candidates.TotalItems productos visibles</p></section>
+</div></main>
+@section Scripts {
+<script>window.destacadosPagina = function (pagina) { const url = new URL(window.location.href); url.searchParams.set('page', pagina); window.location.assign(url); };</script>
+}
