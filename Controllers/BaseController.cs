@@ -8,25 +8,27 @@ namespace AldaJoyeros.Controllers
 {
     public class BaseController : Controller
     {
-        // Acceso a información del usuario usando ClaimsPrincipal (estándar ASP.NET Core)
+        // Acceso a informaciÃ³n del usuario usando ClaimsPrincipal (estÃ¡ndar ASP.NET Core)
         protected long? CurrentUserId => User.GetUserId();
         protected string? CurrentUserEmail => User.GetEmail();
         protected string? CurrentUserRole => User.GetRole();
         protected bool IsAuthenticated => User.IsAuthenticated();
         protected bool IsAdmin => User.IsAdmin();
 
-        // Para compatibilidad con código existente que usa el DTO completo
+        // Para compatibilidad con cÃ³digo existente que usa el DTO completo
         protected UsuarioDto? CurrentUser => HttpContext.Items["CurrentUser"] as UsuarioDto;
 
         public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
-            // Pasar información a las vistas
+            // Pasar informaciÃ³n a las vistas
             ViewBag.CurrentUser = CurrentUser;
             ViewBag.IsAuthenticated = IsAuthenticated;
             ViewBag.IsAdmin = IsAdmin;
 
-            // Obtener contador del carrito de forma asíncrona
-            ViewBag.CarritoCount = await GetCarritoCountAsync();
+            // Obtener contador del carrito de forma asÃ­ncrona
+            var ecommerce = HttpContext.Items[AldaJoyeros.Services.StoreModeStore.ContextKey] is true;
+            ViewBag.EcommerceEnabled = ecommerce;
+            ViewBag.CarritoCount = ecommerce ? await GetCarritoCountAsync() : 0;
 
             await next();
         }

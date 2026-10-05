@@ -1,4 +1,4 @@
-﻿@model AldaJoyeros.DTOs.ProductoDto
+@model AldaJoyeros.DTOs.ProductoDto
 
 @{
     ViewData["Title"] = Model.Nombre;
@@ -37,9 +37,12 @@
         </div>
         <div class="flex-1">
             <p class="font-serif text-sm" x-text="mensajeNotificacion"></p>
-            <a href="/Carrito" class="text-xs text-emerald-200 hover:text-white transition-colors mt-1 inline-block">
-                Ver carrito <i class="fas fa-arrow-right ml-1"></i>
-            </a>
+            @if (ViewBag.EcommerceEnabled == true)
+            {
+                <a href="/Carrito" class="text-xs text-emerald-200 hover:text-white transition-colors mt-1 inline-block">
+                    Ver carrito <i class="fas fa-arrow-right ml-1"></i>
+                </a>
+            }
         </div>
         <button @@click="mostrarNotificacion = false" class="text-emerald-300 hover:text-white transition-colors">
             <i class="fas fa-times"></i>
@@ -178,36 +181,46 @@
                     </section>
                 }
 
-                <div class="space-y-6">
-                    <div>
-                        <label class="block text-xs font-bold uppercase tracking-wide text-gray-500 mb-2">Cantidad</label>
-                        <div class="inline-flex items-center border border-gray-300 rounded hover:border-emerald-600 transition-colors bg-white">
-                            <button type="button" @@click="cantidad = Math.max(1, cantidad - 1)"
-                                    class="w-12 h-12 flex items-center justify-center text-gray-500 hover:text-emerald-700 hover:bg-gray-50 transition-colors">
-                                <i class="fas fa-minus text-xs"></i>
-                            </button>
-                            <input type="number" x-model="cantidad" readonly
-                                   class="w-12 h-12 text-center border-none p-0 text-dark-900 font-medium focus:ring-0 cursor-default" />
-                            <button type="button" @@click="cantidad = Math.min(99, cantidad + 1)"
-                                    class="w-12 h-12 flex items-center justify-center text-gray-500 hover:text-emerald-700 hover:bg-gray-50 transition-colors">
-                                <i class="fas fa-plus text-xs"></i>
+                @if (ViewBag.EcommerceEnabled == true)
+                {
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wide text-gray-500 mb-2">Cantidad</label>
+                            <div class="inline-flex items-center border border-gray-300 rounded hover:border-emerald-600 transition-colors bg-white">
+                                <button type="button" @@click="cantidad = Math.max(1, cantidad - 1)"
+                                        class="w-12 h-12 flex items-center justify-center text-gray-500 hover:text-emerald-700 hover:bg-gray-50 transition-colors">
+                                    <i class="fas fa-minus text-xs"></i>
+                                </button>
+                                <input type="number" x-model="cantidad" readonly
+                                       class="w-12 h-12 text-center border-none p-0 text-dark-900 font-medium focus:ring-0 cursor-default" />
+                                <button type="button" @@click="cantidad = Math.min(99, cantidad + 1)"
+                                        class="w-12 h-12 flex items-center justify-center text-gray-500 hover:text-emerald-700 hover:bg-gray-50 transition-colors">
+                                    <i class="fas fa-plus text-xs"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col gap-3">
+                            <button type="button"
+                                    @@click="agregarAlCarrito(@Model.Id, '@nombreProductoJs', $event)"
+                                    :disabled="cargando"
+                                    class="w-full bg-dark-900 text-white font-sans font-medium text-sm uppercase tracking-widest py-4 px-8 rounded hover:bg-emerald-800 transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-3 group disabled:opacity-50 disabled:cursor-not-allowed">
+                                <span x-show="!cargando">Añadir al Carrito</span>
+                                <span x-show="cargando" class="flex items-center gap-2">
+                                    <i class="fas fa-circle-notch fa-spin"></i> Añadiendo...
+                                </span>
+                                <i x-show="!cargando" class="fas fa-arrow-right transform group-hover:translate-x-1 transition-transform"></i>
                             </button>
                         </div>
                     </div>
-
-                    <div class="flex flex-col gap-3">
-                        <button type="button"
-                                @@click="agregarAlCarrito(@Model.Id, '@nombreProductoJs', $event)"
-                                :disabled="cargando"
-                                class="w-full bg-dark-900 text-white font-sans font-medium text-sm uppercase tracking-widest py-4 px-8 rounded hover:bg-emerald-800 transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-3 group disabled:opacity-50 disabled:cursor-not-allowed">
-                            <span x-show="!cargando">Añadir al Carrito</span>
-                            <span x-show="cargando" class="flex items-center gap-2">
-                                <i class="fas fa-circle-notch fa-spin"></i> Añadiendo...
-                            </span>
-                            <i x-show="!cargando" class="fas fa-arrow-right transform group-hover:translate-x-1 transition-transform"></i>
-                        </button>
+                }
+                else
+                {
+                    <div class="rounded-xl border border-emerald-100 bg-emerald-50 p-6">
+                        <p class="text-sm text-emerald-900 mb-4">Consulta la disponibilidad de esta pieza en nuestra tienda. Te ayudamos a elegir.</p>
+                        <a href="tel:+34925541227" class="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-lg bg-emerald-700 px-6 py-3 text-sm font-semibold text-white hover:bg-emerald-800 transition-colors"><i class="fas fa-phone"></i> Consultar en tienda</a>
                     </div>
-                </div>
+                }
 
                 <div class="mt-8 space-y-4 py-6 border-t border-gray-100">
                     <div class="flex items-start gap-4">
@@ -215,8 +228,8 @@
                             <i class="fas fa-truck text-xs"></i>
                         </div>
                         <div>
-                            <h4 class="font-serif font-bold text-dark-900 text-sm">Envío Asegurado</h4>
-                            <p class="text-xs text-gray-500 mt-1">Entrega gratuita y segura en 24-48h laborales.</p>
+                            <h4 class="font-serif font-bold text-dark-900 text-sm">@(ViewBag.EcommerceEnabled == true ? "Envío Asegurado" : "Atención Personalizada")</h4>
+                            <p class="text-xs text-gray-500 mt-1">@(ViewBag.EcommerceEnabled == true ? "Entrega gratuita y segura en 24-48h laborales." : "Consulta las características y disponibilidad de esta pieza en tienda.")</p>
                         </div>
                     </div>
                     <div class="flex items-start gap-4">

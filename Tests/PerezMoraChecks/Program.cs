@@ -19,6 +19,7 @@ if(args.Contains("--categories-web")){await CategoryWebChecks.Run(project,config
 if(args.Contains("--admin-ui-web")){await AdminUIWebChecks.Run(project,config);return;}
 if(args.Contains("--featured")){await FeaturedChecks.Run(project,config);return;}
 if(args.Contains("--catalog-search")){await CatalogSearchChecks.Run(project);return;}
+if(args.Contains("--store-mode")){await StoreModeChecks.Run(project,config);return;}
 var output=Path.Combine(project,"App_Data","PerezMora","checks");Directory.CreateDirectory(output);
 if(args.Contains("--verify-real")) {
     var latest=(await new PerezMoraStore(config).Jobs()).First(x=>x.Trigger=="manual");

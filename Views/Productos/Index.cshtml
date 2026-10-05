@@ -1,4 +1,4 @@
-﻿@model AldaJoyeros.Helpers.PagedResult<AldaJoyeros.DTOs.ProductoDto>
+@model AldaJoyeros.Helpers.PagedResult<AldaJoyeros.DTOs.ProductoDto>
 
 @{
     ViewData["Title"] = "Colección Exclusiva";
@@ -11,7 +11,10 @@
 <div class="min-h-screen bg-stone-50 font-sans text-stone-800 selection:bg-emerald-900 selection:text-white"
  x-data="carritoNotificacion()">
 
-<partial name="_CarritoNotificacion" />
+@if (ViewBag.EcommerceEnabled == true)
+{
+    <partial name="_CarritoNotificacion" />
+}
 
 <section class="relative pt-32 pb-20 lg:pt-40 lg:pb-32 bg-emerald-950">
         <div class="absolute inset-0 z-0 overflow-hidden">
@@ -186,8 +189,8 @@
 
                     <div class="mt-12 p-8 bg-stone-100 text-center">
                         <i class="fas fa-shipping-fast text-2xl text-stone-400 mb-4"></i>
-                        <h4 class="font-serif text-lg text-stone-900 mb-2">Envío Gratuito</h4>
-                        <p class="text-xs text-stone-500 leading-relaxed mb-4">Disfruta de envío asegurado sin coste en pedidos superiores a 50€.</p>
+                        <h4 class="font-serif text-lg text-stone-900 mb-2">@(ViewBag.EcommerceEnabled == true ? "Envío Gratuito" : "Visítanos en Illescas")</h4>
+                        <p class="text-xs text-stone-500 leading-relaxed mb-4">@(ViewBag.EcommerceEnabled == true ? "Disfruta de envío asegurado sin coste en pedidos superiores a 50€." : "Consulta disponibilidad y recibe asesoramiento personalizado en nuestra tienda.")</p>
                     </div>
                 </div>
 

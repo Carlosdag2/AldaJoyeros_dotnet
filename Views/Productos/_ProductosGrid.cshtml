@@ -47,12 +47,15 @@
                     </a>
 
                     <div class="absolute inset-x-0 bottom-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-t from-white/90 to-transparent">
-                        <button type="button"
-                                onclick="window.carritoApp?.agregarAlCarrito(@producto.Id, '@producto.Nombre.Replace("'", "\\'").Replace("\"", "\\\"")', event)"
-                                class="btn-agregar-carrito w-full py-3 bg-emerald-900 text-white text-xs uppercase tracking-widest font-bold hover:bg-black transition-colors flex items-center justify-center gap-2">
-                            <span class="btn-texto">Añadir al carrito</span>
-                            <span class="btn-loading hidden"><i class="fas fa-circle-notch fa-spin"></i> Añadiendo...</span>
-                        </button>
+                        @if (ViewBag.EcommerceEnabled == true)
+                        {
+                            <button type="button"
+                                    onclick="window.carritoApp?.agregarAlCarrito(@producto.Id, '@producto.Nombre.Replace("'", "\\'").Replace("\"", "\\\"")', event)"
+                                    class="btn-agregar-carrito w-full py-3 bg-emerald-900 text-white text-xs uppercase tracking-widest font-bold hover:bg-black transition-colors flex items-center justify-center gap-2">
+                                <span class="btn-texto">Añadir al carrito</span>
+                                <span class="btn-loading hidden"><i class="fas fa-circle-notch fa-spin"></i> Añadiendo...</span>
+                            </button>
+                        }
                     </div>
 
                     <div class="absolute top-3 left-3 flex flex-col gap-2">
@@ -101,13 +104,16 @@
                     <div class="flex items-center justify-between mt-auto gap-4">
                         <span class="font-serif text-2xl text-stone-900">@producto.Precio.ToString("C")</span>
                         <div class="flex items-center gap-3">
-                            <button type="button"
-                                    onclick="window.carritoApp?.agregarAlCarrito(@producto.Id, '@producto.Nombre.Replace("'", "\\'").Replace("\"", "\\\"")', event)"
-                                    class="btn-agregar-carrito px-4 py-2 bg-emerald-900 text-white text-xs uppercase tracking-widest font-bold hover:bg-black transition-colors flex items-center gap-2">
-                                <i class="fas fa-shopping-bag btn-icon"></i>
-                                <i class="fas fa-circle-notch fa-spin btn-loading hidden"></i>
-                                <span class="hidden sm:inline btn-texto">Añadir</span>
-                            </button>
+                            @if (ViewBag.EcommerceEnabled == true)
+                            {
+                                <button type="button"
+                                        onclick="window.carritoApp?.agregarAlCarrito(@producto.Id, '@producto.Nombre.Replace("'", "\\'").Replace("\"", "\\\"")', event)"
+                                        class="btn-agregar-carrito px-4 py-2 bg-emerald-900 text-white text-xs uppercase tracking-widest font-bold hover:bg-black transition-colors flex items-center gap-2">
+                                    <i class="fas fa-shopping-bag btn-icon"></i>
+                                    <i class="fas fa-circle-notch fa-spin btn-loading hidden"></i>
+                                    <span class="hidden sm:inline btn-texto">Añadir</span>
+                                </button>
+                            }
                             <a href="/Productos/Detalle/@producto.Id" class="text-xs uppercase tracking-widest font-bold text-stone-900 border-b border-stone-900 pb-0.5 hover:text-emerald-800 hover:border-emerald-800 transition-colors">
                                 Ver Detalles
                             </a>
