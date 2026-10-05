@@ -260,7 +260,7 @@
     <script>
         function buscadorProductos(categoriaId) {
             return {
-                consulta: '@busqueda',
+                consulta: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(busqueda)),
                 sugerencias: [],
                 mostrarSugerencias: false,
                 cargando: false,
@@ -270,25 +270,28 @@
 
                 async buscar() {
                     const q = this.consulta.trim();
+                    if (this.controlador) this.controlador.abort();
                     
                     if (q.length < 2) {
                         this.sugerencias = [];
                         this.mostrarSugerencias = false;
+                        this.cargando = false;
                         return;
                     }
                     
-                    if (this.controlador) this.controlador.abort();
-                    this.controlador = new AbortController();
+                    const requestController = new AbortController();
+                    this.controlador = requestController;
                     this.cargando = true;
 
                     try {
                         let url = `/Productos/Buscar?q=${encodeURIComponent(q)}`;
                         if (this.categoriaId) url += `&categoriaId=${this.categoriaId}`;
                         
-                        const response = await fetch(url, { signal: this.controlador.signal });
+                        const response = await fetch(url, { signal: requestController.signal });
                         
                         if (response.ok) {
                             const data = await response.json();
+                            if (this.controlador !== requestController || this.consulta.trim() !== q) return;
 
                             this.sugerencias = data.sugerencias || [];
                             this.mostrarSugerencias = this.sugerencias.length > 0;
@@ -299,7 +302,7 @@
                             console.error('Error en búsqueda:', error);
                         }
                     } finally {
-                        this.cargando = false;
+                        if (this.controlador === requestController) this.cargando = false;
                     }
                 },
                 cerrarSugerencias() {

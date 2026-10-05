@@ -28,6 +28,14 @@ namespace AldaJoyeros.Repositories.Implementations
         /// <summary>
         /// Obtiene todos los productos incluyendo eliminados (para admin)
         /// </summary>
+        public async Task<IEnumerable<Producto>> GetSearchCandidatesAsync(long? categoriaId)
+        {
+            return await _context.Productos.AsNoTracking()
+                .Include(p => p.Categoria).Include(p => p.Proveedores)
+                .Where(p => !p.Eliminado && (!categoriaId.HasValue || p.CategoriaId == categoriaId))
+                .ToListAsync();
+        }
+
         public async Task<IEnumerable<Producto>> GetAllIncludingDeletedAsync()
         {
             return await _context.Productos
@@ -47,7 +55,7 @@ namespace AldaJoyeros.Repositories.Implementations
         }
 
         /// <summary>
-        /// Obtiene un producto por ID solo si NO est· eliminado
+        /// Obtiene un producto por ID solo si NO est√° eliminado
         /// </summary>
         public async Task<Producto?> GetByIdActiveAsync(long id)
         {
@@ -113,7 +121,7 @@ namespace AldaJoyeros.Repositories.Implementations
         }
 
         /// <summary>
-        /// EliminaciÛn permanente (hard delete) - usar con precauciÛn
+        /// Eliminaci√≥n permanente (hard delete) - usar con precauci√≥n
         /// </summary>
         public async Task HardDeleteAsync(long id)
         {

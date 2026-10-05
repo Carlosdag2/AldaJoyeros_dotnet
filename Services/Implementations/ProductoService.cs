@@ -176,21 +176,21 @@ namespace AldaJoyeros.Services.Implementations
                 return Enumerable.Empty<ProductoDto>();
             }
 
-            var productos = categoriaId.HasValue
-                ? await GetByCategoriaAsync(categoriaId.Value, cargarImagenes: false)
-                : await GetAllAsync(cargarImagenes: false);
-
-            // Normalizar el término de búsqueda
-            var terminoLower = termino.ToLower();
+            var productos = await _productoRepository.GetSearchCandidatesAsync(categoriaId);
+            var search = new AldaJoyeros.Helpers.CatalogSearch(termino);
             
             // Búsqueda con scoring para mejores resultados
             var resultadosConScore = productos.Select(p => new
             {
                 Producto = p,
-                Score = CalcularScore(p, terminoLower)
+                Score = search.Score(p.Nombre, p.Descripcion, p.Categoria?.Nombre ?? "",
+                    p.Proveedores.Where(s => s.Estado == "completo").Select(s => s.ReferenciaExterna).Prepend(p.Nombre),
+                    p.Proveedores.Where(s => s.Estado == "completo").SelectMany(s =>
+                        AldaJoyeros.Helpers.CatalogSearch.AttributeText(s.CaracteristicasJson)
+                            .Concat(new[] { s.DescripcionCompleta, s.Marca, s.Coleccion })))
             })
             .Where(x => x.Score > 0)
-            .OrderByDescending(x => x.Score)
+            .OrderByDescending(x => x.Score).ThenBy(x => x.Producto.Id)
             .Select(x => x.Producto);
 
             if (limite > 0)
@@ -198,7 +198,7 @@ namespace AldaJoyeros.Services.Implementations
                 resultadosConScore = resultadosConScore.Take(limite);
             }
 
-            var resultados = resultadosConScore.ToList();
+            var resultados = _mapper.Map<List<ProductoDto>>(resultadosConScore.ToList());
             if (cargarImagenes) await CargarImagenesAsync(resultados);
             return resultados;
         }
@@ -247,31 +247,5 @@ namespace AldaJoyeros.Services.Implementations
             }
         }
 
-        private int CalcularScore(ProductoDto producto, string terminoLower)
-        {
-            int score = 0;
-
-            // Coincidencia exacta en el nombre (máxima prioridad)
-            if (producto.Nombre.Equals(terminoLower, StringComparison.OrdinalIgnoreCase))
-                score += 100;
-
-            // El nombre comienza con el término
-            if (producto.Nombre.StartsWith(terminoLower, StringComparison.OrdinalIgnoreCase))
-                score += 50;
-
-            // El nombre contiene el término
-            if (producto.Nombre.Contains(terminoLower, StringComparison.OrdinalIgnoreCase))
-                score += 30;
-
-            // La descripción contiene el término
-            if (producto.Descripcion != null && producto.Descripcion.Contains(terminoLower, StringComparison.OrdinalIgnoreCase))
-                score += 10;
-
-            // La categoría contiene el término
-            if (producto.CategoriaNombre.Contains(terminoLower, StringComparison.OrdinalIgnoreCase))
-                score += 20;
-
-            return score;
-        }
     }
 }
