@@ -8,9 +8,10 @@ namespace AldaJoyeros.Repositories.Interfaces
         /// Obtiene todos los productos activos (no eliminados)
         /// </summary>
         Task<IEnumerable<Producto>> GetAllAsync();
+        Task<IEnumerable<Producto>> GetSearchCandidatesAsync(long? categoriaId);
         
         /// <summary>
-        /// Obtiene todos los productos incluyendo eliminados (para administraciÛn)
+        /// Obtiene todos los productos incluyendo eliminados (para administraci√≥n)
         /// </summary>
         Task<IEnumerable<Producto>> GetAllIncludingDeletedAsync();
         
@@ -20,7 +21,7 @@ namespace AldaJoyeros.Repositories.Interfaces
         Task<Producto?> GetByIdAsync(long id);
         
         /// <summary>
-        /// Obtiene un producto por ID solo si est· activo
+        /// Obtiene un producto por ID solo si est√° activo
         /// </summary>
         Task<Producto?> GetByIdActiveAsync(long id);
         
@@ -39,7 +40,7 @@ namespace AldaJoyeros.Repositories.Interfaces
         Task RestoreAsync(long id);
         
         /// <summary>
-        /// Hard delete: elimina permanentemente (usar con precauciÛn)
+        /// Hard delete: elimina permanentemente (usar con precauci√≥n)
         /// </summary>
         Task HardDeleteAsync(long id);
         
