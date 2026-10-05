@@ -9,16 +9,20 @@ namespace AldaJoyeros.Controllers
     {
         private readonly IProductoService _productoService;
         private readonly ICategoriaService _categoriaService;
+        private readonly AldaJoyeros.Services.FeaturedProductsStore _featured;
 
-        public HomeController(IProductoService productoService, ICategoriaService categoriaService)
+        public HomeController(IProductoService productoService, ICategoriaService categoriaService, AldaJoyeros.Services.FeaturedProductsStore featured)
         {
             _productoService = productoService;
             _categoriaService = categoriaService;
+            _featured = featured;
         }
 
         public async Task<IActionResult> Index()
         {
-            var productos = (await _productoService.GetAllAsync(cargarImagenes: false)).Take(8).ToList();
+            var ids = await _featured.GetIdsAsync();
+            var active = (await _productoService.GetAllAsync(cargarImagenes: false)).ToDictionary(p => p.Id);
+            var productos = ids.Where(active.ContainsKey).Select(id => active[id]).ToList();
             await _productoService.CargarImagenesAsync(productos);
             var categorias = await _categoriaService.GetAllAsync();
             

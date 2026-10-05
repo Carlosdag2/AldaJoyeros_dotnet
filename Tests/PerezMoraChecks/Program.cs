@@ -17,6 +17,7 @@ var project=Path.GetFullPath(args.FirstOrDefault()??".");
 var config=new ConfigurationBuilder().SetBasePath(project).AddJsonFile("appsettings.json").AddJsonFile("appsettings.Local.json",true).Build();
 if(args.Contains("--categories-web")){await CategoryWebChecks.Run(project,config);return;}
 if(args.Contains("--admin-ui-web")){await AdminUIWebChecks.Run(project,config);return;}
+if(args.Contains("--featured")){await FeaturedChecks.Run(project,config);return;}
 var output=Path.Combine(project,"App_Data","PerezMora","checks");Directory.CreateDirectory(output);
 if(args.Contains("--verify-real")) {
     var latest=(await new PerezMoraStore(config).Jobs()).First(x=>x.Trigger=="manual");

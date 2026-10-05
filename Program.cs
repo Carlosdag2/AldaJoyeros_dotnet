@@ -36,6 +36,7 @@ namespace AldaJoyeros
             builder.Services.Configure<PerezMoraOptions>(builder.Configuration.GetSection("PerezMora"));
             builder.Services.AddSingleton<PerezMoraStore>();
             builder.Services.AddSingleton<PerezMoraSource>();
+            builder.Services.AddSingleton<FeaturedProductsStore>();
             builder.Services.AddHostedService<PerezMoraWorker>();
 
             // Configuración UTF-8 para caracteres especiales (tildes, ñ)
