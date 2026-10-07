@@ -10,7 +10,7 @@ namespace AldaJoyeros.Services.Interfaces
         Task<IEnumerable<ProductoDto>> GetAllAsync(bool cargarImagenes = true);
         
         /// <summary>
-        /// Obtiene todos los productos incluyendo eliminados (para administración)
+        /// Obtiene todos los productos incluyendo eliminados (para administraciÃ³n)
         /// </summary>
         Task<IEnumerable<ProductoDto>> GetAllIncludingDeletedAsync(bool cargarImagenes = true);
         
@@ -20,12 +20,13 @@ namespace AldaJoyeros.Services.Interfaces
         Task<ProductoDto?> GetByIdAsync(long id);
         
         /// <summary>
-        /// Obtiene un producto por ID solo si está activo
+        /// Obtiene un producto por ID solo si estÃ¡ activo
         /// </summary>
         Task<ProductoDto?> GetByIdActiveAsync(long id);
         
         Task<IEnumerable<ProductoDto>> GetByCategoriaAsync(long categoriaId, bool cargarImagenes = true);
         Task CargarImagenesAsync(IEnumerable<ProductoDto> productos);
+        Task<IReadOnlyList<ProductoDto>> GetRelatedAsync(ProductoDto producto);
         Task<ProductoDto> CreateAsync(ProductoCreateDto productoCreateDto);
         Task<ProductoDto> UpdateAsync(long id, ProductoUpdateDto productoUpdateDto);
         
@@ -40,17 +41,17 @@ namespace AldaJoyeros.Services.Interfaces
         Task RestoreAsync(long id);
         
         /// <summary>
-        /// Hard delete: elimina permanentemente el producto y sus imágenes
+        /// Hard delete: elimina permanentemente el producto y sus imÃ¡genes
         /// </summary>
         Task HardDeleteAsync(long id);
         
         /// <summary>
-        /// Busca productos por término de búsqueda con filtro opcional de categoría
+        /// Busca productos por tÃ©rmino de bÃºsqueda con filtro opcional de categorÃ­a
         /// </summary>
-        /// <param name="termino">Término de búsqueda</param>
-        /// <param name="categoriaId">ID de categoría opcional para filtrar</param>
-        /// <param name="limite">Número máximo de resultados (0 = sin límite)</param>
-        /// <returns>Lista de productos que coinciden con la búsqueda</returns>
+        /// <param name="termino">TÃ©rmino de bÃºsqueda</param>
+        /// <param name="categoriaId">ID de categorÃ­a opcional para filtrar</param>
+        /// <param name="limite">NÃºmero mÃ¡ximo de resultados (0 = sin lÃ­mite)</param>
+        /// <returns>Lista de productos que coinciden con la bÃºsqueda</returns>
         Task<IEnumerable<ProductoDto>> BuscarAsync(string termino, long? categoriaId = null, int limite = 0, bool cargarImagenes = true);
     }
 }
