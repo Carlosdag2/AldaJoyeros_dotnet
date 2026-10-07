@@ -271,6 +271,8 @@
         </div>
     </div>
 
+    <partial name="_ProductosRelacionados" model="@(ViewBag.ProductosRelacionados as IReadOnlyList<AldaJoyeros.DTOs.ProductoDto>)" />
+
     <div class="border-t border-gray-100 bg-gray-50/50 py-8">
         <div class="container mx-auto px-4">
             <a asp-controller="Productos" asp-action="Index" asp-route-categoriaId="@Model.CategoriaId"

@@ -26,6 +26,7 @@ namespace AldaJoyeros.Repositories.Interfaces
         Task<Producto?> GetByIdActiveAsync(long id);
         
         Task<IEnumerable<Producto>> GetByCategoriaAsync(long categoriaId);
+        Task<IEnumerable<Producto>> GetRelatedAsync(long productoId, long categoriaId, double precio);
         Task<Producto> CreateAsync(Producto producto);
         Task<Producto> UpdateAsync(Producto producto);
         

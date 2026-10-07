@@ -1,0 +1,47 @@
+@model IReadOnlyList<AldaJoyeros.DTOs.ProductoDto>
+
+@if (Model != null && Model.Count > 0)
+{
+    <section id="productos-relacionados" aria-labelledby="tituloRelacionados" class="border-t border-stone-100 bg-stone-50/70 py-12 lg:py-16">
+        <div class="container mx-auto px-4 lg:px-8">
+            <div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                    <p class="mb-2 text-xs font-semibold uppercase tracking-widest text-emerald-700">Sigue descubriendo</p>
+                    <h2 id="tituloRelacionados" class="font-serif text-2xl text-stone-900 sm:text-3xl">Productos relacionados</h2>
+                    <p class="mt-2 text-sm text-stone-500">Otras piezas de esta categoría que pueden interesarte.</p>
+                </div>
+                <a asp-controller="Productos" asp-action="Index" asp-route-categoriaId="@Model[0].CategoriaId"
+                   class="inline-flex items-center gap-2 text-sm font-semibold text-emerald-800 hover:text-emerald-950">
+                    Ver categoría <i class="fas fa-arrow-right text-xs" aria-hidden="true"></i>
+                </a>
+            </div>
+            <div class="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-4">
+                @foreach (var producto in Model)
+                {
+                    <article data-related-product-id="@producto.Id" class="group min-w-0 overflow-hidden rounded-xl border border-stone-200 bg-white transition-shadow hover:shadow-md">
+                        <a asp-controller="Productos" asp-action="Detalle" asp-route-id="@producto.Id" class="block aspect-square overflow-hidden bg-white" aria-label="Ver @producto.Nombre">
+                            @if (producto.TieneImagenes)
+                            {
+                                <img src="@producto.ImagenPrincipal" alt="@producto.Nombre" loading="lazy"
+                                     class="h-full w-full object-contain p-4 transition-transform duration-500 group-hover:scale-105" />
+                            }
+                            else
+                            {
+                                <div class="flex h-full items-center justify-center bg-stone-100 text-stone-300"><i class="fas fa-gem text-4xl" aria-hidden="true"></i></div>
+                            }
+                        </a>
+                        <div class="p-4 sm:p-5">
+                            <p class="mb-2 truncate text-[10px] font-semibold uppercase tracking-widest text-emerald-700">@producto.CategoriaNombre</p>
+                            <h3 class="line-clamp-2 min-h-12 break-words font-serif text-base text-stone-900 sm:text-lg">
+                                <a asp-controller="Productos" asp-action="Detalle" asp-route-id="@producto.Id" class="hover:text-emerald-800">@producto.Nombre</a>
+                            </h3>
+                            <p class="mt-3 font-serif text-lg text-emerald-800">@producto.Precio.ToString("C")</p>
+                            <a asp-controller="Productos" asp-action="Detalle" asp-route-id="@producto.Id"
+                               class="mt-4 inline-flex items-center gap-2 text-xs font-semibold text-stone-600 hover:text-emerald-800">Ver producto <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+                        </div>
+                    </article>
+                }
+            </div>
+        </div>
+    </section>
+}

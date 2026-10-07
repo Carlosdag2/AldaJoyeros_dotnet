@@ -73,6 +73,17 @@ namespace AldaJoyeros.Repositories.Implementations
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<Producto>> GetRelatedAsync(long productoId, long categoriaId, double precio)
+        {
+            return await _context.Productos.AsNoTracking()
+                .Include(p => p.Categoria)
+                .Where(p => !p.Eliminado && p.Id != productoId && p.CategoriaId == categoriaId)
+                .OrderBy(p => Math.Abs(p.Precio - precio))
+                .ThenBy(p => p.Id)
+                .Take(4)
+                .ToListAsync();
+        }
+
         public async Task<Producto> CreateAsync(Producto producto)
         {
             producto.Eliminado = false;

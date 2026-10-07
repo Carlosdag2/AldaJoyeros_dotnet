@@ -239,6 +239,15 @@ namespace AldaJoyeros.Services.Implementations
             }
         }
 
+        public async Task<IReadOnlyList<ProductoDto>> GetRelatedAsync(ProductoDto producto)
+        {
+            if (producto.CategoriaId <= 0) return Array.Empty<ProductoDto>();
+            var relacionados = await _productoRepository.GetRelatedAsync(producto.Id, producto.CategoriaId, producto.Precio);
+            var resultado = _mapper.Map<List<ProductoDto>>(relacionados);
+            await CargarImagenesAsync(resultado);
+            return resultado;
+        }
+
         public async Task CargarImagenesAsync(IEnumerable<ProductoDto> productos)
         {
             foreach (var producto in productos)

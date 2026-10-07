@@ -154,6 +154,7 @@ namespace AldaJoyeros.Controllers
                 return RedirectToAction("Index");
             }
 
+            ViewBag.ProductosRelacionados = await _productoService.GetRelatedAsync(producto);
             return View(producto);
         }
     }
