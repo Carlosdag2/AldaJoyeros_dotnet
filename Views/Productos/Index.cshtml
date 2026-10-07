@@ -16,6 +16,7 @@
     <partial name="_CarritoNotificacion" />
 }
 
+<div x-data="productosApp()">
 <section class="relative pt-32 pb-20 lg:pt-40 lg:pb-32 bg-emerald-950">
         <div class="absolute inset-0 z-0 overflow-hidden">
             <img src="https://images.unsplash.com/photo-1573408301185-9146fe634ad0?q=80&w=2075&auto=format&fit=crop"
@@ -29,22 +30,15 @@
                 <a asp-controller="Home" asp-action="Index" class="hover:text-white transition-colors">Inicio</a>
                 <span>/</span>
                 <span class="text-white">Catálogo</span>
-                @if (categoriaActual != null)
-                {
+                <span x-show="nombreCategoria" class="inline-flex items-center gap-3" style="@(categoriaActual == null ? "display: none;" : null)">
                     <span>/</span>
-                    <span class="text-emerald-200">@categoriaActual.Nombre</span>
-                }
+                    <span class="text-emerald-200" x-text="nombreCategoria">@categoriaActual?.Nombre</span>
+                </span>
             </nav>
 
             <h1 class="font-serif text-5xl md:text-7xl text-white mb-6 leading-tight">
-                @if (categoriaActual != null)
-                {
-                    @categoriaActual.Nombre
-                }
-                else
-                {
-                    <span>Todos los <i class="font-light italic text-emerald-200">Productos</i></span>
-                }
+                <span x-show="nombreCategoria" x-text="nombreCategoria" style="@(categoriaActual == null ? "display: none;" : null)">@categoriaActual?.Nombre</span>
+                <span x-show="!nombreCategoria" style="@(categoriaActual != null ? "display: none;" : null)">Todos los <i class="font-light italic text-emerald-200">Productos</i></span>
             </h1>
 
             <p class="text-stone-300 text-lg md:text-xl font-light max-w-2xl mx-auto mb-12 leading-relaxed">
@@ -52,12 +46,12 @@
             </p>
 
             <div class="max-w-xl mx-auto relative"
-                 x-data="buscadorProductos('@categoriaSeleccionada')"
+                 x-data="buscadorProductos()"
+                 x-on:catalogo-busqueda.window="restablecer($event.detail)"
                  x-on:click.away="cerrarSugerencias()"
                  style="z-index: 100;">
 
                 <form asp-action="Index" method="get" class="relative group">
-                    <input type="hidden" name="categoriaId" value="@categoriaSeleccionada" />
 
                     <div class="relative flex items-center">
                         <input type="text"
@@ -141,9 +135,7 @@
         </div>
     </section>
 
-    <div class="container mx-auto px-6 py-16" 
-         x-data="productosApp()" 
-         x-init="init()">
+    <div class="container mx-auto px-6 py-16">
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-12">
 
             <aside class="lg:col-span-1 space-y-12">
@@ -234,6 +226,8 @@
     </div>
 </div>
 
+</div>
+
 @section Styles {
     <style>
         /* Fuentes */
@@ -261,15 +255,24 @@
 
 @section Scripts {
     <script>
-        function buscadorProductos(categoriaId) {
+        function buscadorProductos() {
             return {
                 consulta: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(busqueda)),
                 sugerencias: [],
                 mostrarSugerencias: false,
                 cargando: false,
                 indiceActivo: -1,
-                categoriaId: categoriaId || null,
                 controlador: null,
+
+                restablecer(consulta) {
+                    if (this.controlador) this.controlador.abort();
+                    this.controlador = null;
+                    this.consulta = consulta || '';
+                    this.sugerencias = [];
+                    this.mostrarSugerencias = false;
+                    this.indiceActivo = -1;
+                    this.cargando = false;
+                },
 
                 async buscar() {
                     const q = this.consulta.trim();
@@ -287,8 +290,7 @@
                     this.cargando = true;
 
                     try {
-                        let url = `/Productos/Buscar?q=${encodeURIComponent(q)}`;
-                        if (this.categoriaId) url += `&categoriaId=${this.categoriaId}`;
+                        const url = `/Productos/Buscar?q=${encodeURIComponent(q)}`;
                         
                         const response = await fetch(url, { signal: requestController.signal });
                         
@@ -343,7 +345,11 @@
                 viewMode: localStorage.getItem('viewMode') || 'grid',
                 cargando: false,
                 categoriaActual: @(categoriaSeleccionada.HasValue ? categoriaSeleccionada.Value.ToString() : "null"),
-                busquedaActual: '@busqueda',
+                categorias: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(categorias?.Select(c => new { id = c.Id, nombre = c.Nombre }) ?? Enumerable.Empty<object>())),
+                get nombreCategoria() {
+                    return this.categorias.find(c => String(c.id) === String(this.categoriaActual))?.nombre || '';
+                },
+                busquedaActual: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(busqueda)),
                 paginaActual: @Model.PageNumber,
                 totalItems: @Model.TotalItems,
                 totalPages: @Model.TotalPages,
@@ -361,6 +367,7 @@
                         if (event.state) {
                             this.categoriaActual = event.state.categoria;
                             this.busquedaActual = event.state.busqueda || '';
+                            window.dispatchEvent(new CustomEvent('catalogo-busqueda', { detail: this.busquedaActual }));
                             this.paginaActual = event.state.pagina || 1;
                             this.cargarProductos(false); // No actualizar URL
                         }
@@ -373,6 +380,8 @@
                 // Filtrar por categoría
                 async filtrarCategoria(categoriaId) {
                     this.categoriaActual = categoriaId;
+                    this.busquedaActual = '';
+                    window.dispatchEvent(new CustomEvent('catalogo-busqueda', { detail: '' }));
                     this.paginaActual = 1;
                     await this.cargarProductos();
                 },
@@ -389,12 +398,14 @@
                 async limpiarFiltros() {
                     this.categoriaActual = null;
                     this.busquedaActual = '';
+                    window.dispatchEvent(new CustomEvent('catalogo-busqueda', { detail: '' }));
                     this.paginaActual = 1;
                     await this.cargarProductos();
                 },
 
                 // Cargar productos con AJAX
                 async cargarProductos(actualizarUrl = true) {
+                    if (this.busquedaActual.trim()) this.categoriaActual = null;
                     this.cargando = true;
 
                     try {

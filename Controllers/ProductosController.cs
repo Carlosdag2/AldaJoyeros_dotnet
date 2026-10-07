@@ -26,6 +26,8 @@ namespace AldaJoyeros.Controllers
 
         public async Task<IActionResult> Index(long? categoriaId, string busqueda = "", int page = 1)
         {
+            // Una búsqueda de texto siempre consulta todo el catálogo.
+            if (!string.IsNullOrWhiteSpace(busqueda)) categoriaId = null;
             var categorias = await _categoriaService.GetAllAsync();
             ViewBag.Categorias = categorias.Where(c => c.CantidadProductos > 0 && c.Grupo != "Pendientes de organizar")
                 .OrderBy(c => AldaJoyeros.Catalog.CatalogTaxonomy.GroupOrder(c.Grupo)).ThenBy(c => c.Nombre).ToArray();
@@ -36,7 +38,7 @@ namespace AldaJoyeros.Controllers
             
             if (!string.IsNullOrWhiteSpace(busqueda))
             {
-                productos = await _productoService.BuscarAsync(busqueda, categoriaId, cargarImagenes: false);
+                productos = await _productoService.BuscarAsync(busqueda, cargarImagenes: false);
             }
             else
             {
@@ -67,7 +69,7 @@ namespace AldaJoyeros.Controllers
             
             if (!string.IsNullOrWhiteSpace(busqueda))
             {
-                productos = await _productoService.BuscarAsync(busqueda, categoriaId, cargarImagenes: false);
+                productos = await _productoService.BuscarAsync(busqueda, cargarImagenes: false);
             }
             else
             {
@@ -126,7 +128,7 @@ namespace AldaJoyeros.Controllers
                 return Json(new { sugerencias = Array.Empty<object>() });
             }
 
-            var productos = await _productoService.BuscarAsync(q, categoriaId, Math.Clamp(limite, 1, 20));
+            var productos = await _productoService.BuscarAsync(q, limite: Math.Clamp(limite, 1, 20));
 
             var sugerencias = productos.Select(p => new
             {
