@@ -97,6 +97,16 @@ namespace AldaJoyeros.Services.Implementations
             await SendEmailWithAttachmentAsync(to, subject, htmlBody, facturaPdf, attachmentName);
         }
 
+        public async Task SendNewOrderNotificationAsync(PedidoDto pedido, string customerEmail, string paymentMethod)
+        {
+            var recipient = string.IsNullOrWhiteSpace(_emailSettings.OwnerEmail)
+                ? _emailSettings.SenderEmail
+                : _emailSettings.OwnerEmail;
+            var subject = $"Nuevo pedido #{pedido.Id} - Alda Joyeros 1962";
+            var htmlBody = EmailTemplates.NewOrder(pedido, customerEmail, paymentMethod, _emailSettings.BaseUrl);
+            await SendEmailAsync(recipient, subject, htmlBody);
+        }
+
         private string GetOrderConfirmationWithInvoiceEmailTemplate(PedidoDto pedido, string numeroFactura)
             => EmailTemplates.Order(pedido, numeroFactura, _emailSettings.BaseUrl);
 

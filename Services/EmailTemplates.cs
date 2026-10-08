@@ -50,6 +50,34 @@ internal static class EmailTemplates
         return Layout("Confirmación de pedido", $"Pedido #{pedido.Id} recibido. Tu factura está adjunta en PDF.", content);
     }
 
+    public static string NewOrder(PedidoDto pedido, string customerEmail, string paymentMethod, string baseUrl)
+    {
+        var url = $"{baseUrl.TrimEnd('/')}/AdminPedidos/Detalle/{pedido.Id}";
+        var rows = string.Join("", pedido.LineasPedido.Select(line => $"""
+            <tr>
+              <td style="padding:14px 12px 14px 0;border-bottom:1px solid #e7e9e4;word-break:break-word;font-size:14px;line-height:22px;color:#192e27;">
+                <strong>{H(string.IsNullOrWhiteSpace(line.ProductoNombre) ? "Artículo" : line.ProductoNombre)}</strong><br>
+                <span style="color:#626d66;">Cantidad: {line.Cantidad} · {Money(line.Precio)} / ud.</span>
+              </td>
+              <td width="100" align="right" valign="top" style="padding:14px 0;border-bottom:1px solid #e7e9e4;font-size:14px;line-height:22px;color:#192e27;">{Money(line.Subtotal)}</td>
+            </tr>
+            """));
+        var payment = paymentMethod == "Contra Reembolso"
+            ? "Contra reembolso: pendiente de cobro al entregar."
+            : paymentMethod == "Tarjeta" ? "Tarjeta: pago confirmado." : paymentMethod;
+        var content = Hero("NUEVO PEDIDO", $"Has recibido el pedido #{pedido.Id}.", "Un cliente ha realizado un pedido en AldaJoyeros. Consulta los detalles y gestiona su preparación desde el panel de administración.")
+            + Notice("Datos del pedido", $"Fecha: {H(pedido.Fecha?.ToString("d MMMM yyyy · HH:mm", Spanish) ?? "No disponible")}<br>Cliente: {H(customerEmail)}<br>Método de pago: {H(payment)}")
+            + SectionTitle("Artículos del pedido")
+            + $"""
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="table-layout:fixed;">{rows}
+                  <tr><td style="padding:20px 0 28px;font-size:15px;color:#192e27;">Total del pedido</td>
+                  <td align="right" style="padding:20px 0 28px;font-size:20px;font-weight:bold;color:#192e27;">{Money(pedido.Total)}</td></tr>
+                </table>
+                """
+            + Button("Gestionar pedido", url) + LinkFallback(url);
+        return Layout("Nuevo pedido en tu tienda", $"Nuevo pedido #{pedido.Id}. Consulta los artículos y el importe en el panel.", content);
+    }
+
     public static string Invoice(PedidoDto pedido, string invoice, string baseUrl)
     {
         var url = OrderUrl(baseUrl, pedido.Id);
