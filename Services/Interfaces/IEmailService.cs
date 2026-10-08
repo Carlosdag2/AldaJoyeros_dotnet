@@ -26,5 +26,7 @@ namespace AldaJoyeros.Services.Interfaces
         /// Envía solo la factura por email (para reenvíos)
         /// </summary>
         Task SendInvoiceEmailAsync(string to, DTOs.PedidoDto pedido, byte[] facturaPdf, string numeroFactura);
+
+        Task SendNewOrderNotificationAsync(DTOs.PedidoDto pedido, string customerEmail, string paymentMethod);
     }
 }

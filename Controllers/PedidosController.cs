@@ -435,6 +435,16 @@ namespace AldaJoyeros.Controllers
                     _logger.LogWarning(emailEx, "No se pudo enviar email de confirmación con factura para pedido {PedidoId}", pedido.Id);
                 }
 
+                // Intentar el aviso aunque falle la factura o el correo del cliente.
+                try
+                {
+                    await _emailService.SendNewOrderNotificationAsync(pedido, CurrentUser.Email, sessionData.MetodoPago);
+                }
+                catch (Exception emailEx)
+                {
+                    _logger.LogWarning(emailEx, "No se pudo avisar al propietario del nuevo pedido {PedidoId}", pedido.Id);
+                }
+
                 TempData["Success"] = sessionData.MetodoPago == "Contra Reembolso" 
                     ? "¡Pedido realizado! Pagarás al recibir tu pedido. Te hemos enviado la confirmación y factura por email." 
                     : "¡Pedido realizado y pago procesado exitosamente! Te hemos enviado la confirmación y factura por email.";

@@ -5,6 +5,8 @@ namespace AldaJoyeros.Configuration
         public string SmtpServer { get; set; } = string.Empty;
         public int SmtpPort { get; set; }
         public string SenderEmail { get; set; } = string.Empty;
+        // Si está vacío, los avisos de pedidos se envían al remitente de la tienda.
+        public string OwnerEmail { get; set; } = string.Empty;
         public string SenderName { get; set; } = string.Empty;
         public string Username { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
