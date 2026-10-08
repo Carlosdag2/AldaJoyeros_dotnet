@@ -149,33 +149,12 @@
                                     class="categoria-link group w-full text-left flex items-center justify-between text-sm uppercase tracking-widest transition-all duration-300"
                                     :class="categoriaActual === null ? 'text-emerald-900 font-bold pl-2 border-l-2 border-emerald-900' : 'text-stone-500 hover:text-stone-900 hover:pl-2 hover:border-l-2 hover:border-stone-300 border-l-2 border-transparent'">
                                 <span>Todas</span>
-                                <span class="text-xs text-stone-300 group-hover:text-emerald-900">(@(categorias?.Sum(c => c.CantidadProductos) ?? 0))</span>
+                                <span class="text-xs text-stone-300 group-hover:text-emerald-900">(@(ViewBag.TotalCatalogProducts ?? 0))</span>
                             </button>
                         </li>
                         @if (categorias != null)
                         {
-                            @foreach (var grupo in categorias.GroupBy(c => c.Grupo))
-                            {
-                                <li class="pt-3">
-                                <details open="@(grupo.Key == "Joyas" ? "open" : null)">
-                                    <summary class="cursor-pointer py-3 text-xs font-semibold text-stone-600 tracking-widest uppercase">@grupo.Key</summary>
-                                    <ul class="space-y-4 pt-2 pl-2">
-                                @foreach (var cat in grupo)
-                                {
-                                <li>
-                                    <button type="button"
-                                            @@click="filtrarCategoria(@cat.Id)"
-                                            class="categoria-link group w-full text-left flex items-center justify-between text-sm uppercase tracking-widest transition-all duration-300"
-                                            :class="categoriaActual === @cat.Id ? 'text-emerald-900 font-bold pl-2 border-l-2 border-emerald-900' : 'text-stone-500 hover:text-stone-900 hover:pl-2 hover:border-l-2 hover:border-stone-300 border-l-2 border-transparent'">
-                                        <span>@cat.Nombre</span>
-                                        <span class="text-xs text-stone-300 group-hover:text-emerald-900">(@cat.CantidadProductos)</span>
-                                    </button>
-                                </li>
-                                }
-                                    </ul>
-                                </details>
-                                </li>
-                            }
+                            <partial name="_CategoriasCatalogo" model="categorias" />
                         }
                     </ul>
 
@@ -186,7 +165,7 @@
                     </div>
                 </div>
 
-                <div x-data="{ open: false }" class="lg:hidden">
+                <div x-data="{ open: false }" x-on:catalogo-categoria-seleccionada.window="open = false" class="lg:hidden">
                     <button @@click="open = !open" class="w-full flex items-center justify-between px-6 py-4 bg-white border border-stone-200 uppercase tracking-widest text-xs font-bold">
                         <span>Filtrar por categoría</span>
                         <i class="fas fa-chevron-down transition-transform" :class="open ? 'rotate-180' : ''"></i>
@@ -195,14 +174,7 @@
                         <button type="button" @@click="filtrarCategoria(null); open = false" class="block text-sm text-stone-600 w-full text-left hover:text-emerald-900">Todas las joyas</button>
                         @if (categorias != null)
                         {
-                            @foreach (var grupo in categorias.GroupBy(c => c.Grupo))
-                            {
-                                <div class="pt-3 text-xs font-semibold uppercase tracking-widest text-stone-500">@grupo.Key</div>
-                                @foreach (var cat in grupo)
-                                {
-                                <button type="button" @@click="filtrarCategoria(@cat.Id); open = false" class="block text-sm text-stone-600 w-full text-left hover:text-emerald-900">@cat.Nombre</button>
-                                }
-                            }
+                            <ul class="space-y-2"><partial name="_CategoriasCatalogo" model="categorias" /></ul>
                         }
                     </div>
                 </div>
@@ -380,6 +352,7 @@
                 // Filtrar por categoría
                 async filtrarCategoria(categoriaId) {
                     this.categoriaActual = categoriaId;
+                    window.dispatchEvent(new CustomEvent('catalogo-categoria-seleccionada'));
                     this.busquedaActual = '';
                     window.dispatchEvent(new CustomEvent('catalogo-busqueda', { detail: '' }));
                     this.paginaActual = 1;

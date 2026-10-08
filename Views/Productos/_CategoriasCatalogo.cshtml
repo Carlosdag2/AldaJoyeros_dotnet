@@ -1,0 +1,44 @@
+@model IEnumerable<AldaJoyeros.DTOs.CategoriaDto>
+@foreach (var grupo in Model.GroupBy(c => c.Grupo))
+{
+    <li class="pt-3">
+        <details open="@(grupo.Key == "Joyas" ? "open" : null)">
+            <summary class="cursor-pointer py-3 text-xs font-semibold uppercase tracking-widest text-stone-600">@grupo.Key</summary>
+            <ul class="space-y-3 pt-2">
+                @foreach (var familia in grupo.GroupBy(c => AldaJoyeros.Catalog.CatalogTaxonomy.Family(c.Nombre)))
+                {
+                    var parent = familia.FirstOrDefault(c => c.Nombre == familia.Key);
+                    var children = familia.Where(c => c.Nombre != familia.Key).ToArray();
+                    <li>
+                        @if (children.Length > 0)
+                        {
+                            <details class="group/familia" data-category-family="@familia.Key" open="@(familia.Any(c => c.Id == (ViewBag.CategoriaSeleccionada as long?)) ? "open" : null)">
+                                <summary class="flex cursor-pointer items-center justify-between gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-stone-800 hover:bg-stone-100">
+                                    <span>@familia.Key</span><span class="inline-flex items-center gap-2 text-xs font-normal text-stone-400">@(parent?.CantidadProductos ?? children.Sum(c => c.CantidadProductos))<i class="fas fa-chevron-down text-[10px] transition-transform group-open/familia:rotate-180" aria-hidden="true"></i></span>
+                                </summary>
+                                <ul class="mt-2 space-y-1 border-l border-stone-200 pl-3 ml-3">
+                                    @if (parent != null)
+                                    {
+                                        <li><button type="button" @@click="filtrarCategoria(@parent.Id)" class="categoria-link w-full rounded-lg px-3 py-2 text-left text-sm transition-colors" :class="categoriaActual === @parent.Id ? 'bg-emerald-50 text-emerald-900 font-semibold' : 'text-stone-600 hover:bg-stone-100'">Ver todos</button></li>
+                                    }
+                                    @foreach (var cat in children)
+                                    {
+                                        <li><button type="button" @@click="filtrarCategoria(@cat.Id)" class="categoria-link flex w-full items-start justify-between gap-3 rounded-lg px-3 py-2 text-left text-sm transition-colors" :class="categoriaActual === @cat.Id ? 'bg-emerald-50 text-emerald-900 font-semibold' : 'text-stone-600 hover:bg-stone-100'">
+                                            <span>@cat.Nombre[(familia.Key.Length + 3)..]</span><span class="shrink-0 text-xs text-stone-400">@cat.CantidadProductos</span>
+                                        </button></li>
+                                    }
+                                </ul>
+                            </details>
+                        }
+                        else if (parent != null)
+                        {
+                            <button type="button" @@click="filtrarCategoria(@parent.Id)" class="categoria-link flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2 text-left text-sm transition-colors" :class="categoriaActual === @parent.Id ? 'bg-emerald-50 text-emerald-900 font-semibold' : 'text-stone-600 hover:bg-stone-100'">
+                                <span>@parent.Nombre</span><span class="text-xs text-stone-400">@parent.CantidadProductos</span>
+                            </button>
+                        }
+                    </li>
+                }
+            </ul>
+        </details>
+    </li>
+}
