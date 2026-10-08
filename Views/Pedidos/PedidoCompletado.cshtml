@@ -1,176 +1,25 @@
 @model AldaJoyeros.DTOs.PedidoDto
 @{
-    ViewData["Title"] = "¡Pedido Completado!";
-    var totalItems = Model.LineasPedido.Sum(x => x.Cantidad);
+    ViewData["Title"] = "Pedido confirmado";
+    var articulos = Model.LineasPedido.Select(x => new AldaJoyeros.DTOs.CarritoItemDto { ProductoNombre = x.ProductoNombre ?? "Producto", Producto = x.Producto, Cantidad = x.Cantidad, Precio = x.Precio, Subtotal = x.Subtotal });
 }
-
-<div class="min-h-screen bg-gray-50 py-12">
-    <div class="container mx-auto px-4 sm:px-6">
-        <div class="max-w-3xl mx-auto">
-            <!-- Success Header -->
-            <div class="text-center mb-10">
-                <div class="inline-flex items-center justify-center w-20 h-20 bg-emerald-500 rounded-full mb-6 animate-success">
-                    <i class="fas fa-check text-white text-3xl"></i>
-                </div>
-                <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
-                    ¡Gracias por tu compra!
-                </h1>
-                <p class="text-gray-500 text-lg">
-                    Tu pedido <span class="font-semibold text-gray-900">#@Model.Id</span> ha sido confirmado
-                </p>
-            </div>
-
-            <!-- Order Card -->
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
-                <!-- Order Header -->
-                <div class="px-6 py-4 bg-gray-50 border-b border-gray-100 flex flex-wrap items-center justify-between gap-4">
-                    <div>
-                        <div class="text-sm text-gray-500">Pedido realizado</div>
-                        <div class="font-medium text-gray-900">@Model.Fecha?.ToString("dd MMM yyyy, HH:mm")</div>
-                    </div>
-                    <div class="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-sm font-medium">
-                        <i class="fas fa-circle text-xs mr-1"></i>@Model.Estado
-                    </div>
-                </div>
-
-                <!-- Products -->
-                <div class="divide-y divide-gray-100">
-                    @foreach (var linea in Model.LineasPedido)
-                    {
-                        <div class="p-4 flex items-center gap-4">
-                            <div class="relative flex-shrink-0">
-                                <div class="w-16 h-16 bg-gray-100 rounded-lg overflow-hidden">
-                                    @if (linea.Producto?.TieneImagenes == true)
-                                    {
-                                        <img src="@linea.Producto.ImagenPrincipal" alt="@linea.ProductoNombre" class="w-full h-full object-cover" />
-                                    }
-                                    else
-                                    {
-                                        <div class="w-full h-full flex items-center justify-center">
-                                            <i class="fas fa-gem text-gray-300"></i>
-                                        </div>
-                                    }
-                                </div>
-                                <span class="absolute -top-1 -right-1 w-5 h-5 bg-gray-700 text-white text-xs rounded-full flex items-center justify-center">
-                                    @linea.Cantidad
-                                </span>
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <div class="font-medium text-gray-900">@linea.ProductoNombre</div>
-                                <div class="text-sm text-gray-500">@linea.Precio.ToString("C") × @linea.Cantidad</div>
-                            </div>
-                            <div class="font-bold text-gray-900">@linea.Subtotal.ToString("C")</div>
-                        </div>
-                    }
-                </div>
-
-                <!-- Total -->
-                <div class="px-6 py-4 bg-gray-50 border-t border-gray-100">
-                    <div class="flex justify-between items-center">
-                        <span class="font-medium text-gray-700">Total (@totalItems artículos)</span>
-                        <span class="text-2xl font-bold text-emerald-600">@Model.Total.ToString("C")</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Shipping & Info -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-                <!-- Shipping Address -->
+<partial name="_CompraCabecera" model='new AldaJoyeros.DTOs.CompraCabeceraViewModel(5, "Gracias por elegirnos", "Tu pedido estÃ¡ confirmado. Puedes consultar todos sus detalles desde tu cuenta.")' />
+<div class="bg-gray-50 pb-8">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
+        <section class="rounded-2xl bg-emerald-50 border border-emerald-200 p-5 sm:p-6 mb-6 flex items-start gap-4" aria-label="Pedido confirmado">
+            <span class="w-12 h-12 shrink-0 rounded-full bg-emerald-600 text-white flex items-center justify-center"><i class="fas fa-check text-lg" aria-hidden="true"></i></span>
+            <div class="min-w-0"><h2 class="text-lg font-semibold text-gray-900">Pedido #@Model.Id confirmado</h2><p class="text-sm text-emerald-800 mt-1">@Model.Fecha?.ToString("dd MMM yyyy, HH:mm")</p><p class="text-xs text-emerald-800 mt-2">Estado: @Model.Estado</p></div>
+        </section>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-start">
+            <div class="lg:col-span-2 min-w-0 space-y-5">
                 @if (Model.Direccion != null)
                 {
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-                        <div class="flex items-center gap-2 text-sm font-medium text-gray-500 mb-3">
-                            <i class="fas fa-truck text-emerald-500"></i>
-                            Dirección de envío
-                        </div>
-                        <div class="text-sm text-gray-900">
-                            <div class="font-medium">
-                                @Model.Direccion.Calle, @Model.Direccion.Numero
-                                @if (!string.IsNullOrEmpty(Model.Direccion.Piso))
-                                {
-                                    <span>- @Model.Direccion.Piso</span>
-                                }
-                            </div>
-                            <div class="text-gray-500">@Model.Direccion.CodigoPostal @Model.Direccion.Ciudad</div>
-                            <div class="text-gray-500">@Model.Direccion.Provincia</div>
-                        </div>
-                        <div class="mt-4 pt-3 border-t border-gray-100 text-sm text-gray-500">
-                            <i class="fas fa-clock text-gray-400 mr-1"></i>
-                            Entrega estimada: <span class="font-medium text-gray-700">3-5 días laborables</span>
-                        </div>
-                    </div>
+                    <section class="rounded-2xl border border-gray-200 bg-white p-5 sm:p-6"><h2 class="text-lg font-semibold text-gray-900 mb-4">DirecciÃ³n de entrega</h2><div class="flex items-start gap-3"><span class="w-10 h-10 shrink-0 flex items-center justify-center rounded-xl bg-emerald-50 text-emerald-700"><i class="fas fa-truck" aria-hidden="true"></i></span><div class="text-sm min-w-0 break-words"><p class="font-medium text-gray-900">@Model.Direccion.Calle, @Model.Direccion.Numero @if (!string.IsNullOrEmpty(Model.Direccion.Piso)) { <span>â€” @Model.Direccion.Piso</span> }</p><p class="text-gray-500 mt-1">@Model.Direccion.CodigoPostal @Model.Direccion.Ciudad, @Model.Direccion.Provincia</p>@if (Model.FechaEntregaEstimada.HasValue) { <p class="text-gray-500 mt-3">Entrega estimada: @Model.FechaEntregaEstimada.Value.ToString("dd MMM yyyy")</p> }</div></div></section>
                 }
-
-                <!-- What's Next -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-                    <div class="flex items-center gap-2 text-sm font-medium text-gray-500 mb-3">
-                        <i class="fas fa-info-circle text-emerald-500"></i>
-                        Próximos pasos
-                    </div>
-                    <ul class="space-y-3 text-sm">
-                        <li class="flex items-start gap-3">
-                            <div class="w-6 h-6 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                                <i class="fas fa-envelope text-emerald-600 text-xs"></i>
-                            </div>
-                            <span class="text-gray-600">Recibirás un email de confirmación</span>
-                        </li>
-                        <li class="flex items-start gap-3">
-                            <div class="w-6 h-6 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                                <i class="fas fa-box text-emerald-600 text-xs"></i>
-                            </div>
-                            <span class="text-gray-600">Prepararemos tu pedido con cuidado</span>
-                        </li>
-                        <li class="flex items-start gap-3">
-                            <div class="w-6 h-6 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                                <i class="fas fa-shipping-fast text-emerald-600 text-xs"></i>
-                            </div>
-                            <span class="text-gray-600">Te notificaremos cuando esté en camino</span>
-                        </li>
-                    </ul>
-                </div>
+                <section class="rounded-2xl border border-gray-200 bg-white p-5 sm:p-6"><h2 class="text-lg font-semibold text-gray-900 mb-3">Â¿QuÃ© ocurre ahora?</h2><p class="text-sm leading-relaxed text-gray-500">Prepararemos tu pedido. Desde Â«Mis pedidosÂ» puedes consultar su estado y volver a revisar los artÃ­culos y los datos de entrega.</p><div class="flex flex-col sm:flex-row gap-3 mt-5"><a asp-action="Detalle" asp-route-id="@Model.Id" class="inline-flex items-center justify-center gap-2 px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl"><i class="fas fa-receipt" aria-hidden="true"></i>Ver mi pedido</a><a asp-action="Index" class="inline-flex items-center justify-center px-5 py-3 border border-gray-200 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50">Mis pedidos</a></div></section>
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-4 py-2"><a asp-controller="Productos" asp-action="Index" class="text-sm font-medium text-gray-600 hover:text-emerald-700"><i class="fas fa-arrow-left mr-2" aria-hidden="true"></i>Seguir comprando</a><a href="tel:+34925541227" class="text-sm text-emerald-700 hover:underline">Â¿Necesitas ayuda? LlÃ¡manos</a></div>
             </div>
-
-            <!-- Actions -->
-            <div class="flex flex-col sm:flex-row justify-center gap-3">
-                <a asp-action="Detalle" asp-route-id="@Model.Id" 
-                   class="inline-flex items-center justify-center gap-2 px-6 py-3 border border-gray-200 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-colors">
-                    <i class="fas fa-receipt"></i>
-                    <span>Ver pedido</span>
-                </a>
-                <a asp-action="Index" 
-                   class="inline-flex items-center justify-center gap-2 px-6 py-3 border border-gray-200 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-colors">
-                    <i class="fas fa-list"></i>
-                    <span>Mis pedidos</span>
-                </a>
-                <a asp-controller="Productos" asp-action="Index" 
-                   class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-medium transition-colors shadow-lg shadow-emerald-500/20">
-                    <i class="fas fa-shopping-bag"></i>
-                    <span>Seguir comprando</span>
-                </a>
-            </div>
-
-            <!-- Help -->
-            <div class="mt-10 text-center">
-                <p class="text-gray-500 text-sm">
-                    ¿Tienes alguna pregunta? 
-                    <a href="tel:+34925541227" class="text-emerald-600 hover:text-emerald-700 font-medium">
-                        Contáctanos
-                    </a>
-                </p>
-            </div>
+            <aside aria-label="Resumen del pedido" class="min-w-0 lg:sticky lg:top-24"><partial name="_CompraResumen" model='new AldaJoyeros.DTOs.CompraResumenViewModel(articulos, (decimal)Model.Total, "ArtÃ­culos e importe de tu pedido confirmado.")' /></aside>
         </div>
     </div>
 </div>
-
-@section Styles {
-    <style>
-        @@keyframes success-pop {
-            0% { transform: scale(0); opacity: 0; }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1); opacity: 1; }
-        }
-        .animate-success {
-            animation: success-pop 0.5s ease-out forwards;
-        }
-    </style>
-}

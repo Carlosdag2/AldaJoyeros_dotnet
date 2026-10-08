@@ -1,0 +1,30 @@
+@model AldaJoyeros.DTOs.CompraCabeceraViewModel
+@{ var pasos = new[] { "Carrito", "Dirección", "Pago", "Confirmación" }; }
+<div class="bg-gray-900 text-white">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
+        <nav aria-label="Ruta de navegación" class="flex items-center gap-2 text-xs text-gray-400 mb-4">
+            <a asp-controller="Productos" asp-action="Index" class="hover:text-white">Catálogo</a>
+            <i class="fas fa-chevron-right text-[10px]" aria-hidden="true"></i>
+            <span class="text-emerald-300">@(Model.Paso == 1 ? "Tu carrito" : "Finalizar compra")</span>
+        </nav>
+        <p class="text-emerald-300 text-xs font-semibold tracking-widest uppercase mb-2">Alda Joyeros · Desde 1962</p>
+        <h1 class="font-serif text-3xl sm:text-4xl">@Model.Titulo</h1>
+        <p class="text-gray-300 text-sm mt-3 max-w-xl">@Model.Descripcion</p>
+    </div>
+</div>
+<div class="bg-white border-b border-gray-200">
+    <ol aria-label="Pasos de compra" class="max-w-6xl mx-auto grid grid-cols-4 gap-2 px-4 sm:px-6 py-5">
+        @for (var index = 0; index < pasos.Length; index++)
+        {
+            var activo = Model.Paso == index + 1;
+            var completo = Model.Paso > index + 1;
+            <li aria-current="@(activo ? "step" : null)" class="flex flex-col sm:flex-row items-center sm:justify-center gap-2 text-[11px] sm:text-sm @(activo ? "font-semibold text-gray-900" : completo ? "text-emerald-700" : "text-gray-500")">
+                <span class="w-7 h-7 sm:w-8 sm:h-8 shrink-0 rounded-full flex items-center justify-center @(activo ? "bg-emerald-600 text-white" : completo ? "bg-emerald-100 text-emerald-700" : "bg-gray-100 text-gray-500")">
+                    @if (completo) { <i class="fas fa-check" aria-hidden="true"></i><span class="sr-only">Completado:</span> }
+                    else { @(index + 1) }
+                </span>
+                <span>@pasos[index]</span>
+            </li>
+        }
+    </ol>
+</div>

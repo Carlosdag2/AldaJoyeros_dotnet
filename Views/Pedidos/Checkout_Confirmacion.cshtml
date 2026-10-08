@@ -1,219 +1,27 @@
 @model AldaJoyeros.DTOs.CheckoutConfirmacionViewModel
-@{
-    ViewData["Title"] = "Checkout - Confirmación";
-    var totalItems = Model.CarritoItems.Sum(x => x.Cantidad);
-}
-
-<!-- Header -->
-<div class="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 py-10">
-    <div class="container mx-auto px-4 sm:px-6">
-        <nav class="flex items-center gap-2 text-sm text-gray-400 mb-4">
-            <a asp-controller="Home" asp-action="Index" class="hover:text-white transition-colors">
-                <i class="fas fa-home"></i>
-            </a>
-            <i class="fas fa-chevron-right text-xs text-gray-600"></i>
-            <a asp-controller="Carrito" asp-action="Index" class="hover:text-white transition-colors">Carrito</a>
-            <i class="fas fa-chevron-right text-xs text-gray-600"></i>
-            <span class="text-emerald-400">Confirmación</span>
-        </nav>
-        <h1 class="text-3xl font-bold text-white">Revisar pedido</h1>
-    </div>
-</div>
-
-<!-- Progress Steps -->
-<div class="bg-white border-b border-gray-100 sticky top-16 z-40">
-    <div class="container mx-auto px-4 sm:px-6 py-4">
-        <div class="flex items-center justify-center gap-4 md:gap-8">
-            <!-- Step 1 - Completed -->
-            <div class="flex items-center gap-2">
-                <div class="w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center text-white text-sm">
-                    <i class="fas fa-check"></i>
-                </div>
-                <span class="hidden sm:block text-sm font-medium text-emerald-600">Dirección</span>
+@{ ViewData["Title"] = "Confirma tu pedido"; }
+<partial name="_CompraCabecera" model='new AldaJoyeros.DTOs.CompraCabeceraViewModel(4, "Todo listo para tu pedido", "Comprueba la direcciÃ³n, los artÃ­culos y el mÃ©todo de pago antes de confirmar.")' />
+<div class="bg-gray-50 pb-8">
+    <form asp-action="FinalizarPedido" method="post" class="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="All" role="alert" class="text-sm text-red-700 mb-4"></div>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-start">
+            <div class="lg:col-span-2 min-w-0 space-y-5">
+                <section class="rounded-2xl border border-gray-200 bg-white p-5 sm:p-6">
+                    <div class="flex items-center justify-between gap-3 mb-4"><h2 class="text-lg font-semibold text-gray-900">DirecciÃ³n de entrega</h2><a asp-action="Checkout" class="text-sm font-semibold text-emerald-700 hover:underline">Editar</a></div>
+                    <div class="flex items-start gap-3"><span class="w-10 h-10 shrink-0 flex items-center justify-center rounded-xl bg-emerald-50 text-emerald-700"><i class="fas fa-map-marker-alt" aria-hidden="true"></i></span><div class="text-sm min-w-0 break-words"><p class="font-medium text-gray-900">@Model.Direccion.Calle, @Model.Direccion.Numero @if (!string.IsNullOrEmpty(Model.Direccion.Piso)) { <span>â€” @Model.Direccion.Piso</span> }</p><p class="text-gray-500 mt-1">@Model.Direccion.CodigoPostal @Model.Direccion.Ciudad, @Model.Direccion.Provincia</p></div></div>
+                </section>
+                <section class="rounded-2xl border border-gray-200 bg-white p-5 sm:p-6">
+                    <div class="flex items-center justify-between gap-3 mb-4"><h2 class="text-lg font-semibold text-gray-900">MÃ©todo de pago</h2><a asp-action="CheckoutPago" class="text-sm font-semibold text-emerald-700 hover:underline">Cambiar</a></div>
+                    <div class="flex items-start gap-3"><span class="w-10 h-10 shrink-0 flex items-center justify-center rounded-xl bg-emerald-50 text-emerald-700"><i class="fas @(Model.PagoConTarjeta ? "fa-credit-card" : "fa-money-bill-wave")" aria-hidden="true"></i></span><div class="text-sm"><p class="font-medium text-gray-900">@Model.MetodoPagoDisplay</p>@if (Model.PagoConTarjeta) { <p class="text-emerald-700 mt-1"><i class="fas fa-check-circle mr-1" aria-hidden="true"></i>Pago confirmado con Stripe</p><p class="text-gray-500 text-xs mt-2">Confirmar el pedido no volverÃ¡ a cobrar tu tarjeta.</p> } else { <p class="text-gray-500 mt-1">PagarÃ¡s al recibir el pedido.</p> }</div></div>
+                </section>
+                <section class="rounded-2xl border border-gray-200 bg-white p-5 sm:p-6"><h2 class="font-semibold text-gray-900 mb-3">Ãšltima comprobaciÃ³n</h2><p class="text-sm leading-relaxed text-gray-500">Revisa la informaciÃ³n de entrega y tu selecciÃ³n. Al confirmar se registrarÃ¡ tu pedido y podrÃ¡s consultar sus detalles desde tu cuenta.</p></section>
             </div>
-            <div class="w-8 md:w-16 h-0.5 bg-emerald-500"></div>
-            <!-- Step 2 - Completed -->
-            <div class="flex items-center gap-2">
-                <div class="w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center text-white text-sm">
-                    <i class="fas fa-check"></i>
-                </div>
-                <span class="hidden sm:block text-sm font-medium text-emerald-600">Pago</span>
-            </div>
-            <div class="w-8 md:w-16 h-0.5 bg-emerald-500"></div>
-            <!-- Step 3 - Active -->
-            <div class="flex items-center gap-2">
-                <div class="w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center text-white text-sm font-bold">3</div>
-                <span class="hidden sm:block text-sm font-medium text-emerald-600">Confirmación</span>
-            </div>
+            <aside aria-label="Resumen del pedido" class="min-w-0 lg:sticky lg:top-24 space-y-4">
+                <partial name="_CompraResumen" model="new AldaJoyeros.DTOs.CompraResumenViewModel(Model.CarritoItems, Model.Total)" />
+                <button type="submit" class="w-full inline-flex items-center justify-center gap-3 px-5 py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600"><i class="fas fa-check" aria-hidden="true"></i>Confirmar pedido</button>
+                <a asp-action="CheckoutPago" class="block text-center py-2 text-sm font-medium text-gray-500 hover:text-gray-900"><i class="fas fa-arrow-left mr-2" aria-hidden="true"></i>Volver al pago</a>
+            </aside>
         </div>
-    </div>
-</div>
-
-<div class="bg-gray-50 min-h-screen py-8">
-    <div class="container mx-auto px-4 sm:px-6">
-        <div class="max-w-4xl mx-auto">
-            <form asp-action="FinalizarPedido" method="post">
-                @Html.AntiForgeryToken()
-
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <!-- Main Content -->
-                    <div class="lg:col-span-2 space-y-6">
-                        <!-- Productos -->
-                        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                            <div class="px-6 py-4 border-b border-gray-100">
-                                <h2 class="font-bold text-gray-900 flex items-center gap-2">
-                                    <i class="fas fa-shopping-bag text-emerald-500"></i>
-                                    Productos (@totalItems)
-                                </h2>
-                            </div>
-                            <div class="divide-y divide-gray-100">
-                                @foreach (var item in Model.CarritoItems)
-                                {
-                                    <div class="p-4 flex items-center gap-4">
-                                        <div class="relative flex-shrink-0">
-                                            <div class="w-16 h-16 bg-gray-100 rounded-lg overflow-hidden">
-                                                @if (item.Producto?.TieneImagenes == true)
-                                                {
-                                                    <img src="@item.Producto.ImagenPrincipal" alt="@item.ProductoNombre" class="w-full h-full object-cover" />
-                                                }
-                                                else
-                                                {
-                                                    <div class="w-full h-full flex items-center justify-center">
-                                                        <i class="fas fa-gem text-gray-300"></i>
-                                                    </div>
-                                                }
-                                            </div>
-                                            <span class="absolute -top-1 -right-1 w-5 h-5 bg-gray-700 text-white text-xs rounded-full flex items-center justify-center">
-                                                @item.Cantidad
-                                            </span>
-                                        </div>
-                                        <div class="flex-1 min-w-0">
-                                            <div class="font-medium text-gray-900">@item.ProductoNombre</div>
-                                            <div class="text-sm text-gray-500">@item.Precio.ToString("C") × @item.Cantidad</div>
-                                        </div>
-                                        <div class="text-right">
-                                            <div class="font-bold text-gray-900">@item.Subtotal.ToString("C")</div>
-                                        </div>
-                                    </div>
-                                }
-                            </div>
-                        </div>
-
-                        <!-- Dirección y Pago -->
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <!-- Dirección -->
-                            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-                                <div class="flex items-center justify-between mb-3">
-                                    <div class="flex items-center gap-2 text-sm font-medium text-gray-500">
-                                        <i class="fas fa-map-marker-alt text-emerald-500"></i>
-                                        Envío
-                                    </div>
-                                    <a asp-action="Checkout" class="text-emerald-600 hover:text-emerald-700 text-xs font-medium">
-                                        Editar
-                                    </a>
-                                </div>
-                                <div class="text-sm">
-                                    <div class="font-medium text-gray-900">
-                                        @Model.Direccion.Calle, @Model.Direccion.Numero
-                                        @if (!string.IsNullOrEmpty(Model.Direccion.Piso))
-                                        {
-                                            <span>- @Model.Direccion.Piso</span>
-                                        }
-                                    </div>
-                                    <div class="text-gray-500">@Model.Direccion.CodigoPostal @Model.Direccion.Ciudad</div>
-                                    <div class="text-gray-500">@Model.Direccion.Provincia</div>
-                                </div>
-                            </div>
-
-                            <!-- Método de Pago -->
-                            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-                                <div class="flex items-center justify-between mb-3">
-                                    <div class="flex items-center gap-2 text-sm font-medium text-gray-500">
-                                        <i class="fas fa-credit-card text-emerald-500"></i>
-                                        Pago
-                                    </div>
-                                    <a asp-action="CheckoutPago" class="text-emerald-600 hover:text-emerald-700 text-xs font-medium">
-                                        Cambiar
-                                    </a>
-                                </div>
-                                <div class="flex items-center gap-3">
-                                    @if (Model.PagoConTarjeta)
-                                    {
-                                        <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                                            <i class="fab fa-stripe-s text-white"></i>
-                                        </div>
-                                        <div>
-                                            <div class="font-medium text-gray-900 text-sm">Tarjeta</div>
-                                            <div class="text-xs text-emerald-600">
-                                                <i class="fas fa-check-circle mr-1"></i>Confirmado
-                                            </div>
-                                        </div>
-                                    }
-                                    else
-                                    {
-                                        <div class="w-10 h-10 bg-emerald-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                                            <i class="fas fa-money-bill-wave text-white"></i>
-                                        </div>
-                                        <div>
-                                            <div class="font-medium text-gray-900 text-sm">Contra reembolso</div>
-                                            <div class="text-xs text-gray-500">Pago al recibir</div>
-                                        </div>
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Sidebar - Resumen -->
-                    <div class="lg:col-span-1">
-                        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden sticky top-36">
-                            <div class="px-6 py-4 border-b border-gray-100">
-                                <h3 class="font-bold text-gray-900">Resumen</h3>
-                            </div>
-
-                            <div class="p-6 space-y-4">
-                                <div class="flex justify-between text-sm">
-                                    <span class="text-gray-500">Subtotal (@totalItems artículos)</span>
-                                    <span class="font-medium">@Model.Total.ToString("C")</span>
-                                </div>
-
-                                <div class="pt-4 border-t border-gray-100 flex justify-between">
-                                    <span class="font-bold text-gray-900">Total</span>
-                                    <span class="text-2xl font-bold text-emerald-600">@Model.Total.ToString("C")</span>
-                                </div>
-
-                                <button type="submit" 
-                                        class="w-full mt-4 inline-flex items-center justify-center gap-2 px-6 py-4 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl transition-all shadow-lg shadow-emerald-500/20">
-                                    <i class="fas fa-check-circle"></i>
-                                    <span>Confirmar pedido</span>
-                                </button>
-
-                                <a asp-action="CheckoutPago" 
-                                   class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 text-gray-600 hover:text-gray-900 font-medium transition-colors text-sm">
-                                    <i class="fas fa-arrow-left"></i>
-                                    <span>Volver</span>
-                                </a>
-                            </div>
-
-                            <!-- Beneficios -->
-                            <div class="px-6 pb-6 pt-2 space-y-3">
-                                <div class="flex items-center gap-3 text-sm text-gray-600">
-                                    <i class="fas fa-truck text-emerald-500"></i>
-                                    <span>Envío en 3-5 días laborables</span>
-                                </div>
-                                <div class="flex items-center gap-3 text-sm text-gray-600">
-                                    <i class="fas fa-undo text-emerald-500"></i>
-                                    <span>30 días de devolución</span>
-                                </div>
-                                <div class="flex items-center gap-3 text-sm text-gray-600">
-                                    <i class="fas fa-gift text-emerald-500"></i>
-                                    <span>Empaquetado premium</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
+    </form>
 </div>

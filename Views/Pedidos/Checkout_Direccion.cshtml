@@ -1,65 +1,26 @@
 @model AldaJoyeros.DTOs.CheckoutDireccionViewModel
 @{
-    ViewData["Title"] = "Checkout - Dirección";
+    ViewData["Title"] = "Checkout - DirecciÃ³n";
     var direccionesGuardadas = Model.DireccionesGuardadas.ToList();
     var tieneDirecciones = direccionesGuardadas.Any();
     var totalItems = Model.CarritoItems.Sum(x => x.Cantidad);
 }
 
-<!-- Header -->
-<div class="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 py-10">
-    <div class="container mx-auto px-4 sm:px-6">
-        <nav class="flex items-center gap-2 text-sm text-gray-400 mb-4">
-            <a asp-controller="Home" asp-action="Index" class="hover:text-white transition-colors">
-                <i class="fas fa-home"></i>
-            </a>
-            <i class="fas fa-chevron-right text-xs text-gray-600"></i>
-            <a asp-controller="Carrito" asp-action="Index" class="hover:text-white transition-colors">Carrito</a>
-            <i class="fas fa-chevron-right text-xs text-gray-600"></i>
-            <span class="text-emerald-400">Checkout</span>
-        </nav>
-        <h1 class="text-3xl font-bold text-white">Finalizar compra</h1>
-    </div>
-</div>
-
-<!-- Progress Steps -->
-<div class="bg-white border-b border-gray-100 sticky top-16 z-40">
-    <div class="container mx-auto px-4 sm:px-6 py-4">
-        <div class="flex items-center justify-center gap-4 md:gap-8">
-            <!-- Step 1 -->
-            <div class="flex items-center gap-2">
-                <div class="w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center text-white text-sm font-bold">1</div>
-                <span class="hidden sm:block text-sm font-medium text-emerald-600">Dirección</span>
-            </div>
-            <div class="w-8 md:w-16 h-0.5 bg-gray-200"></div>
-            <!-- Step 2 -->
-            <div class="flex items-center gap-2">
-                <div class="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center text-gray-400 text-sm font-bold">2</div>
-                <span class="hidden sm:block text-sm font-medium text-gray-400">Pago</span>
-            </div>
-            <div class="w-8 md:w-16 h-0.5 bg-gray-200"></div>
-            <!-- Step 3 -->
-            <div class="flex items-center gap-2">
-                <div class="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center text-gray-400 text-sm font-bold">3</div>
-                <span class="hidden sm:block text-sm font-medium text-gray-400">Confirmación</span>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="bg-gray-50 min-h-screen py-8">
-    <div class="container mx-auto px-4 sm:px-6">
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+<partial name="_CompraCabecera" model='new AldaJoyeros.DTOs.CompraCabeceraViewModel(2, "Â¿DÃ³nde lo enviamos?", "Elige una direcciÃ³n guardada o completa los datos de entrega.")' />
+<div class="bg-gray-50 pb-8 py-6 sm:py-10">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-start">
             <!-- Formulario -->
-            <div class="lg:col-span-2">
+            <div class="lg:col-span-2 min-w-0">
                 <form asp-action="GuardarDireccion" method="post" class="space-y-6" id="direccionForm">
                     @Html.AntiForgeryToken()
+                    <div asp-validation-summary="All" role="alert" class="text-sm text-red-700"></div>
 
                     @if (tieneDirecciones)
                     {
                         <!-- Direcciones Guardadas -->
-                        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                            <div class="px-6 py-4 border-b border-gray-100">
+                        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                            <div class="px-4 sm:px-6 py-5 border-b border-gray-100">
                                 <h2 class="font-bold text-gray-900 flex items-center gap-2">
                                     <i class="fas fa-bookmark text-emerald-500"></i>
                                     Direcciones guardadas
@@ -69,10 +30,10 @@
                                 @foreach (var dir in direccionesGuardadas)
                                 {
                                     <label class="direccion-option flex items-start gap-4 p-4 border-2 border-gray-100 rounded-xl cursor-pointer transition-all hover:border-emerald-300 hover:bg-emerald-50/50">
-                                        <input type="radio" name="DireccionSeleccionadaId" value="@dir.Id" 
-                                               class="mt-1 w-5 h-5 text-emerald-500 border-gray-300 focus:ring-emerald-500" 
+                                        <input type="radio" name="DireccionSeleccionadaId" value="@dir.Id"
+                                               class="mt-1 w-5 h-5 text-emerald-500 border-gray-300 focus:ring-emerald-500"
                                                onclick="seleccionarDireccionGuardada(this)" />
-                                        <div class="flex-1">
+                                        <div class="flex-1 min-w-0 break-words">
                                             <div class="font-medium text-gray-900">
                                                 @dir.Calle, @dir.Numero
                                                 @if (!string.IsNullOrEmpty(dir.Piso))
@@ -89,21 +50,21 @@
                                 }
                             </div>
                             <div class="px-4 pb-4">
-                                <button type="button" onclick="mostrarFormularioNueva()" 
+                                <button type="button" onclick="mostrarFormularioNueva()"
                                         class="w-full flex items-center justify-center gap-2 p-3 border-2 border-dashed border-gray-200 rounded-xl text-gray-500 hover:border-emerald-400 hover:text-emerald-600 hover:bg-emerald-50 transition-all">
                                     <i class="fas fa-plus"></i>
-                                    <span>Usar otra dirección</span>
+                                    <span>Usar otra direcciÃ³n</span>
                                 </button>
                             </div>
                         </div>
                     }
 
-                    <!-- Nueva Dirección -->
-                    <div id="nueva-direccion-form" class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden @(tieneDirecciones ? "hidden" : "")">
-                        <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+                    <!-- Nueva DirecciÃ³n -->
+                    <div id="nueva-direccion-form" class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden @(tieneDirecciones ? "hidden" : "")">
+                        <div class="px-4 sm:px-6 py-5 border-b border-gray-100 flex items-center justify-between">
                             <h2 class="font-bold text-gray-900 flex items-center gap-2">
                                 <i class="fas fa-map-marker-alt text-emerald-500"></i>
-                                @(tieneDirecciones ? "Nueva dirección" : "Dirección de envío")
+                                @(tieneDirecciones ? "Nueva direcciÃ³n" : "DirecciÃ³n de envÃ­o")
                             </h2>
                             @if (tieneDirecciones)
                             {
@@ -112,49 +73,49 @@
                                 </button>
                             }
                         </div>
-                        
+
                         <input type="hidden" name="UsarNuevaDireccion" value="@(!tieneDirecciones ? "true" : "false")" id="usar-nueva-hidden" />
 
-                        <div class="p-6 space-y-4">
-                            <!-- Calle y Número -->
+                        <div class="p-4 sm:p-6 space-y-5"><p class="text-xs text-gray-500">Los campos con * son obligatorios.</p>
+                            <!-- Calle y NÃºmero -->
                             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                                 <div class="md:col-span-3">
-                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Calle *</label>
-                                    <input asp-for="NuevaDireccion.Calle" 
-                                           class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all outline-none" 
+                                    <label asp-for="NuevaDireccion.Calle" class="block text-sm font-medium text-gray-700 mb-1.5">Calle *</label>
+                                    <input asp-for="NuevaDireccion.Calle" autocomplete="address-line1"
+                                           class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all outline-none"
                                            placeholder="Nombre de la calle" />
                                     <span asp-validation-for="NuevaDireccion.Calle" class="text-red-500 text-sm"></span>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Número *</label>
-                                    <input asp-for="NuevaDireccion.Numero" 
-                                           class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all outline-none" 
-                                           placeholder="Nº" />
+                                    <label asp-for="NuevaDireccion.Numero" class="block text-sm font-medium text-gray-700 mb-1.5">NÃºmero *</label>
+                                    <input asp-for="NuevaDireccion.Numero"
+                                           class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all outline-none"
+                                           placeholder="NÂº" />
                                     <span asp-validation-for="NuevaDireccion.Numero" class="text-red-500 text-sm"></span>
                                 </div>
                             </div>
 
                             <!-- Piso -->
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1.5">Piso / Puerta <span class="text-gray-400">(opcional)</span></label>
-                                <input asp-for="NuevaDireccion.Piso" 
-                                       class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all outline-none" 
-                                       placeholder="Ej: 2º A" />
+                                <label asp-for="NuevaDireccion.Piso" class="block text-sm font-medium text-gray-700 mb-1.5">Piso / Puerta <span class="text-gray-400">(opcional)</span></label>
+                                <input asp-for="NuevaDireccion.Piso"
+                                       class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all outline-none"
+                                       placeholder="Ej: 2Âº A" />
                             </div>
 
                             <!-- CP, Provincia, Ciudad -->
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1.5">
-                                        Código Postal *
+                                        CÃ³digo Postal *
                                         <span id="cp-loading" class="hidden ml-2">
                                             <i class="fas fa-spinner fa-spin text-emerald-500"></i>
                                         </span>
                                     </label>
                                     <div class="relative">
-                                        <input asp-for="NuevaDireccion.CodigoPostal" 
-                                               id="codigoPostalInput"
-                                               class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all outline-none" 
+                                        <input asp-for="NuevaDireccion.CodigoPostal"
+                                               id="codigoPostalInput" inputmode="numeric" autocomplete="postal-code"
+                                               class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all outline-none"
                                                placeholder="28001"
                                                maxlength="5"
                                                pattern="[0-9]{5}" />
@@ -163,14 +124,14 @@
                                         </div>
                                     </div>
                                     <span asp-validation-for="NuevaDireccion.CodigoPostal" class="text-red-500 text-sm"></span>
-                                    <p id="cp-hint" class="text-xs text-gray-400 mt-1">Al introducir el CP se rellenará automáticamente la provincia y ciudad</p>
+                                    <p id="cp-hint" class="text-xs text-gray-400 mt-1">Al introducir el CP se rellenarÃ¡ automÃ¡ticamente la provincia y ciudad</p>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Provincia *</label>
+                                    <label for="provinciaSelect" class="block text-sm font-medium text-gray-700 mb-1.5">Provincia *</label>
                                     <div class="relative">
-                                        <select name="NuevaDireccion.Provincia" 
+                                        <select name="NuevaDireccion.Provincia"
                                                 id="provinciaSelect"
-                                                class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all outline-none appearance-none bg-white cursor-pointer">
+                                                class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all outline-none appearance-none bg-white cursor-pointer">
                                             <option value="">Selecciona provincia</option>
                                         </select>
                                         <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
@@ -180,11 +141,11 @@
                                     <span id="provincia-error" class="text-red-500 text-sm hidden">La provincia es obligatoria</span>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Ciudad *</label>
+                                    <label for="ciudadSelect" class="block text-sm font-medium text-gray-700 mb-1.5">Ciudad *</label>
                                     <div class="relative">
-                                        <select name="NuevaDireccion.Ciudad" 
+                                        <select name="NuevaDireccion.Ciudad"
                                                 id="ciudadSelect"
-                                                class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all outline-none appearance-none bg-white cursor-pointer"
+                                                class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all outline-none appearance-none bg-white cursor-pointer"
                                                 disabled>
                                             <option value="">Primero selecciona provincia</option>
                                         </select>
@@ -205,19 +166,19 @@
                                     <i class="fas fa-edit text-emerald-500 mr-1"></i>
                                     Escribe tu ciudad
                                 </label>
-                                <input type="text" 
+                                <input type="text"
                                        id="ciudadCustomInput"
-                                       class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all outline-none" 
+                                       class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all outline-none"
                                        placeholder="Nombre de tu ciudad o localidad" />
                             </div>
 
-                            <!-- Guardar dirección -->
+                            <!-- Guardar direcciÃ³n -->
                             <div class="pt-2">
                                 <label class="flex items-center gap-3 cursor-pointer">
-                                    <input type="checkbox" name="GuardarDireccion" value="true" 
+                                    <input type="checkbox" name="GuardarDireccion" value="true"
                                            class="w-5 h-5 text-emerald-500 border-gray-300 rounded focus:ring-emerald-500" />
                                     <div>
-                                        <span class="font-medium text-gray-900">Guardar esta dirección</span>
+                                        <span class="font-medium text-gray-900">Guardar esta direcciÃ³n</span>
                                         <p class="text-sm text-gray-500">Para futuras compras</p>
                                     </div>
                                 </label>
@@ -226,14 +187,14 @@
                     </div>
 
                     <!-- Botones -->
-                    <div class="flex flex-col sm:flex-row justify-between gap-4">
-                        <a asp-controller="Carrito" asp-action="Index" 
+                    <div class="flex flex-col-reverse sm:flex-row justify-between gap-4">
+                        <a asp-controller="Carrito" asp-action="Index"
                            class="inline-flex items-center justify-center gap-2 px-6 py-3 text-gray-600 hover:text-gray-900 font-medium transition-colors">
                             <i class="fas fa-arrow-left"></i>
                             <span>Volver al carrito</span>
                         </a>
-                        <button type="submit" 
-                                class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl transition-all shadow-lg shadow-emerald-500/20">
+                        <button type="submit"
+                                class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl transition-colors">
                             <span>Continuar al pago</span>
                             <i class="fas fa-arrow-right"></i>
                         </button>
@@ -241,69 +202,12 @@
                 </form>
             </div>
 
-            <!-- Resumen -->
-            <div class="lg:col-span-1">
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden sticky top-36">
-                    <div class="px-6 py-4 border-b border-gray-100">
-                        <h3 class="font-bold text-gray-900">Resumen del pedido</h3>
-                    </div>
-
-                    <!-- Items -->
-                    <div class="p-4 space-y-3 max-h-64 overflow-y-auto">
-                        @foreach (var item in Model.CarritoItems)
-                        {
-                            <div class="flex items-center gap-3">
-                                <div class="relative flex-shrink-0">
-                                    <div class="w-14 h-14 bg-gray-100 rounded-lg overflow-hidden">
-                                        @if (item.Producto?.TieneImagenes == true)
-                                        {
-                                            <img src="@item.Producto.ImagenPrincipal" alt="@item.ProductoNombre" class="w-full h-full object-cover" />
-                                        }
-                                        else
-                                        {
-                                            <div class="w-full h-full flex items-center justify-center">
-                                                <i class="fas fa-gem text-gray-300"></i>
-                                            </div>
-                                        }
-                                    </div>
-                                    <span class="absolute -top-1 -right-1 w-5 h-5 bg-gray-700 text-white text-xs rounded-full flex items-center justify-center">
-                                        @item.Cantidad
-                                    </span>
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <div class="text-sm font-medium text-gray-900 truncate">@item.ProductoNombre</div>
-                                    <div class="text-sm text-gray-500">@item.Precio.ToString("C")</div>
-                                </div>
-                                <div class="text-sm font-bold text-gray-900">@item.Subtotal.ToString("C")</div>
-                            </div>
-                        }
-                    </div>
-
-                    <!-- Totales -->
-                    <div class="p-6 border-t border-gray-100 space-y-3">
-                        <div class="flex justify-between text-sm">
-                            <span class="text-gray-500">Subtotal (@totalItems artículos)</span>
-                            <span class="font-medium">@Model.Total.ToString("C")</span>
-                        </div>
-                        <div class="flex justify-between pt-3 border-t border-gray-100">
-                            <span class="font-bold text-gray-900">Total</span>
-                            <span class="text-xl font-bold text-emerald-600">@Model.Total.ToString("C")</span>
-                        </div>
-                    </div>
-
-                    <!-- Security badges -->
-                    <div class="px-6 pb-6">
-                        <div class="flex items-center gap-2 text-xs text-gray-500">
-                            <i class="fas fa-lock text-emerald-500"></i>
-                            <span>Pago seguro garantizado</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <aside aria-label="Resumen del pedido" class="min-w-0 lg:sticky lg:top-24">
+                <partial name="_CompraResumen" model="new AldaJoyeros.DTOs.CompraResumenViewModel(Model.CarritoItems, Model.Total)" />
+            </aside>
         </div>
     </div>
 </div>
-
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>
@@ -312,7 +216,7 @@
         let ciudadesCache = {};
         let debounceTimer;
 
-        // Inicialización
+        // InicializaciÃ³n
         document.addEventListener('DOMContentLoaded', async function() {
             await cargarProvincias();
             setupEventListeners();
@@ -336,9 +240,9 @@
         function poblarSelectProvincias() {
             const select = document.getElementById('provinciaSelect');
             const currentValue = select.value;
-            
+
             select.innerHTML = '<option value="">Selecciona provincia</option>';
-            
+
             provinciasData.forEach(prov => {
                 const option = document.createElement('option');
                 option.value = prov.nombre;
@@ -353,14 +257,14 @@
         // Cargar ciudades por provincia
         async function cargarCiudades(provincia) {
             const select = document.getElementById('ciudadSelect');
-            
+
             if (!provincia) {
                 select.innerHTML = '<option value="">Primero selecciona provincia</option>';
                 select.disabled = true;
                 return;
             }
 
-            // Verificar caché
+            // Verificar cachÃ©
             if (ciudadesCache[provincia]) {
                 poblarSelectCiudades(ciudadesCache[provincia], provincia);
                 return;
@@ -386,9 +290,9 @@
         function poblarSelectCiudades(ciudades, provincia) {
             const select = document.getElementById('ciudadSelect');
             const currentValue = select.value || select.getAttribute('data-pending-value');
-            
+
             select.innerHTML = '<option value="">Selecciona ciudad</option>';
-            
+
             ciudades.forEach(ciudad => {
                 const option = document.createElement('option');
                 option.value = ciudad;
@@ -399,7 +303,7 @@
                 select.appendChild(option);
             });
 
-            // Añadir opción "Otra"
+            // AÃ±adir opciÃ³n "Otra"
             const otraOption = document.createElement('option');
             otraOption.value = "__otra__";
             otraOption.textContent = "?? Otra ciudad (escribir)";
@@ -407,22 +311,22 @@
 
             select.disabled = false;
             select.removeAttribute('data-pending-value');
-            
+
             document.getElementById('ciudad-otra-hint').classList.remove('hidden');
-            
+
             // Limpiar error si hay valor
             if (select.value && select.value !== '__otra__') {
                 clearFieldError('ciudad');
             }
         }
 
-        // Buscar por código postal
+        // Buscar por cÃ³digo postal
         async function buscarPorCodigoPostal(cp) {
             if (cp.length !== 5) return;
 
             const loading = document.getElementById('cp-loading');
             const check = document.getElementById('cp-check');
-            
+
             loading.classList.remove('hidden');
             check.classList.add('hidden');
 
@@ -430,30 +334,30 @@
                 const response = await fetch(`/api/ubicacion/codigopostal/${cp}`);
                 if (response.ok) {
                     const data = await response.json();
-                    
+
                     // Establecer provincia
                     const provinciaSelect = document.getElementById('provinciaSelect');
                     provinciaSelect.value = data.provincia;
                     clearFieldError('provincia');
-                    
+
                     // Cargar ciudades y establecer la ciudad
                     const ciudadSelect = document.getElementById('ciudadSelect');
                     ciudadSelect.setAttribute('data-pending-value', data.ciudad);
                     await cargarCiudades(data.provincia);
-                    
-                    // Si la ciudad no está en la lista, mostrar input personalizado
+
+                    // Si la ciudad no estÃ¡ en la lista, mostrar input personalizado
                     if (ciudadSelect.value !== data.ciudad) {
                         ciudadSelect.value = data.ciudad;
                         if (!ciudadSelect.value) {
-                            // La ciudad no está en la lista, mostrar campo personalizado
+                            // La ciudad no estÃ¡ en la lista, mostrar campo personalizado
                             mostrarCiudadCustom(data.ciudad);
                         }
                     }
-                    
+
                     clearFieldError('ciudad');
                     check.classList.remove('hidden');
-                    
-                    // Animación de éxito
+
+                    // AnimaciÃ³n de Ã©xito
                     provinciaSelect.classList.add('ring-2', 'ring-emerald-500/50');
                     ciudadSelect.classList.add('ring-2', 'ring-emerald-500/50');
                     setTimeout(() => {
@@ -462,7 +366,7 @@
                     }, 1500);
                 }
             } catch (error) {
-                console.error('Error buscando código postal:', error);
+                console.error('Error buscando cÃ³digo postal:', error);
             } finally {
                 loading.classList.add('hidden');
             }
@@ -473,11 +377,11 @@
             const container = document.getElementById('ciudad-custom-container');
             const input = document.getElementById('ciudadCustomInput');
             const select = document.getElementById('ciudadSelect');
-            
+
             container.classList.remove('hidden');
             input.value = ciudadInicial;
-            
-            // Función para actualizar el select
+
+            // FunciÃ³n para actualizar el select
             function updateSelectFromInput() {
                 const customOption = select.querySelector('#custom-ciudad-option');
                 if (customOption) {
@@ -491,16 +395,16 @@
                     select.appendChild(opt);
                 }
                 select.value = input.value;
-                
+
                 if (input.value) {
                     clearFieldError('ciudad');
                 }
             }
-            
+
             // Remover listener anterior si existe
             input.removeEventListener('input', updateSelectFromInput);
             input.addEventListener('input', updateSelectFromInput);
-            
+
             if (ciudadInicial) {
                 updateSelectFromInput();
             }
@@ -511,17 +415,17 @@
             document.getElementById('ciudad-custom-container').classList.add('hidden');
         }
 
-        // Validación personalizada del formulario
+        // ValidaciÃ³n personalizada del formulario
         function setupFormValidation() {
             const form = document.getElementById('direccionForm');
-            
+
             form.addEventListener('submit', function(e) {
-                // Solo validar si se está usando nueva dirección
+                // Solo validar si se estÃ¡ usando nueva direcciÃ³n
                 const usarNueva = document.getElementById('usar-nueva-hidden').value === 'true';
-                
+
                 if (usarNueva) {
                     let isValid = true;
-                    
+
                     // Validar provincia
                     const provincia = document.getElementById('provinciaSelect');
                     if (!provincia.value) {
@@ -530,19 +434,19 @@
                     } else {
                         clearFieldError('provincia');
                     }
-                    
+
                     // Validar ciudad
                     const ciudad = document.getElementById('ciudadSelect');
                     const ciudadCustom = document.getElementById('ciudadCustomInput');
                     const ciudadValue = ciudad.value || ciudadCustom.value;
-                    
+
                     if (!ciudadValue || ciudadValue === '__otra__') {
                         showFieldError('ciudad', 'La ciudad es obligatoria');
                         isValid = false;
                     } else {
                         clearFieldError('ciudad');
                     }
-                    
+
                     if (!isValid) {
                         e.preventDefault();
                         // Scroll al primer error
@@ -554,32 +458,32 @@
                 }
             });
         }
-        
+
         // Mostrar error en campo
         function showFieldError(field, message) {
             const errorSpan = document.getElementById(`${field}-error`);
             const select = document.getElementById(`${field}Select`);
-            
+
             if (errorSpan) {
                 errorSpan.textContent = message;
                 errorSpan.classList.remove('hidden');
             }
-            
+
             if (select) {
                 select.classList.add('border-red-500');
                 select.classList.remove('border-gray-200');
             }
         }
-        
+
         // Limpiar error de campo
         function clearFieldError(field) {
             const errorSpan = document.getElementById(`${field}-error`);
             const select = document.getElementById(`${field}Select`);
-            
+
             if (errorSpan) {
                 errorSpan.classList.add('hidden');
             }
-            
+
             if (select) {
                 select.classList.remove('border-red-500');
                 select.classList.add('border-gray-200');
@@ -588,12 +492,12 @@
 
         // Configurar event listeners
         function setupEventListeners() {
-            // Código postal - búsqueda automática con debounce
+            // CÃ³digo postal - bÃºsqueda automÃ¡tica con debounce
             const cpInput = document.getElementById('codigoPostalInput');
             cpInput.addEventListener('input', function(e) {
-                // Solo permitir números
+                // Solo permitir nÃºmeros
                 this.value = this.value.replace(/[^0-9]/g, '');
-                
+
                 clearTimeout(debounceTimer);
                 debounceTimer = setTimeout(() => {
                     if (this.value.length === 5) {
@@ -606,7 +510,7 @@
             document.getElementById('provinciaSelect').addEventListener('change', function() {
                 ocultarCiudadCustom();
                 cargarCiudades(this.value);
-                
+
                 if (this.value) {
                     clearFieldError('provincia');
                 }
@@ -629,13 +533,13 @@
         function seleccionarDireccionGuardada(radio) {
             document.getElementById('nueva-direccion-form').classList.add('hidden');
             document.getElementById('usar-nueva-hidden').value = 'false';
-            
+
             // Update visual state
             document.querySelectorAll('.direccion-option').forEach(opt => {
                 opt.classList.remove('border-emerald-500', 'bg-emerald-50');
                 opt.querySelector('.check-icon').classList.add('opacity-0');
             });
-            
+
             const parent = radio.closest('.direccion-option');
             parent.classList.add('border-emerald-500', 'bg-emerald-50');
             parent.querySelector('.check-icon').classList.remove('opacity-0');
@@ -644,14 +548,14 @@
         function mostrarFormularioNueva() {
             document.getElementById('nueva-direccion-form').classList.remove('hidden');
             document.getElementById('usar-nueva-hidden').value = 'true';
-            
+
             // Deselect saved addresses
             document.querySelectorAll('input[name="DireccionSeleccionadaId"]').forEach(r => r.checked = false);
             document.querySelectorAll('.direccion-option').forEach(opt => {
                 opt.classList.remove('border-emerald-500', 'bg-emerald-50');
                 opt.querySelector('.check-icon').classList.add('opacity-0');
             });
-            
+
             // Focus first input
             document.querySelector('input[name="NuevaDireccion.Calle"]')?.focus();
         }
@@ -669,21 +573,21 @@
             border-color: #10b981;
             background-color: rgb(236 253 245);
         }
-        
+
         /* Estilos para los selects */
         select:focus {
             outline: none;
         }
-        
+
         select option {
             padding: 8px;
         }
-        
-        /* Animación suave para los campos */
+
+        /* AnimaciÃ³n suave para los campos */
         input, select {
             transition: all 0.2s ease;
         }
-        
+
         /* Error state para selects */
         select.border-red-500 {
             border-color: #ef4444 !important;

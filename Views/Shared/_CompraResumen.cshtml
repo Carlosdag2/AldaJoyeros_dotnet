@@ -1,0 +1,18 @@
+@model AldaJoyeros.DTOs.CompraResumenViewModel
+<div class="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
+    <div class="p-5 sm:p-6 border-b border-gray-100 flex items-center justify-between gap-2"><h2 class="font-semibold text-lg text-gray-900">Tu pedido</h2><span class="text-xs text-gray-500">@Model.Articulos.Sum(x => x.Cantidad) artículos</span></div>
+    <div class="p-5 sm:p-6 space-y-4 max-h-80 overflow-y-auto">
+        @foreach (var item in Model.Articulos)
+        {
+            <div class="flex items-center gap-3">
+                <div class="w-14 h-14 rounded-xl border border-gray-100 bg-gray-50 overflow-hidden shrink-0">
+                    @if (item.Producto?.TieneImagenes == true) { <img src="@item.Producto.ImagenPrincipal" alt="@item.ProductoNombre" class="w-full h-full object-contain p-1" /> }
+                    else { <div class="w-full h-full flex items-center justify-center"><i class="fas fa-gem text-gray-300" aria-hidden="true"></i></div> }
+                </div>
+                <div class="min-w-0 flex-1"><p class="text-sm font-medium text-gray-900 break-words">@item.ProductoNombre</p><p class="text-xs text-gray-500 mt-1">Cantidad: @item.Cantidad</p></div>
+                <span class="text-sm font-semibold text-gray-900 shrink-0">@item.Subtotal.ToString("C")</span>
+            </div>
+        }
+    </div>
+    <div class="p-5 sm:p-6 bg-gray-50 border-t border-gray-100"><div class="flex justify-between items-center gap-3"><span class="font-semibold text-gray-900">Total del pedido</span><span class="text-2xl font-semibold tracking-tight text-gray-900">@Model.Total.ToString("C")</span></div><p class="text-xs text-gray-500 mt-3">@Model.Nota</p></div>
+</div>
