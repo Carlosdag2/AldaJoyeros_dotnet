@@ -67,9 +67,12 @@ namespace AldaJoyeros.Repositories.Implementations
 
         public async Task<IEnumerable<Producto>> GetByCategoriaAsync(long categoriaId)
         {
+            var name = await _context.Categorias.Where(c => c.Id == categoriaId).Select(c => c.Nombre).FirstOrDefaultAsync();
+            var family = name != null && !name.Contains(" · ");
+            var prefix = name + " · ";
             return await _context.Productos
                 .Include(p => p.Categoria)
-                .Where(p => p.CategoriaId == categoriaId && !p.Eliminado) // Filtrar eliminados
+                .Where(p => !p.Eliminado && (p.CategoriaId == categoriaId || family && p.Categoria != null && p.Categoria.Nombre.StartsWith(prefix)))
                 .ToListAsync();
         }
 

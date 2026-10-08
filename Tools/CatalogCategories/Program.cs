@@ -9,7 +9,22 @@ if(args.Contains("--check")) {
         if(CatalogTaxonomy.Normalize(pair.Item1)!=pair.Item2 || CatalogTaxonomy.Normalize(pair.Item2)!=pair.Item2)throw new Exception("Clasificación incorrecta: "+pair.Item1);
     foreach(var pair in new[]{("Colgante Plata Mujer","Colgantes"),("Cadena Oro","Cadenas"),("Pendiente Acero","Pendientes"),("Medalla Oro","Medallas")})
         if(CatalogTaxonomy.Normalize(pair.Item1)!=pair.Item2)throw new Exception("Clasificación nueva incorrecta: "+pair.Item1);
-    Console.WriteLine("15 comprobaciones de clasificación y estabilidad superadas.");return;
+    foreach(var test in new[]{
+        ("Anillos","18K SORTIJA ORO BLANCO","","Anillos · Oro de 18 quilates"),
+        ("Anillos","SELLO DE ACERO","","Anillos · Sellos · Acero"),
+        ("Pendientes","ARO DE PLATA BAÑADO EN ORO","","Pendientes · Aros · Plata"),
+        ("Pendientes","PENDIENTES LARGOS 18K","","Pendientes · Largos · Oro de 18 quilates"),
+        ("Pulseras","PULSERA RÍGIDA","Plata","Pulseras · Rígidas · Plata"),
+        ("Anillos","ANILLO BAÑADO EN ORO","","Anillos"),
+        ("Anillos","ANILLO DE ORO","Acero","Anillos · Acero"),
+        ("Smartwatches","RELOJ DE ACERO","","Smartwatches"),
+        ("Oro de 9 quilates","18K SORTIJA","","Oro de 9 quilates")
+    }) {
+        var classified=CatalogTaxonomy.Specific(test.Item1,test.Item2,test.Item3);
+        if(classified!=test.Item4 || CatalogTaxonomy.Normalize(classified)!=classified || CatalogTaxonomy.Specific(classified,test.Item2,test.Item3)!=classified)
+            throw new Exception("Subcategoría incorrecta o inestable: "+test.Item2);
+    }
+    Console.WriteLine("24 comprobaciones de clasificación y estabilidad superadas.");return;
 }
 var root=Path.GetFullPath(args.FirstOrDefault()??".");
 var config=new ConfigurationBuilder().SetBasePath(root).AddJsonFile("appsettings.json").AddJsonFile("appsettings.Local.json",true).Build();
@@ -20,6 +35,7 @@ foreach(var key in new[]{"alda_munreco_monthly","alda_munreco_import",pmLock}) {
     if(Convert.ToInt32(await mutex.ExecuteScalarAsync())!=1)throw new InvalidOperationException("Hay una importación en curso. Reintentar cuando termine.");
 }
 await using var tx=await sql.BeginTransactionAsync();
+if(args.Contains("--specific")){await SpecificCategories.Run(sql,tx,root,args.Contains("--apply"));return;}
 async Task<List<Dictionary<string,object?>>> Rows(string query) {
     await using var command=new MySqlCommand(query,sql,tx);await using var reader=await command.ExecuteReaderAsync();var rows=new List<Dictionary<string,object?>>();
     while(await reader.ReadAsync()){var row=new Dictionary<string,object?>();for(var i=0;i<reader.FieldCount;i++)row[reader.GetName(i)]=reader.IsDBNull(i)?null:reader.GetValue(i);rows.Add(row);}return rows;
@@ -51,7 +67,7 @@ foreach(var change in changes) {
         await Execute("DELETE FROM categoria WHERE id=@id",("@id",old.id));
     }
     await Execute("UPDATE categoria SET nombre=@name WHERE id=@id",("@name",change.name),("@id",change.target));
-    if(change.products==0&&change.name!="Sin categoría")await Execute("DELETE FROM categoria WHERE id=@id",("@id",change.target));
+    if(change.products==0&&change.name!="Sin categoría"&&!changes.Any(c=>c.name.StartsWith(change.name+" · ")))await Execute("DELETE FROM categoria WHERE id=@id",("@id",change.target));
 }
 var actual=await Rows("SELECT * FROM producto ORDER BY id");
 string Preserved(List<Dictionary<string,object?>> rows)=>JsonSerializer.Serialize(rows.Select(r=>r.Where(x=>x.Key!="categoria_id").ToDictionary()));

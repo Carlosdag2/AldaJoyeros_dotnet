@@ -103,6 +103,6 @@ static partial class ImportRunner {
         var full=gender.Length>0?basis+" "+gender:basis;
         var match=existing.FirstOrDefault(x=>x.Name.Equals(full,StringComparison.OrdinalIgnoreCase))
             ?? existing.FirstOrDefault(x=>x.Name.Equals(basis,StringComparison.OrdinalIgnoreCase));
-        return AldaJoyeros.Catalog.CatalogTaxonomy.Normalize(match?.Name ?? full);
+        return AldaJoyeros.Catalog.CatalogTaxonomy.Specific(match?.Name ?? full, title, material);
     }
 }

@@ -29,6 +29,10 @@ public static class Engine {
                 await using var pricing=new MySqlCommand("SELECT coeficiente FROM perez_mora_pricing WHERE id=1",sql);
                 var value=await pricing.ExecuteScalarAsync();if(value!=null&&value!=DBNull.Value)coefficient=Convert.ToDecimal(value);
             }
+            catalog = catalog with { Products = catalog.Products.Select(p => p with {
+                Category = p.Category.Length == 0 ? "" : AldaJoyeros.Catalog.CatalogTaxonomy.Specific(p.Category, p.Description,
+                    p.Fields.GetValueOrDefault("METAL", ""), p.Fields.GetValueOrDefault("TIPO", ""))
+            }).ToArray() };
             foreach(var product in catalog.Products)AldaJoyeros.Catalog.ProviderPricing.Pvp(product.Price,coefficient);
             var existing=new List<CurrentProduct>();
             await using(var cmd=new MySqlCommand("SELECT id,nombre,descripcion,precio,categoria_id,eliminado,fecha_eliminado FROM producto",sql)) {
@@ -154,6 +158,12 @@ public static class Engine {
     }
     static async Task<long> Category(MySqlConnection sql,MySqlTransaction tx,string name) {
         name=AldaJoyeros.Catalog.CatalogTaxonomy.Normalize(name);
+        var family = AldaJoyeros.Catalog.CatalogTaxonomy.Family(name);
+        if (family != name)
+        {
+            await using var parent = new MySqlCommand("INSERT INTO categoria(nombre) VALUES(@name) ON DUPLICATE KEY UPDATE nombre=VALUES(nombre)",sql,tx);
+            parent.Parameters.AddWithValue("@name",family); await parent.ExecuteNonQueryAsync();
+        }
         await using var cmd=new MySqlCommand("INSERT INTO categoria(nombre) VALUES(@name) ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id)",sql,tx);cmd.Parameters.AddWithValue("@name",name);await cmd.ExecuteNonQueryAsync();return cmd.LastInsertedId;
     }
     static async Task State(MySqlConnection sql,MySqlTransaction tx,ManagedProduct state) {

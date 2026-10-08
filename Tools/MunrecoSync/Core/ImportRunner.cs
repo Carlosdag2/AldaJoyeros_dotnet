@@ -78,6 +78,12 @@ static partial class ImportRunner {
                             if(item.ExistingId.HasValue)productId=item.ExistingId.Value;
                             else {
                                 long catId;
+                                var family = AldaJoyeros.Catalog.CatalogTaxonomy.Family(item.CategoryName);
+                                if (family != item.CategoryName)
+                                {
+                                    await using var parent = new MySqlCommand("INSERT INTO categoria(nombre) VALUES(@name) ON DUPLICATE KEY UPDATE nombre=VALUES(nombre)",sql,tx);
+                                    parent.Parameters.AddWithValue("@name",family); await parent.ExecuteNonQueryAsync();
+                                }
                                 await using(var cat=new MySqlCommand("INSERT INTO categoria(nombre) VALUES(@name) ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id)",sql,tx)) {
                                     cat.Parameters.AddWithValue("@name",item.CategoryName);await cat.ExecuteNonQueryAsync();catId=cat.LastInsertedId;
                                 }

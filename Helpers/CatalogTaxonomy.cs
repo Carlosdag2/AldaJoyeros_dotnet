@@ -10,6 +10,7 @@ public static class CatalogTaxonomy
 
     public static string Normalize(string name)
     {
+        if (name.Contains(" · ")) return name.Trim();
         var key = Key(name);
         if (key == "smartwatch" || key == "smartwatches") return "Smartwatches";
         if (key.StartsWith("reloj bolsillo") || key == "relojes de bolsillo") return "Relojes de bolsillo";
@@ -41,7 +42,47 @@ public static class CatalogTaxonomy
         };
     }
 
-    public static string Group(string name) => Normalize(name) switch
+    public static string Family(string name) => name == "Pérez Mora · Pendientes de revisar" ? name : name.Split(" · ")[0];
+
+    public static string Specific(string category, string description, string metal = "", string subtype = "")
+    {
+        var family = Normalize(Family(category));
+        if (Group(family) is "Pendientes de organizar" or "Colecciones especiales" || family is "Smartwatches" or "Relojes" or "Relojes de bolsillo") return family;
+        var text = Key(description);
+        bool Has(string value, string pattern) => System.Text.RegularExpressions.Regex.IsMatch(value, pattern, System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+        string Material(string value)
+        {
+            if (Has(value, @"\bplata\b")) return "Plata";
+            if (Has(value, @"\bacero\b")) return "Acero";
+            if (Has(value, @"\btitanio\b")) return "Titanio";
+            if (Has(value, @"\b(?:chapad[oa]|banad[oa]|bano)\b")) return "";
+            var karats = System.Text.RegularExpressions.Regex.Match(value, @"\b(9|14|18|24)\s*(?:k(?:t)?|quilates?|kilates?)\b");
+            if (karats.Success) return "Oro de " + karats.Groups[1].Value + " quilates";
+            if (Has(value, @"\boro\b")) return "Oro";
+            if (Has(value, @"\bpiel\b")) return "Piel";
+            return "";
+        }
+        var material = Material(Key(metal));
+        if (material.Length == 0) material = Material(text);
+        if (material.Length == 0 && family == "Oro de 9 quilates") material = family;
+        var typeText = string.IsNullOrWhiteSpace(subtype) ? text : Key(subtype) + " " + text;
+        string? kind = family switch
+        {
+            "Pendientes" when Has(typeText, @"\b(?:aros?|criollas?)\b") => "Aros",
+            "Pendientes" when Has(typeText, @"\b(?:largos?|colgantes?)\b") => "Largos",
+            "Pendientes" when Has(typeText, @"\bboton(?:es)?\b") => "Botón",
+            "Anillos" when Has(text, @"\bsolitarios?\b") => "Solitarios",
+            "Anillos" when Has(text, @"\bsellos?\b") => "Sellos",
+            "Anillos" when Has(text, @"\btresillos?\b") => "Tresillos",
+            "Pulseras" when Has(text, @"\besclavas?\b") => "Esclavas",
+            "Pulseras" when Has(text, @"\brigid[oa]s?\b") => "Rígidas",
+            _ => null
+        };
+        var parts = new[] { family, kind, material }.Where(s => !string.IsNullOrWhiteSpace(s)).Distinct();
+        return string.Join(" · ", parts);
+    }
+
+    public static string Group(string name) => Normalize(Family(name)) switch
     {
         "Relojes" or "Smartwatches" or "Relojes de bolsillo" => "Relojería",
         "Gemelos y pisacorbatas" or "Llaveros" or "Otros complementos" or "Fornituras" or "Insignias profesionales" or "Placas" => "Complementos",

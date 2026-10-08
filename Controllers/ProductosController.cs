@@ -29,6 +29,9 @@ namespace AldaJoyeros.Controllers
             // Una búsqueda de texto siempre consulta todo el catálogo.
             if (!string.IsNullOrWhiteSpace(busqueda)) categoriaId = null;
             var categorias = await _categoriaService.GetAllAsync();
+            ViewBag.TotalCatalogProducts = categorias.Sum(c => c.CantidadProductos);
+            foreach (var categoria in categorias.Where(c => !c.Nombre.Contains(" · ")))
+                categoria.CantidadProductos += categorias.Where(c => c.Nombre.StartsWith(categoria.Nombre + " · ", StringComparison.Ordinal)).Sum(c => c.CantidadProductos);
             ViewBag.Categorias = categorias.Where(c => c.CantidadProductos > 0 && c.Grupo != "Pendientes de organizar")
                 .OrderBy(c => AldaJoyeros.Catalog.CatalogTaxonomy.GroupOrder(c.Grupo)).ThenBy(c => c.Nombre).ToArray();
             ViewBag.CategoriaSeleccionada = categoriaId;
