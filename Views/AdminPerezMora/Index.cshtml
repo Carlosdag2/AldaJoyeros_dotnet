@@ -5,6 +5,7 @@
     ViewData["Title"]="Catálogo de Pérez Mora";
     var active=Model.Jobs.FirstOrDefault(x=>x.Active);
     var last=Model.Jobs.FirstOrDefault(x=>x.State=="completed");
+    var factors=Model.PricePreview?.Bands??Model.Pricing;
     string[] days=["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"];
 }
 <div class="min-h-screen bg-slate-50 pb-12">
@@ -23,16 +24,24 @@
         <section class="bg-white border rounded-2xl p-6" id="pricing-section">
             <h2 class="text-xl font-semibold">Precio de venta de Pérez Mora</h2>
             <p class="text-sm text-slate-600 mt-2">El PRECIO del Excel es el coste del proveedor. El PVP se calcula como coste × coeficiente y se redondea a dos decimales.</p>
-            <p class="text-sm mt-3">Coeficiente guardado: <strong id="saved-coefficient">@Model.Coefficient.ToString("0.####",System.Globalization.CultureInfo.GetCultureInfo("es-ES"))</strong></p>
+            <p class="text-sm mt-3" id="saved-coefficient">Guardados: <strong>A × @Model.Pricing.A.ToString("0.####") · B × @Model.Pricing.B.ToString("0.####") · C × @Model.Pricing.C.ToString("0.####")</strong></p>
             <form asp-action="Precios" method="post" class="mt-5 space-y-4">
-                <label class="block text-sm font-medium" for="pricing-coefficient">Coeficiente para calcular el PVP</label>
-                <input id="pricing-coefficient" name="coeficiente" type="number" min="0.01" max="100" step="0.0001" required
-                       value="@((Model.PricePreview?.Coefficient??Model.Coefficient).ToString("0.####",System.Globalization.CultureInfo.InvariantCulture))"
-                       class="w-full sm:w-48 rounded-lg border border-slate-300 px-3 py-2" />
+                <div class="grid gap-4 md:grid-cols-3">
+                    @foreach(var band in new[]{(Name:"A",Range:"De 0 € a 100 €",Value:factors.A),(Name:"B",Range:"Más de 100 € hasta 500 €",Value:factors.B),(Name:"C",Range:"Más de 500 €",Value:factors.C)})
+                    {
+                        <div class="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                            <p class="text-sm font-semibold text-emerald-800">Tramo @band.Name</p>
+                            <p class="mt-1 text-sm text-slate-600">@band.Range de coste</p>
+                            <label class="mt-4 block text-sm font-medium" for="pricing-coefficient-@band.Name">Coeficiente @band.Name</label>
+                            <input id="pricing-coefficient-@band.Name" name="@("coeficiente"+band.Name)" type="number" min="0.01" max="100" step="0.0001" required
+                                   value="@(band.Value.ToString("0.####",System.Globalization.CultureInfo.InvariantCulture))" class="mt-2 w-full rounded-lg border border-slate-300 px-3 py-2" />
+                        </div>
+                    }
+                </div>
                 <p class="text-sm text-slate-500">Ejemplo: un coste de 10 € con coeficiente 2,5 da un PVP de 25 €. El coeficiente no añade impuestos por separado.</p>
                 <div class="flex flex-wrap gap-3">
                     <button name="aplicar" value="false" disabled="@(active!=null)" class="px-4 py-2 rounded-lg border font-semibold disabled:opacity-40">Previsualizar precios</button>
-                    <button name="aplicar" value="true" disabled="@(active!=null)" class="px-4 py-2 rounded-lg bg-emerald-700 text-white font-semibold disabled:opacity-40">Guardar y aplicar coeficiente</button>
+                    <button name="aplicar" value="true" disabled="@(active!=null)" class="px-4 py-2 rounded-lg bg-emerald-700 text-white font-semibold disabled:opacity-40">Guardar y aplicar coeficientes</button>
                 </div>
                 <p class="text-sm text-slate-500">Se aplica a los productos existentes de Pérez Mora y a las próximas importaciones, incluso las programadas. Los precios cambiados manualmente se conservan. El coste original permanece guardado y el coeficiente siempre se aplica sobre ese coste.</p>
             </form>
@@ -42,8 +51,8 @@
                     <p class="font-semibold">Previsualización: @pricing.Updated precios cambiarían; @pricing.Protected precios manuales se conservarían.</p>
                     <p class="text-sm text-slate-500 mt-1">Esta previsualización no ha cambiado ningún precio ni el coeficiente guardado.</p>
                     <div class="overflow-x-auto mt-4"><table class="w-full text-sm text-left">
-                        <thead><tr><th class="p-2">Referencia</th><th class="p-2">Coste</th><th class="p-2">PVP actual</th><th class="p-2">Nuevo PVP</th></tr></thead>
-                        <tbody>@foreach(var item in pricing.Examples){<tr class="border-t"><td class="p-2">@item.Reference @(item.Manual?"(manual)":"")</td><td class="p-2">@item.Cost.ToString("N2") €</td><td class="p-2">@item.CurrentPrice.ToString("N2") €</td><td class="p-2">@item.NewPrice.ToString("N2") €</td></tr>}</tbody>
+                        <thead><tr><th class="p-2">Referencia</th><th class="p-2">Coste</th><th class="p-2">Coeficiente</th><th class="p-2">PVP actual</th><th class="p-2">Nuevo PVP</th></tr></thead>
+                        <tbody>@foreach(var item in pricing.Examples){<tr class="border-t"><td class="p-2">@item.Reference @(item.Manual?"(manual)":"")</td><td class="p-2">@item.Cost.ToString("N2") €</td><td class="p-2">@(item.Manual?"Manual":"× "+factors.Factor(item.Cost).ToString("0.####"))</td><td class="p-2">@item.CurrentPrice.ToString("N2") €</td><td class="p-2">@item.NewPrice.ToString("N2") €</td></tr>}</tbody>
                     </table></div>
                 </div>
             }

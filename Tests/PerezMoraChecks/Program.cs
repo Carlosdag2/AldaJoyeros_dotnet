@@ -177,6 +177,8 @@ try {
     Check(AldaJoyeros.Catalog.ProviderPricing.TryCoefficient("2,5",out var parsedFactor)&&parsedFactor==2.5m,"Spanish decimal coefficient accepted");
     Check(!AldaJoyeros.Catalog.ProviderPricing.TryCoefficient("0",out _)&&!AldaJoyeros.Catalog.ProviderPricing.TryCoefficient("-2",out _)&&!AldaJoyeros.Catalog.ProviderPricing.TryCoefficient("101",out _),"Invalid coefficients rejected");
     Check(AldaJoyeros.Catalog.ProviderPricing.Pvp(1.01m,2.5m)==2.53m,"PVP rounds midpoint away from zero");
+    var bands=new AldaJoyeros.Catalog.ProviderPriceBands(2m,3m,4m);
+    Check(bands.Factor(0)==2&&bands.Factor(100)==2&&bands.Factor(100.01m)==3&&bands.Factor(500)==3&&bands.Factor(500.01m)==4,"Cost bands cover exact boundaries and cents without gaps");
     async Task<decimal> Price(string reference){await using var sql=new MySqlConnection(sqlBuilder.ConnectionString);await sql.OpenAsync();await using var cmd=new MySqlCommand("SELECT precio FROM producto WHERE nombre=@ref",sql);cmd.Parameters.AddWithValue("@ref",reference);return Convert.ToDecimal(await cmd.ExecuteScalarAsync());}
     var pricingBefore=await Price("0024/14");
     var pricePreview=await store.Prices(2.5m,false,env.ContentRootPath);
@@ -191,6 +193,20 @@ try {
     await Import(Data(Row("0024",image:newImage),Row("0024/14",category:"",price:"70"),Row("SOLDOUT",stock:"5"),Row("COLLISION"),Row("NEWPRICE",price:"1.01")));
     Check(await Price("0024/14")==210m&&await Price("NEWPRICE")==3.03m&&await Price("0024")==99m,"Future import prices existing and new products from cost using saved coefficient");
     await using(var sql=new MySqlConnection(sqlBuilder.ConnectionString)){await sql.OpenAsync();await using var cmd=new MySqlCommand("SELECT pvp FROM producto_proveedor WHERE referencia='0024/14'",sql);Check(Convert.ToDecimal(await cmd.ExecuteScalarAsync())==70m,"Original supplier cost remains unchanged");}
+    // Simular una instalación antigua únicamente en la base de pruebas desechable.
+    await using(var sql=new MySqlConnection(sqlBuilder.ConnectionString)){await sql.OpenAsync();await using var cmd=new MySqlCommand("DROP TABLE perez_mora_pricing_bands",sql);await cmd.ExecuteNonQueryAsync();}
+    Check(await new PerezMoraStore(testConfig).Bands()==new AldaJoyeros.Catalog.ProviderPriceBands(3,3,3),"Legacy coefficient is preserved across all bands on schema migration");
+    await Import(Data(Row("0024",image:newImage),Row("0024/14",price:"100"),Row("SOLDOUT",stock:"5",price:"100.01"),Row("COLLISION"),Row("NEWPRICE",price:"500"),Row("HIGH",price:"500.01")));
+    var beforeBands=await Price("NEWPRICE");
+    var bandPreview=await store.Prices(bands,false,env.ContentRootPath);
+    Check(bandPreview.Bands==bands&&await Price("NEWPRICE")==beforeBands&&await store.Bands()==new AldaJoyeros.Catalog.ProviderPriceBands(3,3,3),"Band preview changes neither prices nor configuration");
+    await store.Prices(bands,true,env.ContentRootPath);
+    Check(await Price("0024/14")==200&&await Price("SOLDOUT")==300.03m&&await Price("NEWPRICE")==1500&&await Price("HIGH")==2000.04m,"Recosting uses the correct band at each boundary");
+    Check(await Price("0024")==99&&await Price("COLLISION")==123,"Band recosting preserves manual and foreign prices");
+    await store.Prices(bands,true,env.ContentRootPath);
+    Check(await Price("HIGH")==2000.04m&&await new PerezMoraStore(testConfig).Bands()==bands,"Bands persist after restart and repeated application does not compound prices");
+    await Import(Data(Row("0024",image:newImage),Row("0024/14",price:"100"),Row("SOLDOUT",stock:"5",price:"100.01"),Row("COLLISION"),Row("NEWPRICE",price:"501"),Row("HIGH",price:"99"),Row("NEWBAND",price:"600")));
+    Check(await Price("NEWPRICE")==2004&&await Price("HIGH")==198&&await Price("NEWBAND")==2400,"Future imports price new products and move existing products between cost bands");
 }finally {
     Environment.SetEnvironmentVariable("ALDA_PEREZMORA_CONNECTIONS",null);
     if(!testName.StartsWith("alda_pm_test_")||testName.Length!=45)throw new Exception("Unsafe test cleanup name");
@@ -271,15 +287,15 @@ async Task Web() {
             return Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(string.Join("|",rows))));
         }
         var priceStore=new PerezMoraStore(config);var factorBefore=await priceStore.Coefficient();var pricesBefore=await PricesHash();
-        var unprotectedPrice=context.APIRequest.CreateFormData();unprotectedPrice.Set("coeficiente","2.5");
+        var unprotectedPrice=context.APIRequest.CreateFormData();unprotectedPrice.Set("coeficienteA","2.5");unprotectedPrice.Set("coeficienteB","2.5");unprotectedPrice.Set("coeficienteC","2.5");
         Check((await context.APIRequest.PostAsync(url+"/AdminPerezMora/Precios",new(){Form=unprotectedPrice})).Status==400,"Price changes require antiforgery token");
-        await page.Locator("#pricing-coefficient").FillAsync("2.5");
+        await page.Locator("#pricing-coefficient-A").FillAsync("2.5");await page.Locator("#pricing-coefficient-B").FillAsync("2.5");await page.Locator("#pricing-coefficient-C").FillAsync("2.5");
         await page.GetByRole(AriaRole.Button,new(){Name="Previsualizar precios",Exact=true}).ClickAsync();
         await page.Locator("#pricing-preview").WaitForAsync();
         Check(await page.Locator("#pricing-preview").IsVisibleAsync(),"Real catalog price preview renders");
         Check(pricesBefore==await PricesHash()&&factorBefore==await priceStore.Coefficient(),"Preview preserves every real price and the stored coefficient");
         var priceToken=await page.Locator("#pricing-section input[name='__RequestVerificationToken']").InputValueAsync();
-        var invalidPrice=context.APIRequest.CreateFormData();invalidPrice.Set("coeficiente","0");invalidPrice.Set("aplicar","true");invalidPrice.Set("__RequestVerificationToken",priceToken);
+        var invalidPrice=context.APIRequest.CreateFormData();invalidPrice.Set("coeficienteA","0");invalidPrice.Set("coeficienteB","2.5");invalidPrice.Set("coeficienteC","2.5");invalidPrice.Set("aplicar","true");invalidPrice.Set("__RequestVerificationToken",priceToken);
         await context.APIRequest.PostAsync(url+"/AdminPerezMora/Precios",new(){Form=invalidPrice});
         Check(pricesBefore==await PricesHash()&&factorBefore==await priceStore.Coefficient(),"Invalid coefficient leaves all real prices unchanged");
         await page.Locator("#pricing-section").ScreenshotAsync(new(){Path=Path.Combine(output,"precios-panel.png")});

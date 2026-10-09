@@ -8,13 +8,13 @@ namespace AldaJoyeros.Controllers;
 [AdminOnly]
 [ResponseCache(NoStore=true,Location=ResponseCacheLocation.None)]
 public sealed class AdminPerezMoraController(PerezMoraStore store,PerezMoraSource source,IOptions<PerezMoraOptions> options,IWebHostEnvironment env):BaseController {
-    [HttpGet] public async Task<IActionResult> Index(CancellationToken ct)=>View(new PerezMoraDashboard(await store.Schedule(ct),await store.Jobs(ct),source.Connected,options.Value.WorkerEnabled,await store.Coefficient(ct)));
-    [HttpPost,ValidateAntiForgeryToken] public async Task<IActionResult> Precios(string coeficiente,bool aplicar,CancellationToken ct) {
-        if(!AldaJoyeros.Catalog.ProviderPricing.TryCoefficient(coeficiente,out var factor)){TempData["Warning"]="Introduce un coeficiente entre 0,01 y 100, con un máximo de cuatro decimales.";return RedirectToAction(nameof(Index));}
+    [HttpGet] public async Task<IActionResult> Index(CancellationToken ct)=>View(new PerezMoraDashboard(await store.Schedule(ct),await store.Jobs(ct),source.Connected,options.Value.WorkerEnabled,Bands:await store.Bands(ct)));
+    [HttpPost,ValidateAntiForgeryToken] public async Task<IActionResult> Precios(string coeficienteA,string coeficienteB,string coeficienteC,bool aplicar,CancellationToken ct) {
+        if(!AldaJoyeros.Catalog.ProviderPricing.TryCoefficient(coeficienteA,out var a)||!AldaJoyeros.Catalog.ProviderPricing.TryCoefficient(coeficienteB,out var b)||!AldaJoyeros.Catalog.ProviderPricing.TryCoefficient(coeficienteC,out var c)){TempData["Warning"]="Introduce en cada tramo un coeficiente entre 0,01 y 100, con un máximo de cuatro decimales.";return RedirectToAction(nameof(Index));}
         try {
-            var preview=await store.Prices(factor,aplicar,source.Root,ct);
-            if(aplicar){TempData["Success"]=$"Coeficiente guardado. {preview.Updated} precios actualizados; {preview.Protected} precios manuales conservados.";return RedirectToAction(nameof(Index));}
-            return View("Index",new PerezMoraDashboard(await store.Schedule(ct),await store.Jobs(ct),source.Connected,options.Value.WorkerEnabled,await store.Coefficient(ct),preview));
+            var preview=await store.Prices(new AldaJoyeros.Catalog.ProviderPriceBands(a,b,c),aplicar,source.Root,ct);
+            if(aplicar){TempData["Success"]=$"Coeficientes guardados. {preview.Updated} precios actualizados; {preview.Protected} precios manuales conservados.";return RedirectToAction(nameof(Index));}
+            return View("Index",new PerezMoraDashboard(await store.Schedule(ct),await store.Jobs(ct),source.Connected,options.Value.WorkerEnabled,PricePreview:preview,Bands:await store.Bands(ct)));
         }catch(InvalidOperationException e){TempData["Warning"]=e.Message;return RedirectToAction(nameof(Index));}
         catch(InvalidDataException e){TempData["Warning"]=e.Message;return RedirectToAction(nameof(Index));}
     }

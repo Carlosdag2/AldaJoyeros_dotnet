@@ -28,6 +28,12 @@ public sealed partial class PerezMoraStore(IConfiguration configuration) {
               id int PRIMARY KEY, coeficiente decimal(7,4) NOT NULL, actualizado_utc datetime(6) NOT NULL
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
             INSERT IGNORE INTO perez_mora_pricing VALUES(1,1,UTC_TIMESTAMP(6));
+            CREATE TABLE IF NOT EXISTS perez_mora_pricing_bands (
+              id int PRIMARY KEY, coeficiente_a decimal(7,4) NOT NULL, coeficiente_b decimal(7,4) NOT NULL,
+              coeficiente_c decimal(7,4) NOT NULL, actualizado_utc datetime(6) NOT NULL
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+            INSERT IGNORE INTO perez_mora_pricing_bands
+              SELECT id,coeficiente,coeficiente,coeficiente,actualizado_utc FROM perez_mora_pricing WHERE id=1;
             """;
             await using var c=new MySqlCommand(ddl,sql);await c.ExecuteNonQueryAsync(ct);ready=true;
         } finally {schemaGate.Release();}

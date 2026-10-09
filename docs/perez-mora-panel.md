@@ -18,9 +18,17 @@ El `.xls` del 30/09/2026 contiene una tabla HTML codificada en Windows-1252. El 
 
 Se conservan las referencias como texto, incluidos ceros iniciales y sufijos de talla. Una referencia como `0024/14` es distinta de `0024`. Cuando existe la referencia padre explícita `0024`, se pueden heredar categoría, subcategoría, descripción o imágenes ausentes en la variante. Las columnas originales se conservan completas en `producto_proveedor.datos_json`; metal, color, peso, piedras, medidas, cierre, talla y género quedan disponibles también como características para la ficha pública.
 
-`PRECIO` se interpreta como **coste del proveedor**. El panel permite previsualizar y guardar un coeficiente entre 0,01 y 100, con hasta cuatro decimales. El PVP es `coste × coeficiente`, redondeado a dos decimales (mitades hacia arriba). El coeficiente inicial es 1 y no añade impuestos por separado.
+`PRECIO` se interpreta como **coste del proveedor**. El panel permite previsualizar y guardar tres coeficientes independientes entre 0,01 y 100, con hasta cuatro decimales. El PVP es `coste × coeficiente del tramo`, redondeado a dos decimales (mitades hacia arriba), sin añadir impuestos por separado.
 
-Guardar el coeficiente recalcula los precios automáticos existentes y establece la regla para futuras importaciones manuales, mediante Excel y programadas. Siempre se utiliza el coste original, nunca el PVP anterior; repetir la operación no acumula multiplicadores. Se conservan los precios editados manualmente, otras marcas, imágenes, categorías y visibilidad. El coste del Excel sigue guardado en `datos_json.PRECIO` y en la columna histórica `producto_proveedor.pvp` (para Pérez Mora esta columna contiene el coste). La configuración persistente se guarda en `perez_mora_pricing` y los respaldos de cada recálculo en `App_Data/PerezMora/pricing`, fuera de la web pública. El recálculo comparte el bloqueo del importador y actualiza el precio de referencia de la sincronización en una transacción.
+| Tramo | Coste original del proveedor |
+| --- | --- |
+| A | De 0 € a 100 €, incluidos |
+| B | Más de 100 € hasta 500 €, incluidos |
+| C | Más de 500 € |
+
+Los tramos también cubren costes con céntimos: 100,01 € utiliza B; 500 € utiliza B y 500,01 € utiliza C. En una instalación existente, los tres coeficientes heredan el valor anterior, sin modificar productos. En una instalación nueva parten de 1. El administrador puede cambiarlos en cualquier momento mediante **Previsualizar precios** y **Guardar y aplicar coeficientes**. Si cambia el coste en una futura importación, se selecciona el tramo correspondiente al nuevo coste.
+
+Guardar los coeficientes recalcula los precios automáticos existentes y establece la regla para futuras importaciones manuales, mediante Excel y programadas. Siempre se utiliza el coste original, nunca el PVP anterior; repetir la operación no acumula multiplicadores. Se conservan los precios editados manualmente, otras marcas, imágenes, categorías y visibilidad. El coste del Excel sigue guardado en `datos_json.PRECIO` y en la columna histórica `producto_proveedor.pvp` (para Pérez Mora esta columna contiene el coste). La configuración persistente se guarda en `perez_mora_pricing_bands`; `perez_mora_pricing` se conserva para compatibilidad. Los respaldos de cada recálculo se guardan en `App_Data/PerezMora/pricing`, fuera de la web pública. El recálculo comparte el bloqueo del importador y actualiza los precios, los coeficientes y las referencias de sincronización en una transacción.
 
 Los productos con stock cero, sin categoría, sin descripción, sin imágenes válidas o sin coste positivo quedan ocultos para revisión. Las reposiciones reactivan productos ocultados automáticamente; las decisiones manuales de visibilidad se mantienen. Las retiradas se aplican solamente a productos de este proveedor después de procesar el catálogo completo. Una desaparición superior al 15% exige revisión y detiene la aplicación de cambios.
 
