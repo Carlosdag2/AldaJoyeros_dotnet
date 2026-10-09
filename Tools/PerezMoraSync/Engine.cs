@@ -29,11 +29,18 @@ public static class Engine {
                 await using var pricing=new MySqlCommand("SELECT coeficiente FROM perez_mora_pricing WHERE id=1",sql);
                 var value=await pricing.ExecuteScalarAsync();if(value!=null&&value!=DBNull.Value)coefficient=Convert.ToDecimal(value);
             }
+            var pricingBands=new AldaJoyeros.Catalog.ProviderPriceBands(coefficient,coefficient,coefficient);
+            if(await Table(sql,"perez_mora_pricing_bands")) {
+                await using var pricing=new MySqlCommand("SELECT coeficiente_a,coeficiente_b,coeficiente_c FROM perez_mora_pricing_bands WHERE id=1",sql);
+                await using var reader=await pricing.ExecuteReaderAsync();
+                if(await reader.ReadAsync())pricingBands=new(reader.GetDecimal(0),reader.GetDecimal(1),reader.GetDecimal(2));
+            }
+            pricingBands.Validate();
             catalog = catalog with { Products = catalog.Products.Select(p => p with {
                 Category = p.Category.Length == 0 ? "" : AldaJoyeros.Catalog.CatalogTaxonomy.Specific(p.Category, p.Description,
                     p.Fields.GetValueOrDefault("METAL", ""), p.Fields.GetValueOrDefault("TIPO", ""))
             }).ToArray() };
-            foreach(var product in catalog.Products)AldaJoyeros.Catalog.ProviderPricing.Pvp(product.Price,coefficient);
+            foreach(var product in catalog.Products)pricingBands.Pvp(product.Price);
             var existing=new List<CurrentProduct>();
             await using(var cmd=new MySqlCommand("SELECT id,nombre,descripcion,precio,categoria_id,eliminado,fecha_eliminado FROM producto",sql)) {
                 await using var reader=await cmd.ExecuteReaderAsync();
@@ -60,12 +67,12 @@ public static class Engine {
             var collisions=catalog.Products.Where(x=>!previous.ContainsKey(x.Reference)&&byRef.ContainsKey(x.Reference)).Select(x=>x.Reference).ToHashSet(StringComparer.OrdinalIgnoreCase);
             var accepted=catalog.Products.Where(x=>!collisions.Contains(x.Reference)).ToArray();
             var changes=accepted.Select(x=>new{reference=x.Reference,action=!previous.TryGetValue(x.Reference,out var old)?"nuevo":
-                !old.Present||x.Stock>old.Stock?"reposicion":old.Stock>0&&x.Stock==0?"agotado":old.Fingerprint!=x.Fingerprint||(!old.ManualPrice&&old.LastPrice!=AldaJoyeros.Catalog.ProviderPricing.Pvp(x.Price,coefficient))?"modificado":"sin_cambios",stock=x.Stock,review=x.RequiresReview}).ToArray();
+                !old.Present||x.Stock>old.Stock?"reposicion":old.Stock>0&&x.Stock==0?"agotado":old.Fingerprint!=x.Fingerprint||(!old.ManualPrice&&old.LastPrice!=pricingBands.Pvp(x.Price))?"modificado":"sin_cambios",stock=x.Stock,review=x.RequiresReview}).ToArray();
             var summary=new {products=catalog.Products.Count,added=changes.Count(x=>x.action=="nuevo"),restocked=changes.Count(x=>x.action=="reposicion"),
                 soldOut=changes.Count(x=>x.action=="agotado"),modified=changes.Count(x=>x.action=="modificado"),removed=removed.Length,
                 needsReview=catalog.Products.Count(x=>x.RequiresReview),collisions=collisions.Count,imageLinks=catalog.Products.Sum(x=>x.ImageUrls.Length),fileHash=catalog.FileHash};
             await File.WriteAllTextAsync(Path.Combine(root,"comparacion.json"),Serialize(new{summary.products,summary.added,summary.restocked,summary.soldOut,summary.modified,summary.removed,summary.needsReview,summary.collisions,summary.imageLinks,summary.fileHash,
-                applied=false,status="comparacion",coefficient,changes,retired=removed.Select(x=>x.Reference),conflictingReferences=collisions.Order().ToArray(),catalogSummary=catalog.Summary}));
+                applied=false,status="comparacion",coefficient,pricingBands,changes,retired=removed.Select(x=>x.Reference),conflictingReferences=collisions.Order().ToArray(),catalogSummary=catalog.Summary}));
             Console.WriteLine($"CATALOG {catalog.Products.Count} new={summary.added} collisions={collisions.Count}");
             if(!apply)return;
             Catalog.ValidateRemovals(catalog.Products,previous.Values.Where(x=>x.Present).Select(x=>x.Reference));
@@ -87,12 +94,12 @@ public static class Engine {
                 if(id==0) {
                     await using var tx=await sql.BeginTransactionAsync();var category=await Category(sql,tx,product.Category.Length>0?product.Category:"Pérez Mora · Pendientes de revisar");
                     await using(var insert=new MySqlCommand("INSERT INTO producto(nombre,descripcion,precio,categoria_id,eliminado,fecha_eliminado) VALUES(@ref,@description,@price,@category,1,NULL)",sql,tx)) {
-                        insert.Parameters.AddWithValue("@ref",product.Reference);insert.Parameters.AddWithValue("@description",product.Description);insert.Parameters.AddWithValue("@price",AldaJoyeros.Catalog.ProviderPricing.Pvp(product.Price,coefficient));insert.Parameters.AddWithValue("@category",category);
+                        insert.Parameters.AddWithValue("@ref",product.Reference);insert.Parameters.AddWithValue("@description",product.Description);insert.Parameters.AddWithValue("@price",pricingBands.Pvp(product.Price));insert.Parameters.AddWithValue("@category",category);
                         await insert.ExecuteNonQueryAsync();id=insert.LastInsertedId;
                     }
                     if(await images.CountDocumentsAsync(Builders<BsonDocument>.Filter.Eq("producto_id",id))>0)
                         throw new InvalidDataException("El identificador nuevo ya tiene imágenes antiguas. Revisar la correspondencia entre MySQL y MongoDB antes de continuar.");
-                    old=new(id,product.Reference,"",0,true,true,null,AldaJoyeros.Catalog.ProviderPricing.Pvp(product.Price,coefficient),product.Description,category,false,false,false,false,[],true);
+                    old=new(id,product.Reference,"",0,true,true,null,pricingBands.Pvp(product.Price),product.Description,category,false,false,false,false,[],true);
                     await Metadata(sql,tx,product,id,true,[],"pendiente_imagenes");await State(sql,tx,old);await tx.CommitAsync();
                     byId[id]=new(id,product.Reference,product.Description,product.Price,category,true,null);
                 }
@@ -102,7 +109,7 @@ public static class Engine {
                 if(product.ImageFailure)selected=selected.Union(old.Images).ToArray();
                 await using(var tx=await sql.BeginTransactionAsync()) {
                     var category=decision.ManualCategory?current.Category??old.LastCategory:await Category(sql,tx,product.Category.Length>0?product.Category:"Pérez Mora · Pendientes de revisar");
-                    var price=decision.ManualPrice?current.Price:AldaJoyeros.Catalog.ProviderPricing.Pvp(product.Price,coefficient);var description=decision.ManualDescription?current.Description:product.Description;
+                    var price=decision.ManualPrice?current.Price:pricingBands.Pvp(product.Price);var description=decision.ManualDescription?current.Description:product.Description;
                     // Keep the same timestamp while hidden; a changed timestamp is a manual visibility decision.
                     var deleted=decision.Hidden?(current.Hidden?current.DeletedAt:DateTime.UtcNow):null;
                     await using(var update=new MySqlCommand("UPDATE producto SET descripcion=@description,precio=@price,categoria_id=@category,eliminado=@hidden,fecha_eliminado=@deleted WHERE id=@id",sql,tx)) {
@@ -147,7 +154,7 @@ public static class Engine {
             if(verified!=accepted.Length)throw new InvalidDataException("No coinciden los productos verificados con el catálogo procesado.");
             await File.WriteAllTextAsync(Path.Combine(root,"resultado.json"),Serialize(new{summary.products,summary.added,summary.restocked,summary.soldOut,summary.modified,summary.removed,
                 needsReview=accepted.Count(x=>x.RequiresReview||x.ImageUrls.Any(u=>!downloaded.ContainsKey(u))),summary.collisions,summary.fileHash,
-                applied=true,status="completo",coefficient,verifiedProducts=verified,linkedImages=imageCount,imageDownloadFailures=imageCache.Failures.Count,errors=Array.Empty<string>()}));
+                applied=true,status="completo",coefficient,pricingBands,verifiedProducts=verified,linkedImages=imageCount,imageDownloadFailures=imageCache.Failures.Count,errors=Array.Empty<string>()}));
             Console.WriteLine($"VERIFIED {verified} images={imageCount}");
         }finally{await using var release=new MySqlCommand("SELECT RELEASE_LOCK(@key)",sql);release.Parameters.AddWithValue("@key",lockName);await release.ExecuteScalarAsync();}
     }

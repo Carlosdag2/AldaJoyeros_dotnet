@@ -28,9 +28,11 @@ public sealed record PerezMoraJob(string Id,string Trigger,string State,string P
     public bool Active=>State is "queued" or "running";
     public string Label=>State switch {"queued"=>"En espera","running"=>"En proceso","previewed"=>"Comparación terminada","completed"=>"Completada","needs_login"=>"Renovar enlace","interrupted"=>"Interrumpida",_=>"Revisar incidencia"};
 }
-public sealed record PerezMoraDashboard(PerezMoraSchedule Schedule,IReadOnlyList<PerezMoraJob> Jobs,bool Connected,bool WorkerEnabled,decimal Coefficient=1,PerezMoraPricePreview? PricePreview=null);
+public sealed record PerezMoraDashboard(PerezMoraSchedule Schedule,IReadOnlyList<PerezMoraJob> Jobs,bool Connected,bool WorkerEnabled,decimal Coefficient=1,PerezMoraPricePreview? PricePreview=null,AldaJoyeros.Catalog.ProviderPriceBands? Bands=null) {
+    public AldaJoyeros.Catalog.ProviderPriceBands Pricing=>Bands??new(Coefficient,Coefficient,Coefficient);
+}
 public sealed record PerezMoraPriceRow(long Id,string Reference,decimal Cost,decimal CurrentPrice,decimal NewPrice,bool Manual,string State);
-public sealed record PerezMoraPricePreview(decimal Coefficient,int Updated,int Protected,IReadOnlyList<PerezMoraPriceRow> Examples);
+public sealed record PerezMoraPricePreview(decimal Coefficient,int Updated,int Protected,IReadOnlyList<PerezMoraPriceRow> Examples,AldaJoyeros.Catalog.ProviderPriceBands? Bands=null);
 public sealed class PerezMoraConnection {
     [Required,MaxLength(1000)] public string DownloadUrl { get; set; }="";
 }

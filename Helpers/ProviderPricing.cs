@@ -3,6 +3,13 @@ using System.Text.RegularExpressions;
 
 namespace AldaJoyeros.Catalog;
 
+public sealed record ProviderPriceBands(decimal A,decimal B,decimal C)
+{
+    public decimal Factor(decimal cost) => cost <= 100m ? A : cost <= 500m ? B : C;
+    public decimal Pvp(decimal cost) => ProviderPricing.Pvp(cost,Factor(cost));
+    public void Validate() { ProviderPricing.Pvp(0,A);ProviderPricing.Pvp(0,B);ProviderPricing.Pvp(0,C); }
+}
+
 public static class ProviderPricing
 {
     public static bool TryCoefficient(string? input,out decimal coefficient)
