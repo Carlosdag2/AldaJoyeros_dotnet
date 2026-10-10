@@ -14,5 +14,9 @@
             </div>
         }
     </div>
-    <div class="p-5 sm:p-6 bg-gray-50 border-t border-gray-100"><div class="flex justify-between items-center gap-3"><span class="font-semibold text-gray-900">Total del pedido</span><span class="text-2xl font-semibold tracking-tight text-gray-900">@Model.Total.ToString("C")</span></div><p class="text-xs text-gray-500 mt-3">@Model.Nota</p></div>
+    <div class="p-5 sm:p-6 bg-gray-50 border-t border-gray-100">
+        <div class="flex justify-between items-center gap-3"><span class="font-semibold text-gray-900">Total del pedido</span><span class="text-2xl font-semibold tracking-tight text-gray-900">@Model.Total.ToString("C")</span></div>
+        <p class="text-xs text-gray-500 mt-3">@Model.Nota</p>
+        <partial name="_AvisoPrecios" />
+    </div>
 </div>

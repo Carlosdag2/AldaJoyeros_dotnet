@@ -189,6 +189,10 @@
                     </div>
                 </div>
 
+                <div class="mb-4">
+                    <partial name="_AvisoPrecios" />
+                </div>
+
                 <!-- Contenedor de productos (se actualiza con AJAX) -->
                 <div id="productosContainer" x-ref="productosContainer">
                     @await Html.PartialAsync("_ProductosGrid", Model)
