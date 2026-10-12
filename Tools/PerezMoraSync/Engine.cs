@@ -38,7 +38,8 @@ public static class Engine {
             pricingBands.Validate();
             catalog = catalog with { Products = catalog.Products.Select(p => p with {
                 Category = p.Category.Length == 0 ? "" : AldaJoyeros.Catalog.CatalogTaxonomy.Specific(p.Category, p.Description,
-                    p.Fields.GetValueOrDefault("METAL", ""), p.Fields.GetValueOrDefault("TIPO", ""))
+                    p.Fields.GetValueOrDefault("METAL", ""), p.Fields.GetValueOrDefault("TIPO", ""),
+                    p.Category + " " + p.Subcategory + " " + p.Fields.GetValueOrDefault("GENERO", ""))
             }).ToArray() };
             foreach(var product in catalog.Products)pricingBands.Pvp(product.Price);
             var existing=new List<CurrentProduct>();

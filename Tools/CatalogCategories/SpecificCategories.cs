@@ -4,7 +4,7 @@ using System.Text.Json;
 
 static class SpecificCategories
 {
-    public static async Task Run(MySqlConnection sql, MySqlTransaction tx, string root, bool apply)
+    public static async Task Run(MySqlConnection sql, MySqlTransaction tx, string root, bool apply, bool earringsOnly = false)
     {
         async Task<List<Dictionary<string, object?>>> Rows(string query)
         {
@@ -41,7 +41,7 @@ static class SpecificCategories
             if (previous.TryGetValue(Id(product), out var state) &&
                 (state.GetProperty("manualCategory").GetBoolean() || state.GetProperty("lastCategory").GetInt64() != Id(product,"categoria_id"))) { manual++; continue; }
             var description = product["descripcion"]?.ToString() ?? "";
-            string metal = "", subtype = "";
+            string metal = "", subtype = "", context = "";
             if (metadata.TryGetValue(Id(product), out var provider) && provider != null)
             {
                 using var data = JsonDocument.Parse((string)provider["datos_json"]!);
@@ -49,12 +49,15 @@ static class SpecificCategories
                 {
                     if (data.RootElement.TryGetProperty("METAL", out var m)) metal = m.ToString();
                     if (data.RootElement.TryGetProperty("TIPO", out var t)) subtype = t.ToString();
+                    foreach (var field in new[] { "CATEGORIA", "SUBCATEGORIA", "GENERO" })
+                        if (data.RootElement.TryGetProperty(field, out var value)) context += " " + value.ToString();
                 }
                 else if (data.RootElement.TryGetProperty("attributes", out var attributes) && attributes.ValueKind == JsonValueKind.Array)
                     foreach (var attribute in attributes.EnumerateArray())
                         if (attribute.TryGetProperty("name", out var key) && key.GetString() == "Material Principal" && attribute.TryGetProperty("value", out var value)) metal = value.ToString();
             }
-            var target = CatalogTaxonomy.Specific(category, description, metal, subtype);
+            if (earringsOnly && !CatalogTaxonomy.IsEarring(category, description, subtype)) continue;
+            var target = CatalogTaxonomy.Specific(category, description, metal, subtype, context);
             if (target != category) changes.Add((Id(product), Id(product,"categoria_id"), target, !Convert.ToBoolean(product["eliminado"])));
         }
         var plan = changes.GroupBy(c => c.Name).OrderBy(g => g.Key).Select(g => new { name = g.Key, total = g.Count(), visible = g.Count(c => c.Visible) }).ToArray();

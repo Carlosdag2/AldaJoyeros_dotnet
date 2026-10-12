@@ -12,8 +12,8 @@ if(args.Contains("--check")) {
     foreach(var test in new[]{
         ("Anillos","18K SORTIJA ORO BLANCO","","Anillos · Oro de 18 quilates"),
         ("Anillos","SELLO DE ACERO","","Anillos · Sellos · Acero"),
-        ("Pendientes","ARO DE PLATA BAÑADO EN ORO","","Pendientes · Aros · Plata"),
-        ("Pendientes","PENDIENTES LARGOS 18K","","Pendientes · Largos · Oro de 18 quilates"),
+        ("Pendientes","ARO DE PLATA BAÑADO EN ORO","","Pendientes · Señora"),
+        ("Pendientes","PENDIENTES LARGOS 18K","","Pendientes · Señora"),
         ("Pulseras","PULSERA RÍGIDA","Plata","Pulseras · Rígidas · Plata"),
         ("Anillos","ANILLO BAÑADO EN ORO","","Anillos"),
         ("Anillos","ANILLO DE ORO","Acero","Anillos · Acero"),
@@ -24,7 +24,25 @@ if(args.Contains("--check")) {
         if(classified!=test.Item4 || CatalogTaxonomy.Normalize(classified)!=classified || CatalogTaxonomy.Specific(classified,test.Item2,test.Item3)!=classified)
             throw new Exception("Subcategoría incorrecta o inestable: "+test.Item2);
     }
-    Console.WriteLine("24 comprobaciones de clasificación y estabilidad superadas.");return;
+    foreach (var test in new[] {
+        ("Pendientes", "PENDIENTES ORO CIERRE TUERCA", "", "Tornillería o bebé"),
+        ("Pendientes", "PENDIENTES ROSCA", "", "Tornillería o bebé"),
+        ("Bebé", "18K PENDIENTES AROS", "", "Tornillería o bebé"),
+        ("Comunión e infantil", "18K PENDIENTES CIERRE PRESION", "", "Comunión"),
+        ("Pendientes", "PENDIENTES NIÑA", "", "Comunión"),
+        ("Pendientes rosca y presión", "PENDIENTES CIERRE PRESION", "", "Señora"),
+        ("Pendientes", "PENDIENTES COMUNIÓN CIERRE TUERCA", "", "Comunión"),
+        ("Pendientes", "PENDIENTES PLATA", "Bebé PENDIENTES BEBE", "Tornillería o bebé"),
+        ("Pendientes", "PENDIENTES PLATA", "Comunión e infantil", "Comunión")
+    }) {
+        var expected="Pendientes · "+test.Item4;
+        var classifiedAudience=CatalogTaxonomy.Specific(test.Item1,test.Item2,context:test.Item3);
+        if(classifiedAudience!=expected || CatalogTaxonomy.Specific(classifiedAudience,test.Item2,context:test.Item3)!=expected)
+            throw new Exception("Destinatario de pendientes incorrecto: "+test.Item2);
+    }
+    if(CatalogTaxonomy.Specific("Comunión e infantil","18K JUEGO PENDIENTES Y COLGANTE")!="Comunión e infantil")
+        throw new Exception("Un conjunto se ha convertido en pendientes.");
+    Console.WriteLine("Comprobaciones de clasificación, destinatarios y estabilidad superadas.");return;
 }
 var root=Path.GetFullPath(args.FirstOrDefault()??".");
 var config=new ConfigurationBuilder().SetBasePath(root).AddJsonFile("appsettings.json").AddJsonFile("appsettings.Local.json",true).Build();
@@ -35,7 +53,7 @@ foreach(var key in new[]{"alda_munreco_monthly","alda_munreco_import",pmLock}) {
     if(Convert.ToInt32(await mutex.ExecuteScalarAsync())!=1)throw new InvalidOperationException("Hay una importación en curso. Reintentar cuando termine.");
 }
 await using var tx=await sql.BeginTransactionAsync();
-if(args.Contains("--specific")){await SpecificCategories.Run(sql,tx,root,args.Contains("--apply"));return;}
+if(args.Contains("--specific") || args.Contains("--earrings")){await SpecificCategories.Run(sql,tx,root,args.Contains("--apply"),args.Contains("--earrings"));return;}
 async Task<List<Dictionary<string,object?>>> Rows(string query) {
     await using var command=new MySqlCommand(query,sql,tx);await using var reader=await command.ExecuteReaderAsync();var rows=new List<Dictionary<string,object?>>();
     while(await reader.ReadAsync()){var row=new Dictionary<string,object?>();for(var i=0;i<reader.FieldCount;i++)row[reader.GetName(i)]=reader.IsDBNull(i)?null:reader.GetValue(i);rows.Add(row);}return rows;
