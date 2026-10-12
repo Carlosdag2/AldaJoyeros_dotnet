@@ -44,12 +44,28 @@ public static class CatalogTaxonomy
 
     public static string Family(string name) => name == "Pérez Mora · Pendientes de revisar" ? name : name.Split(" · ")[0];
 
-    public static string Specific(string category, string description, string metal = "", string subtype = "")
+    public static bool IsEarring(string category, string description, string subtype = "")
+    {
+        var text = Key(description);
+        return Normalize(Family(category)) == "Pendientes" ||
+            (System.Text.RegularExpressions.Regex.IsMatch(Key(subtype) + " " + text, @"\bpendientes?\b")
+             && !System.Text.RegularExpressions.Regex.IsMatch(text, @"\b(?:juegos?|conjuntos?)\b"));
+    }
+
+    public static string Specific(string category, string description, string metal = "", string subtype = "", string context = "")
     {
         var family = Normalize(Family(category));
-        if (Group(family) is "Pendientes de organizar" or "Colecciones especiales" || family is "Smartwatches" or "Relojes" or "Relojes de bolsillo") return family;
         var text = Key(description);
         bool Has(string value, string pattern) => System.Text.RegularExpressions.Regex.IsMatch(value, pattern, System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+        if (IsEarring(category, description, subtype))
+        {
+            var audience = Key(category + " " + subtype + " " + context) + " " + text;
+            var audienceKind = Has(audience, @"\bcomunion\b") ? "Comunión"
+                : Has(audience, @"\b(?:bebes?|tornilleria)\b") || Has(text, @"\b(?:rosca|tornillos?|tuercas?)\b") ? "Tornillería o bebé"
+                : Has(audience, @"\b(?:infantil|ninas?|ninos?)\b") ? "Comunión" : "Señora";
+            return "Pendientes · " + audienceKind;
+        }
+        if (Group(family) is "Pendientes de organizar" or "Colecciones especiales" || family is "Smartwatches" or "Relojes" or "Relojes de bolsillo") return family;
         string Material(string value)
         {
             if (Has(value, @"\bplata\b")) return "Plata";
@@ -65,12 +81,8 @@ public static class CatalogTaxonomy
         var material = Material(Key(metal));
         if (material.Length == 0) material = Material(text);
         if (material.Length == 0 && family == "Oro de 9 quilates") material = family;
-        var typeText = string.IsNullOrWhiteSpace(subtype) ? text : Key(subtype) + " " + text;
         string? kind = family switch
         {
-            "Pendientes" when Has(typeText, @"\b(?:aros?|criollas?)\b") => "Aros",
-            "Pendientes" when Has(typeText, @"\b(?:largos?|colgantes?)\b") => "Largos",
-            "Pendientes" when Has(typeText, @"\bboton(?:es)?\b") => "Botón",
             "Anillos" when Has(text, @"\bsolitarios?\b") => "Solitarios",
             "Anillos" when Has(text, @"\bsellos?\b") => "Sellos",
             "Anillos" when Has(text, @"\btresillos?\b") => "Tresillos",

@@ -8,6 +8,13 @@
     var encodedUrl = Uri.EscapeDataString(productUrl);
     var encodedText = Uri.EscapeDataString(shareText);
     var nombreProductoJs = Model.Nombre.Replace("'", "\\'").Replace("\"", "\\\"");
+    var caracteristicasPublicas = Model.Caracteristicas
+        .Where(c => !c.Nombre.Contains("proveedor", StringComparison.OrdinalIgnoreCase))
+        .ToList();
+    var marcaNormalizada = (Model.Marca ?? "").Trim().Replace(" ", "").Replace("é", "e", StringComparison.OrdinalIgnoreCase);
+    var marcaPublica = marcaNormalizada.Equals("PerezMora", StringComparison.OrdinalIgnoreCase)
+        || marcaNormalizada.Equals("Munreco", StringComparison.OrdinalIgnoreCase) ? "" : Model.Marca;
+    var marcaColeccion = string.Join(" · ", new[] { marcaPublica, Model.Coleccion }.Where(x => !string.IsNullOrWhiteSpace(x)));
 }
 
 <div class="min-h-screen bg-white text-dark-800 animate-fade-in-up" x-data="carritoDetalle()">
@@ -137,7 +144,7 @@
                         @Model.Nombre
                     </h1>
 
-                    <div class="flex items-center justify-between">
+                    <div class="flex flex-wrap items-center justify-between gap-3">
                         <div class="flex items-center gap-4">
                             <span class="font-serif text-3xl text-dark-900">
                                 @Model.Precio.ToString("C")
@@ -148,7 +155,7 @@
                                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                                 <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
                             </span>
-                            En Stock
+                            Disponible en 72 horas
                         </div>
                     </div>
                     <partial name="_AvisoPrecios" />
@@ -162,16 +169,16 @@
                     </p>
                 </div>
 
-                @if (Model.Caracteristicas.Any())
+                @if (caracteristicasPublicas.Any())
                 {
                     <section class="mb-8 border-t border-gray-100 pt-6">
                         <h2 class="font-serif text-xl text-dark-900 mb-4">Características</h2>
-                        @if (!string.IsNullOrWhiteSpace(Model.Marca))
+                        @if (!string.IsNullOrWhiteSpace(marcaColeccion))
                         {
-                            <p class="text-sm text-gray-600 mb-4">@Model.Marca @(!string.IsNullOrWhiteSpace(Model.Coleccion) ? " · " + Model.Coleccion : "")</p>
+                            <p class="text-sm text-gray-600 mb-4">@marcaColeccion</p>
                         }
                         <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-sm">
-                            @foreach (var caracteristica in Model.Caracteristicas)
+                            @foreach (var caracteristica in caracteristicasPublicas)
                             {
                                 <div>
                                     <dt class="font-semibold text-gray-700">@caracteristica.Nombre</dt>
@@ -230,7 +237,7 @@
                         </div>
                         <div>
                             <h4 class="font-serif font-bold text-dark-900 text-sm">@(ViewBag.EcommerceEnabled == true ? "Envío Asegurado" : "Atención Personalizada")</h4>
-                            <p class="text-xs text-gray-500 mt-1">@(ViewBag.EcommerceEnabled == true ? "Entrega gratuita y segura en 24-48h laborales." : "Consulta las características y disponibilidad de esta pieza en tienda.")</p>
+                            <p class="text-xs text-gray-500 mt-1">@(ViewBag.EcommerceEnabled == true ? "Disponible en 72 horas. Envío gratuito y seguro." : "Disponible en 72 horas. Consulta esta pieza en tienda.")</p>
                         </div>
                     </div>
                     <div class="flex items-start gap-4">
