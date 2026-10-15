@@ -62,7 +62,10 @@ public sealed class AdminPerezMoraController(PerezMoraStore store,PerezMoraSourc
         return RedirectToAction(nameof(Index));
     }
     [HttpGet] public async Task<IActionResult> Informe(string id,string tipo="resultado",CancellationToken ct=default) {
-        if(!Guid.TryParseExact(id,"N",out _)||tipo is not ("resultado" or "comparacion" or "revision" or "error")||!(await store.Jobs(ct)).Any(x=>x.Id==id))return NotFound();
-        var file=Path.Combine(source.Run(id),tipo+".json");return System.IO.File.Exists(file)?PhysicalFile(file,"application/json",$"perez-mora-{id}-{tipo}.json"):NotFound();
+        if(!Guid.TryParseExact(id,"N",out _)||tipo is not ("resultado" or "comparacion" or "revision" or "error"))return NotFound();
+        var job=(await store.Jobs(ct)).FirstOrDefault(x=>x.Id==id);if(job==null)return NotFound();
+        var file=Path.Combine(source.Run(id),tipo+".json");if(!System.IO.File.Exists(file))return NotFound();
+        var pdf=await AldaJoyeros.Services.SupplierReportPdf.GenerateAsync("Pérez Mora",id,job.Trigger,job.State,job.CreatedUtc,job.EndedUtc,file,ct);
+        return File(pdf,"application/pdf",$"perez-mora-{id}-{tipo}.pdf");
     }
 }
