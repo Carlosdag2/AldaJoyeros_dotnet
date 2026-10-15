@@ -46,8 +46,9 @@ public sealed class AdminMunrecoController(MunrecoStore store,MunrecoSession ses
     [HttpGet]
     public async Task<IActionResult> Informe(string id,string tipo="resultado",CancellationToken ct=default) {
         if(!Guid.TryParseExact(id,"N",out _) || tipo is not ("resultado" or "comparacion" or "verificacion-mensual" or "error"))return NotFound();
-        if(!(await store.Jobs(ct)).Any(x=>x.Id==id))return NotFound();
+        var job=(await store.Jobs(ct)).FirstOrDefault(x=>x.Id==id);if(job==null)return NotFound();
         var path=Path.Combine(paths.Run(id),tipo+".json");if(!System.IO.File.Exists(path))return NotFound();
-        return PhysicalFile(path,"application/json",$"munreco-{id}-{tipo}.json");
+        var pdf=await AldaJoyeros.Services.SupplierReportPdf.GenerateAsync("Munreco",id,job.Trigger,job.State,job.CreatedUtc,job.EndedUtc,path,ct);
+        return File(pdf,"application/pdf",$"munreco-{id}-{tipo}.pdf");
     }
 }

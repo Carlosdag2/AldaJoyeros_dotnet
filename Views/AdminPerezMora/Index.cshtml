@@ -108,11 +108,11 @@
                     }else{<span>—</span>}
                     </td><td class="p-3">@if(job.State is "completed" or "previewed"){
                         if(job.State=="completed"){
-                            <a asp-action="Informe" asp-route-id="@job.Id" class="text-emerald-700 underline block">Resultado</a>
-                            <a asp-action="Informe" asp-route-id="@job.Id" asp-route-tipo="revision" class="text-emerald-700 underline block mt-2">Productos ocultos y revisión</a>
+                            <a asp-action="Informe" asp-route-id="@job.Id" class="text-emerald-700 underline block">Resultado (PDF)</a>
+                            <a asp-action="Informe" asp-route-id="@job.Id" asp-route-tipo="revision" class="text-emerald-700 underline block mt-2">Productos ocultos y revisión (PDF)</a>
                         }
-                        <a asp-action="Informe" asp-route-id="@job.Id" asp-route-tipo="comparacion" class="text-emerald-700 underline block mt-2">Referencias afectadas</a>
-                    }else if(job.State=="failed"){<a asp-action="Informe" asp-route-id="@job.Id" asp-route-tipo="error" class="text-emerald-700 underline">Incidencia</a>}</td></tr>}
+                        <a asp-action="Informe" asp-route-id="@job.Id" asp-route-tipo="comparacion" class="text-emerald-700 underline block mt-2">Cambios detectados (PDF)</a>
+                    }else if(job.State=="failed"){<a asp-action="Informe" asp-route-id="@job.Id" asp-route-tipo="error" class="text-emerald-700 underline">Incidencia (PDF)</a>}</td></tr>}
             </tbody></table></div>}
         </section>
     </div>
