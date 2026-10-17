@@ -1,280 +1,131 @@
 @model AldaJoyeros.DTOs.PedidoDto
+@using AldaJoyeros.Helpers
 @{
     ViewData["Title"] = $"Pedido #{Model.Id}";
+    var estado = PedidoPresentacion.Desde(Model.Estado);
+    var unidades = Model.LineasPedido.Sum(x => x.Cantidad);
+    var pasos = new[] { ("Recibido", "fa-clipboard-check"), ("En preparaci贸n", "fa-box"), ("Enviado", "fa-truck"), ("Entregado", "fa-check-circle") };
 }
-
 <partial name="_AdminConfirmModal" />
-
-<div class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
-    <!-- Header -->
-    <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
-        <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\"60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%239C92AC\" fill-opacity=\"0.05\"%3E%3Cpath d=\"M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-40"></div>
-        <div class="absolute top-0 right-0 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
-        
-        <div class="relative container mx-auto px-6 py-8">
-            <nav class="flex items-center gap-2 text-sm text-slate-400 mb-4">
-                <a asp-controller="Admin" asp-action="Index" class="hover:text-white transition-colors"><i class="fas fa-home"></i></a>
-                <i class="fas fa-chevron-right text-xs"></i>
-                <a asp-action="Index" class="hover:text-white transition-colors">Pedidos</a>
-                <i class="fas fa-chevron-right text-xs"></i>
-                <span class="text-white">#@Model.Id</span>
+<div class="min-h-screen bg-slate-50 pb-12">
+    <header class="bg-slate-900 text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-9 sm:pt-8 sm:pb-12">
+            <nav aria-label="Ruta de navegaci贸n" class="flex flex-wrap items-center gap-2 text-xs text-slate-400 mb-6">
+                <a asp-controller="Admin" asp-action="Index" class="hover:text-white">Administraci贸n</a>
+                <i class="fas fa-chevron-right text-[9px]" aria-hidden="true"></i>
+                <a asp-action="Index" class="hover:text-white">Pedidos</a>
+                <i class="fas fa-chevron-right text-[9px]" aria-hidden="true"></i>
+                <span class="text-slate-200">#@Model.Id</span>
             </nav>
-            
-            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                <div class="flex items-center gap-4">
-                    <div class="w-14 h-14 bg-gradient-to-br from-amber-400 to-orange-500 rounded-2xl flex items-center justify-center shadow-xl shadow-amber-500/25">
-                        <i class="fas fa-box text-white text-2xl"></i>
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div class="min-w-0">
+                    <p class="text-xs font-semibold uppercase tracking-widest text-emerald-300 mb-2">Gesti贸n de pedidos</p>
+                    <div class="flex flex-wrap items-center gap-3">
+                        <h1 class="text-3xl sm:text-4xl font-bold tracking-tight">Pedido #@Model.Id</h1>
+                        <partial name="_PedidoEstado" model="estado" />
                     </div>
-                    <div>
-                        <h1 class="text-2xl md:text-3xl font-bold text-white">Pedido #@Model.Id</h1>
-                        <p class="text-slate-400 text-sm mt-1">@Model.Fecha?.ToString("dd/MM/yyyy 'a las' HH:mm")</p>
-                    </div>
+                    <p class="text-sm text-slate-300 mt-3"><i class="far fa-calendar-alt mr-2" aria-hidden="true"></i>@(Model.Fecha?.ToString("dd MMM yyyy 路 HH:mm") ?? "Fecha no registrada")</p>
                 </div>
-                <div class="flex items-center gap-3">
-                    @switch(Model.Estado)
-                    {
-                        case "PENDIENTE":
-                            <span class="inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold bg-yellow-500 text-white shadow-lg"><i class="fas fa-clock mr-2"></i>Pendiente</span>
-                            break;
-                        case "EN_PROCESO":
-                            <span class="inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold bg-blue-500 text-white shadow-lg"><i class="fas fa-sync-alt mr-2"></i>En Proceso</span>
-                            break;
-                        case "ENVIADO":
-                            <span class="inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold bg-purple-500 text-white shadow-lg"><i class="fas fa-shipping-fast mr-2"></i>Enviado</span>
-                            break;
-                        case "ENTREGADO":
-                            <span class="inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold bg-green-500 text-white shadow-lg"><i class="fas fa-check-circle mr-2"></i>Entregado</span>
-                            break;
-                        case "CANCELADO":
-                            <span class="inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold bg-red-500 text-white shadow-lg"><i class="fas fa-times-circle mr-2"></i>Cancelado</span>
-                            break;
-                    }
-                    <a asp-action="EditarEstado" asp-route-id="@Model.Id" class="inline-flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-xl font-medium transition-all border border-white/10">
-                        <i class="fas fa-edit"></i>Cambiar Estado
-                    </a>
-                </div>
+                <a asp-action="EditarEstado" asp-route-id="@Model.Id" class="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 px-5 py-3 text-sm font-semibold text-slate-950 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-emerald-300">
+                    <i class="fas fa-pen" aria-hidden="true"></i>Cambiar estado
+                </a>
             </div>
         </div>
-    </div>
-
-    <div class="container mx-auto px-6 py-8">
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Main Content -->
-            <div class="lg:col-span-2 space-y-6">
-                <!-- Products -->
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                    <div class="p-5 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white">
-                        <h2 class="font-semibold text-slate-800 flex items-center gap-2">
-                            <i class="fas fa-shopping-bag text-emerald-500"></i>
-                            Productos (@Model.LineasPedido.Count)
-                        </h2>
+    </header>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 sm:mt-8">
+        <a asp-action="Index" class="inline-flex items-center gap-2 mb-6 text-sm font-medium text-slate-500 hover:text-emerald-700"><i class="fas fa-arrow-left" aria-hidden="true"></i>Volver a pedidos</a>
+        <dl class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
+            <div class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5"><dt class="text-xs font-medium text-slate-500 mb-2">Total del pedido</dt><dd class="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 break-words">@Model.Total.ToString("C")</dd></div>
+            <div class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5"><dt class="text-xs font-medium text-slate-500 mb-2">Art铆culos</dt><dd class="text-xl sm:text-2xl font-bold text-slate-900">@unidades <span class="text-xs font-normal text-slate-500">@(unidades == 1 ? "unidad" : "unidades")</span></dd></div>
+            <div class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5"><dt class="text-xs font-medium text-slate-500 mb-2">Entrega estimada</dt><dd class="text-sm sm:text-base font-semibold text-slate-900">@(Model.FechaEntregaEstimada?.ToString("dd/MM/yyyy") ?? "Sin fecha prevista")</dd></div>
+            <div class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5"><dt class="text-xs font-medium text-slate-500 mb-2">Entrega registrada</dt><dd class="text-sm sm:text-base font-semibold text-slate-900">@(Model.FechaEntregaReal?.ToString("dd/MM/yyyy") ?? "Sin registrar")</dd></div>
+        </dl>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+            <div class="lg:col-span-2 min-w-0 space-y-6">
+                <section aria-labelledby="articulos-titulo" class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div class="p-5 sm:p-6 border-b border-slate-100 flex flex-wrap items-center justify-between gap-2">
+                        <h2 id="articulos-titulo" class="font-semibold text-lg text-slate-900">Art铆culos del pedido</h2>
+                        <span class="text-xs font-medium text-slate-500 bg-slate-100 rounded-full px-3 py-1">@Model.LineasPedido.Count @(Model.LineasPedido.Count == 1 ? "l铆nea" : "l铆neas")</span>
                     </div>
-                    <div class="p-5 space-y-4">
-                        @foreach(var l in Model.LineasPedido)
+                    <div class="hidden sm:grid grid-cols-12 gap-4 px-6 py-3 bg-slate-50 text-xs font-medium text-slate-500" aria-hidden="true"><span class="col-span-7">Producto</span><span class="col-span-2 text-center">Cantidad</span><span class="col-span-3 text-right">Importe</span></div>
+                    <div class="divide-y divide-slate-100">
+                        @foreach (var linea in Model.LineasPedido)
                         {
-                            <div class="flex items-center gap-4 bg-slate-50 rounded-xl p-4 border border-slate-100">
-                                <div class="w-16 h-16 bg-white rounded-lg overflow-hidden flex items-center justify-center shadow-sm">
-                                    @if(l.Producto?.TieneImagenes == true)
-                                    {
-                                        <img src="@l.Producto.ImagenPrincipal" alt="@l.ProductoNombre" class="w-full h-full object-cover"/>
-                                    }
-                                    else
-                                    {
-                                        <i class="fas fa-gem text-slate-300 text-xl"></i>
-                                    }
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <h3 class="font-semibold text-slate-800 truncate">@l.ProductoNombre</h3>
-                                    <div class="flex items-center gap-3 mt-1 text-sm">
-                                        <span class="text-slate-500">Cantidad: <span class="font-medium text-slate-700">@l.Cantidad</span></span>
-                                        <span class="text-slate-500">Precio: <span class="font-medium text-emerald-600">@l.Precio.ToString("C")</span></span>
+                            <div class="p-4 sm:p-6 grid grid-cols-1 sm:grid-cols-12 gap-3 sm:gap-4 sm:items-center">
+                                <div class="sm:col-span-7 flex items-start gap-3 sm:gap-4 min-w-0">
+                                    <div class="w-16 h-20 sm:w-20 sm:h-24 shrink-0 rounded-xl border border-slate-100 bg-slate-50 overflow-hidden">
+                                        @if (linea.Producto?.TieneImagenes == true)
+                                        {
+                                            <img src="@linea.Producto.ImagenPrincipal" alt="" loading="lazy" class="w-full h-full object-contain p-1" />
+                                        }
+                                        else
+                                        {
+                                            <div class="w-full h-full flex items-center justify-center text-slate-300"><i class="fas fa-gem text-xl" aria-hidden="true"></i><span class="sr-only">Sin imagen</span></div>
+                                        }
+                                    </div>
+                                    <div class="min-w-0 py-1">
+                                        <h3 class="text-sm font-semibold text-slate-900 break-words">@(string.IsNullOrWhiteSpace(linea.ProductoNombre) ? "Producto no disponible" : linea.ProductoNombre)</h3>
+                                        <p class="text-xs text-slate-500 mt-2 break-words">@linea.Precio.ToString("C") / unidad</p>
                                     </div>
                                 </div>
-                                <div class="text-right">
-                                    <div class="text-xs text-slate-400">Subtotal</div>
-                                    <div class="text-lg font-bold text-emerald-600">@l.Subtotal.ToString("C")</div>
-                                </div>
+                                <div class="sm:col-span-2 flex sm:justify-center items-center gap-2 text-sm text-slate-600"><span class="sm:hidden">Cantidad:</span><span class="inline-flex items-center justify-center min-w-[2rem] rounded-lg bg-slate-100 px-2 py-1 font-semibold text-slate-800">@linea.Cantidad</span></div>
+                                <div class="sm:col-span-3 flex items-center justify-between gap-2 sm:justify-end text-sm font-semibold text-slate-900"><span class="sm:hidden text-slate-500 font-normal">Importe</span><span>@linea.Subtotal.ToString("C")</span></div>
                             </div>
+                        }
+                        @if (!Model.LineasPedido.Any())
+                        {
+                            <div class="text-center px-5 py-10"><i class="fas fa-box-open text-2xl text-slate-300 mb-3" aria-hidden="true"></i><p class="text-sm text-slate-500">No hay art铆culos registrados en este pedido.</p></div>
                         }
                     </div>
-                    <div class="p-5 border-t border-slate-100 bg-gradient-to-r from-emerald-50 to-green-50">
-                        <div class="flex justify-between items-center">
-                            <span class="font-semibold text-slate-800">Total del Pedido</span>
-                            <span class="text-2xl font-bold text-emerald-600">@Model.Total.ToString("C")</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Timeline -->
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
-                    <h2 class="font-semibold text-slate-800 mb-4 flex items-center gap-2">
-                        <i class="fas fa-history text-blue-500"></i>Historial
-                    </h2>
-                    <div class="space-y-4">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 bg-emerald-500 rounded-lg flex items-center justify-center">
-                                <i class="fas fa-check text-white"></i>
-                            </div>
-                            <div>
-                                <div class="font-medium text-slate-800">Pedido Creado</div>
-                                <div class="text-sm text-slate-500">@Model.Fecha?.ToString("dd/MM/yyyy HH:mm")</div>
-                            </div>
-                        </div>
-                        @if(Model.Estado != "PENDIENTE" && Model.Estado != "CANCELADO")
-                        {
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
-                                    <i class="fas fa-cog text-white"></i>
-                                </div>
-                                <div>
-                                    <div class="font-medium text-slate-800">En Proceso</div>
-                                    <div class="text-sm text-slate-500">Preparando pedido</div>
-                                </div>
-                            </div>
-                        }
-                        @if(Model.Estado == "ENVIADO" || Model.Estado == "ENTREGADO")
-                        {
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
-                                    <i class="fas fa-shipping-fast text-white"></i>
-                                </div>
-                                <div>
-                                    <div class="font-medium text-slate-800">Enviado</div>
-                                    <div class="text-sm text-slate-500">Entrega estimada: @Model.FechaEntregaEstimada?.ToString("dd/MM/yyyy")</div>
-                                </div>
-                            </div>
-                        }
-                        @if(Model.Estado == "ENTREGADO" && Model.FechaEntregaReal.HasValue)
-                        {
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center">
-                                    <i class="fas fa-check-double text-white"></i>
-                                </div>
-                                <div>
-                                    <div class="font-medium text-green-700">Entregado</div>
-                                    <div class="text-sm text-slate-500">@Model.FechaEntregaReal?.ToString("dd/MM/yyyy HH:mm")</div>
-                                </div>
-                            </div>
-                        }
-                    </div>
-                </div>
+                    <div class="p-5 sm:p-6 bg-emerald-50 border-t border-emerald-100 flex flex-wrap items-center justify-between gap-3"><div><p class="font-semibold text-slate-900">Total del pedido</p><p class="text-xs text-slate-500 mt-1">Importe registrado en el pedido</p></div><p class="text-2xl font-bold tracking-tight text-emerald-800">@Model.Total.ToString("C")</p></div>
+                </section>
+                <section aria-labelledby="seguimiento-titulo" class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6">
+                    <h2 id="seguimiento-titulo" class="font-semibold text-lg text-slate-900">Seguimiento del pedido</h2>
+                    <p class="text-sm text-slate-500 mt-1">Estado actual: <span class="font-medium text-slate-700">@estado.Etiqueta</span></p>
+                    @if (estado.Paso >= 0)
+                    {
+                        <ol class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-5" aria-label="Fases del pedido">
+                            @for (var i = 0; i < pasos.Length; i++)
+                            {
+                                var actual = i == estado.Paso;
+                                <li aria-current="@(actual ? "step" : null)" class="rounded-xl border p-3 @(actual ? "border-emerald-200 bg-emerald-50" : "border-slate-100 bg-slate-50")">
+                                    <span class="w-8 h-8 rounded-full flex items-center justify-center mb-3 @(i <= estado.Paso ? "bg-emerald-600 text-white" : "bg-slate-200 text-slate-500")"><i class="fas @pasos[i].Item2 text-xs" aria-hidden="true"></i></span>
+                                    <span class="block text-xs font-semibold text-slate-800">@pasos[i].Item1</span>
+                                    <span class="block text-[11px] mt-1 text-slate-500">@(actual ? "Estado actual" : i < estado.Paso ? "Fase anterior" : "Pendiente")</span>
+                                </li>
+                            }
+                        </ol>
+                    }
+                    else
+                    {
+                        <div class="flex items-center gap-3 rounded-xl p-4 mt-5 @estado.Color"><i class="fas @estado.Icono" aria-hidden="true"></i><p class="text-sm">@(estado.Grupo == "cancelados" ? "Este pedido est谩 cancelado." : "No hay seguimiento disponible para este estado.")</p></div>
+                    }
+                </section>
             </div>
-
-            <!-- Sidebar -->
-            <div class="space-y-6">
-                <!-- Customer Info -->
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
-                    <h3 class="font-semibold text-slate-800 mb-4 flex items-center gap-2">
-                        <i class="fas fa-user text-blue-500"></i>Cliente
-                    </h3>
-                    <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
-                        <div class="text-sm text-slate-500 mb-1">Email</div>
-                        <div class="font-medium text-slate-800">@Model.UsuarioEmail</div>
-                        <div class="text-sm text-slate-500 mt-3 mb-1">ID Usuario</div>
-                        <div class="font-medium text-slate-800">#@Model.UsuarioId</div>
+            <aside aria-label="Cliente y gesti贸n del pedido" class="min-w-0 space-y-6">
+                <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6">
+                    <div class="flex items-center gap-3 mb-5"><span class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center"><i class="far fa-user" aria-hidden="true"></i></span><h2 class="font-semibold text-lg text-slate-900">Cliente</h2></div>
+                    <dl class="space-y-4 text-sm"><div><dt class="text-xs text-slate-500 mb-1">Correo electr贸nico</dt><dd class="font-medium text-slate-800 break-all">@(string.IsNullOrWhiteSpace(Model.UsuarioEmail) ? "Sin correo registrado" : Model.UsuarioEmail)</dd></div><div><dt class="text-xs text-slate-500 mb-1">N煤mero de cliente</dt><dd class="font-medium text-slate-800">@(Model.UsuarioId.HasValue ? $"#{Model.UsuarioId}" : "No disponible")</dd></div></dl>
+                    <div class="border-t border-slate-100 pt-5 mt-5"><h3 class="font-semibold text-sm text-slate-900 mb-3"><i class="fas fa-map-marker-alt text-slate-400 mr-2" aria-hidden="true"></i>Direcci贸n de entrega</h3>
+                        @if (Model.Direccion != null)
+                        {
+                            <address class="not-italic text-sm text-slate-600 break-words leading-relaxed"><p class="font-medium text-slate-800">@Model.Direccion.Calle, @Model.Direccion.Numero</p>@if (!string.IsNullOrWhiteSpace(Model.Direccion.Piso)) { <p>@Model.Direccion.Piso</p> }<p>@Model.Direccion.CodigoPostal @Model.Direccion.Ciudad</p><p>@Model.Direccion.Provincia</p></address>
+                        }
+                        else
+                        {
+                            <p class="text-sm text-slate-500">No hay una direcci贸n registrada.</p>
+                        }
                     </div>
-                </div>
-
-                <!-- Address -->
-                @if(Model.Direccion != null)
-                {
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
-                        <h3 class="font-semibold text-slate-800 mb-4 flex items-center gap-2">
-                            <i class="fas fa-map-marker-alt text-red-500"></i>Direcci髇 de Env韔
-                        </h3>
-                        <div class="bg-red-50 border border-red-200 rounded-xl p-4">
-                            <address class="not-italic text-sm text-slate-700 space-y-1">
-                                <div class="font-medium text-slate-800">@Model.Direccion.Calle, @Model.Direccion.Numero</div>
-                                @if(!string.IsNullOrEmpty(Model.Direccion.Piso))
-                                {
-                                    <div>@Model.Direccion.Piso</div>
-                                }
-                                <div>@Model.Direccion.CodigoPostal - @Model.Direccion.Ciudad</div>
-                                <div>@Model.Direccion.Provincia</div>
-                            </address>
-                        </div>
-                    </div>
-                }
-
-                <!-- Actions -->
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
-                    <h3 class="font-semibold text-slate-800 mb-4 flex items-center gap-2">
-                        <i class="fas fa-bolt text-amber-500"></i>Acciones
-                    </h3>
-                    <div class="space-y-2">
-                        <a asp-action="EditarEstado" asp-route-id="@Model.Id" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-medium transition-all">
-                            <i class="fas fa-edit"></i>Cambiar Estado
-                        </a>
-                        <a href="/Pedidos/@Model.Id/Factura" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-amber-500 hover:bg-amber-600 text-white rounded-xl font-medium transition-all">
-                            <i class="fas fa-file-invoice"></i>Descargar Factura
-                        </a>
-                        <form asp-action="Eliminar" asp-route-id="@Model.Id" method="post" id="deleteOrderForm">
-                            <button type="button" onclick="confirmDelete('deleteOrderForm', 'Pedido #@Model.Id')" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-xl font-medium transition-all">
-                                <i class="fas fa-trash"></i>Eliminar
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Navigation -->
-        <div class="mt-8 flex flex-wrap gap-3">
-            <a asp-action="Index" class="inline-flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-200 text-slate-600 hover:border-slate-300 rounded-xl transition-all font-medium">
-                <i class="fas fa-arrow-left"></i>Volver a Pedidos
-            </a>
-            <a asp-controller="Admin" asp-action="Index" class="inline-flex items-center gap-2 px-5 py-2.5 text-slate-500 hover:text-slate-700 transition-all font-medium">
-                <i class="fas fa-home"></i>Ir al Panel
-            </a>
+                </section>
+                <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6">
+                    <h2 class="font-semibold text-lg text-slate-900">Factura</h2><p class="text-sm text-slate-500 mt-2 mb-5">Descarga el documento de este pedido en PDF.</p>
+                    <a href="@Url.Content($"~/Pedidos/{Model.Id}/Factura")" class="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-slate-900 hover:bg-slate-800 px-4 py-3 text-white font-semibold text-sm transition-colors"><i class="fas fa-file-download" aria-hidden="true"></i>Descargar factura</a>
+                </section>
+                <section class="rounded-2xl border border-red-100 bg-white p-5 sm:p-6">
+                    <h2 class="font-semibold text-sm text-slate-800">Eliminar pedido</h2><p class="text-xs text-slate-500 leading-relaxed mt-2 mb-4">Si necesitas cancelar el pedido, utiliza el cambio de estado para conservar su registro.</p>
+                    <form asp-action="Eliminar" asp-route-id="@Model.Id" method="post" id="deleteOrderForm"><button type="button" onclick="confirmDelete('deleteOrderForm', 'Pedido #@Model.Id')" class="w-full inline-flex items-center justify-center gap-2 rounded-xl border border-red-200 px-4 py-2.5 text-sm font-medium text-red-700 hover:bg-red-50 transition-colors"><i class="far fa-trash-alt" aria-hidden="true"></i>Eliminar pedido</button></form>
+                </section>
+            </aside>
         </div>
     </div>
 </div>
-
-@section Scripts {
-    <script>
-        async function enviarFacturaAdmin(pedidoId) {
-            const btn = document.getElementById('btnEnviarFactura');
-            const originalHtml = btn.innerHTML;
-            
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
-            
-            try {
-                const response = await fetch(`/Pedidos/${pedidoId}/EnviarFactura`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    btn.innerHTML = '<i class="fas fa-check"></i> nviada!';
-                    btn.classList.remove('bg-purple-500', 'hover:bg-purple-600');
-                    btn.classList.add('bg-green-500');
-                    setTimeout(() => {
-                        btn.innerHTML = originalHtml;
-                        btn.classList.remove('bg-green-500');
-                        btn.classList.add('bg-purple-500', 'hover:bg-purple-600');
-                        btn.disabled = false;
-                    }, 3000);
-                } else {
-                    btn.innerHTML = '<i class="fas fa-times"></i> Error';
-                    btn.classList.remove('bg-purple-500', 'hover:bg-purple-600');
-                    btn.classList.add('bg-red-500');
-                    setTimeout(() => {
-                        btn.innerHTML = originalHtml;
-                        btn.classList.remove('bg-red-500');
-                        btn.classList.add('bg-purple-500', 'hover:bg-purple-600');
-                        btn.disabled = false;
-                    }, 3000);
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                btn.innerHTML = originalHtml;
-                btn.disabled = false;
-            }
-        }
-    </script>
-}
