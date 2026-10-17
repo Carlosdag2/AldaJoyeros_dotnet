@@ -11,15 +11,17 @@ namespace AldaJoyeros.Services.Implementations
         private readonly ICarritoRepository _carritoRepository;
         private readonly IProductoRepository _productoRepository;
         private readonly IMapper _mapper;
+        private readonly AldaJoyeros.Services.CatalogoService _catalogo;
 
         public CarritoService(
             ICarritoRepository carritoRepository,
             IProductoRepository productoRepository,
-            IMapper mapper)
+            IMapper mapper, AldaJoyeros.Services.CatalogoService catalogo)
         {
             _carritoRepository = carritoRepository;
             _productoRepository = productoRepository;
             _mapper = mapper;
+            _catalogo = catalogo;
         }
 
         public async Task<IEnumerable<CarritoItemDto>> GetByUsuarioIdAsync(long usuarioId)
@@ -30,6 +32,8 @@ namespace AldaJoyeros.Services.Implementations
 
         public async Task<CarritoItemDto> AddItemAsync(long usuarioId, CarritoItemCreateDto carritoItemCreateDto)
         {
+            if (!await _catalogo.IsPurchasableAsync(carritoItemCreateDto.ProductoId))
+                throw new InvalidOperationException("Selecciona una talla disponible en la ficha del producto antes de añadirlo al carrito.");
             var producto = await _productoRepository.GetByIdAsync(carritoItemCreateDto.ProductoId);
             if (producto == null)
             {

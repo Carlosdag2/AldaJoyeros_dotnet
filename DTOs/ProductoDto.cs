@@ -9,6 +9,8 @@ namespace AldaJoyeros.DTOs
         public string Valor { get; set; } = string.Empty;
     }
 
+    public sealed record ProductoTallaDto(long ProductoId, string Referencia, string Talla, double Precio);
+
     public class ProductoDto
     {
         public long Id { get; set; }
@@ -40,6 +42,11 @@ namespace AldaJoyeros.DTOs
         public string? ImagenPrincipal => Imagenes.FirstOrDefault(i => i.EsPrincipal)?.ImagenBase64 
                                           ?? Imagenes.OrderBy(i => i.Orden).FirstOrDefault()?.ImagenBase64;
         public bool TieneImagenes => Imagenes.Any();
+        public List<ProductoTallaDto> Tallas { get; set; } = new();
+        public long? ProductoSeleccionadoId { get; set; }
+        public string? ReferenciaSeleccionada { get; set; }
+        public bool TieneTallas => Tallas.Count > 0;
+        public bool PrecioDesde => TieneTallas && !ProductoSeleccionadoId.HasValue;
     }
 
     public class ProductoCreateDto

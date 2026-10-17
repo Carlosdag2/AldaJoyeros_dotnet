@@ -28,6 +28,9 @@ namespace AldaJoyeros.Mappings
             // Producto mappings
             CreateMap<Producto, ProductoDto>()
                 .ForMember(dest => dest.CategoriaNombre, opt => opt.MapFrom(src => src.Categoria != null ? src.Categoria.Nombre : string.Empty))
+                .ForMember(dest => dest.Tallas, opt => opt.Ignore())
+                .ForMember(dest => dest.ProductoSeleccionadoId, opt => opt.Ignore())
+                .ForMember(dest => dest.ReferenciaSeleccionada, opt => opt.Ignore())
                 .ForMember(dest => dest.Imagenes, opt => opt.Ignore()); // Las imágenes vienen de MongoDB ahora
             CreateMap<ProductoCreateDto, Producto>();
             CreateMap<ProductoUpdateDto, Producto>()

@@ -7,13 +7,13 @@ namespace AldaJoyeros.Controllers
 {
     public class HomeController : BaseController
     {
-        private readonly IProductoService _productoService;
+        private readonly AldaJoyeros.Services.CatalogoService _catalogo;
         private readonly ICategoriaService _categoriaService;
         private readonly AldaJoyeros.Services.FeaturedProductsStore _featured;
 
-        public HomeController(IProductoService productoService, ICategoriaService categoriaService, AldaJoyeros.Services.FeaturedProductsStore featured)
+        public HomeController(AldaJoyeros.Services.CatalogoService catalogo, ICategoriaService categoriaService, AldaJoyeros.Services.FeaturedProductsStore featured)
         {
-            _productoService = productoService;
+            _catalogo = catalogo;
             _categoriaService = categoriaService;
             _featured = featured;
         }
@@ -21,10 +21,12 @@ namespace AldaJoyeros.Controllers
         public async Task<IActionResult> Index()
         {
             var ids = await _featured.GetIdsAsync();
-            var active = (await _productoService.GetAllAsync(cargarImagenes: false)).ToDictionary(p => p.Id);
-            var productos = ids.Where(active.ContainsKey).Select(id => active[id]).ToList();
-            await _productoService.CargarImagenesAsync(productos);
+            var families = await _catalogo.FamiliesAsync();
+            var productos = ids.Select(id => families.FirstOrDefault(f => f.Members.Any(p => p.Id == id && !p.Eliminado))?.Product)
+                .OfType<AldaJoyeros.DTOs.ProductoDto>().DistinctBy(p => p.Id).ToList();
+            await _catalogo.LoadImagesAsync(productos);
             var categorias = await _categoriaService.GetAllAsync();
+            foreach (var c in categorias) c.CantidadProductos = families.Count(f => f.Product.CategoriaId == c.Id);
             
             ViewBag.Categorias = categorias.Where(c => c.CantidadProductos > 0 && c.Grupo != "Pendientes de organizar")
                 .OrderBy(c => AldaJoyeros.Catalog.CatalogTaxonomy.GroupOrder(c.Grupo)).ThenBy(c => c.Nombre).ToArray();
