@@ -40,7 +40,7 @@ namespace AldaJoyeros.Controllers
             var userId = User.GetUserId();
             if (!userId.HasValue)
             {
-                return RedirectToAction("Login", "Auth");
+                return RedirectToAction("Login", "Auth", new { returnUrl = Request.PathBase + Request.Path + Request.QueryString });
             }
 
             var pedido = await _pedidoService.GetByIdAsync(id);
@@ -60,7 +60,7 @@ namespace AldaJoyeros.Controllers
             var usuario = await _usuarioService.GetByIdAsync(userId.Value);
             if (usuario == null)
             {
-                return RedirectToAction("Login", "Auth");
+                return RedirectToAction("Login", "Auth", new { returnUrl = Request.PathBase + Request.Path + Request.QueryString });
             }
 
             try

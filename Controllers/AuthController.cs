@@ -36,8 +36,10 @@ namespace AldaJoyeros.Controllers
         [HttpGet]
         public IActionResult Login(string? returnUrl = null)
         {
+            returnUrl = Url.IsLocalUrl(returnUrl) ? returnUrl : null;
             if (IsAuthenticated)
             {
+                if (returnUrl != null) return LocalRedirect(returnUrl);
                 return RedirectToAction("Index", "Home");
             }
             
@@ -48,6 +50,7 @@ namespace AldaJoyeros.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginDto loginDto, string? returnUrl = null, bool RememberMe = false)
         {
+            returnUrl = Url.IsLocalUrl(returnUrl) ? returnUrl : null;
             if (!ModelState.IsValid)
             {
                 TempData["Warning"] = "Por favor, completa todos los campos";
@@ -86,7 +89,7 @@ namespace AldaJoyeros.Controllers
 
                 if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                 {
-                    return Redirect(returnUrl);
+                    return LocalRedirect(returnUrl);
                 }
 
                 if (usuario.Rol == "ADMIN")
@@ -115,8 +118,10 @@ namespace AldaJoyeros.Controllers
         [HttpGet]
         public IActionResult Register(string? returnUrl = null)
         {
+            returnUrl = Url.IsLocalUrl(returnUrl) ? returnUrl : null;
             if (IsAuthenticated)
             {
+                if (returnUrl != null) return LocalRedirect(returnUrl);
                 return RedirectToAction("Index", "Home");
             }
             
@@ -127,6 +132,7 @@ namespace AldaJoyeros.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(UsuarioCreateDto usuarioCreateDto, string? returnUrl = null)
         {
+            returnUrl = Url.IsLocalUrl(returnUrl) ? returnUrl : null;
             if (!ModelState.IsValid)
             {
                 TempData["Warning"] = "Por favor, revisa los campos del formulario";
@@ -151,7 +157,7 @@ namespace AldaJoyeros.Controllers
                 {
                     TempData["Warning"] = "Cuenta creada. Por favor, inicia sesión manualmente.";
                     ViewBag.ReturnUrl = returnUrl;
-                    return RedirectToAction("Login");
+                    return RedirectToAction("Login", new { returnUrl });
                 }
                 
                 var token = _jwtService.GenerateToken(loggedUser);
@@ -171,7 +177,7 @@ namespace AldaJoyeros.Controllers
                 if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                 {
                     TempData["Success"] = $"¡Bienvenido a Alda Joyeros, {loggedUser.Email.Split('@')[0]}! Tu cuenta ha sido creada.";
-                    return Redirect(returnUrl);
+                    return LocalRedirect(returnUrl);
                 }
 
                 if (HttpContext.Items[AldaJoyeros.Services.StoreModeStore.ContextKey] is true && TempCarritoHelper.HasItems(HttpContext))

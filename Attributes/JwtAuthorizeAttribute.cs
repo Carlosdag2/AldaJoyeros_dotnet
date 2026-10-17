@@ -26,7 +26,7 @@ namespace AldaJoyeros.Attributes
             // Verificar autenticación usando ClaimsPrincipal
             if (!user.IsAuthenticated())
             {
-                var returnUrl = context.HttpContext.Request.Path + context.HttpContext.Request.QueryString;
+                var returnUrl = context.HttpContext.Request.PathBase + context.HttpContext.Request.Path + context.HttpContext.Request.QueryString;
                 context.Result = new RedirectToActionResult("Login", "Auth", new { returnUrl });
                 return;
             }
