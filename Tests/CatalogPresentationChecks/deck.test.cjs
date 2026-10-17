@@ -21,3 +21,17 @@ assert.equal(duplicates.items.length, 2);
 const repeatBoundary = new CatalogDeck([{ id: 1 }, { id: 2 }], () => 0);
 assert.deepEqual(Array.from({ length: 8 }, () => repeatBoundary.next().id), [2, 1, 2, 1, 2, 1, 2, 1]);
 console.log('PASS: vueltas completas, sin duplicados, límites entre vueltas, catálogo vacío, único y 28.000 productos.');
+for (const size of [0, 1, 2, 17, 28000]) {
+    const deck = new CatalogDeck(Array.from({ length: size }, (_, id) => ({ id })));
+    const seen = new Set();
+    for (let i = 0; i < size; i++) seen.add(deck.next(false).id);
+    assert.equal(seen.size, size);
+    assert.equal(deck.next(false), null, 'Debe detenerse al terminar la selección');
+    assert.equal(deck.next(false), null, 'No debe empezar otra vuelta por precarga');
+    if (!size) continue;
+    const last = deck.lastId;
+    const first = deck.next(true);
+    if (size > 1) assert.notEqual(first.id, last, 'Activar el bucle no debe repetir el último producto');
+    assert.equal(deck.round, 2);
+}
+console.log('PASS: una vuelta finita y activación posterior del bucle, incluido un único producto.');

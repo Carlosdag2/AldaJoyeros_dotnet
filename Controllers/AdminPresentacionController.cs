@@ -1,6 +1,7 @@
 using System.Globalization;
 using AldaJoyeros.Attributes;
 using AldaJoyeros.Data;
+using AldaJoyeros.DTOs;
 using AldaJoyeros.Models.MongoDB;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,13 +13,29 @@ namespace AldaJoyeros.Controllers;
 [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
 public sealed class AdminPresentacionController(AldaJoyerosContext sql, MongoDbContext mongo) : BaseController
 {
-    [HttpGet] public IActionResult Index() => View();
-    [HttpGet] public IActionResult Reproducir() => View();
+    [HttpGet]
+    public async Task<IActionResult> Index(CancellationToken ct) => View(await sql.Categorias.AsNoTracking()
+        .Where(c => c.Productos.Any(p => !p.Eliminado)).OrderBy(c => c.Nombre)
+        .Select(c => new CategoriaDto { Id = c.Id, Nombre = c.Nombre }).ToListAsync(ct));
 
     [HttpGet]
-    public async Task<IActionResult> Catalogo(CancellationToken ct)
+    public async Task<IActionResult> Reproducir(long? categoriaId, CancellationToken ct)
     {
-        var products = await sql.Productos.AsNoTracking().Where(p => !p.Eliminado)
+        CategoriaDto? categoria = null;
+        if (categoriaId.HasValue)
+        {
+            categoria = await sql.Categorias.AsNoTracking().Where(c => c.Id == categoriaId.Value)
+                .Select(c => new CategoriaDto { Id = c.Id, Nombre = c.Nombre }).SingleOrDefaultAsync(ct);
+            if (categoria == null) return NotFound();
+        }
+        return View(categoria);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Catalogo(CancellationToken ct, long? categoriaId = null)
+    {
+        var products = await sql.Productos.AsNoTracking()
+            .Where(p => !p.Eliminado && (!categoriaId.HasValue || p.CategoriaId == categoriaId.Value))
             .OrderBy(p => p.Id).Select(p => new { p.Id, p.Nombre, p.Descripcion, p.Precio,
                 Categoria = p.Categoria != null ? p.Categoria.Nombre : "Joyas y relojes" }).ToListAsync(ct);
         var filter = Builders<ProductoImagenMongo>.Filter.In(x => x.ProductoId, products.Select(p => p.Id))

@@ -1,3 +1,4 @@
+@model IEnumerable<AldaJoyeros.DTOs.CategoriaDto>
 @{ ViewData["Title"] = "Presentación del catálogo"; }
 <div class="min-h-screen bg-stone-50 px-4 py-10 sm:py-16">
     <div class="mx-auto max-w-5xl">
@@ -12,10 +13,26 @@
                 <div class="grid gap-5 sm:grid-cols-3">
                     <div class="rounded-2xl bg-stone-50 p-5"><i class="fas fa-clock text-emerald-700" aria-hidden="true"></i><h2 class="mt-3 font-semibold">Cada 5 segundos</h2><p class="mt-2 text-sm leading-relaxed text-stone-600">Una pieza a la vez, con su fotografía, referencia y precio.</p></div>
                     <div class="rounded-2xl bg-stone-50 p-5"><i class="fas fa-shuffle text-emerald-700" aria-hidden="true"></i><h2 class="mt-3 font-semibold">Sin repetir en cada vuelta</h2><p class="mt-2 text-sm leading-relaxed text-stone-600">Los productos aparecen en orden aleatorio hasta completar el catálogo.</p></div>
-                    <div class="rounded-2xl bg-stone-50 p-5"><i class="fas fa-repeat text-emerald-700" aria-hidden="true"></i><h2 class="mt-3 font-semibold">Un bucle continuo</h2><p class="mt-2 text-sm leading-relaxed text-stone-600">Al terminar, se mezclan de nuevo. Puedes pausar y usar pantalla completa.</p></div>
+                    <div class="rounded-2xl bg-stone-50 p-5"><i class="fas fa-repeat text-emerald-700" aria-hidden="true"></i><h2 class="mt-3 font-semibold">Tú eliges qué mostrar</h2><p class="mt-2 text-sm leading-relaxed text-stone-600">Todo el catálogo en bucle o una categoría con aviso al terminar y opción de repetir.</p></div>
                 </div>
                 <p class="mt-6 text-sm leading-relaxed text-stone-500">Se muestran únicamente productos visibles con imagen. Necesitas mantener la web y la conexión disponibles. La pantalla intentará mantenerse encendida si el dispositivo lo permite.</p>
-                <a asp-action="Reproducir" class="mt-7 inline-flex w-full items-center justify-center gap-3 rounded-xl bg-emerald-800 px-6 py-4 font-semibold text-white hover:bg-emerald-900 sm:w-auto"><i class="fas fa-play" aria-hidden="true"></i>Abrir presentación</a>
+                <form asp-action="Reproducir" method="get" class="mt-7 rounded-2xl border border-stone-200 bg-stone-50 p-5 sm:p-6">
+                    <label for="categoriaId" class="block font-semibold text-stone-900">¿Qué quieres enseñar?</label>
+                    <select id="categoriaId" name="categoriaId" class="mt-3 w-full rounded-xl border border-stone-300 bg-white px-3 py-3 text-sm text-stone-900 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-200" aria-describedby="category-help">
+                        <option value="">Todos los productos de la tienda</option>
+                        @foreach (var grupo in Model.GroupBy(c => c.Grupo).OrderBy(g => g.Key))
+                        {
+                            <optgroup label="@grupo.Key">
+                                @foreach (var categoria in grupo)
+                                {
+                                    <option value="@categoria.Id">@categoria.Nombre</option>
+                                }
+                            </optgroup>
+                        }
+                    </select>
+                    <p id="category-help" class="mt-3 text-sm leading-relaxed text-stone-600">Al elegir una categoría, la presentación se detiene al finalizar. Podrás repetir una vuelta, activar el bucle o elegir otra categoría.</p>
+                    <button type="submit" class="mt-5 inline-flex w-full items-center justify-center gap-3 rounded-xl bg-emerald-800 px-6 py-4 font-semibold text-white hover:bg-emerald-900 sm:w-auto"><i class="fas fa-play" aria-hidden="true"></i>Abrir presentación</button>
+                </form>
             </div>
         </div>
     </div>
