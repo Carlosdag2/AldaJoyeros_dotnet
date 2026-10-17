@@ -5,6 +5,7 @@ using AldaJoyeros.Configuration;
 using AldaJoyeros.Services.Interfaces;
 using AldaJoyeros.DTOs;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Http.Extensions;
 
 namespace AldaJoyeros.Services.Implementations
 {
@@ -12,11 +13,13 @@ namespace AldaJoyeros.Services.Implementations
     {
         private readonly EmailSettings _emailSettings;
         private readonly ILogger<EmailService> _logger;
+        private readonly IHttpContextAccessor? _httpContextAccessor;
 
-        public EmailService(IOptions<EmailSettings> emailSettings, ILogger<EmailService> logger)
+        public EmailService(IOptions<EmailSettings> emailSettings, ILogger<EmailService> logger, IHttpContextAccessor? httpContextAccessor = null)
         {
             _emailSettings = emailSettings.Value;
             _logger = logger;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task SendEmailAsync(string to, string subject, string htmlBody)
@@ -103,15 +106,30 @@ namespace AldaJoyeros.Services.Implementations
                 ? _emailSettings.SenderEmail
                 : _emailSettings.OwnerEmail;
             var subject = $"Nuevo pedido #{pedido.Id} - Alda Joyeros 1962";
-            var htmlBody = EmailTemplates.NewOrder(pedido, customerEmail, paymentMethod, _emailSettings.BaseUrl);
+            var htmlBody = GetNewOrderNotificationEmailTemplate(pedido, customerEmail, paymentMethod);
             await SendEmailAsync(recipient, subject, htmlBody);
         }
 
         private string GetOrderConfirmationWithInvoiceEmailTemplate(PedidoDto pedido, string numeroFactura)
-            => EmailTemplates.Order(pedido, numeroFactura, _emailSettings.BaseUrl);
+            => EmailTemplates.Order(pedido, numeroFactura, GetApplicationBaseUrl());
 
         private string GetInvoiceEmailTemplate(PedidoDto pedido, string numeroFactura)
-            => EmailTemplates.Invoice(pedido, numeroFactura, _emailSettings.BaseUrl);
+            => EmailTemplates.Invoice(pedido, numeroFactura, GetApplicationBaseUrl());
+
+        private string GetNewOrderNotificationEmailTemplate(PedidoDto pedido, string customerEmail, string paymentMethod)
+            => EmailTemplates.NewOrder(pedido, customerEmail, paymentMethod, GetApplicationBaseUrl());
+
+        private string GetApplicationBaseUrl()
+        {
+            var request = _httpContextAccessor?.HttpContext?.Request;
+            // Usar el mismo origen de la petición que el restablecimiento de contraseña.
+            // El middleware de cabeceras reenviadas reconoce HTTPS detrás de Tailscale o de un proxy configurado.
+            if (request != null && request.Host.HasValue && request.Scheme is "http" or "https")
+                return UriHelper.BuildAbsolute(request.Scheme, request.Host, request.PathBase).TrimEnd('/');
+
+            // Los envíos sin petición HTTP (por ejemplo, futuras tareas de fondo) usan la URL configurada.
+            return _emailSettings.BaseUrl.TrimEnd('/');
+        }
 
         private string GetPasswordResetEmailTemplate(string verifyLink, string code)
             => EmailTemplates.Password(verifyLink, code);
