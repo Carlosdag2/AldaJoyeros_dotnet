@@ -154,6 +154,7 @@ namespace AldaJoyeros
             builder.Services.AddScoped<IJwtService, JwtService>();
 
             // Registrar Servicio de Email
+            builder.Services.AddHttpContextAccessor();
             builder.Services.AddScoped<IEmailService, EmailService>();
 
             // Registrar Servicio de Facturas
