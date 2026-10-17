@@ -1,0 +1,22 @@
+@{ ViewData["Title"] = "Presentación del catálogo"; }
+<div class="min-h-screen bg-stone-50 px-4 py-10 sm:py-16">
+    <div class="mx-auto max-w-5xl">
+        <a asp-controller="Admin" asp-action="Index" class="text-sm font-medium text-emerald-800 hover:underline"><i class="fas fa-arrow-left mr-2" aria-hidden="true"></i>Volver al panel</a>
+        <div class="mt-6 overflow-hidden rounded-3xl border border-stone-200 bg-white shadow-sm">
+            <div class="bg-emerald-950 px-6 py-10 text-white sm:px-10 sm:py-14">
+                <span class="text-xs font-semibold uppercase tracking-widest text-emerald-200">Una ventana a tu colección</span>
+                <h1 class="mt-4 font-serif text-3xl sm:text-5xl">El catálogo, en movimiento</h1>
+                <p class="mt-5 max-w-2xl text-base leading-relaxed text-emerald-100">Deja que tus clientes descubran las piezas de Alda Joyeros mientras están en la tienda. Una presentación automática para la tablet o una pantalla.</p>
+            </div>
+            <div class="p-6 sm:p-10">
+                <div class="grid gap-5 sm:grid-cols-3">
+                    <div class="rounded-2xl bg-stone-50 p-5"><i class="fas fa-clock text-emerald-700" aria-hidden="true"></i><h2 class="mt-3 font-semibold">Cada 5 segundos</h2><p class="mt-2 text-sm leading-relaxed text-stone-600">Una pieza a la vez, con su fotografía, referencia y precio.</p></div>
+                    <div class="rounded-2xl bg-stone-50 p-5"><i class="fas fa-shuffle text-emerald-700" aria-hidden="true"></i><h2 class="mt-3 font-semibold">Sin repetir en cada vuelta</h2><p class="mt-2 text-sm leading-relaxed text-stone-600">Los productos aparecen en orden aleatorio hasta completar el catálogo.</p></div>
+                    <div class="rounded-2xl bg-stone-50 p-5"><i class="fas fa-repeat text-emerald-700" aria-hidden="true"></i><h2 class="mt-3 font-semibold">Un bucle continuo</h2><p class="mt-2 text-sm leading-relaxed text-stone-600">Al terminar, se mezclan de nuevo. Puedes pausar y usar pantalla completa.</p></div>
+                </div>
+                <p class="mt-6 text-sm leading-relaxed text-stone-500">Se muestran únicamente productos visibles con imagen. Necesitas mantener la web y la conexión disponibles. La pantalla intentará mantenerse encendida si el dispositivo lo permite.</p>
+                <a asp-action="Reproducir" class="mt-7 inline-flex w-full items-center justify-center gap-3 rounded-xl bg-emerald-800 px-6 py-4 font-semibold text-white hover:bg-emerald-900 sm:w-auto"><i class="fas fa-play" aria-hidden="true"></i>Abrir presentación</a>
+            </div>
+        </div>
+    </div>
+</div>

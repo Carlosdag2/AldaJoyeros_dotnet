@@ -1,0 +1,55 @@
+@{ Layout = null; }
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Catálogo en tienda | Alda Joyeros</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+    <style>
+        [hidden] { display: none !important; }
+        body { font-family: Inter, sans-serif; } .display-serif { font-family: 'Playfair Display', Georgia, serif; }
+        #stage-image { transition: opacity .3s ease; } .presentation-controls { transition: opacity .3s ease; }
+        .controls-hidden .presentation-controls:not(:focus-within) { opacity: 0; pointer-events: none; }
+        @@media (prefers-reduced-motion: reduce) { #stage-image, .presentation-controls { transition: none; } }
+    </style>
+</head>
+<body class="min-h-screen bg-stone-50 text-stone-900" data-catalog-url="@Url.Action("Catalogo")">
+    <main class="relative flex min-h-screen flex-col">
+        <header class="flex items-center justify-between gap-4 px-5 py-5 sm:px-10">
+            <div><p class="display-serif text-xl tracking-wide sm:text-2xl">ALDA JOYEROS</p><p class="mt-1 text-[10px] uppercase tracking-[.25em] text-stone-500">Desde 1962</p></div>
+            <p class="hidden text-xs uppercase tracking-widest text-stone-500 sm:block">Piezas que acompañan tu historia</p>
+        </header>
+        <section id="slide" hidden class="flex flex-1 flex-col items-center justify-center gap-5 px-5 pb-24 sm:px-10 lg:flex-row lg:gap-12">
+            <div class="flex w-full items-center justify-center overflow-hidden rounded-3xl bg-white p-4 lg:w-3/5">
+                <img id="stage-image" alt="" class="h-[40vh] w-full object-contain sm:h-[48vh] lg:h-[64vh]" />
+            </div>
+            <div class="w-full max-w-xl lg:w-2/5">
+                <p id="category" class="text-xs font-semibold uppercase tracking-widest text-emerald-800"></p>
+                <h1 id="product-name" class="display-serif mt-4 break-words text-2xl leading-snug sm:text-3xl lg:text-4xl"></h1>
+                <p id="reference" class="mt-4 break-words text-sm text-stone-500"></p>
+                <p id="price" class="display-serif mt-5 text-3xl sm:text-4xl lg:text-5xl"></p>
+                <p class="mt-3 text-xs text-stone-500">Precios de contado, salvo error tipográfico.</p>
+                <p class="mt-6 inline-flex rounded-full bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-800">Disponible en 72 horas</p>
+            </div>
+        </section>
+        <section id="status" class="mx-auto flex max-w-xl flex-1 flex-col items-center justify-center px-6 pb-24 text-center" aria-live="polite">
+            <h1 class="display-serif text-3xl sm:text-4xl">Elige una pieza. Descubre una historia.</h1>
+            <p id="status-text" class="mt-5 leading-relaxed text-stone-600">Pulsa comenzar para iniciar la presentación automática del catálogo.</p>
+            <button id="start" type="button" class="mt-7 rounded-xl bg-emerald-800 px-8 py-4 font-semibold text-white hover:bg-emerald-900">Comenzar presentación</button>
+        </section>
+        <nav aria-label="Controles de presentación" class="presentation-controls fixed inset-x-0 bottom-0 flex flex-wrap items-center justify-center gap-2 border-t border-stone-200 bg-white/95 px-3 py-3 backdrop-blur sm:justify-between sm:px-8">
+            <a href="@Url.Action("Index")" class="rounded-lg px-3 py-2 text-sm text-stone-600 hover:bg-stone-100">Salir</a>
+            <p id="progress" class="text-xs text-stone-500" aria-live="off">Cada 5 segundos · Orden aleatorio</p>
+            <div class="flex gap-2">
+                <button id="pause" type="button" disabled class="rounded-lg px-3 py-2 text-sm font-semibold hover:bg-stone-100 disabled:opacity-40">Pausar</button>
+                <button id="next" type="button" disabled class="rounded-lg px-3 py-2 text-sm font-semibold hover:bg-stone-100 disabled:opacity-40">Siguiente</button>
+                <button id="fullscreen" type="button" class="rounded-lg bg-emerald-800 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-900">Pantalla completa</button>
+            </div>
+        </nav>
+    </main>
+    <script src="~/js/catalog-deck.js" asp-append-version="true"></script>
+    <script src="~/js/catalog-presentation.js" asp-append-version="true"></script>
+</body>
+</html>
