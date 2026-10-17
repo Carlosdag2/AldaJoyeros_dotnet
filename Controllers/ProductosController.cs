@@ -9,17 +9,17 @@ namespace AldaJoyeros.Controllers
 {
     public class ProductosController : BaseController
     {
-        private readonly IProductoService _productoService;
+        private readonly AldaJoyeros.Services.CatalogoService _catalogo;
         private readonly ICategoriaService _categoriaService;
         private readonly ICompositeViewEngine _viewEngine;
         private const int PageSize = 12;
 
         public ProductosController(
-            IProductoService productoService, 
+            AldaJoyeros.Services.CatalogoService catalogo,
             ICategoriaService categoriaService,
             ICompositeViewEngine viewEngine)
         {
-            _productoService = productoService;
+            _catalogo = catalogo;
             _categoriaService = categoriaService;
             _viewEngine = viewEngine;
         }
@@ -29,7 +29,9 @@ namespace AldaJoyeros.Controllers
             // Una búsqueda de texto siempre consulta todo el catálogo.
             if (!string.IsNullOrWhiteSpace(busqueda)) categoriaId = null;
             var categorias = await _categoriaService.GetAllAsync();
-            ViewBag.TotalCatalogProducts = categorias.Sum(c => c.CantidadProductos);
+            var allCatalog = await _catalogo.GetAsync();
+            foreach (var c in categorias) c.CantidadProductos = allCatalog.Count(p => p.CategoriaId == c.Id);
+            ViewBag.TotalCatalogProducts = allCatalog.Count;
             foreach (var categoria in categorias.Where(c => !c.Nombre.Contains(" · ")))
                 categoria.CantidadProductos += categorias.Where(c => c.Nombre.StartsWith(categoria.Nombre + " · ", StringComparison.Ordinal)).Sum(c => c.CantidadProductos);
             ViewBag.Categorias = categorias.Where(c => c.CantidadProductos > 0 && c.Grupo != "Pendientes de organizar")
@@ -37,21 +39,10 @@ namespace AldaJoyeros.Controllers
             ViewBag.CategoriaSeleccionada = categoriaId;
             ViewBag.Busqueda = busqueda;
 
-            IEnumerable<DTOs.ProductoDto> productos;
-            
-            if (!string.IsNullOrWhiteSpace(busqueda))
-            {
-                productos = await _productoService.BuscarAsync(busqueda, cargarImagenes: false);
-            }
-            else
-            {
-                productos = categoriaId.HasValue
-                    ? await _productoService.GetByCategoriaAsync(categoriaId.Value, cargarImagenes: false)
-                    : await _productoService.GetAllAsync(cargarImagenes: false);
-            }
+            var productos = await _catalogo.GetAsync(categoriaId, busqueda);
 
             var pagedResult = PagedResult<DTOs.ProductoDto>.Create(productos, page, PageSize);
-            await _productoService.CargarImagenesAsync(pagedResult.Items);
+            await _catalogo.LoadImagesAsync(pagedResult.Items);
 
             // Si es petición AJAX, devolver solo el partial
             if (Request.Headers.XRequestedWith == "XMLHttpRequest")
@@ -68,21 +59,10 @@ namespace AldaJoyeros.Controllers
         [HttpGet]
         public async Task<IActionResult> Filtrar(long? categoriaId, string busqueda = "", int page = 1)
         {
-            IEnumerable<DTOs.ProductoDto> productos;
-            
-            if (!string.IsNullOrWhiteSpace(busqueda))
-            {
-                productos = await _productoService.BuscarAsync(busqueda, cargarImagenes: false);
-            }
-            else
-            {
-                productos = categoriaId.HasValue
-                    ? await _productoService.GetByCategoriaAsync(categoriaId.Value, cargarImagenes: false)
-                    : await _productoService.GetAllAsync(cargarImagenes: false);
-            }
+            var productos = await _catalogo.GetAsync(categoriaId, busqueda);
 
             var pagedResult = PagedResult<DTOs.ProductoDto>.Create(productos, page, PageSize);
-            await _productoService.CargarImagenesAsync(pagedResult.Items);
+            await _catalogo.LoadImagesAsync(pagedResult.Items);
 
             return Json(new
             {
@@ -131,7 +111,8 @@ namespace AldaJoyeros.Controllers
                 return Json(new { sugerencias = Array.Empty<object>() });
             }
 
-            var productos = await _productoService.BuscarAsync(q, limite: Math.Clamp(limite, 1, 20));
+            var productos = await _catalogo.GetAsync(busqueda: q, limite: Math.Clamp(limite, 1, 20));
+            await _catalogo.LoadImagesAsync(productos);
 
             var sugerencias = productos.Select(p => new
             {
@@ -139,7 +120,7 @@ namespace AldaJoyeros.Controllers
                 nombre = p.Nombre,
                 categoria = p.CategoriaNombre,
                 precio = p.Precio,
-                precioFormateado = p.Precio.ToString("C"),
+                precioFormateado = (p.PrecioDesde ? "Desde " : "") + p.Precio.ToString("C"),
                 imagen = p.ImagenPrincipal,
                 tieneImagen = p.TieneImagenes
             }).ToList();
@@ -150,16 +131,16 @@ namespace AldaJoyeros.Controllers
             return Json(new { sugerencias });
         }
 
-        public async Task<IActionResult> Detalle(long id)
+        public async Task<IActionResult> Detalle(long id, long? tallaId = null)
         {
-            var producto = await _productoService.GetByIdActiveAsync(id);
+            var producto = await _catalogo.DetailAsync(id, tallaId);
             if (producto == null)
             {
                 TempData["Error"] = "Este producto no está disponible";
                 return RedirectToAction("Index");
             }
 
-            ViewBag.ProductosRelacionados = await _productoService.GetRelatedAsync(producto);
+            ViewBag.ProductosRelacionados = await _catalogo.RelatedAsync(producto);
             return View(producto);
         }
     }

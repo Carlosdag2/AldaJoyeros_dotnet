@@ -140,6 +140,7 @@ namespace AldaJoyeros
             builder.Services.AddScoped<IUsuarioService, UsuarioService>();
             builder.Services.AddScoped<ICategoriaService, CategoriaService>();
             builder.Services.AddScoped<IProductoService, ProductoService>();
+            builder.Services.AddScoped<AldaJoyeros.Services.CatalogoService>();
             builder.Services.AddScoped<ICarritoService, CarritoService>();
             builder.Services.AddScoped<IDireccionService, DireccionService>();
             builder.Services.AddScoped<IPedidoService, PedidoService>();

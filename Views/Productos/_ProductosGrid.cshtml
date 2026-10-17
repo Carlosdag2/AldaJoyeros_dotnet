@@ -49,12 +49,14 @@
                     <div class="absolute inset-x-0 bottom-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-t from-white/90 to-transparent">
                         @if (ViewBag.EcommerceEnabled == true)
                         {
-                            <button type="button"
+                            @if (producto.TieneTallas)
+                            { <a asp-controller="Productos" asp-action="Detalle" asp-route-id="@producto.Id" class="inline-flex w-full items-center justify-center rounded-lg bg-emerald-900 px-4 py-3 text-xs font-semibold uppercase tracking-widest text-white hover:bg-emerald-800">Elegir talla</a> }
+                            else { <button type="button"
                                     onclick="window.carritoApp?.agregarAlCarrito(@producto.Id, '@producto.Nombre.Replace("'", "\\'").Replace("\"", "\\\"")', event)"
                                     class="btn-agregar-carrito w-full py-3 bg-emerald-900 text-white text-xs uppercase tracking-widest font-bold hover:bg-black transition-colors flex items-center justify-center gap-2">
                                 <span class="btn-texto">Añadir al carrito</span>
                                 <span class="btn-loading hidden"><i class="fas fa-circle-notch fa-spin"></i> Añadiendo...</span>
-                            </button>
+                            </button> }
                         }
                     </div>
 
@@ -69,7 +71,7 @@
                     <h3 class="font-serif text-lg text-stone-900 group-hover:text-emerald-800 transition-colors">
                         <a href="/Productos/Detalle/@producto.Id">@producto.Nombre</a>
                     </h3>
-                    <div class="font-serif text-emerald-800">@producto.Precio.ToString("C")</div>
+                    <div class="font-serif text-emerald-800">@(producto.PrecioDesde ? "Desde " : "")@producto.Precio.ToString("C")</div>
                 </div>
             </div>
         }
@@ -102,17 +104,19 @@
                     </h3>
                     <p class="text-sm text-stone-500 mb-4 line-clamp-2">@producto.Descripcion</p>
                     <div class="flex items-center justify-between mt-auto gap-4">
-                        <span class="font-serif text-2xl text-stone-900">@producto.Precio.ToString("C")</span>
+                        <span class="font-serif text-2xl text-stone-900">@(producto.PrecioDesde ? "Desde " : "")@producto.Precio.ToString("C")</span>
                         <div class="flex items-center gap-3">
                             @if (ViewBag.EcommerceEnabled == true)
                             {
-                                <button type="button"
+                                @if (producto.TieneTallas)
+                                { <a asp-controller="Productos" asp-action="Detalle" asp-route-id="@producto.Id" class="inline-flex w-full items-center justify-center rounded-lg bg-emerald-900 px-4 py-3 text-xs font-semibold uppercase tracking-widest text-white hover:bg-emerald-800">Elegir talla</a> }
+                                else { <button type="button"
                                         onclick="window.carritoApp?.agregarAlCarrito(@producto.Id, '@producto.Nombre.Replace("'", "\\'").Replace("\"", "\\\"")', event)"
                                         class="btn-agregar-carrito px-4 py-2 bg-emerald-900 text-white text-xs uppercase tracking-widest font-bold hover:bg-black transition-colors flex items-center gap-2">
                                     <i class="fas fa-shopping-bag btn-icon"></i>
                                     <i class="fas fa-circle-notch fa-spin btn-loading hidden"></i>
                                     <span class="hidden sm:inline btn-texto">Añadir</span>
-                                </button>
+                                </button> }
                             }
                             <a href="/Productos/Detalle/@producto.Id" class="text-xs uppercase tracking-widest font-bold text-stone-900 border-b border-stone-900 pb-0.5 hover:text-emerald-800 hover:border-emerald-800 transition-colors">
                                 Ver Detalles

@@ -143,7 +143,9 @@
                                 <div class="absolute inset-x-0 bottom-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
                                     @if (ViewBag.EcommerceEnabled == true)
                                     {
-                                        <button type="button"
+                                        @if (producto.TieneTallas)
+                                        { <a asp-controller="Productos" asp-action="Detalle" asp-route-id="@producto.Id" class="inline-flex w-full items-center justify-center rounded-lg bg-emerald-900 px-4 py-3 text-xs font-semibold uppercase tracking-widest text-white hover:bg-emerald-800">Elegir talla</a> }
+                                        else { <button type="button"
                                                 @@click="agregarAlCarrito(@producto.Id, '@producto.Nombre.Replace("'", "\\'").Replace("\"", "\\\"")', $event)"
                                                 class="w-full bg-emerald-600 text-white py-3 text-xs uppercase tracking-widest hover:bg-emerald-700 transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                                                 :disabled="cargandoProducto === @producto.Id">
@@ -153,7 +155,7 @@
                                             <span x-show="cargandoProducto === @producto.Id" class="flex items-center gap-2">
                                                 <i class="fas fa-circle-notch fa-spin"></i> Añadiendo...
                                             </span>
-                                        </button>
+                                        </button> }
                                     }
                                 </div>
                             </div>
@@ -166,7 +168,7 @@
                                     </a>
                                 </h3>
                                 <p class="text-emerald-600 font-serif text-xl font-semibold">
-                                    @producto.Precio.ToString("C")
+                                    @(producto.PrecioDesde ? "Desde " : "")@producto.Precio.ToString("C")
                                 </p>
 
                                 <!-- View Details Link -->
