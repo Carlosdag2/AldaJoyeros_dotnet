@@ -2,7 +2,11 @@
 
 En Administración > Presentación del catálogo, abrir la presentación y pulsar Comenzar. Muestra una pieza cada cinco segundos, con imagen, descripción breve, referencia, categoría, precio y disponibilidad en 72 horas. La pantalla de reproducción no incluye navegación de administración, carrito ni datos de proveedor.
 
-Cada vuelta mezcla todos los productos visibles con imagen mediante Fisher-Yates. No repite referencias dentro de la vuelta ni el último producto de una vuelta inmediatamente al iniciar la siguiente, salvo que solo haya un producto. Las piezas ocultas y sin imagen se excluyen. El listado se toma al iniciar; para incorporar nuevas referencias, salir y volver a comenzar. Si una pieza se oculta durante la reproducción, la descarga de su imagen se rechaza y se pasa a otra.
+Antes de abrirla se puede elegir todos los productos o una categoría concreta. La selección de categoría se aplica en MySQL antes de consultar las imágenes de MongoDB: no se descargan productos de otras categorías. Solo se ofrecen categorías con productos visibles; si no tienen fotos se muestra un aviso y se puede volver a elegir. Una categoría inexistente no abre la presentación.
+
+Todo el catálogo conserva el bucle automático. Una categoría muestra una sola vuelta y, tras los cinco segundos del último producto, se detiene con el aviso «Has terminado la presentación». El administrador puede repetir una vuelta, activar la repetición continua o elegir otra categoría. La barra inferior permite cambiar de categoría en cualquier momento. La precarga respeta el final de la vuelta y no adelanta un producto de la siguiente antes de que el administrador lo decida.
+
+Cada vuelta mezcla los productos visibles con imagen de la selección mediante Fisher-Yates. No repite referencias dentro de la vuelta ni el último producto de una vuelta inmediatamente al iniciar la siguiente, salvo que solo haya un producto. Las piezas ocultas y sin imagen se excluyen. El listado se toma al iniciar; para incorporar nuevas referencias, salir y volver a comenzar. Si una pieza se oculta durante la reproducción, la descarga de su imagen se rechaza y se pasa a otra.
 
 Pausar/Continuar, Siguiente y Pantalla completa están disponibles en la barra inferior, que se oculta durante la reproducción y reaparece al tocar, mover el ratón o usar el teclado. Espacio pausa y flecha derecha avanza. Pantalla completa requiere un navegador compatible; se solicita mantener encendida la pantalla cuando el dispositivo lo permite. Si no lo permite, configurar el tiempo de suspensión del dispositivo.
 

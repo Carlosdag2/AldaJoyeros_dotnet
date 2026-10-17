@@ -5,8 +5,9 @@
             this.items = [...new Map(items.map(item => [item.id, item])).values()];
             this.random = random; this.order = []; this.position = 0; this.round = 0; this.lastId = null;
         }
-        next() {
+        next(repeat = true) {
             if (!this.items.length) return null;
+            if (!repeat && this.round > 0 && this.position >= this.order.length) return null;
             if (this.position >= this.order.length) {
                 this.order = [...this.items];
                 for (let i = this.order.length - 1; i > 0; i--) {

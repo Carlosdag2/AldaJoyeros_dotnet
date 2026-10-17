@@ -1,3 +1,4 @@
+@model AldaJoyeros.DTOs.CategoriaDto
 @{ Layout = null; }
 <!DOCTYPE html>
 <html lang="es">
@@ -15,11 +16,11 @@
         @@media (prefers-reduced-motion: reduce) { #stage-image, .presentation-controls { transition: none; } }
     </style>
 </head>
-<body class="min-h-screen bg-stone-50 text-stone-900" data-catalog-url="@Url.Action("Catalogo")">
+<body class="min-h-screen bg-stone-50 text-stone-900" data-catalog-url="@Url.Action("Catalogo", new { categoriaId = Model?.Id })" data-repeat="@(Model == null ? "true" : "false")">
     <main class="relative flex min-h-screen flex-col">
         <header class="flex items-center justify-between gap-4 px-5 py-5 sm:px-10">
             <div><p class="display-serif text-xl tracking-wide sm:text-2xl">ALDA JOYEROS</p><p class="mt-1 text-[10px] uppercase tracking-[.25em] text-stone-500">Desde 1962</p></div>
-            <p class="hidden text-xs uppercase tracking-widest text-stone-500 sm:block">Piezas que acompañan tu historia</p>
+            <p class="max-w-[50%] break-words text-right text-xs font-medium text-emerald-800">@(Model?.Nombre ?? "Todo el catálogo")</p>
         </header>
         <section id="slide" hidden class="flex flex-1 flex-col items-center justify-center gap-5 px-5 pb-24 sm:px-10 lg:flex-row lg:gap-12">
             <div class="flex w-full items-center justify-center overflow-hidden rounded-3xl bg-white p-4 lg:w-3/5">
@@ -36,11 +37,21 @@
         </section>
         <section id="status" class="mx-auto flex max-w-xl flex-1 flex-col items-center justify-center px-6 pb-24 text-center" aria-live="polite">
             <h1 class="display-serif text-3xl sm:text-4xl">Elige una pieza. Descubre una historia.</h1>
-            <p id="status-text" class="mt-5 leading-relaxed text-stone-600">Pulsa comenzar para iniciar la presentación automática del catálogo.</p>
+            <p id="status-text" class="mt-5 leading-relaxed text-stone-600">@(Model == null ? "Todo el catálogo en orden aleatorio y en bucle continuo." : $"Presentación de {Model.Nombre}. Te avisaremos al terminar para que decidas cómo continuar.")</p>
             <button id="start" type="button" class="mt-7 rounded-xl bg-emerald-800 px-8 py-4 font-semibold text-white hover:bg-emerald-900">Comenzar presentación</button>
         </section>
+        <section id="completed" hidden class="mx-auto flex max-w-xl flex-1 flex-col items-center justify-center px-6 pb-32 pt-8 text-center" aria-labelledby="completed-title">
+            <span class="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-3xl text-emerald-800" aria-hidden="true">✓</span>
+            <h1 id="completed-title" tabindex="-1" class="display-serif mt-6 text-3xl sm:text-4xl">Has terminado la presentación</h1>
+            <p class="mt-4 text-stone-600">Has llegado al final de @(Model?.Nombre ?? "todo el catálogo"). ¿Cómo quieres continuar?</p>
+            <div class="mt-7 grid w-full gap-3 sm:grid-cols-2">
+                <button id="repeat" type="button" class="rounded-xl bg-emerald-800 px-5 py-4 font-semibold text-white hover:bg-emerald-900">Repetir una vuelta</button>
+                <button id="loop" type="button" class="rounded-xl border border-emerald-800 px-5 py-4 font-semibold text-emerald-800 hover:bg-emerald-50">Repetir en bucle</button>
+                <a href="@Url.Action("Index")" class="rounded-xl border border-stone-300 px-5 py-4 font-medium text-stone-700 hover:bg-stone-100 sm:col-span-2">Elegir otra categoría</a>
+            </div>
+        </section>
         <nav aria-label="Controles de presentación" class="presentation-controls fixed inset-x-0 bottom-0 flex flex-wrap items-center justify-center gap-2 border-t border-stone-200 bg-white/95 px-3 py-3 backdrop-blur sm:justify-between sm:px-8">
-            <a href="@Url.Action("Index")" class="rounded-lg px-3 py-2 text-sm text-stone-600 hover:bg-stone-100">Salir</a>
+            <a href="@Url.Action("Index")" class="rounded-lg px-3 py-2 text-sm text-stone-600 hover:bg-stone-100">Cambiar categoría / Salir</a>
             <p id="progress" class="text-xs text-stone-500" aria-live="off">Cada 5 segundos · Orden aleatorio</p>
             <div class="flex gap-2">
                 <button id="pause" type="button" disabled class="rounded-lg px-3 py-2 text-sm font-semibold hover:bg-stone-100 disabled:opacity-40">Pausar</button>
