@@ -76,7 +76,7 @@
             <div class="lg:col-span-7" x-data="{ activeImage: 0 }">
                 <div class="lg:sticky lg:top-8 space-y-6">
 
-                    <div class="relative aspect-square md:aspect-[4/3] bg-gray-50 rounded-lg overflow-hidden border border-gray-100 group">
+                    <div class="product-media relative aspect-square md:aspect-[4/3] bg-gray-50 rounded-lg overflow-hidden border border-gray-100 group">
                         @if (imagenes.Any())
                         {
                             @foreach (var (imagen, index) in imagenes.Select((img, i) => (img, i)))
@@ -122,7 +122,7 @@
                         <div class="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
                             @foreach (var (imagen, index) in imagenes.Select((img, i) => (img, i)))
                             {
-                                <button @@click="activeImage = @index"
+                                <button @@click="activeImage = @index" :aria-pressed="activeImage === @index"
                                         class="relative w-20 h-20 md:w-24 md:h-24 flex-shrink-0 bg-gray-50 rounded-md border transition-all duration-300 overflow-hidden"
                                         :class="activeImage === @index ? 'border-emerald-600 ring-1 ring-emerald-600 ring-offset-2' : 'border-gray-200 hover:border-gray-300'">
                                     <img src="@imagen.ImagenBase64" class="w-full h-full object-contain p-2" />

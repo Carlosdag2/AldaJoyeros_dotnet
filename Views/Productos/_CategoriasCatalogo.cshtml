@@ -19,11 +19,11 @@
                                 <ul class="mt-2 space-y-1 border-l border-stone-200 pl-3 ml-3">
                                     @if (parent != null)
                                     {
-                                        <li><button type="button" @@click="filtrarCategoria(@parent.Id)" class="categoria-link w-full rounded-lg px-3 py-2 text-left text-sm transition-colors" :class="categoriaActual === @parent.Id ? 'bg-emerald-50 text-emerald-900 font-semibold' : 'text-stone-600 hover:bg-stone-100'">Ver todos</button></li>
+                                        <li><button type="button" @@click="filtrarCategoria(@parent.Id)" :aria-pressed="categoriaActual === @parent.Id" class="categoria-link w-full rounded-lg px-3 py-2 text-left text-sm transition-colors" :class="categoriaActual === @parent.Id ? 'bg-emerald-50 text-emerald-900 font-semibold' : 'text-stone-600 hover:bg-stone-100'">Ver todos</button></li>
                                     }
                                     @foreach (var cat in children)
                                     {
-                                        <li><button type="button" @@click="filtrarCategoria(@cat.Id)" class="categoria-link flex w-full items-start justify-between gap-3 rounded-lg px-3 py-2 text-left text-sm transition-colors" :class="categoriaActual === @cat.Id ? 'bg-emerald-50 text-emerald-900 font-semibold' : 'text-stone-600 hover:bg-stone-100'">
+                                        <li><button type="button" @@click="filtrarCategoria(@cat.Id)" :aria-pressed="categoriaActual === @cat.Id" class="categoria-link flex w-full items-start justify-between gap-3 rounded-lg px-3 py-2 text-left text-sm transition-colors" :class="categoriaActual === @cat.Id ? 'bg-emerald-50 text-emerald-900 font-semibold' : 'text-stone-600 hover:bg-stone-100'">
                                             <span>@cat.Nombre[(familia.Key.Length + 3)..]</span><span class="shrink-0 text-xs text-stone-400">@cat.CantidadProductos</span>
                                         </button></li>
                                     }
@@ -32,7 +32,7 @@
                         }
                         else if (parent != null)
                         {
-                            <button type="button" @@click="filtrarCategoria(@parent.Id)" class="categoria-link flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2 text-left text-sm transition-colors" :class="categoriaActual === @parent.Id ? 'bg-emerald-50 text-emerald-900 font-semibold' : 'text-stone-600 hover:bg-stone-100'">
+                            <button type="button" @@click="filtrarCategoria(@parent.Id)" :aria-pressed="categoriaActual === @parent.Id" class="categoria-link flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2 text-left text-sm transition-colors" :class="categoriaActual === @parent.Id ? 'bg-emerald-50 text-emerald-900 font-semibold' : 'text-stone-600 hover:bg-stone-100'">
                                 <span>@parent.Nombre</span><span class="text-xs text-stone-400">@parent.CantidadProductos</span>
                             </button>
                         }

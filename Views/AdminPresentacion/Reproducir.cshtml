@@ -6,6 +6,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Catálogo en tienda | Alda Joyeros</title>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <link href="~/css/site.css" rel="stylesheet" asp-append-version="true" />
+    <link href="~/css/theme.css" rel="stylesheet" asp-append-version="true" />
+    <link href="~/css/high-contrast.css" rel="stylesheet" asp-append-version="true" />
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
     <style>
@@ -16,14 +20,14 @@
         @@media (prefers-reduced-motion: reduce) { #stage-image, .presentation-controls { transition: none; } }
     </style>
 </head>
-<body class="min-h-screen bg-stone-50 text-stone-900" data-catalog-url="@Url.Action("Catalogo", new { categoriaId = Model?.Id })" data-repeat="@(Model == null ? "true" : "false")">
+<body class="catalog-presentation min-h-screen bg-stone-50 text-stone-900" data-catalog-url="@Url.Action("Catalogo", new { categoriaId = Model?.Id })" data-repeat="@(Model == null ? "true" : "false")">
     <main class="relative flex min-h-screen flex-col">
         <header class="flex items-center justify-between gap-4 px-5 py-5 sm:px-10">
             <div><p class="display-serif text-xl tracking-wide sm:text-2xl">ALDA JOYEROS</p><p class="mt-1 text-[10px] uppercase tracking-[.25em] text-stone-500">Desde 1962</p></div>
-            <p class="max-w-[50%] break-words text-right text-xs font-medium text-emerald-800">@(Model?.Nombre ?? "Todo el catálogo")</p>
+            <div class="flex max-w-[60%] items-center gap-3"><p class="break-words text-right text-xs font-medium text-emerald-800">@(Model?.Nombre ?? "Todo el catálogo")</p><partial name="_ThemePicker" /></div>
         </header>
         <section id="slide" hidden class="flex flex-1 flex-col items-center justify-center gap-5 px-5 pb-24 sm:px-10 lg:flex-row lg:gap-12">
-            <div class="flex w-full items-center justify-center overflow-hidden rounded-3xl bg-white p-4 lg:w-3/5">
+            <div class="product-media flex w-full items-center justify-center overflow-hidden rounded-3xl bg-white p-4 lg:w-3/5">
                 <img id="stage-image" alt="" class="h-[40vh] w-full object-contain sm:h-[48vh] lg:h-[64vh]" />
             </div>
             <div class="w-full max-w-xl lg:w-2/5">

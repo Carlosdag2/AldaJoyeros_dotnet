@@ -1,57 +1,55 @@
-﻿// Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
+(() => {
+    'use strict';
+    const key = 'alda-theme-preference';
+    const allowed = ['system', 'light', 'dark', 'high-contrast'];
+    const root = document.documentElement;
+    const dark = window.matchMedia('(prefers-color-scheme: dark)');
+    const contrast = window.matchMedia('(prefers-contrast: more)');
+    let preference = 'system';
+    try {
+        const saved = localStorage.getItem(key);
+        const legacy = localStorage.getItem('hc-theme-preference');
+        preference = allowed.includes(saved) ? saved
+            : legacy === 'high-contrast' ? 'high-contrast' : legacy === 'normal' ? 'light' : 'system';
+    } catch { /* El tema sigue funcionando si el navegador bloquea el almacenamiento. */ }
 
-// Write your JavaScript code.
-document.addEventListener('DOMContentLoaded', () => {
-    const toggleBtn = document.getElementById('theme-toggle-btn');
-    const rootElement = document.documentElement; // Aplica al <html>
-    const STORAGE_KEY = 'hc-theme-preference';
-
-    if (!toggleBtn) return;
-
-    // Función que aplica el tema y actualiza ARIA
-    const applyTheme = (theme) => {
-        const spanText = toggleBtn.querySelector('span');
-
-        if (theme === 'high-contrast') {
-            rootElement.setAttribute('data-theme', 'high-contrast');
-            toggleBtn.setAttribute('aria-pressed', 'true');
-            if(spanText) spanText.textContent = "Modo Normal";
-        } else {
-            rootElement.setAttribute('data-theme', 'normal');
-            toggleBtn.setAttribute('aria-pressed', 'false');
-            if(spanText) spanText.textContent = "Alto Contraste";
-        }
-        // Guardar preferencia explícita del usuario
-        localStorage.setItem(STORAGE_KEY, theme);
-    };
-
-    // 1. Inicialización: Comprobar LocalStorage
-    const savedTheme = localStorage.getItem(STORAGE_KEY);
-
-    // 2. Comprobar preferencia del Sistema Operativo
-    const systemPrefersHC = window.matchMedia('(prefers-contrast: more)');
-
-    // Prioridad: 1° Preferencia del usuario, 2° Preferencia del sistema
-    if (savedTheme) {
-        applyTheme(savedTheme);
-    } else if (systemPrefersHC.matches) {
-        applyTheme('high-contrast');
+    function apply() {
+        const theme = preference === 'system'
+            ? contrast.matches ? 'high-contrast' : dark.matches ? 'dark' : 'light'
+            : preference;
+        root.dataset.theme = theme;
+        root.classList.toggle('dark', theme === 'dark');
+        root.style.colorScheme = theme === 'light' ? 'light' : 'dark';
+        document.querySelectorAll('[data-theme-select]').forEach(select => {
+            select.value = preference;
+            select.title = `Apariencia: ${select.selectedOptions[0]?.textContent ?? preference}`;
+        });
+        window.dispatchEvent(new CustomEvent('alda:themechange', { detail: { theme, preference } }));
     }
-
-    // 3. Manejador de clic: Alternar modos
-    toggleBtn.addEventListener('click', () => {
-        const currentTheme = rootElement.getAttribute('data-theme');
-        const isCurrentlyHC = currentTheme === 'high-contrast';
-
-        applyTheme(isCurrentlyHC ? 'normal' : 'high-contrast');
+    function setPreference(value) {
+        if (!allowed.includes(value)) return;
+        preference = value;
+        try { localStorage.setItem(key, value); } catch { /* Preferencia válida durante esta página. */ }
+        apply();
+    }
+    window.AldaTheme = Object.freeze({
+        setPreference,
+        getPreference: () => preference,
+        getTheme: () => root.dataset.theme
     });
-
-    // 4. Escuchar dinámicamente si el usuario cambia la configuración de su PC/Mac
-    systemPrefersHC.addEventListener('change', (e) => {
-        // Solo aplicar si el usuario no ha forzado una preferencia manual en la web
-        if (!localStorage.getItem(STORAGE_KEY)) {
-            applyTheme(e.matches ? 'high-contrast' : 'normal');
-        }
+    // Se ejecuta en el head, antes de dibujar la página, para evitar el destello de un tema diferente.
+    apply();
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('[data-theme-select]').forEach(select =>
+            select.addEventListener('change', () => setPreference(select.value)));
+        apply();
     });
-});
+    for (const query of [dark, contrast]) query.addEventListener('change', () => {
+        if (preference === 'system') apply();
+    });
+    window.addEventListener('storage', event => {
+        if (event.key !== key && event.key !== null) return;
+        preference = allowed.includes(event.newValue) ? event.newValue : 'system';
+        apply();
+    });
+})();

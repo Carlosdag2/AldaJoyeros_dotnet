@@ -7,11 +7,14 @@
     <title>@ViewData["Title"] | ALDA JOYEROS 1962</title>
 
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <script src="~/js/site.js"></script>
-    <link href="~/css/site.css" rel="stylesheet" />
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <link href="~/css/site.css" rel="stylesheet" asp-append-version="true" />
+    <link href="~/css/theme.css" rel="stylesheet" asp-append-version="true" />
+    <link href="~/css/high-contrast.css" rel="stylesheet" asp-append-version="true" />
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
                     fontFamily: {
@@ -139,16 +142,7 @@
 
                 <!-- Right Navigation -->
                 <div class="flex items-center gap-5">
-                    <!-- Botón de Alto Contraste -->
-                    <button id="theme-toggle-btn"
-                            class="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors bg-gray-100 hover:bg-gray-200 px-3 py-1.5 rounded-full"
-                            aria-pressed="false"
-                            aria-label="Alternar modo de alto contraste">
-                        <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22ZM12 20V4C16.4183 4 20 7.58172 20 12C20 16.4183 16.4183 20 12 20Z"></path>
-                        </svg>
-                        <span class="hidden lg:inline text-sm font-medium">Contraste</span>
-                    </button>
+                    <partial name="_ThemePicker" />
 
                     @if (ViewBag.IsAuthenticated == true)
                     {

@@ -1,0 +1,111 @@
+/* Alto contraste: lectura, acciones y foco diferenciados sin modificar las fotografías. */
+html[data-theme="high-contrast"] {
+    --hc-text:#ffffff;
+    --hc-action:#ffe45c;
+    --hc-focus:#00ffff;
+    --hc-error:#ffb4b4;
+    background:#000 !important;
+    color:var(--hc-text) !important;
+    color-scheme:dark;
+    scrollbar-color:#fff #000;
+}
+html[data-theme="high-contrast"] body { background:#000 !important; color:var(--hc-text) !important; }
+/* Heredar evita texto blanco sobre botones claros y elimina los tonos demasiado tenues. */
+html[data-theme="high-contrast"] :where(*) {
+    color:inherit !important;
+    border-color:var(--hc-text) !important;
+    text-shadow:none !important;
+    box-shadow:none !important;
+    transition:none !important;
+}
+html[data-theme="high-contrast"] :where(main,header,footer,section,aside,nav,table,thead,tbody,tr,th,td,
+    .card,.dropdown-menu,.modal-content,.list-group-item,.glass-nav,
+    [class*="bg-"],[class*="from-"],[class*="via-"],[class*="to-"]) {
+    background-color:#000 !important;
+    background-image:none !important;
+}
+html[data-theme="high-contrast"] :where(.animate-fade-in-up,.animate-fade-in,.animate-ping,.animate-pulse) { animation:none !important; }
+html[data-theme="high-contrast"] :where(.animate-fade-in-up,.animate-fade-in) { opacity:1 !important; transform:none !important; }
+html[data-theme="high-contrast"] :where(a,summary) {
+    color:var(--hc-action) !important;
+    text-decoration:underline;
+    text-underline-offset:.22em;
+    text-decoration-thickness:1px;
+}
+html[data-theme="high-contrast"] :where(a,summary):hover { color:var(--hc-focus) !important; text-decoration-thickness:2px; }
+html[data-theme="high-contrast"] :where(button,[role="button"],input[type="submit"],a.btn,a.admin-btn,a.inline-flex,a.flex):not(.product-media) {
+    background:#000 !important;
+    color:var(--hc-action) !important;
+    border:2px solid var(--hc-action) !important;
+    text-decoration:none;
+}
+html[data-theme="high-contrast"] :where(button,input[type="submit"],a.btn,a.admin-btn,a.inline-flex,a.flex):is(
+    .bg-emerald-500,.bg-emerald-600,.bg-emerald-700,.bg-emerald-800,.bg-emerald-900,
+    .bg-green-600,.bg-green-700,.bg-green-800,.bg-green-900,.bg-dark-900,.bg-slate-900,.bg-gray-900,.bg-black,
+    .from-emerald-500,.from-emerald-600) {
+    background:var(--hc-action) !important;
+    color:#000 !important;
+}
+html[data-theme="high-contrast"] :where(button:enabled,[role="button"],a.btn,a.admin-btn,a.inline-flex,a.flex):not(.product-media):hover {
+    background:#fff !important;
+    color:#000 !important;
+    border-color:#fff !important;
+}
+/* Texto de iconos y etiquetas siempre toma el color de su control. */
+html[data-theme="high-contrast"] :is(button,[role="button"],a.btn,a.admin-btn,a.inline-flex,a.flex) :where(*) { color:inherit !important; border-color:inherit !important; }
+html[data-theme="high-contrast"] :is(button,[role="button"],a.btn,a.admin-btn,a.inline-flex,a.flex) :where([class*="bg-"],[class*="from-"],[class*="via-"],[class*="to-"]) { background:transparent !important; }
+html[data-theme="high-contrast"] .group:focus-within :is(.opacity-0,.translate-y-full) { opacity:1 !important; transform:none !important; }
+html[data-theme="high-contrast"] :where(button,a):is(.bg-red-500,.bg-red-600,.text-red-600,.text-red-700):not(.product-media) {
+    background:#000 !important; color:var(--hc-error) !important; border-color:var(--hc-error) !important;
+}
+html[data-theme="high-contrast"] :where(button:enabled,a):is(.bg-red-500,.bg-red-600,.text-red-600,.text-red-700):not(.product-media):hover {
+    background:var(--hc-error) !important; color:#000 !important;
+}
+html[data-theme="high-contrast"] :is(button,input,select,textarea):disabled:not(.product-media),
+html[data-theme="high-contrast"] [aria-disabled="true"] {
+    background:#000 !important; color:#bfbfbf !important; border:2px dashed #bfbfbf !important;
+    opacity:1 !important; cursor:not-allowed;
+}
+html[data-theme="high-contrast"] :where(input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),select,textarea) {
+    background:#000 !important; color:#fff !important; border:2px solid #fff !important; color-scheme:dark;
+}
+html[data-theme="high-contrast"] :is(input,textarea)::placeholder { color:#d9d9d9 !important; opacity:1; }
+html[data-theme="high-contrast"] input:-webkit-autofill { -webkit-text-fill-color:#fff; box-shadow:0 0 0 1000px #000 inset !important; }
+html[data-theme="high-contrast"] :is(input[type="checkbox"],input[type="radio"]) { accent-color:var(--hc-action); }
+html[data-theme="high-contrast"] select option { background:#000 !important; color:#fff !important; }
+html[data-theme="high-contrast"] :focus-visible {
+    outline:3px solid var(--hc-focus) !important; outline-offset:3px !important;
+    scroll-margin-block:6rem;
+}
+html[data-theme="high-contrast"] :is(button,a)[aria-current="page"]:not(.product-media),
+html[data-theme="high-contrast"] :is(button,a)[aria-pressed="true"]:not(.product-media),
+html[data-theme="high-contrast"] [role="tab"][aria-selected="true"] {
+    background:#fff !important; color:#000 !important; border:2px solid var(--hc-focus) !important;
+    font-weight:700;
+}
+html[data-theme="high-contrast"] [aria-current="step"] {
+    border:2px solid var(--hc-focus) !important; border-radius:.5rem; padding:.5rem;
+}
+html[data-theme="high-contrast"] label.payment-option:has(input:checked) { border:3px solid var(--hc-focus) !important; }
+html[data-theme="high-contrast"] :is([role="alert"],.validation-summary-errors,.field-validation-error) {
+    color:var(--hc-error) !important;
+}
+html[data-theme="high-contrast"] .input-validation-error { border:2px solid var(--hc-error) !important; }
+html[data-theme="high-contrast"] [data-price-notice] { border:2px solid var(--hc-action) !important; border-left-width:5px !important; color:var(--hc-action) !important; }
+html[data-theme="high-contrast"] :where(.dropdown-menu,.modal-content,#modalContent) { border:2px solid #fff !important; }
+html[data-theme="high-contrast"] :where([class*="divide-"]) > :not([hidden]) ~ :not([hidden]) { border-color:#fff !important; }
+html[data-theme="high-contrast"] :where([class*="ring-"]) { --tw-ring-color:#fff !important; }
+html[data-theme="high-contrast"] .mix-blend-multiply { mix-blend-mode:normal !important; }
+html[data-theme="high-contrast"] img { filter:none !important; }
+html[data-theme="high-contrast"] img[src$="/logo.png"] { filter:brightness(0) invert(1) !important; }
+html[data-theme="high-contrast"] .product-media { background:#000 !important; border:1px solid #fff !important; }
+html[data-theme="high-contrast"] ::selection { background:var(--hc-action); color:#000; }
+html[data-theme="high-contrast"] ::-webkit-scrollbar-track { background:#000; }
+html[data-theme="high-contrast"] ::-webkit-scrollbar-thumb { background:#fff; border:2px solid #000; }
+/* El selector conserva el icono compacto en móvil y el texto completo desde tablet. */
+html[data-theme="high-contrast"] .theme-picker { border:2px solid #fff !important; background:#000 !important; }
+html[data-theme="high-contrast"] .theme-picker select { border:0 !important; color:transparent !important; }
+@media (min-width:640px) { html[data-theme="high-contrast"] .theme-picker select { color:#fff !important; } }
+@media (forced-colors:active) {
+    html[data-theme="high-contrast"] :focus-visible { outline-color:Highlight !important; }
+}
