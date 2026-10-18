@@ -29,7 +29,7 @@
         @foreach (var producto in Model.Items)
         {
             <div class="group relative flex flex-col producto-card" data-producto-id="@producto.Id">
-                <div class="relative aspect-[4/5] bg-white overflow-hidden mb-4 border border-stone-100">
+                <div class="product-media relative aspect-[4/5] bg-white overflow-hidden mb-4 border border-stone-100">
                     <a href="/Productos/Detalle/@producto.Id" class="block w-full h-full">
                         @if (producto.TieneImagenes)
                         {
@@ -85,7 +85,7 @@
         @foreach (var producto in Model.Items)
         {
             <div class="group flex flex-col sm:flex-row bg-white border border-stone-100 hover:border-emerald-900/20 transition-all duration-300 producto-card" data-producto-id="@producto.Id">
-                <div class="w-full sm:w-48 aspect-square flex-shrink-0 bg-stone-50 relative overflow-hidden">
+                <div class="product-media w-full sm:w-48 aspect-square flex-shrink-0 bg-stone-50 relative overflow-hidden">
                     <a href="/Productos/Detalle/@producto.Id">
                         @if (producto.TieneImagenes)
                         {

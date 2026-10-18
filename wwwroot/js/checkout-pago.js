@@ -10,6 +10,33 @@
     let initializing = false, ready = false, paying = false;
     const cardSelected = () => form.querySelector('input[name="MetodoPago"]:checked')?.value === 'Tarjeta';
 
+    function paymentAppearance() {
+        const theme = document.documentElement.dataset.theme;
+        const night = theme === 'dark' || theme === 'high-contrast';
+        const highContrast = theme === 'high-contrast';
+        return {
+            theme: night ? 'night' : 'stripe',
+            variables: {
+                colorPrimary: highContrast ? '#ffe45c' : night ? '#86efac' : '#16a34a',
+                colorBackground: highContrast ? '#000000' : night ? '#172231' : '#ffffff',
+                colorText: highContrast ? '#ffffff' : night ? '#f1f5f9' : '#111827',
+                colorTextSecondary: highContrast ? '#ffffff' : night ? '#b3c1d3' : '#6b7280',
+                colorDanger: highContrast ? '#ffb4b4' : night ? '#fecaca' : '#b91c1c',
+                fontFamily: 'Inter, system-ui, sans-serif', fontSizeBase: '16px',
+                spacingUnit: '4px', borderRadius: '10px'
+            },
+            rules: {
+                '.Input': { border: highContrast ? '2px solid #ffffff' : `1px solid ${night ? '#53677f' : '#d1d5db'}`, boxShadow: 'none', padding: '12px' },
+                '.Input:focus': { border: highContrast ? '2px solid #00ffff' : `1px solid ${night ? '#86efac' : '#16a34a'}`, boxShadow: highContrast ? '0 0 0 3px #00ffff' : `0 0 0 3px ${night ? '#12372c' : '#dcfce7'}` },
+                '.Label': { fontWeight: '500', marginBottom: '8px' }
+            }
+        };
+    }
+    window.addEventListener('alda:themechange', () => {
+        // Actualiza solo la apariencia; conserva el intento de pago y el formulario de Stripe.
+        elements?.update({ appearance: paymentAppearance() });
+    });
+
     function updateButton() {
         submit.disabled = paying || (cardSelected() && !ready);
         submit.setAttribute('aria-busy', String(paying));
@@ -58,20 +85,7 @@
                 document.getElementById('payment-intent-id').value = data.paymentIntentId;
                 elements = stripe.elements({
                     clientSecret: data.clientSecret,
-                    appearance: {
-                        theme: 'stripe',
-                        variables: {
-                            colorPrimary: '#16a34a', colorBackground: '#ffffff',
-                            colorText: '#111827', colorTextSecondary: '#6b7280',
-                            colorDanger: '#b91c1c', fontFamily: 'Inter, system-ui, sans-serif',
-                            fontSizeBase: '16px', spacingUnit: '4px', borderRadius: '10px'
-                        },
-                        rules: {
-                            '.Input': { border: '1px solid #d1d5db', boxShadow: 'none', padding: '12px' },
-                            '.Input:focus': { border: '1px solid #16a34a', boxShadow: '0 0 0 3px #dcfce7' },
-                            '.Label': { fontWeight: '500', marginBottom: '8px' }
-                        }
-                    }
+                    appearance: paymentAppearance()
                 });
             }
             paymentElement?.destroy();
