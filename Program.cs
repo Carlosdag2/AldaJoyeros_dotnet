@@ -1,3 +1,4 @@
+using AldaJoyeros.Extensions;
 using Microsoft.EntityFrameworkCore;
 using AldaJoyeros.Data;
 using AldaJoyeros.Configuration;
@@ -46,6 +47,8 @@ namespace AldaJoyeros
             {
                 options.TextEncoderSettings = new TextEncoderSettings(UnicodeRanges.All);
             });
+
+            builder.Services.AddPublicationFeatures(builder.Configuration);
 
             // Add services to the container.
             builder.Services.AddControllersWithViews(options => options.Filters.Add<AldaJoyeros.Filters.StoreModeFilter>());
@@ -191,6 +194,7 @@ namespace AldaJoyeros
 
             app.UseHttpsRedirection();
             app.UseRouting();
+            app.UsePublicationFeatures();
 
             // Middleware para exponer headers personalizados en AJAX
             app.Use(async (context, next) =>
@@ -231,7 +235,7 @@ namespace AldaJoyeros
                         !context.Response.ContentType.Contains("charset"))
                     {
                         context.Response.ContentType = "text/html; charset=utf-8";
-                        context.Response.ContentType = "application/javascript; charset=utf-8";
+
                     }
 
                     return Task.CompletedTask;
@@ -245,6 +249,7 @@ namespace AldaJoyeros
                 pattern: "{controller=Home}/{action=Index}/{id?}")
                 .WithStaticAssets();
 
+            app.MapPublicationFallback();
             app.Run();
         }
     }

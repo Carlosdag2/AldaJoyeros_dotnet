@@ -276,7 +276,7 @@
             if (file.size > 5 * 1024 * 1024) { alert('Máx 5MB'); fileInput.value = ''; return; }
             const r = new FileReader();
             r.onload = () => {
-                dropZone.innerHTML = `<div class="space-y-2"><img src="${r.result}" class="mx-auto rounded-lg shadow max-h-40 object-contain"/><div class="text-sm text-emerald-600 font-medium"><i class="fas fa-file-image mr-1"></i>${file.name}</div><p class="text-xs text-slate-400">Clic para cambiar</p></div>`;
+                dropZone.innerHTML = `<div class="space-y-2"><img src="${r.result}" alt="Vista previa de la imagen seleccionada" class="mx-auto rounded-lg shadow max-h-40 object-contain"/><div class="text-sm text-emerald-600 font-medium"><i class="fas fa-file-image mr-1"></i>${file.name}</div><p class="text-xs text-slate-400">Clic para cambiar</p></div>`;
             };
             r.readAsDataURL(file);
             const dt = new DataTransfer();

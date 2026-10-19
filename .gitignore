@@ -16,3 +16,6 @@ App_Data/
 .vs/
 **/bin/
 **/obj/
+
+# Frontend build dependencies
+node_modules/

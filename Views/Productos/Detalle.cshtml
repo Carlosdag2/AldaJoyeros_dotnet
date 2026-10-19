@@ -1,7 +1,7 @@
 @model AldaJoyeros.DTOs.ProductoDto
 
 @{
-    ViewData["Title"] = Model.Nombre;
+    ViewData["Title"] = $"{Model.CategoriaNombre} {Model.Nombre}";
     var imagenes = Model.Imagenes ?? new List<AldaJoyeros.DTOs.ProductoImagenDto>();
     var productUrl = Url.Action("Detalle", "Productos", new { id = Model.Id, tallaId = Model.ProductoSeleccionadoId }, Context.Request.Scheme)!;
     var shareText = $"{Model.Nombre} - {Model.Precio.ToString("C")}";
@@ -125,7 +125,7 @@
                                 <button @@click="activeImage = @index" :aria-pressed="activeImage === @index"
                                         class="relative w-20 h-20 md:w-24 md:h-24 flex-shrink-0 bg-gray-50 rounded-md border transition-all duration-300 overflow-hidden"
                                         :class="activeImage === @index ? 'border-emerald-600 ring-1 ring-emerald-600 ring-offset-2' : 'border-gray-200 hover:border-gray-300'">
-                                    <img src="@imagen.ImagenBase64" class="w-full h-full object-contain p-2" />
+                                    <img src="@imagen.ImagenBase64" alt="Vista de @Model.CategoriaNombre, referencia @Model.Nombre" loading="lazy" decoding="async" class="w-full h-full object-contain p-2" />
                                 </button>
                             }
                         </div>

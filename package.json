@@ -1,0 +1,11 @@
+{
+  "name": "alda-joyeros-styles",
+  "private": true,
+  "scripts": {
+    "build:css": "tailwindcss -c tailwind.config.cjs -i Styles/tailwind.css -o wwwroot/css/tailwind.css --minify",
+    "watch:css": "tailwindcss -c tailwind.config.cjs -i Styles/tailwind.css -o wwwroot/css/tailwind.css --watch"
+  },
+  "devDependencies": {
+    "tailwindcss": "3.4.19"
+  }
+}

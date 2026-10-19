@@ -136,8 +136,8 @@ namespace AldaJoyeros.Controllers
             var producto = await _catalogo.DetailAsync(id, tallaId);
             if (producto == null)
             {
-                TempData["Error"] = "Este producto no está disponible";
-                return RedirectToAction("Index");
+                Response.StatusCode = 404;
+                return View("~/Views/Home/NotFoundPage.cshtml");
             }
 
             ViewBag.ProductosRelacionados = await _catalogo.RelatedAsync(producto);
