@@ -1,0 +1,68 @@
+@using System.Text.Json
+@using AldaJoyeros.DTOs
+@inject Microsoft.Extensions.Options.IOptions<AldaJoyeros.Configuration.PublicationOptions> Publication
+@inject Microsoft.Extensions.Options.IOptions<AldaJoyeros.Configuration.EmpresaSettings> Empresa
+@{
+    var publication = Publication.Value;
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    var action = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+    var product = ViewData.Model as ProductoDto;
+    var description = product != null ? (product.DescripcionCompleta ?? product.Descripcion ?? $"{product.CategoriaNombre}, referencia {product.Nombre}. Disponible en 72 horas.")
+        : ViewData["Description"]?.ToString() ?? "Descubre la colección de joyería y relojería de Alda Joyeros 1962 en Illescas. Encuentra la pieza para tus momentos especiales.";
+    description = System.Text.RegularExpressions.Regex.Replace(description, "<[^>]*>", " ");
+    if (description.Length > 170) description = description[..167] + "…";
+    var publicPage = (controller == "Home" && action is "Index" or "Privacy" or "Cookies" or "Terminos" or "AvisoLegal")
+        || (controller == "Productos" && action is "Index" or "Detalle" && string.IsNullOrWhiteSpace(Context.Request.Query["busqueda"]));
+    var index = publication.CanIndex && publicPage && Context.Response.StatusCode == 200;
+    var origin = publication.PublicOrigin;
+    var path = product != null ? Url.Action("Detalle", "Productos", new { id = product.Id }) : (Context.Request.PathBase + Context.Request.Path).ToString();
+    if (controller == "Home" && action == "Index") path = Url.Content("~/");
+    if (controller == "Productos" && action == "Index") path = Url.Content("~/Productos");
+    // Url.Action already includes PathBase; PublicBaseUrl may also contain the deployment prefix.
+    var prefix = Context.Request.PathBase.Value ?? "";
+    var relative = path ?? "/";
+    if (prefix.Length > 0 && relative.StartsWith(prefix + "/", StringComparison.Ordinal)) relative = relative[prefix.Length..];
+    var canonical = origin == null ? null : origin + relative;
+    if (product == null && controller == "Productos" && action == "Index")
+    {
+        var query = new Dictionary<string,string?>();
+        if (long.TryParse(Context.Request.Query["categoriaId"], out var category) && category > 0) query["categoriaId"] = category.ToString();
+        if (int.TryParse(Context.Request.Query["page"], out var page) && page > 1) query["page"] = page.ToString();
+        if (canonical != null) canonical = Microsoft.AspNetCore.WebUtilities.QueryHelpers.AddQueryString(canonical, query);
+    }
+    var e = Empresa.Value;
+    object? structured = null;
+    if (origin != null && controller == "Home" && action == "Index")
+        structured = new Dictionary<string, object?> {
+            ["@context"] = "https://schema.org", ["@type"] = "JewelryStore", ["name"] = e.Nombre,
+            ["url"] = origin + "/", ["telephone"] = e.Telefono, ["email"] = e.Email,
+            ["address"] = new Dictionary<string, object?> { ["@type"] = "PostalAddress", ["streetAddress"] = e.Direccion, ["postalCode"] = e.CodigoPostal, ["addressLocality"] = e.Ciudad, ["addressRegion"] = e.Provincia, ["addressCountry"] = "ES" }
+        };
+    if (origin != null && product != null && publicPage && Context.Response.StatusCode == 200)
+        structured = new Dictionary<string, object?> {
+            ["@context"] = "https://schema.org", ["@type"] = "Product", ["name"] = product.CategoriaNombre + " · " + product.Nombre,
+            ["sku"] = product.Nombre, ["description"] = description, ["url"] = canonical,
+            ["image"] = product.Imagenes.Select(i => origin + "/CatalogoImagen/Foto/" + i.Id).ToArray()
+        };
+}
+<meta name="description" content="@description" />
+<meta name="robots" content="@(index ? "index, follow" : "noindex, nofollow")" />
+<meta property="og:title" content="@ViewData["Title"] | Alda Joyeros 1962" />
+<meta property="og:description" content="@description" />
+<meta property="og:type" content="@(product == null ? "website" : "product")" />
+<meta property="og:locale" content="es_ES" />
+<meta property="og:site_name" content="Alda Joyeros 1962" />
+@if (canonical != null && publicPage)
+{
+    <link rel="canonical" href="@canonical" />
+    <meta property="og:url" content="@canonical" />
+}
+@if (origin != null && product?.Imagenes.FirstOrDefault() is { } photo && publicPage)
+{
+    <meta property="og:image" content="@(origin + "/CatalogoImagen/Foto/" + photo.Id)" />
+    <meta property="og:image:alt" content="@product.CategoriaNombre, referencia @product.Nombre" />
+}
+@if (structured != null)
+{
+    <script type="application/ld+json">@Html.Raw(JsonSerializer.Serialize(structured))</script>
+}

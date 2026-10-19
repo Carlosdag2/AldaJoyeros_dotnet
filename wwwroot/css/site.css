@@ -18,8 +18,25 @@ html {
 }
 
 body {
-    margin-bottom: 60px;
+    margin: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Mantener el footer al final, incluso en paginas con poco contenido. */
+.site-layout {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    min-height: 100dvh;
+}
+
+.site-layout > main {
+    flex: 1 0 auto;
+}
+
+.site-layout > header,
+.site-layout > footer {
+    flex-shrink: 0;
 }
 
 /* Navbar personalizado */

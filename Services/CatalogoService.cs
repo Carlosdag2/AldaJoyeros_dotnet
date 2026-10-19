@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace AldaJoyeros.Services;
 
 // Vista pública de las familias. Los registros del proveedor, administración y pedidos se conservan individuales.
-public sealed class CatalogoService(AldaJoyerosContext sql, IMapper mapper, IProductoImagenService images)
+public sealed class CatalogoService(AldaJoyerosContext sql, IMapper mapper, PublicImageService images)
 {
     private Task<IReadOnlyList<ProductFamily>>? snapshot;
     public Task<IReadOnlyList<ProductFamily>> FamiliesAsync() => snapshot ??= LoadAsync();

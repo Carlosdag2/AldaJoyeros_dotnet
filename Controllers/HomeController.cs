@@ -33,6 +33,14 @@ namespace AldaJoyeros.Controllers
             return View(productos);
         }
 
+        public IActionResult AvisoLegal() => View();
+
+        public IActionResult NotFoundPage()
+        {
+            Response.StatusCode = 404;
+            return View();
+        }
+
         public IActionResult Privacy()
         {
             return View();

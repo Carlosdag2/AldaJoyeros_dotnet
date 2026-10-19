@@ -5,58 +5,16 @@
     <meta name="language" content="Spanish" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] | ALDA JOYEROS 1962</title>
+    <partial name="_SeoHead" />
+    <link rel="icon" href="~/favicon.ico" sizes="any" />
 
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <link href="~/css/tailwind.css" rel="stylesheet" asp-append-version="true" />
     <link href="~/css/site.css" rel="stylesheet" asp-append-version="true" />
     <link href="~/css/theme.css" rel="stylesheet" asp-append-version="true" />
     <link href="~/css/high-contrast.css" rel="stylesheet" asp-append-version="true" />
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        serif: ['Playfair Display', 'serif'],
-                    },
-                    colors: {
-                        emerald: {
-                            50: '#F0FDF4',
-                            100: '#DCFCE7',
-                            200: '#BBF7D0',
-                            300: '#86EFAC',
-                            400: '#4ADE80',
-                            500: '#22C55E',
-                            600: '#16A34A',
-                            700: '#15803D',
-                            800: '#166534',
-                            900: '#14532D',
-                        },
-                        dark: {
-                            800: '#1A1A1A',
-                            900: '#111111',
-                        },
-                    },
-                    animation: {
-                        'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
-                        'float': 'float 6s ease-in-out infinite',
-                    },
-                    keyframes: {
-                        fadeInUp: {
-                            '0%': { opacity: '0', transform: 'translateY(20px)' },
-                            '100%': { opacity: '1', transform: 'translateY(0)' },
-                        },
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0)' },
-                            '50%': { transform: 'translateY(-10px)' },
-                        }
-                    }
-                }
-            }
-        }
-    </script>
+
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -107,7 +65,7 @@
     </style>
     @await RenderSectionAsync("Styles", required: false)
 </head>
-<body class="font-sans text-gray-800 antialiased">
+<body class="site-layout font-sans text-gray-800 antialiased">
 
     <!-- Header -->
     <header class="bg-white border-b border-gray-200 sticky top-0 z-50" x-data="{ mobileOpen: false }">
@@ -305,7 +263,7 @@
         </div>
     </header>
 
-    <main class="min-h-screen">
+    <main>
         @* Sistema de notificaciones global *@
         <partial name="_Notifications" />
 
@@ -405,6 +363,8 @@
             <div class="pt-6 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-500">
                 <p>&copy; @DateTime.Now.Year Alda Joyeros 1962. Todos los derechos reservados.</p>
                 <div class="flex gap-4">
+                    <a asp-controller="Home" asp-action="AvisoLegal" class="hover:text-emerald-400 transition-colors">Aviso legal</a>
+                    <span>•</span>
                     <a asp-controller="Home" asp-action="Privacy" class="hover:text-emerald-400 transition-colors">Privacidad</a>
                     <span>•</span>
                     <a asp-controller="Home" asp-action="Terminos" class="hover:text-emerald-400 transition-colors">Términos</a>
@@ -435,5 +395,6 @@
     <script src="~/js/carrito-ajax.js"></script>
     <script src="~/js/paginacion.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+    <partial name="_CookieNotice" />
 </body>
 </html>

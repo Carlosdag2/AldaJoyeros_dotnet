@@ -8,6 +8,8 @@ using System.Security.Cryptography;
 
 namespace AldaJoyeros.Controllers
 {
+    [AutoValidateAntiforgeryToken]
+    [Microsoft.AspNetCore.RateLimiting.EnableRateLimiting("auth-forms")]
     public class AuthController : BaseController
     {
         private readonly IUsuarioService _usuarioService;

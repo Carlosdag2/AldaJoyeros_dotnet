@@ -18,14 +18,14 @@
             <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70 z-10"></div>
             <img src="https://images.unsplash.com/photo-1573408301185-9146fe634ad0?q=80&w=2400&auto=format&fit=crop"
                  class="w-full h-full object-cover scale-105 animate-float"
-                 alt="Imagen de fondo de joya en incio">
+                 alt="" fetchpriority="high" decoding="async">
         </div>
 
         <!-- Hero Content -->
         <div class="relative z-20 container mx-auto h-full flex flex-col justify-center items-center text-center text-white px-6">
             <span class="text-emerald-300 text-xs md:text-sm tracking-[0.3em] uppercase mb-4 opacity-0 animate-fade-in-up"
                   style="animation-delay: 0.2s; animation-fill-mode: forwards;">
-                <i class="fas fa-gem mr-2"></i>Colección 2025
+                <i class="fas fa-gem mr-2"></i>Nuestra colección
             </span>
 
             <h1 class="font-serif text-5xl md:text-7xl lg:text-8xl font-bold mb-6 opacity-0 animate-fade-in-up luxury-text-shadow"
@@ -46,11 +46,7 @@
                     <i class="fas fa-shopping-bag mr-3"></i>
                     Explorar Catálogo
                 </a>
-                <a href="#productos-destacados"
-                   class="inline-flex items-center px-8 py-4 bg-emerald-500 text-white text-sm uppercase tracking-[0.2em] hover:bg-emerald-600 transition-all duration-300 rounded-sm font-semibold">
-                    Ver Productos
-                    <i class="fas fa-arrow-down ml-3"></i>
-                </a>
+
             </div>
         </div>
 
@@ -118,7 +114,7 @@
                                 @if (producto.TieneImagenes)
                                 {
                                     <img src="@producto.ImagenPrincipal"
-                                         alt="@producto.Nombre"
+                                         alt="@producto.CategoriaNombre, referencia @producto.Nombre" decoding="async" loading="lazy"
                                          class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                                          onerror="this.onerror=null; this.src='/images/placeholder-product.jpg';" />
                                 }

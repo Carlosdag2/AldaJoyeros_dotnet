@@ -34,7 +34,7 @@
                         @if (producto.TieneImagenes)
                         {
                             <img src="@producto.ImagenPrincipal"
-                                 alt="@producto.Nombre"
+                                 alt="@producto.CategoriaNombre, referencia @producto.Nombre" decoding="async"
                                  loading="lazy"
                                  class="w-full h-full object-cover object-center transform transition-transform duration-700 group-hover:scale-105" />
                         }
@@ -89,7 +89,7 @@
                     <a href="/Productos/Detalle/@producto.Id">
                         @if (producto.TieneImagenes)
                         {
-                            <img src="@producto.ImagenPrincipal" alt="@producto.Nombre" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                            <img src="@producto.ImagenPrincipal" alt="@producto.CategoriaNombre, referencia @producto.Nombre" decoding="async" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
                         }
                         else
                         {

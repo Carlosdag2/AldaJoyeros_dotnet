@@ -4,6 +4,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <DefaultItemExcludes>$(DefaultItemExcludes);node_modules/**</DefaultItemExcludes>
   </PropertyGroup>
 
   <ItemGroup>
@@ -11,8 +12,11 @@
     <Content Remove="Tools/**;Tests/**;App_Data/**;appsettings.Local.json" />
     <None Remove="Tools/**;Tests/**;App_Data/**" />
     <Content Update="appsettings.json" CopyToPublishDirectory="Never" />
+    <Content Update="package.json;package-lock.json" CopyToPublishDirectory="Never" />
     <ProjectReference Include="Tools/MunrecoSync/MunrecoSync.csproj" ReferenceOutputAssembly="false" Private="false" />
     <ProjectReference Include="Tools/PerezMoraSync/PerezMoraSync.csproj" ReferenceOutputAssembly="false" Private="false" />
+    <PackageReference Include="SkiaSharp" Version="3.119.4" />
+    <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="3.119.4" />
     <PackageReference Include="MySqlConnector" Version="2.6.2" />
     <PackageReference Include="MailKit" Version="4.14.1" />
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0" />
