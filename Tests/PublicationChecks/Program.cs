@@ -31,6 +31,34 @@ using (var original = new SKBitmap(1600, 1000))
     Check(webp != null && webp.EncodedFormat == SKEncodedImageFormat.Webp && webp.Info.Width == 800 && webp.Info.Height == 500, "WebP conserva la proporción y limita el lado mayor a 800 px");
 }
 
+
+var ring = new ProductoDto { Id = 2792, Nombre = "02000090", CategoriaNombre = "Anillos · Oro de 18 quilates" };
+Check(PublicUrls.ProductPath(ring) == "/producto/anillos-oro-de-18-quilates-02000090", "URL descriptiva conserva referencia y ceros iniciales");
+Check(PublicUrls.ProductSlug(new ProductoDto { Nombre = "A/21 <script>", CategoriaNombre = "Colección de señora" }) == "coleccion-de-senora-a-21-script", "El slug elimina acentos, barras y caracteres de marcado");
+var request = new DefaultHttpContext().Request;
+request.PathBase = "/joyeria"; request.Scheme = "https"; request.Host = new HostString("portatil.example.ts.net");
+ring.ProductoSeleccionadoId = 3001;
+ring.Tallas.Add(new ProductoTallaDto(3001, "02000090/21", "21", 120));
+Check(PublicUrls.ProductLink(request, ring) == "/joyeria/producto/anillos-oro-de-18-quilates-02000090?talla=21", "El enlace conserva subcarpeta y talla seleccionada");
+request.QueryString = new QueryString("?id=3001&slug=antiguo&tallaId=3002&utm_source=correo");
+var query = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(PublicUrls.ProductQuery(request, ring));
+Check(query["talla"] == "21" && !query.ContainsKey("tallaId") && query["utm_source"] == "correo" && !query.ContainsKey("id") && !query.ContainsKey("slug"), "La migración conserva talla y seguimiento sin duplicar parámetros de ruta");
+var settings = new PublicationOptions { IndexingEnabled = true, PublicBaseUrl = "https://tienda.example/joyeria" };
+Check(!PublicUrls.ShouldRedirectOrigin(request, settings), "Tailscale no redirige a otro dominio por defecto");
+settings.RedirectToPublicOrigin = true;
+Check(PublicUrls.ShouldRedirectOrigin(request, settings) && PublicUrls.Destination(request, settings, PublicUrls.ProductPath(ring), "") == "https://tienda.example/joyeria/producto/anillos-oro-de-18-quilates-02000090", "El dominio preferido solo redirige cuando se activa expresamente");
+settings.IndexingEnabled = false;
+Check(!PublicUrls.ShouldRedirectOrigin(request, settings), "No se fuerza el dominio en modo privado");
+Check(PublicUrls.Canonical(settings, PublicUrls.ProductPath(ring)) == "https://tienda.example/joyeria/producto/anillos-oro-de-18-quilates-02000090", "La canónica no depende del Host ni añade la talla");
+Check(PublicUrls.CatalogPath("anillos", 2) == "/catalogo/anillos?page=2" && PublicUrls.CatalogPath(null, 1) == "/catalogo", "Cada página del catálogo conserva su dirección y se omite page=1");
+
+var allocated = CatalogUrlStore.Allocate(new[] {
+    KeyValuePair.Create("pieza-a", "anillos-oro-02000090"), KeyValuePair.Create("pieza-b", "anillos-oro-02000090")
+}, new Dictionary<string,string>());
+Check(allocated.Values.Distinct().Count() == 2 && allocated["pieza-a"] == "anillos-oro-02000090" && allocated["pieza-b"] == "anillos-oro-02000090-alternativa-2", "Referencias iguales reciben direcciones distintas sin IDs de la base de datos");
+var renamed = CatalogUrlStore.Allocate(new[] { KeyValuePair.Create("pieza-a", "otra-categoria-nueva") }, allocated);
+Check(renamed["pieza-a"] == allocated["pieza-a"], "La dirección guardada no cambia al editar la categoría o el nombre");
+
 foreach (var publicMode in new[] { false, true })
 {
     var builder = WebApplication.CreateBuilder(new WebApplicationOptions { Args = Array.Empty<string>(), ContentRootPath = AppContext.BaseDirectory });
@@ -43,7 +71,7 @@ foreach (var publicMode in new[] { false, true })
     builder.Services.AddDataProtection().UseEphemeralDataProtectionProvider();
     builder.Services.AddPublicationFeatures(builder.Configuration);
     builder.Services.Configure<EmpresaSettings>(_ => { });
-    builder.Services.AddSingleton(new CatalogoService(null!, null!, null!));
+    builder.Services.AddSingleton(new CatalogoService(null!, null!, null!, null!));
     builder.Services.AddSingleton(new FeaturedProductsStore(builder.Configuration));
     builder.Services.AddSingleton<ICategoriaService>(Stub.Make<ICategoriaService>());
     builder.Services.AddSingleton<IUsuarioService>(Stub.Make<IUsuarioService>());
@@ -54,6 +82,7 @@ foreach (var publicMode in new[] { false, true })
     builder.Services.AddSingleton<ITraficoService, TraficoService>();
     await using var app = builder.Build();
     app.UseRouting(); app.UsePublicationFeatures(); app.UseMiddleware<AldaJoyeros.Middleware.TraficoMiddleware>();
+    app.MapPublicRoutes();
     app.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}"); app.MapPublicationFallback();
     await app.StartAsync();
     try
@@ -61,15 +90,29 @@ foreach (var publicMode in new[] { false, true })
         var address = app.Services.GetRequiredService<IServer>().Features.Get<IServerAddressesFeature>()!.Addresses.Single();
         var jar = new CookieContainer();
         using var client = new HttpClient(new HttpClientHandler { CookieContainer = jar, AllowAutoRedirect = false }) { BaseAddress = new Uri(address) };
-        var cookies = await client.GetAsync("/Home/Cookies"); var html = await cookies.Content.ReadAsStringAsync();
+        var generator = app.Services.GetRequiredService<Microsoft.AspNetCore.Routing.LinkGenerator>();
+        Check(generator.GetPathByAction("Detalle", "Productos", new { slug = "anillos-oro" }) == "/producto/anillos-oro", "Los enlaces generados usan la ruta de producto limpia");
+        Check(generator.GetPathByAction("Index", "Productos") == "/catalogo", "La navegación genera catalogo");
+        foreach (var pair in new Dictionary<string,string> {
+            ["/Home"] = "/", ["/Home/Index?utm_source=correo"] = "/?utm_source=correo",
+            ["/Productos"] = "/catalogo", ["/Productos/Index?categoriaId=3&page=2"] = "/catalogo?categoriaId=3&page=2",
+            ["/Home/Privacy"] = "/privacidad", ["/Home/Cookies"] = "/cookies", ["/Home/AvisoLegal"] = "/aviso-legal",
+            ["/Home/Terminos"] = "/condiciones-de-compra", ["/PRIVACIDAD/"] = "/privacidad" })
+        {
+            var response = await client.GetAsync(pair.Key);
+            Check(response.StatusCode == HttpStatusCode.MovedPermanently && response.Headers.Location?.ToString() == pair.Value, "301 de " + pair.Key + " al destino esperado");
+        }
+        var head = await client.SendAsync(new HttpRequestMessage(HttpMethod.Head, "/Home/Cookies"));
+        Check(head.StatusCode == HttpStatusCode.MovedPermanently && head.Headers.Location?.ToString() == "/cookies", "HEAD también redirige sin ejecutar la página antigua");
+        var cookies = await client.GetAsync("/cookies"); var html = await cookies.Content.ReadAsStringAsync();
         Check(cookies.StatusCode == HttpStatusCode.OK && !jar.GetCookies(client.BaseAddress).Cast<Cookie>().Any(c => c.Name == VisitorConsent.VisitorCookie), "No se crea una cookie analítica sin permiso");
         var token = WebUtility.HtmlDecode(Regex.Match(html, "name=\"__RequestVerificationToken\"[^>]*value=\"([^\"]+)\"").Groups[1].Value);
         Check(token.Length > 0, "La elección de cookies incluye protección antifalsificación");
         async Task<HttpResponseMessage> Choose(bool analytics, string destination) => await client.PostAsync("/Consent/Save", new FormUrlEncodedContent(new Dictionary<string,string> {
             ["analytics"] = analytics.ToString(), ["returnUrl"] = destination, ["__RequestVerificationToken"] = token }));
-        var accepted = await Choose(true, "/Home/Privacy");
-        Check(accepted.StatusCode == HttpStatusCode.Redirect && accepted.Headers.Location!.ToString() == "/Home/Privacy", "Aceptar conserva el destino local");
-        await client.GetAsync("/Home/Privacy");
+        var accepted = await Choose(true, "/privacidad");
+        Check(accepted.StatusCode == HttpStatusCode.Redirect && accepted.Headers.Location!.ToString() == "/privacidad", "Aceptar conserva el destino local");
+        await client.GetAsync("/privacidad");
         Check(jar.GetCookies(client.BaseAddress).Cast<Cookie>().Any(c => c.Name == VisitorConsent.VisitorCookie), "Solo tras aceptar se crea la cookie de visitas");
         var refused = await Choose(false, "https://evil.invalid/");
         Check(refused.Headers.Location!.ToString() == "/" && !jar.GetCookies(client.BaseAddress).Cast<Cookie>().Any(c => c.Name == VisitorConsent.VisitorCookie), "Retirar elimina la cookie y evita redirecciones externas");
@@ -82,13 +125,20 @@ foreach (var publicMode in new[] { false, true })
         else
         {
             var sitemap = await client.GetStringAsync("/sitemap-0.xml");
-            Check(sitemap.Contains("https://tienda.example/joyeria/Home/AvisoLegal") && !sitemap.Contains("/Auth"), "El sitemap público utiliza el dominio y no incluye acceso ni pedidos");
-            Check(html.Contains("rel=\"canonical\" href=\"https://tienda.example/joyeria/Home/Cookies\""), "Canonical con el dominio configurado");
+            Check(sitemap.Contains("https://tienda.example/joyeria/aviso-legal") && !sitemap.Contains("/Auth"), "El sitemap público utiliza el dominio y no incluye acceso ni pedidos");
+            Check(html.Contains("rel=\"canonical\" href=\"https://tienda.example/joyeria/cookies\""), "Canonical con el dominio configurado");
         }
         for (var i = 0; i < 10; i++)
             Check((await client.PostAsync("/Auth/Login", new FormUrlEncodedContent(new Dictionary<string,string>()))).StatusCode == HttpStatusCode.BadRequest, "El login real rechaza formularios sin token");
         var limited = await client.PostAsync("/Auth/Login", new FormUrlEncodedContent(new Dictionary<string,string>()));
         Check((int)limited.StatusCode == 429 && limited.Headers.RetryAfter != null, "Los envíos excesivos al login real se limitan");
+        if (publicMode)
+        {
+            app.Services.GetRequiredService<Microsoft.Extensions.Options.IOptions<PublicationOptions>>().Value.RedirectToPublicOrigin = true;
+            var preferred = await client.GetAsync("/Home/Privacy?utm_source=correo");
+            Check(preferred.StatusCode == HttpStatusCode.MovedPermanently && preferred.Headers.Location?.ToString() == "https://tienda.example/joyeria/privacidad?utm_source=correo", "El dominio preferido y la ruta antigua se unifican en una sola 301");
+            Check((await client.GetAsync("/Auth/Login")).StatusCode == HttpStatusCode.OK, "La preferencia de dominio no altera el acceso ni su flujo de sesión");
+        }
     }
     finally { await app.StopAsync(); }
 }

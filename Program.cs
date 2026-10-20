@@ -244,6 +244,7 @@ namespace AldaJoyeros
                 await next();
             });
 
+            app.MapPublicRoutes();
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}")

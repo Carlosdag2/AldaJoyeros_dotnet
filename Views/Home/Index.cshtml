@@ -41,7 +41,7 @@
 
             <div class="flex flex-wrap justify-center gap-4 opacity-0 animate-fade-in-up"
                  style="animation-delay: 0.8s; animation-fill-mode: forwards;">
-                <a asp-controller="Productos" asp-action="Index"
+                <a asp-controller="Productos" asp-action="Index" asp-route-categoria=""
                    class="inline-flex items-center px-8 py-4 bg-white/10 backdrop-blur-md border border-white/30 text-white text-sm uppercase tracking-[0.2em] hover:bg-white hover:text-black transition-all duration-500 rounded-sm">
                     <i class="fas fa-shopping-bag mr-3"></i>
                     Explorar Catálogo
@@ -140,7 +140,7 @@
                                     @if (ViewBag.EcommerceEnabled == true)
                                     {
                                         @if (producto.TieneTallas)
-                                        { <a asp-controller="Productos" asp-action="Detalle" asp-route-id="@producto.Id" class="inline-flex w-full items-center justify-center rounded-lg bg-emerald-900 px-4 py-3 text-xs font-semibold uppercase tracking-widest text-white hover:bg-emerald-800">Elegir talla</a> }
+                                        { <a href="@AldaJoyeros.Helpers.PublicUrls.ProductLink(Context.Request, producto)" data-product-id="@producto.Id" class="inline-flex w-full items-center justify-center rounded-lg bg-emerald-900 px-4 py-3 text-xs font-semibold uppercase tracking-widest text-white hover:bg-emerald-800">Elegir talla</a> }
                                         else { <button type="button"
                                                 @@click="agregarAlCarrito(@producto.Id, '@producto.Nombre.Replace("'", "\\'").Replace("\"", "\\\"")', $event)"
                                                 class="w-full bg-emerald-600 text-white py-3 text-xs uppercase tracking-widest hover:bg-emerald-700 transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
@@ -159,7 +159,7 @@
                             <!-- Product Info -->
                             <div class="text-center">
                                 <h3 class="font-sans text-sm uppercase tracking-wider text-gray-900 mb-2 group-hover:text-emerald-600 transition-colors">
-                                    <a asp-controller="Productos" asp-action="Detalle" asp-route-id="@producto.Id" class="hover:underline">
+                                    <a href="@AldaJoyeros.Helpers.PublicUrls.ProductLink(Context.Request, producto)" data-product-id="@producto.Id" class="hover:underline">
                                         @producto.Nombre
                                     </a>
                                 </h3>
@@ -168,7 +168,7 @@
                                 </p>
 
                                 <!-- View Details Link -->
-                                <a asp-controller="Productos" asp-action="Detalle" asp-route-id="@producto.Id"
+                                <a href="@AldaJoyeros.Helpers.PublicUrls.ProductLink(Context.Request, producto)" data-product-id="@producto.Id"
                                    class="inline-block mt-3 text-xs uppercase tracking-widest text-gray-600 hover:text-emerald-600 transition-colors border-b border-transparent hover:border-emerald-600 pb-1">
                                     Ver Detalles
                                 </a>
@@ -179,7 +179,7 @@
 
                 <!-- View All Button -->
                 <div class="text-center mt-16">
-                    <a asp-controller="Productos" asp-action="Index"
+                    <a asp-controller="Productos" asp-action="Index" asp-route-categoria=""
                        class="inline-flex items-center px-8 py-4 bg-dark-900 text-white text-sm uppercase tracking-[0.2em] hover:bg-emerald-600 hover:text-white transition-all duration-300 rounded-sm">
                         <i class="fas fa-th mr-3"></i>
                         Ver Todo el Catálogo

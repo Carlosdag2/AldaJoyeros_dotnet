@@ -30,13 +30,13 @@ static class CatalogSearchChecks
         await using var browser = await pw.Chromium.LaunchAsync(new() { Channel = "msedge", Headless = true });
         var context = await browser.NewContextAsync(new() { ViewportSize = new() { Width = 1440, Height = 1000 } });
         const string host = "http://127.0.0.1:5097";
-        async Task<(int Count, long[] Ids)> Results(string query)
+        async Task<(int Count, string[] Slugs)> Results(string query)
         {
             var response = await context.APIRequest.GetAsync(host + "/Productos/Filtrar?busqueda=" + Uri.EscapeDataString(query));
             Check(response.Status == 200, "Catálogo responde a " + query);
             using var json = JsonDocument.Parse(await response.TextAsync());
             var html = json.RootElement.GetProperty("html").GetString()!;
-            var ids = System.Text.RegularExpressions.Regex.Matches(html, @"/Productos/Detalle/(\d+)").Select(m => long.Parse(m.Groups[1].Value)).Distinct().ToArray();
+            var ids = System.Text.RegularExpressions.Regex.Matches(html, @"/producto/([a-z0-9-]+)").Select(m => m.Groups[1].Value).Distinct().ToArray();
             return (json.RootElement.GetProperty("totalItems").GetInt32(), ids);
         }
         var baseline = await Results("anillo 18k");
@@ -44,19 +44,19 @@ static class CatalogSearchChecks
         foreach (var query in new[] { "anillos 18 quilates", "sortija 18 kilates", "18kt anillo" })
         {
             var equivalent = await Results(query);
-            Check(equivalent.Count == baseline.Count && equivalent.Ids.SequenceEqual(baseline.Ids), "Mismos resultados y orden para " + query);
+            Check(equivalent.Count == baseline.Count && equivalent.Slugs.SequenceEqual(baseline.Slugs), "Mismos resultados y orden para " + query);
         }
         var suggestions = await context.APIRequest.GetAsync(host + "/Productos/Buscar?q=anillo%2018k");
         using var suggestionJson = JsonDocument.Parse(await suggestions.TextAsync());
-        var suggestionIds = suggestionJson.RootElement.GetProperty("sugerencias").EnumerateArray().Select(x => x.GetProperty("id").GetInt64()).ToArray();
-        Check(suggestionIds.SequenceEqual(baseline.Ids.Take(5)), "Sugerencias y catálogo usan la misma relevancia");
+        var suggestionSlugs = suggestionJson.RootElement.GetProperty("sugerencias").EnumerateArray().Select(x => new Uri(new Uri(host), x.GetProperty("url").GetString()!).Segments.Last()).ToArray();
+        Check(suggestionSlugs.SequenceEqual(baseline.Slugs.Take(5)), "Sugerencias y catálogo usan la misma relevancia");
         var page = await context.NewPageAsync();
         var errors = new List<string>(); page.PageError += (_, error) => errors.Add(error);
         await page.GotoAsync(host + "/Productos");
         var input = page.Locator("input[x-model=consulta]");
         await input.FillAsync("anillo 18k");
         await page.WaitForFunctionAsync("() => [...document.querySelectorAll('[x-show]')].some(x => x.getAttribute('x-show')?.includes('mostrarSugerencias') && getComputedStyle(x).display !== 'none')");
-        Check(await page.Locator("a[href*='/Productos/Detalle/']").CountAsync() > 0, "Sugerencias predictivas visibles al escribir");
+        Check(await page.Locator("a[href*='/producto/']").CountAsync() > 0, "Sugerencias predictivas visibles al escribir");
         var output = Path.Combine(project, "App_Data", "CatalogSearch", "checks"); Directory.CreateDirectory(output);
         await page.ScreenshotAsync(new() { Path = Path.Combine(output, "desktop.png"), FullPage = true });
         await page.GotoAsync(host + "/Productos?busqueda=" + Uri.EscapeDataString("anillo de 18 quilates"));

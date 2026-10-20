@@ -4,6 +4,7 @@ namespace AldaJoyeros.Configuration;
 public sealed class PublicationOptions
 {
     public bool IndexingEnabled { get; set; }
+    public bool RedirectToPublicOrigin { get; set; }
     public string PublicBaseUrl { get; set; } = "";
     public string LegalOwner { get; set; } = "";
     public string RegistryDetails { get; set; } = "";

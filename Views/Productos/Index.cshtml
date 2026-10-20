@@ -88,7 +88,7 @@
                         <ul class="max-h-80 overflow-y-auto">
                             <template x-for="(producto, index) in sugerencias" :key="producto.id">
                                 <li>
-                                    <a :href="'/Productos/Detalle/' + producto.id"
+                                    <a :href="producto.url"
                                        class="flex items-center gap-4 px-4 py-3 transition-colors group border-b border-stone-100 last:border-b-0"
                                        :class="indiceActivo === index ? 'bg-stone-100' : 'hover:bg-stone-50'"
                                        x-on:mouseenter="indiceActivo = index"
@@ -125,7 +125,7 @@
                     <div class="absolute -bottom-12 left-0 right-0 flex justify-center">
                         <div class="inline-flex items-center gap-3 px-4 py-2 bg-white/10 rounded-full backdrop-blur-sm border border-white/10">
                             <span class="text-stone-300 text-sm">Resultados para: <span class="text-white font-serif italic">"@busqueda"</span></span>
-                            <a asp-action="Index" asp-route-categoriaId="@categoriaSeleccionada" class="text-stone-400 hover:text-white transition-colors">
+                            <a asp-action="Index" asp-route-categoria="@categoriaActual?.UrlSlug" class="text-stone-400 hover:text-white transition-colors">
                                 <i class="fas fa-times"></i>
                             </a>
                         </div>
@@ -266,7 +266,7 @@
                     this.cargando = true;
 
                     try {
-                        const url = `/Productos/Buscar?q=${encodeURIComponent(q)}`;
+                        const url = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Url.Action("Buscar", "Productos"))) + `?q=${encodeURIComponent(q)}`;
                         
                         const response = await fetch(url, { signal: requestController.signal });
                         
@@ -307,7 +307,7 @@
                     }
                 },
                 seleccionarProducto(producto) {
-                    window.location.href = `/Productos/Detalle/${producto.id}`;
+                    window.location.href = producto.url;
                 }
             };
         }
@@ -321,7 +321,7 @@
                 viewMode: localStorage.getItem('viewMode') || 'grid',
                 cargando: false,
                 categoriaActual: @(categoriaSeleccionada.HasValue ? categoriaSeleccionada.Value.ToString() : "null"),
-                categorias: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(categorias?.Select(c => new { id = c.Id, nombre = c.Nombre }) ?? Enumerable.Empty<object>())),
+                categorias: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(categorias?.Select(c => new { id = c.Id, nombre = c.Nombre, slug = c.UrlSlug, url = (Context.Request.PathBase + AldaJoyeros.Helpers.PublicUrls.CatalogPath(c.UrlSlug)).ToString() }) ?? Enumerable.Empty<object>())),
                 get nombreCategoria() {
                     return this.categorias.find(c => String(c.id) === String(this.categoriaActual))?.nombre || '';
                 },
@@ -387,7 +387,7 @@
 
                     try {
                         // Construir URL
-                        let url = `/Productos/Filtrar?page=${this.paginaActual}`;
+                        let url = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Url.Action("Filtrar", "Productos"))) + `?page=${this.paginaActual}`;
                         if (this.categoriaActual) url += `&categoriaId=${this.categoriaActual}`;
                         if (this.busquedaActual) url += `&busqueda=${encodeURIComponent(this.busquedaActual)}`;
 
@@ -426,10 +426,11 @@
 
                 // Guardar estado en el historial del navegador
                 guardarEstadoEnHistorial(reemplazar = false) {
-                    let url = '/Productos';
+                    let url = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Url.Content("~/catalogo")));
+                    if (this.categoriaActual && !this.busquedaActual.trim()) url = this.categorias.find(c => String(c.id) === String(this.categoriaActual))?.url || url;
                     const params = new URLSearchParams();
                     
-                    if (this.categoriaActual) params.set('categoriaId', this.categoriaActual);
+
                     if (this.busquedaActual) params.set('busqueda', this.busquedaActual);
                     if (this.paginaActual > 1) params.set('page', this.paginaActual);
                     
@@ -445,6 +446,18 @@
                         history.replaceState(state, '', url);
                     } else {
                         history.pushState(state, '', url);
+                    }
+                    const robots = document.querySelector('meta[name="robots"]');
+                    if (robots) robots.content = robots.dataset.publicIndexing === 'true' && !this.busquedaActual.trim() ? 'index, follow' : 'noindex, nofollow';
+                    const canonical = document.querySelector('link[rel="canonical"][data-catalog-base]');
+                    if (canonical && canonical.dataset.catalogBase) {
+                        const categorySlug = this.categoriaActual && !this.busquedaActual.trim() ? this.categorias.find(c => String(c.id) === String(this.categoriaActual))?.slug : null;
+                        const canonicalUrl = new URL(canonical.dataset.catalogBase + (categorySlug ? "/" + categorySlug : ""));
+
+                        if (this.paginaActual > 1) canonicalUrl.searchParams.set('page', this.paginaActual);
+                        canonical.href = canonicalUrl.href;
+                        const ogUrl = document.querySelector('meta[property="og:url"]');
+                        if (ogUrl) ogUrl.content = canonical.href;
                     }
                 }
             };

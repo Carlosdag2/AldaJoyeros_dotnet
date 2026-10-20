@@ -76,6 +76,10 @@ Además se han realizado pruebas temporales de navegador sobre el catálogo real
 
 El proyecto ya presentaba advertencias NuGet de seguridad que requieren una actualización y pruebas propias. La herramienta de compilación Tailwind 3 también tiene avisos en dependencias de desarrollo; no se instala ni se ejecuta en el navegador o servidor de la tienda. Se conserva la misma generación de Tailwind para evitar una migración visual mayor dentro de esta revisión. Antes de exponer la web públicamente deben revisarse estas dependencias. No se han hecho actualizaciones forzadas de paquetes ajenos a los cambios.
 
+## Actualización de las rutas públicas
+
+El catálogo y las fichas usan ahora `/catalogo` y `/producto/texto-descriptivo`. El sitemap y las canónicas se han adaptado a esas rutas, y las antiguas redirigen con 301. Consulta `docs/urls-canonicas-y-redirecciones.md` para la explicación y la configuración de dominio. Las pruebas de publicación se han ampliado respecto a las 49 comprobaciones originales indicadas arriba.
+
 ## Referencias
 
 - [AEPD: guía sobre cookies](https://www.aepd.es/guias/guia-cookies.pdf).

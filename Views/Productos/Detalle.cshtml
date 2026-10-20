@@ -3,7 +3,8 @@
 @{
     ViewData["Title"] = $"{Model.CategoriaNombre} {Model.Nombre}";
     var imagenes = Model.Imagenes ?? new List<AldaJoyeros.DTOs.ProductoImagenDto>();
-    var productUrl = Url.Action("Detalle", "Productos", new { id = Model.Id, tallaId = Model.ProductoSeleccionadoId }, Context.Request.Scheme)!;
+    var relativeProductUrl = AldaJoyeros.Helpers.PublicUrls.ProductLink(Context.Request, Model);
+    var productUrl = $"{Context.Request.Scheme}://{Context.Request.Host}{relativeProductUrl}";
     var shareText = $"{Model.Nombre} - {Model.Precio.ToString("C")}";
     var encodedUrl = Uri.EscapeDataString(productUrl);
     var encodedText = Uri.EscapeDataString(shareText);
@@ -60,9 +61,9 @@
         <nav class="flex items-center text-xs md:text-sm font-sans text-gray-400">
             <a asp-controller="Home" asp-action="Index" class="hover:text-emerald-700 transition-colors">Inicio</a>
             <span class="mx-2 text-gray-300">/</span>
-            <a asp-controller="Productos" asp-action="Index" class="hover:text-emerald-700 transition-colors">Catálogo</a>
+            <a asp-controller="Productos" asp-action="Index" asp-route-categoria="" class="hover:text-emerald-700 transition-colors">Catálogo</a>
             <span class="mx-2 text-gray-300">/</span>
-            <a asp-controller="Productos" asp-action="Index" asp-route-categoriaId="@Model.CategoriaId" class="hover:text-emerald-700 transition-colors">
+            <a asp-controller="Productos" asp-action="Index" asp-route-categoria="" asp-route-categoriaId="@Model.CategoriaId" class="hover:text-emerald-700 transition-colors">
                 @Model.CategoriaNombre
             </a>
             <span class="mx-2 text-gray-300">/</span>
@@ -161,13 +162,13 @@
                     <partial name="_AvisoPrecios" />
                     @if (Model.TieneTallas)
                     {
-                        <form asp-controller="Productos" asp-action="Detalle" asp-route-id="@Model.Id" method="get" class="mt-6 rounded-xl border border-emerald-100 bg-emerald-50/60 p-4 sm:p-5">
-                            <label for="tallaId" class="block text-sm font-semibold text-dark-900">Elige tu talla</label>
-                            <select id="tallaId" name="tallaId" onchange="this.form.requestSubmit()" aria-describedby="talla-ayuda" class="mt-3 w-full rounded-lg border border-gray-300 bg-white px-3 py-3 text-sm text-dark-900 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-200">
+                        <form asp-controller="Productos" asp-action="Detalle" asp-route-slug="@AldaJoyeros.Helpers.PublicUrls.ProductSlug(Model)" method="get" class="mt-6 rounded-xl border border-emerald-100 bg-emerald-50/60 p-4 sm:p-5">
+                            <label for="talla" class="block text-sm font-semibold text-dark-900">Elige tu talla</label>
+                            <select id="talla" name="talla" onchange="this.form.requestSubmit()" aria-describedby="talla-ayuda" class="mt-3 w-full rounded-lg border border-gray-300 bg-white px-3 py-3 text-sm text-dark-900 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-200">
                                 <option value="">Selecciona una talla</option>
                                 @foreach (var talla in Model.Tallas)
                                 {
-                                    <option value="@talla.ProductoId" selected="@(Model.ProductoSeleccionadoId == talla.ProductoId)">Talla @talla.Talla · @talla.Precio.ToString("C")</option>
+                                    <option value="@talla.Talla" selected="@(Model.ProductoSeleccionadoId == talla.ProductoId)">Talla @talla.Talla · @talla.Precio.ToString("C")</option>
                                 }
                             </select>
                             <p id="talla-ayuda" class="mt-3 text-xs leading-relaxed text-gray-600">El precio depende de la talla. Solo se muestran tallas disponibles.</p>
@@ -302,7 +303,7 @@
 
     <div class="border-t border-gray-100 bg-gray-50/50 py-8">
         <div class="container mx-auto px-4">
-            <a asp-controller="Productos" asp-action="Index" asp-route-categoriaId="@Model.CategoriaId"
+            <a asp-controller="Productos" asp-action="Index" asp-route-categoria="" asp-route-categoriaId="@Model.CategoriaId"
                class="inline-flex items-center gap-2 text-gray-500 hover:text-emerald-700 font-medium transition-colors group">
                 <i class="fas fa-arrow-left text-xs group-hover:-translate-x-1 transition-transform"></i>
                 <span class="font-serif">Volver a @Model.CategoriaNombre</span>

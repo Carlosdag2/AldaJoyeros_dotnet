@@ -26,6 +26,7 @@ namespace AldaJoyeros.Controllers
                 .OfType<AldaJoyeros.DTOs.ProductoDto>().DistinctBy(p => p.Id).ToList();
             await _catalogo.LoadImagesAsync(productos);
             var categorias = await _categoriaService.GetAllAsync();
+            await _catalogo.AssignCategoryUrlsAsync(categorias);
             foreach (var c in categorias) c.CantidadProductos = families.Count(f => f.Product.CategoriaId == c.Id);
             
             ViewBag.Categorias = categorias.Where(c => c.CantidadProductos > 0 && c.Grupo != "Pendientes de organizar")

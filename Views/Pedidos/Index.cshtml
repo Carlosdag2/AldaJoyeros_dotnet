@@ -11,7 +11,7 @@
 <div class="bg-gray-900 text-white">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
         <nav aria-label="Ruta de navegación" class="text-xs text-gray-400 mb-4"><a asp-controller="Home" asp-action="Index" class="hover:text-white">Inicio</a><i class="fas fa-chevron-right text-[10px] mx-2" aria-hidden="true"></i><span class="text-emerald-300">Mis pedidos</span></nav>
-        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-5"><div><p class="text-xs text-emerald-300 uppercase tracking-widest font-semibold mb-2">Tu cuenta · Alda Joyeros</p><h1 class="font-serif text-3xl sm:text-4xl">Mis pedidos</h1><p class="text-sm text-gray-300 mt-3">Consulta tus compras, su estado y todos los detalles de entrega.</p></div><a asp-controller="Productos" asp-action="Index" class="inline-flex items-center justify-center gap-2 self-start px-4 py-3 rounded-xl border border-gray-600 text-sm font-medium hover:bg-gray-800">Explorar el catálogo<i class="fas fa-arrow-right text-xs" aria-hidden="true"></i></a></div>
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-5"><div><p class="text-xs text-emerald-300 uppercase tracking-widest font-semibold mb-2">Tu cuenta · Alda Joyeros</p><h1 class="font-serif text-3xl sm:text-4xl">Mis pedidos</h1><p class="text-sm text-gray-300 mt-3">Consulta tus compras, su estado y todos los detalles de entrega.</p></div><a asp-controller="Productos" asp-action="Index" asp-route-categoria="" class="inline-flex items-center justify-center gap-2 self-start px-4 py-3 rounded-xl border border-gray-600 text-sm font-medium hover:bg-gray-800">Explorar el catálogo<i class="fas fa-arrow-right text-xs" aria-hidden="true"></i></a></div>
     </div>
 </div>
 <div class="bg-gray-50 py-6 sm:py-10 pb-10">
@@ -59,7 +59,7 @@
         }
         else
         {
-            <section class="max-w-xl mx-auto rounded-2xl bg-white border border-gray-200 p-8 sm:p-12 text-center my-6"><span class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-emerald-50 text-emerald-700 text-2xl mb-6"><i class="fas fa-box-open" aria-hidden="true"></i></span><h2 class="font-serif text-2xl sm:text-3xl text-gray-900">Tu historia empieza aquí</h2><p class="text-sm text-gray-500 mt-3 mb-7">Todavía no tienes pedidos. Cuando realices una compra, podrás consultarla en este apartado.</p><a asp-controller="Productos" asp-action="Index" class="inline-flex items-center justify-center gap-3 px-6 py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl">Descubrir la colección<i class="fas fa-arrow-right text-xs" aria-hidden="true"></i></a></section>
+            <section class="max-w-xl mx-auto rounded-2xl bg-white border border-gray-200 p-8 sm:p-12 text-center my-6"><span class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-emerald-50 text-emerald-700 text-2xl mb-6"><i class="fas fa-box-open" aria-hidden="true"></i></span><h2 class="font-serif text-2xl sm:text-3xl text-gray-900">Tu historia empieza aquí</h2><p class="text-sm text-gray-500 mt-3 mb-7">Todavía no tienes pedidos. Cuando realices una compra, podrás consultarla en este apartado.</p><a asp-controller="Productos" asp-action="Index" asp-route-categoria="" class="inline-flex items-center justify-center gap-3 px-6 py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl">Descubrir la colección<i class="fas fa-arrow-right text-xs" aria-hidden="true"></i></a></section>
         }
     </div>
 </div>

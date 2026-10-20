@@ -33,14 +33,14 @@ public sealed class DiscoveryController(IOptions<PublicationOptions> publication
     {
         if (!publication.Value.CanIndex || page < 0) return NotFound();
         IEnumerable<string> paths;
-        if (page == 0) paths = new[] { "/", "/Productos", "/Home/AvisoLegal", "/Home/Privacy", "/Home/Cookies", "/Home/Terminos" };
+        if (page == 0) paths = new[] { "/", "/catalogo", "/aviso-legal", "/privacidad", "/cookies", "/condiciones-de-compra" };
         else
         {
             var catalog = await HttpContext.RequestServices.GetRequiredService<CatalogoService>().GetAsync();
             if (catalog.Count == 0 || page > (int)Math.Ceiling(catalog.Count / (double)ChunkSize)) return NotFound();
             var products = catalog.OrderBy(p => p.Id).Skip((page - 1) * ChunkSize).Take(ChunkSize).ToArray();
             if (products.Length == 0) return NotFound();
-            paths = products.Select(p => "/Productos/Detalle/" + p.Id);
+            paths = products.Select(AldaJoyeros.Helpers.PublicUrls.ProductPath);
         }
         return Xml(new XElement(Ns + "urlset", paths.Select(path => new XElement(Ns + "url", new XElement(Ns + "loc", publication.Value.PublicOrigin + path)))));
     }
