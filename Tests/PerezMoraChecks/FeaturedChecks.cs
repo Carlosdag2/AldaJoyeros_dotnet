@@ -82,8 +82,8 @@ static class FeaturedChecks
         Check(await page.Locator("[data-candidate-id]").CountAsync() == 0, "Buscador del catálogo");
         Check((await page.Locator("[data-featured-id]").EvaluateAllAsync<string[]>("rows => rows.map(x => x.dataset.featuredId)")).SequenceEqual(selected), "La búsqueda conserva la selección");
         await page.GotoAsync(host + "/");
-        var links = await page.Locator("#productos-destacados a[href*='/Productos/Detalle/']").EvaluateAllAsync<string[]>("links => links.map(x => x.getAttribute('href').split('/').pop())");
-        Check(links.Distinct().SequenceEqual(selected), "El inicio respeta los destacados y su orden");
+        var links = await page.Locator("#productos-destacados a[href*='/producto/']").EvaluateAllAsync<string[]>("links => [...new Set(links.map(x => x.dataset.productId))]");
+        Check(links.SequenceEqual(selected), "El inicio respeta los destacados y su orden");
         await page.SetViewportSizeAsync(390, 844); await page.GotoAsync(host + "/AdminDestacados");
         Check(await page.EvaluateAsync<bool>("document.documentElement.scrollWidth <= innerWidth"), "Selector responsive sin desbordamiento");
         await page.ScreenshotAsync(new() { Path = Path.Combine(output, "mobile.png"), FullPage = true });

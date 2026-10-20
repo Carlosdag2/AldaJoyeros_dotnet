@@ -1,9 +1,11 @@
 @model IEnumerable<AldaJoyeros.DTOs.CarritoItemDto>
+@inject AldaJoyeros.Services.CatalogoService Catalogo
 @{
     ViewData["Title"] = "Tu carrito";
     var items = Model?.ToList() ?? new List<AldaJoyeros.DTOs.CarritoItemDto>();
     var total = ViewBag.Total as double? ?? 0;
     var totalUnidades = items.Sum(x => x.Cantidad);
+    var publicFamilies = items.Count > 0 ? await Catalogo.FamiliesAsync() : Array.Empty<AldaJoyeros.Helpers.ProductFamily>();
 }
 <partial name="_CompraCabecera" model='new AldaJoyeros.DTOs.CompraCabeceraViewModel(1, "Tu selección", "Revisa tus artículos antes de continuar con la compra.")' />
 <div class="bg-gray-50 pb-8">
@@ -16,13 +18,13 @@
                     {
                         <article class="bg-white rounded-2xl border border-gray-200 shadow-sm p-4 sm:p-6">
                             <div class="flex items-start gap-4">
-                                <a asp-controller="Productos" asp-action="Detalle" asp-route-id="@item.ProductoId" class="shrink-0 w-20 h-24 sm:w-28 sm:h-28 rounded-xl overflow-hidden border border-gray-100 bg-gray-50">
+                                <a href="@(AldaJoyeros.Helpers.PublicUrls.MemberLink(Context.Request, publicFamilies, item.ProductoId) ?? Url.Content("~/catalogo"))" class="shrink-0 w-20 h-24 sm:w-28 sm:h-28 rounded-xl overflow-hidden border border-gray-100 bg-gray-50">
                                     @if (item.Producto?.TieneImagenes == true) { <img src="@item.Producto.ImagenPrincipal" alt="@item.ProductoNombre" class="w-full h-full object-contain p-2" /> }
                                     else { <div class="w-full h-full flex items-center justify-center"><i class="fas fa-gem text-gray-300 text-2xl" aria-hidden="true"></i></div> }
                                 </a>
                                 <div class="flex-1 min-w-0">
                                     @if (!string.IsNullOrEmpty(item.Producto?.CategoriaNombre)) { <p class="text-xs text-emerald-700 font-medium mb-2 break-words">@item.Producto.CategoriaNombre</p> }
-                                    <a asp-controller="Productos" asp-action="Detalle" asp-route-id="@item.ProductoId" class="block font-semibold text-sm sm:text-base text-gray-900 hover:text-emerald-700 break-words">@item.ProductoNombre</a>
+                                    <a href="@(AldaJoyeros.Helpers.PublicUrls.MemberLink(Context.Request, publicFamilies, item.ProductoId) ?? Url.Content("~/catalogo"))" class="block font-semibold text-sm sm:text-base text-gray-900 hover:text-emerald-700 break-words">@item.ProductoNombre</a>
                                     <p class="text-sm text-gray-500 mt-2">@item.Precio.ToString("C") <span class="text-xs">/ unidad</span></p>
                                 </div>
                             </div>
@@ -37,7 +39,7 @@
                         </article>
                     }
                     <div class="flex flex-col sm:flex-row items-center justify-between gap-4 py-3">
-                        <a asp-controller="Productos" asp-action="Index" class="text-sm font-medium text-gray-600 hover:text-emerald-700"><i class="fas fa-arrow-left mr-2" aria-hidden="true"></i>Seguir comprando</a>
+                        <a asp-controller="Productos" asp-action="Index" asp-route-categoria="" class="text-sm font-medium text-gray-600 hover:text-emerald-700"><i class="fas fa-arrow-left mr-2" aria-hidden="true"></i>Seguir comprando</a>
                         <button type="button" onclick="carritoAjax.vaciar()" class="text-sm text-gray-500 hover:text-red-700 px-4 py-2">Vaciar carrito</button>
                     </div>
                 </section>
@@ -62,7 +64,7 @@
                 <span class="inline-flex w-16 h-16 rounded-2xl bg-emerald-50 text-emerald-700 items-center justify-center text-2xl mb-6"><i class="fas fa-shopping-bag" aria-hidden="true"></i></span>
                 <h2 class="font-serif text-2xl sm:text-3xl text-gray-900">Tu carrito está vacío</h2>
                 <p class="text-sm text-gray-500 mt-3 mb-7">Descubre nuestra colección y añade las piezas que más te gusten.</p>
-                <a asp-controller="Productos" asp-action="Index" class="inline-flex items-center justify-center gap-3 px-6 py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl">Explorar el catálogo<i class="fas fa-arrow-right text-xs" aria-hidden="true"></i></a>
+                <a asp-controller="Productos" asp-action="Index" asp-route-categoria="" class="inline-flex items-center justify-center gap-3 px-6 py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl">Explorar el catálogo<i class="fas fa-arrow-right text-xs" aria-hidden="true"></i></a>
             </section>
         }
     </div>

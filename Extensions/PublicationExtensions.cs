@@ -10,7 +10,9 @@ public static class PublicationExtensions
     {
         services.Configure<PublicationOptions>(configuration.GetSection("Publication"));
         services.AddScoped<PublicImageService>();
+        services.Configure<Microsoft.AspNetCore.Mvc.MvcOptions>(options => options.Filters.Add<AldaJoyeros.Filters.PublicUrlFilter>());
         services.AddSingleton<PublicImageCache>();
+        services.AddSingleton<CatalogUrlStore>();
         services.AddRateLimiter(options =>
         {
             options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;

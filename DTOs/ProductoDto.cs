@@ -15,6 +15,7 @@ namespace AldaJoyeros.DTOs
     {
         public long Id { get; set; }
         public string Nombre { get; set; } = string.Empty;
+        public string UrlSlug { get; set; } = string.Empty;
         public string? Descripcion { get; set; }
         public double Precio { get; set; }
         public long CategoriaId { get; set; }

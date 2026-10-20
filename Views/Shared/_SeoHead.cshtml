@@ -15,21 +15,17 @@
         || (controller == "Productos" && action is "Index" or "Detalle" && string.IsNullOrWhiteSpace(Context.Request.Query["busqueda"]));
     var index = publication.CanIndex && publicPage && Context.Response.StatusCode == 200;
     var origin = publication.PublicOrigin;
-    var path = product != null ? Url.Action("Detalle", "Productos", new { id = product.Id }) : (Context.Request.PathBase + Context.Request.Path).ToString();
-    if (controller == "Home" && action == "Index") path = Url.Content("~/");
-    if (controller == "Productos" && action == "Index") path = Url.Content("~/Productos");
-    // Url.Action already includes PathBase; PublicBaseUrl may also contain the deployment prefix.
-    var prefix = Context.Request.PathBase.Value ?? "";
-    var relative = path ?? "/";
-    if (prefix.Length > 0 && relative.StartsWith(prefix + "/", StringComparison.Ordinal)) relative = relative[prefix.Length..];
-    var canonical = origin == null ? null : origin + relative;
-    if (product == null && controller == "Productos" && action == "Index")
+    string? path = null;
+    if (product != null) path = AldaJoyeros.Helpers.PublicUrls.ProductPath(product);
+    else if (controller == "Home") AldaJoyeros.Helpers.PublicUrls.HomePaths.TryGetValue(action, out path);
+    else if (controller == "Productos" && action == "Index")
     {
-        var query = new Dictionary<string,string?>();
-        if (long.TryParse(Context.Request.Query["categoriaId"], out var category) && category > 0) query["categoriaId"] = category.ToString();
-        if (int.TryParse(Context.Request.Query["page"], out var page) && page > 1) query["page"] = page.ToString();
-        if (canonical != null) canonical = Microsoft.AspNetCore.WebUtilities.QueryHelpers.AddQueryString(canonical, query);
+        var page = (ViewData.Model as AldaJoyeros.Helpers.PagedResult<ProductoDto>)?.PageNumber ?? 1;
+        string? category = ViewData["CategoriaSlug"]?.ToString();
+        if (!string.IsNullOrWhiteSpace(Context.Request.Query["busqueda"])) category = null;
+        path = AldaJoyeros.Helpers.PublicUrls.CatalogPath(category, page);
     }
+    var canonical = path == null ? null : AldaJoyeros.Helpers.PublicUrls.Canonical(publication, path);
     var e = Empresa.Value;
     object? structured = null;
     if (origin != null && controller == "Home" && action == "Index")
@@ -46,7 +42,7 @@
         };
 }
 <meta name="description" content="@description" />
-<meta name="robots" content="@(index ? "index, follow" : "noindex, nofollow")" />
+<meta name="robots" content="@(index ? "index, follow" : "noindex, nofollow")" data-public-indexing="@publication.CanIndex.ToString().ToLowerInvariant()" />
 <meta property="og:title" content="@ViewData["Title"] | Alda Joyeros 1962" />
 <meta property="og:description" content="@description" />
 <meta property="og:type" content="@(product == null ? "website" : "product")" />
@@ -54,7 +50,7 @@
 <meta property="og:site_name" content="Alda Joyeros 1962" />
 @if (canonical != null && publicPage)
 {
-    <link rel="canonical" href="@canonical" />
+    <link rel="canonical" href="@canonical" data-catalog-base="@(controller == "Productos" && action == "Index" ? origin + "/catalogo" : null)" />
     <meta property="og:url" content="@canonical" />
 }
 @if (origin != null && product?.Imagenes.FirstOrDefault() is { } photo && publicPage)

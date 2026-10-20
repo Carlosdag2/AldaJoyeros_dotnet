@@ -9,14 +9,38 @@ using Microsoft.EntityFrameworkCore;
 namespace AldaJoyeros.Services;
 
 // Vista pública de las familias. Los registros del proveedor, administración y pedidos se conservan individuales.
-public sealed class CatalogoService(AldaJoyerosContext sql, IMapper mapper, PublicImageService images)
+public sealed class CatalogoService(AldaJoyerosContext sql, IMapper mapper, PublicImageService images, CatalogUrlStore urls)
 {
     private Task<IReadOnlyList<ProductFamily>>? snapshot;
     public Task<IReadOnlyList<ProductFamily>> FamiliesAsync() => snapshot ??= LoadAsync();
-    private async Task<IReadOnlyList<ProductFamily>> LoadAsync() => ProductFamilies.Build(
-        await sql.Productos.AsNoTracking().Include(p => p.Categoria).Include(p => p.Proveedores)
-            .Where(p => !p.Eliminado || p.Proveedores.Any(s => s.Proveedor == "PerezMora" && s.Estado == "completo"))
-            .ToListAsync(), p => mapper.Map<ProductoDto>(p));
+    private async Task<IReadOnlyList<ProductFamily>> LoadAsync()
+    {
+        var families = ProductFamilies.Build(await sql.Productos.AsNoTracking().Include(p => p.Categoria).Include(p => p.Proveedores)
+            .Where(p => !p.Eliminado || p.Proveedores.Any(s => s.Proveedor == "PerezMora" && s.Estado == "completo")).ToListAsync(), p => mapper.Map<ProductoDto>(p));
+        string Key(ProductFamily family) => family.Product.TieneTallas ? "familia-pm:" + family.Product.Nombre.ToUpperInvariant() : "producto:" + family.Product.Id;
+        var assigned = await urls.GetAsync(families.Select(f => KeyValuePair.Create(Key(f), PublicUrls.ProductSlug(f.Product))));
+        foreach (var family in families) family.Product.UrlSlug = CatalogUrlStore.Lookup(assigned, Key(family));
+        return families;
+    }
+    public async Task AssignCategoryUrlsAsync(IEnumerable<CategoriaDto> categories)
+    {
+        var rows = categories.ToArray();
+        var assigned = await urls.GetAsync(rows.Select(c => KeyValuePair.Create("categoria:" + c.Id, PublicUrls.Slug(c.Nombre))));
+        foreach (var row in rows) row.UrlSlug = CatalogUrlStore.Lookup(assigned, "categoria:" + row.Id);
+    }
+    public async Task<ProductoDto?> DetailBySlugAsync(string slug, string? size = null)
+    {
+        var family = (await FamiliesAsync()).FirstOrDefault(f => f.Product.UrlSlug.Equals(slug, StringComparison.OrdinalIgnoreCase));
+        if (family == null) return null;
+        long? selected = null;
+        if (!string.IsNullOrEmpty(size))
+        {
+            var matches = family.Product.Tallas.Where(t => t.Talla.Equals(size, StringComparison.Ordinal)).ToArray();
+            if (matches.Length != 1) return null;
+            selected = matches[0].ProductoId;
+        }
+        return await DetailAsync(family.Product.Id, selected);
+    }
 
     public async Task<IReadOnlyList<ProductoDto>> GetAsync(long? categoriaId = null, string? busqueda = null, int limite = 0)
     {
@@ -57,6 +81,7 @@ public sealed class CatalogoService(AldaJoyerosContext sql, IMapper mapper, Publ
         ProductoService.CompletarDatosProveedor(source, dto);
         dto.Id = family.Product.Id;
         dto.Nombre = family.Product.Nombre;
+        dto.UrlSlug = family.Product.UrlSlug;
         dto.Tallas = family.Product.Tallas;
         dto.ProductoSeleccionadoId = selectedId;
         dto.Precio = selectedId.HasValue ? source.Precio : family.Product.Precio;

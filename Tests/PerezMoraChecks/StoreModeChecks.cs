@@ -86,7 +86,7 @@ static class StoreModeChecks
                 await page.GotoAsync(host + path);
                 Check(new Uri(page.Url).AbsolutePath == "/Productos", "Acceso directo redirigido: " + path);
             }
-            var detail = await page.Locator("a[href*='/Productos/Detalle/']").First.GetAttributeAsync("href");
+            var detail = await page.Locator("a[href*='/producto/']").First.GetAttributeAsync("href");
             Check(detail != null, "Catálogo disponible");
             await page.GotoAsync(host + detail);
             Check(await page.GetByRole(AriaRole.Link, new() { Name = "Consultar en tienda" }).CountAsync() == 1, "Detalle ofrece contacto en escaparate");

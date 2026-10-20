@@ -30,7 +30,7 @@
         {
             <div class="group relative flex flex-col producto-card" data-producto-id="@producto.Id">
                 <div class="product-media relative aspect-[4/5] bg-white overflow-hidden mb-4 border border-stone-100">
-                    <a href="/Productos/Detalle/@producto.Id" class="block w-full h-full">
+                    <a href="@AldaJoyeros.Helpers.PublicUrls.ProductLink(Context.Request, producto)" class="block w-full h-full">
                         @if (producto.TieneImagenes)
                         {
                             <img src="@producto.ImagenPrincipal"
@@ -50,7 +50,7 @@
                         @if (ViewBag.EcommerceEnabled == true)
                         {
                             @if (producto.TieneTallas)
-                            { <a asp-controller="Productos" asp-action="Detalle" asp-route-id="@producto.Id" class="inline-flex w-full items-center justify-center rounded-lg bg-emerald-900 px-4 py-3 text-xs font-semibold uppercase tracking-widest text-white hover:bg-emerald-800">Elegir talla</a> }
+                            { <a href="@AldaJoyeros.Helpers.PublicUrls.ProductLink(Context.Request, producto)" class="inline-flex w-full items-center justify-center rounded-lg bg-emerald-900 px-4 py-3 text-xs font-semibold uppercase tracking-widest text-white hover:bg-emerald-800">Elegir talla</a> }
                             else { <button type="button"
                                     onclick="window.carritoApp?.agregarAlCarrito(@producto.Id, '@producto.Nombre.Replace("'", "\\'").Replace("\"", "\\\"")', event)"
                                     class="btn-agregar-carrito w-full py-3 bg-emerald-900 text-white text-xs uppercase tracking-widest font-bold hover:bg-black transition-colors flex items-center justify-center gap-2">
@@ -69,7 +69,7 @@
 
                 <div class="text-center space-y-1">
                     <h3 class="font-serif text-lg text-stone-900 group-hover:text-emerald-800 transition-colors">
-                        <a href="/Productos/Detalle/@producto.Id">@producto.Nombre</a>
+                        <a href="@AldaJoyeros.Helpers.PublicUrls.ProductLink(Context.Request, producto)">@producto.Nombre</a>
                     </h3>
                     <div class="font-serif text-emerald-800">@(producto.PrecioDesde ? "Desde " : "")@producto.Precio.ToString("C")</div>
                 </div>
@@ -86,7 +86,7 @@
         {
             <div class="group flex flex-col sm:flex-row bg-white border border-stone-100 hover:border-emerald-900/20 transition-all duration-300 producto-card" data-producto-id="@producto.Id">
                 <div class="product-media w-full sm:w-48 aspect-square flex-shrink-0 bg-stone-50 relative overflow-hidden">
-                    <a href="/Productos/Detalle/@producto.Id">
+                    <a href="@AldaJoyeros.Helpers.PublicUrls.ProductLink(Context.Request, producto)">
                         @if (producto.TieneImagenes)
                         {
                             <img src="@producto.ImagenPrincipal" alt="@producto.CategoriaNombre, referencia @producto.Nombre" decoding="async" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
@@ -100,7 +100,7 @@
                 <div class="p-6 flex-1 flex flex-col justify-center">
                     <div class="text-xs uppercase tracking-widest text-emerald-800 mb-2">@producto.CategoriaNombre</div>
                     <h3 class="font-serif text-xl text-stone-900 mb-2">
-                        <a href="/Productos/Detalle/@producto.Id">@producto.Nombre</a>
+                        <a href="@AldaJoyeros.Helpers.PublicUrls.ProductLink(Context.Request, producto)">@producto.Nombre</a>
                     </h3>
                     <p class="text-sm text-stone-500 mb-4 line-clamp-2">@producto.Descripcion</p>
                     <div class="flex items-center justify-between mt-auto gap-4">
@@ -109,7 +109,7 @@
                             @if (ViewBag.EcommerceEnabled == true)
                             {
                                 @if (producto.TieneTallas)
-                                { <a asp-controller="Productos" asp-action="Detalle" asp-route-id="@producto.Id" class="inline-flex w-full items-center justify-center rounded-lg bg-emerald-900 px-4 py-3 text-xs font-semibold uppercase tracking-widest text-white hover:bg-emerald-800">Elegir talla</a> }
+                                { <a href="@AldaJoyeros.Helpers.PublicUrls.ProductLink(Context.Request, producto)" class="inline-flex w-full items-center justify-center rounded-lg bg-emerald-900 px-4 py-3 text-xs font-semibold uppercase tracking-widest text-white hover:bg-emerald-800">Elegir talla</a> }
                                 else { <button type="button"
                                         onclick="window.carritoApp?.agregarAlCarrito(@producto.Id, '@producto.Nombre.Replace("'", "\\'").Replace("\"", "\\\"")', event)"
                                         class="btn-agregar-carrito px-4 py-2 bg-emerald-900 text-white text-xs uppercase tracking-widest font-bold hover:bg-black transition-colors flex items-center gap-2">
@@ -118,7 +118,7 @@
                                     <span class="hidden sm:inline btn-texto">Añadir</span>
                                 </button> }
                             }
-                            <a href="/Productos/Detalle/@producto.Id" class="text-xs uppercase tracking-widest font-bold text-stone-900 border-b border-stone-900 pb-0.5 hover:text-emerald-800 hover:border-emerald-800 transition-colors">
+                            <a href="@AldaJoyeros.Helpers.PublicUrls.ProductLink(Context.Request, producto)" class="text-xs uppercase tracking-widest font-bold text-stone-900 border-b border-stone-900 pb-0.5 hover:text-emerald-800 hover:border-emerald-800 transition-colors">
                                 Ver Detalles
                             </a>
                         </div>

@@ -82,7 +82,7 @@
                     <a asp-controller="Home" asp-action="Index" class="nav-link text-sm tracking-wide text-gray-600 hover:text-gray-900 transition-colors">
                         Inicio
                     </a>
-                    <a asp-controller="Productos" asp-action="Index" class="nav-link text-sm tracking-wide text-gray-600 hover:text-gray-900 transition-colors">
+                    <a asp-controller="Productos" asp-action="Index" asp-route-categoria="" class="nav-link text-sm tracking-wide text-gray-600 hover:text-gray-900 transition-colors">
                         Catálogo
                     </a>
                     @if (ViewBag.IsAdmin == true)
@@ -212,7 +212,7 @@
                 <a asp-controller="Home" asp-action="Index" class="block py-2 text-gray-700 hover:text-gray-900">
                     Inicio
                 </a>
-                <a asp-controller="Productos" asp-action="Index" class="block py-2 text-gray-700 hover:text-gray-900">
+                <a asp-controller="Productos" asp-action="Index" asp-route-categoria="" class="block py-2 text-gray-700 hover:text-gray-900">
                     Catálogo
                 </a>
 
@@ -306,7 +306,7 @@
                     <h4 class="text-white font-bold mb-5 flex items-center gap-2"><div class="w-2 h-2 bg-emerald-500 rounded-full"></div>Navegación</h4>
                     <ul class="space-y-3 text-sm">
                         <li><a asp-controller="Home" asp-action="Index" class="text-gray-400 hover:text-white transition-colors flex items-center gap-2"><i class="fas fa-chevron-right text-xs text-emerald-500"></i>Inicio</a></li>
-                        <li><a asp-controller="Productos" asp-action="Index" class="text-gray-400 hover:text-white transition-colors flex items-center gap-2"><i class="fas fa-chevron-right text-xs text-emerald-500"></i>Catálogo</a></li>
+                        <li><a asp-controller="Productos" asp-action="Index" asp-route-categoria="" class="text-gray-400 hover:text-white transition-colors flex items-center gap-2"><i class="fas fa-chevron-right text-xs text-emerald-500"></i>Catálogo</a></li>
                         @if (ViewBag.EcommerceEnabled == true)
                         {
                             <li><a asp-controller="Carrito" asp-action="Index" class="text-gray-400 hover:text-white transition-colors flex items-center gap-2"><i class="fas fa-chevron-right text-xs text-emerald-500"></i>Mi Carrito</a></li>
