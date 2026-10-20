@@ -200,7 +200,7 @@
     </section>
 
     <!-- Store Location Section -->
-    <section class="py-28 bg-white">
+    <section class="py-16 sm:py-20 lg:py-28 bg-white" aria-labelledby="store-location-title">
         <div class="container mx-auto px-6">
             <!-- Section Header -->
             <div class="text-center mb-16">
@@ -209,7 +209,7 @@
                     <span class="text-emerald-600 text-xs uppercase tracking-[0.4em]">Visítanos</span>
                     <div class="w-12 h-px bg-emerald-500"></div>
                 </div>
-                <h2 class="font-serif text-4xl md:text-5xl font-light text-gray-900 mb-4">
+                <h2 id="store-location-title" class="font-serif text-3xl sm:text-4xl md:text-5xl font-light text-gray-900 mb-4">
                     Nuestra Tienda
                 </h2>
                 <p class="text-gray-500 max-w-xl mx-auto">
@@ -219,12 +219,13 @@
 
             <div class="grid grid-cols-1 lg:grid-cols-5 gap-0 shadow-2xl overflow-hidden">
                 <!-- Map -->
-                <div class="lg:col-span-3 aspect-[4/3] lg:aspect-auto lg:min-h-[550px] bg-gray-100 relative">
+                <div class="relative h-72 min-w-0 overflow-hidden bg-gray-100 sm:h-96 lg:col-span-3 lg:h-auto lg:min-h-[550px]">
                     <iframe 
                         src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3040.262772693775!2d-3.850095!3d40.1228119!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd41f1eb52287a03%3A0x7ea236ec19f47b25!2sAlda%20Joyeros%201962!5e0!3m2!1ses!2ses!4v1703123456789!5m2!1ses!2ses"
                         width="100%"
                         height="100%"
-                        style="border:0; min-height: 450px;"
+                        title="Ubicación de Alda Joyeros 1962 en Illescas"
+                        style="border:0;"
                         allowfullscreen=""
                         loading="lazy"
                         referrerpolicy="no-referrer-when-downgrade"
@@ -233,8 +234,8 @@
                 </div>
 
                 <!-- Contact Info -->
-                <div class="lg:col-span-2 bg-emerald-950 text-white p-12 lg:p-14 flex flex-col justify-center">
-                    <div class="space-y-10">
+                <div class="min-w-0 lg:col-span-2 bg-emerald-950 text-white p-6 sm:p-10 lg:p-12 xl:p-14 flex flex-col justify-center">
+                    <div class="space-y-8 sm:space-y-10">
                         <!-- Logo -->
                         <div class="mb-4">
                             <p class="font-serif text-3xl tracking-wider">ALDA</p>
@@ -246,7 +247,7 @@
                             <div class="w-10 h-10 bg-emerald-900 flex items-center justify-center flex-shrink-0">
                                 <i class="fas fa-map-marker-alt text-emerald-400 text-sm"></i>
                             </div>
-                            <div>
+                            <div class="min-w-0">
                                 <p class="text-emerald-500 text-xs uppercase tracking-[0.2em] mb-2">Dirección</p>
                                 <p class="text-white/80 leading-relaxed">
                                     C/ Sor Livia Alcorta, 24<br />
@@ -260,7 +261,7 @@
                             <div class="w-10 h-10 bg-emerald-900 flex items-center justify-center flex-shrink-0">
                                 <i class="fas fa-phone text-emerald-400 text-sm"></i>
                             </div>
-                            <div>
+                            <div class="min-w-0">
                                 <p class="text-emerald-500 text-xs uppercase tracking-[0.2em] mb-2">Teléfono</p>
                                 <a href="tel:+34925541227" class="text-white hover:text-emerald-400 transition-colors text-lg">
                                     +34 925 54 12 27
@@ -273,7 +274,7 @@
                             <div class="w-10 h-10 bg-emerald-900 flex items-center justify-center flex-shrink-0">
                                 <i class="fas fa-clock text-emerald-400 text-sm"></i>
                             </div>
-                            <div>
+                            <div class="min-w-0">
                                 <p class="text-emerald-500 text-xs uppercase tracking-[0.2em] mb-2">Horario</p>
                                 <div class="text-white/80 text-sm space-y-1">
                                     <p>Lun - Vie: 10:15 - 13:30 / 17:00 - 20:00</p>
@@ -287,7 +288,7 @@
                         <a href="https://www.google.com/maps/dir//Calle+Sor+Livia+Alcorta,+24,+45200+Illescas,+Toledo"
                            target="_blank"
                            rel="noopener noreferrer"
-                           class="inline-flex items-center px-8 py-4 bg-emerald-600 text-white text-xs uppercase tracking-[0.2em] hover:bg-emerald-500 transition-colors mt-4">
+                           class="inline-flex w-full sm:w-auto items-center justify-center px-6 sm:px-8 py-4 bg-emerald-600 text-white text-xs uppercase tracking-[0.2em] hover:bg-emerald-500 transition-colors mt-4">
                             <i class="fas fa-directions mr-3"></i>
                             Cómo Llegar
                         </a>
