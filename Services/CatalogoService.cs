@@ -42,7 +42,7 @@ public sealed class CatalogoService(AldaJoyerosContext sql, IMapper mapper, Publ
         return await DetailAsync(family.Product.Id, selected);
     }
 
-    public async Task<IReadOnlyList<ProductoDto>> GetAsync(long? categoriaId = null, string? busqueda = null, int limite = 0)
+    public async Task<IReadOnlyList<ProductoDto>> GetAsync(long? categoriaId = null, string? busqueda = null, int limite = 0, CatalogPriceRange? priceRange = null)
     {
         var families = await FamiliesAsync();
         IEnumerable<ProductFamily> query = families;
@@ -62,6 +62,7 @@ public sealed class CatalogoService(AldaJoyerosContext sql, IMapper mapper, Publ
             query = families.Where(f => f.Members.Any(p => !p.Eliminado && (p.CategoriaId == categoriaId ||
                 name != null && !name.Contains(" · ") && p.Categoria != null && p.Categoria.Nombre.StartsWith(name + " · ", StringComparison.Ordinal))));
         }
+        if (priceRange != null) query = query.Where(f => priceRange.Contains(f.Product.Precio));
         if (limite > 0) query = query.Take(limite);
         return query.Select(f => f.Product).ToArray();
     }
