@@ -24,8 +24,12 @@ namespace AldaJoyeros.Controllers
             _viewEngine = viewEngine;
         }
 
-        public async Task<IActionResult> Index(long? categoriaId, string busqueda = "", int page = 1, string? categoria = null)
+        public async Task<IActionResult> Index(long? categoriaId, string busqueda = "", int page = 1, string? categoria = null, string? precioMin = null, string? precioMax = null)
         {
+            if (!CatalogPriceRange.TryCreate(precioMin, precioMax, out var range))
+                return BadRequest("Indica precios válidos, sin valores negativos y con el mínimo menor o igual al máximo.");
+            ViewBag.PrecioMin = range.MinText;
+            ViewBag.PrecioMax = range.MaxText;
             // Una búsqueda de texto siempre consulta todo el catálogo.
             if (!string.IsNullOrWhiteSpace(busqueda)) categoriaId = null;
             var categorias = await _categoriaService.GetAllAsync();
@@ -40,6 +44,7 @@ namespace AldaJoyeros.Controllers
             var allCatalog = await _catalogo.GetAsync();
             foreach (var c in categorias) c.CantidadProductos = allCatalog.Count(p => p.CategoriaId == c.Id);
             ViewBag.TotalCatalogProducts = allCatalog.Count;
+            ViewBag.PrecioTope = Math.Max(1, Math.Ceiling(allCatalog.Where(p => double.IsFinite(p.Precio)).Select(p => p.Precio).DefaultIfEmpty(1).Max()));
             foreach (var categoryRow in categorias.Where(c => !c.Nombre.Contains(" · ")))
                 categoryRow.CantidadProductos += categorias.Where(c => c.Nombre.StartsWith(categoryRow.Nombre + " · ", StringComparison.Ordinal)).Sum(c => c.CantidadProductos);
             ViewBag.Categorias = categorias.Where(c => c.CantidadProductos > 0 && c.Grupo != "Pendientes de organizar")
@@ -47,7 +52,7 @@ namespace AldaJoyeros.Controllers
             ViewBag.CategoriaSeleccionada = categoriaId;
             ViewBag.Busqueda = busqueda;
 
-            var productos = await _catalogo.GetAsync(categoriaId, busqueda);
+            var productos = await _catalogo.GetAsync(categoriaId, busqueda, priceRange: range);
 
             var pagedResult = PagedResult<DTOs.ProductoDto>.Create(productos, page, PageSize);
             var categorySlug = categorias.FirstOrDefault(c => c.Id == categoriaId)?.UrlSlug;
@@ -72,9 +77,11 @@ namespace AldaJoyeros.Controllers
         /// Endpoint AJAX para filtrar productos con JSON response
         /// </summary>
         [HttpGet]
-        public async Task<IActionResult> Filtrar(long? categoriaId, string busqueda = "", int page = 1)
+        public async Task<IActionResult> Filtrar(long? categoriaId, string busqueda = "", int page = 1, string? precioMin = null, string? precioMax = null)
         {
-            var productos = await _catalogo.GetAsync(categoriaId, busqueda);
+            if (!CatalogPriceRange.TryCreate(precioMin, precioMax, out var range))
+                return BadRequest(new { success = false, message = "Revisa el rango de precios: el mínimo no puede superar al máximo." });
+            var productos = await _catalogo.GetAsync(categoriaId, busqueda, priceRange: range);
 
             var pagedResult = PagedResult<DTOs.ProductoDto>.Create(productos, page, PageSize);
             await _catalogo.LoadImagesAsync(pagedResult.Items);

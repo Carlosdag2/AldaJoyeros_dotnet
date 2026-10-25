@@ -13,7 +13,8 @@
     if (description.Length > 170) description = description[..167] + "…";
     var publicPage = (controller == "Home" && action is "Index" or "Privacy" or "Cookies" or "Terminos" or "AvisoLegal")
         || (controller == "Productos" && action is "Index" or "Detalle" && string.IsNullOrWhiteSpace(Context.Request.Query["busqueda"]));
-    var index = publication.CanIndex && publicPage && Context.Response.StatusCode == 200;
+    var priceFiltered = controller == "Productos" && action == "Index" && (!string.IsNullOrWhiteSpace(Context.Request.Query["precioMin"]) || !string.IsNullOrWhiteSpace(Context.Request.Query["precioMax"]));
+    var index = publication.CanIndex && publicPage && !priceFiltered && Context.Response.StatusCode == 200;
     var origin = publication.PublicOrigin;
     string? path = null;
     if (product != null) path = AldaJoyeros.Helpers.PublicUrls.ProductPath(product);

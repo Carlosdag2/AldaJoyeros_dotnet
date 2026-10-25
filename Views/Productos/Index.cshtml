@@ -5,6 +5,8 @@
     var categorias = ViewBag.Categorias as IEnumerable<AldaJoyeros.DTOs.CategoriaDto>;
     var categoriaSeleccionada = ViewBag.CategoriaSeleccionada as long?;
     var busqueda = ViewBag.Busqueda as string ?? "";
+    var precioMin = ViewBag.PrecioMin as string ?? "";
+    var precioMax = ViewBag.PrecioMax as string ?? "";
     var categoriaActual = categorias?.FirstOrDefault(c => c.Id == categoriaSeleccionada);
 }
 
@@ -140,7 +142,45 @@
 
             <aside class="lg:col-span-1 space-y-12">
 
-                <div class="hidden lg:block sticky top-24">
+                <form method="get" action="@(Context.Request.PathBase + AldaJoyeros.Helpers.PublicUrls.CatalogPath(categoriaActual?.UrlSlug))"
+                      x-on:submit.prevent="aplicarPrecio()" class="border-b border-stone-200 pb-8" aria-labelledby="tituloFiltroPrecio">
+                    <input type="hidden" name="busqueda" :value="busquedaActual" value="@busqueda" />
+                    <h2 id="tituloFiltroPrecio" class="font-serif text-2xl text-stone-900 mb-6">Precio</h2>
+                    <div class="catalog-price-slider relative mx-3 h-10 text-emerald-800" x-on:pointerdown="elegirPrecioEnBarra($event)">
+                        <div class="catalog-price-track pointer-events-none absolute inset-x-0 top-1/2 h-1 -translate-y-1/2 rounded-full bg-stone-200"></div>
+                        <div class="catalog-price-selection pointer-events-none absolute top-1/2 h-1 -translate-y-1/2 rounded-full bg-emerald-800"
+                             :style="{ left: (precioInferior / precioTope * 100) + '%', right: (100 - precioSuperior / precioTope * 100) + '%' }"></div>
+                        <input id="precioMinBarra" type="range" min="0" step="0.01" :max="precioTope" :value="precioInferior"
+                               :aria-valuemax="precioSuperior" :aria-valuetext="formatearPrecio(precioInferior)"
+                               aria-label="Precio mínimo" class="catalog-price-handle"
+                               :style="{ zIndex: precioInferior >= precioTope ? 3 : 1 }"
+                               x-on:input="moverPrecio('min', $event.target.value)" x-on:change="aplicarBarraPrecio()" />
+                        <input id="precioMaxBarra" type="range" min="0" step="0.01" :max="precioTope" :value="precioSuperior"
+                               :aria-valuemin="precioInferior" :aria-valuetext="formatearPrecio(precioSuperior)"
+                               aria-label="Precio máximo" class="catalog-price-handle"
+                               x-on:input="moverPrecio('max', $event.target.value)" x-on:change="aplicarBarraPrecio()" />
+                    </div>
+                    <div class="mt-3 grid grid-cols-2 gap-3">
+                        <label for="precioMin" class="min-w-0 text-xs text-stone-600">Desde (€)
+                            <input id="precioMin" name="precioMin" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0"
+                                   value="@precioMin" x-model="precioMinEntrada" x-on:change="aplicarPrecio()"
+                                   class="mt-2 block w-full min-w-0 rounded-sm border border-stone-300 bg-white px-3 py-3 text-sm text-stone-900 focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700" />
+                        </label>
+                        <label for="precioMax" class="min-w-0 text-xs text-stone-600">Hasta (€)
+                            <input id="precioMax" name="precioMax" type="number" min="0" step="0.01" inputmode="decimal" :placeholder="precioTope"
+                                   value="@precioMax" x-model="precioMaxEntrada" x-on:change="aplicarPrecio()"
+                                   class="mt-2 block w-full min-w-0 rounded-sm border border-stone-300 bg-white px-3 py-3 text-sm text-stone-900 focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700" />
+                        </label>
+                    </div>
+                    <p class="mt-3 text-xs leading-relaxed text-stone-500">Desliza los extremos para elegir tu rango. En artículos con tallas se usa el precio «Desde».</p>
+                    <p x-show="errorPrecio" x-text="errorPrecio" x-cloak role="alert" class="mt-3 text-sm text-red-700"></p>
+                    <div x-show="precioMinActual !== '' || precioMaxActual !== ''" x-cloak class="mt-4 space-y-2">
+                        <p x-text="resumenPrecio" aria-live="polite" class="text-sm font-medium text-emerald-900"></p>
+                        <button type="button" x-on:click="quitarPrecio()" class="text-sm text-stone-600 underline hover:text-emerald-900">Quitar filtro de precio</button>
+                    </div>
+                </form>
+
+                <div class="hidden lg:block">
                     <h3 class="font-serif text-2xl text-stone-900 mb-6">Categorías</h3>
                     <ul class="space-y-4" id="listaCategorias">
                         <li>
@@ -206,6 +246,32 @@
 
 @section Styles {
     <style>
+        /* Both native ranges share one rail; only their thumbs receive pointer input. */
+        .catalog-price-handle {
+            position: absolute; inset: 0; width: 100%; height: 40px; margin: 0;
+            appearance: none; -webkit-appearance: none; background: transparent;
+            pointer-events: none; color: inherit; outline: none;
+        }
+        .catalog-price-handle::-webkit-slider-runnable-track { height: 4px; background: transparent; }
+        .catalog-price-handle::-moz-range-track { height: 4px; background: transparent; }
+        .catalog-price-handle::-webkit-slider-thumb {
+            appearance: none; -webkit-appearance: none; margin-top: -10px;
+            width: 24px; height: 24px; border-radius: 6px; border: 2px solid currentColor;
+            background: var(--theme-surface, #fff); pointer-events: auto; cursor: ew-resize; touch-action: none;
+        }
+        .catalog-price-handle::-moz-range-thumb {
+            width: 20px; height: 20px; border-radius: 6px; border: 2px solid currentColor;
+            background: var(--theme-surface, #fff); pointer-events: auto; cursor: ew-resize; touch-action: none;
+        }
+        .catalog-price-handle:focus-visible::-webkit-slider-thumb { outline: 3px solid currentColor; outline-offset: 4px; }
+        .catalog-price-handle:focus-visible::-moz-range-thumb { outline: 3px solid currentColor; outline-offset: 4px; }
+        html[data-theme="high-contrast"] .catalog-price-slider { color: #ffff00 !important; }
+        html[data-theme="high-contrast"] .catalog-price-track { background: #fff !important; }
+        html[data-theme="high-contrast"] .catalog-price-handle { border: 0 !important; background: transparent !important; color: #ffff00 !important; }
+        html[data-theme="high-contrast"] .catalog-price-handle::-webkit-slider-thumb { background: #000 !important; border-color: #ffff00 !important; }
+        html[data-theme="high-contrast"] .catalog-price-handle::-moz-range-thumb { background: #000 !important; border-color: #ffff00 !important; }
+        html[data-theme="high-contrast"] .catalog-price-selection { background: #ffff00 !important; }
+
         /* Fuentes */
         .font-serif {
             font-family: 'Playfair Display', serif;
@@ -326,6 +392,66 @@
                     return this.categorias.find(c => String(c.id) === String(this.categoriaActual))?.nombre || '';
                 },
                 busquedaActual: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(busqueda)),
+                precioMinEntrada: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(precioMin)),
+                precioMaxEntrada: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(precioMax)),
+                precioMinActual: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(precioMin)),
+                precioMaxActual: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(precioMax)),
+                precioTopeCatalogo: @Html.Raw(System.Text.Json.JsonSerializer.Serialize((double)(ViewBag.PrecioTope ?? 1d))),
+                get precioTope() {
+                    return Math.max(this.precioTopeCatalogo, Number(this.precioMinActual) || 0, Number(this.precioMaxActual) || 0);
+                },
+                get precioInferior() {
+                    return Math.min(this.precioTope, Math.max(0, Number(this.precioMinEntrada) || 0));
+                },
+                get precioSuperior() {
+                    return this.precioMaxEntrada === '' || this.precioMaxEntrada === null ? this.precioTope : Math.min(this.precioTope, Math.max(0, Number(this.precioMaxEntrada) || 0));
+                },
+                formatearPrecio(value) {
+                    return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(value);
+                },
+                moverPrecio(extremo, value) {
+                    const number = Math.round(Number(value) * 100) / 100;
+                    if (extremo === 'min') this.precioMinEntrada = String(Math.min(number, this.precioSuperior));
+                    else this.precioMaxEntrada = String(Math.max(number, this.precioInferior));
+                    this.errorPrecio = '';
+                },
+                async aplicarBarraPrecio() {
+                    if (Number(this.precioMinEntrada) === 0) this.precioMinEntrada = '';
+                    if (Number(this.precioMaxEntrada) === this.precioTope) this.precioMaxEntrada = '';
+                    await this.aplicarPrecio();
+                },
+                async elegirPrecioEnBarra(event) {
+                    if (event.target.matches('input')) return;
+                    const rect = event.currentTarget.getBoundingClientRect();
+                    const value = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width)) * this.precioTope;
+                    this.moverPrecio(Math.abs(value - this.precioInferior) <= Math.abs(value - this.precioSuperior) ? 'min' : 'max', value);
+                    await this.aplicarBarraPrecio();
+                },
+                errorPrecio: '',
+                controladorCatalogo: null,
+                get resumenPrecio() {
+                    const euro = value => new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(Number(value));
+                    if (this.precioMinActual !== '' && this.precioMaxActual !== '') return `De ${euro(this.precioMinActual)} a ${euro(this.precioMaxActual)}`;
+                    if (this.precioMinActual !== '') return `Desde ${euro(this.precioMinActual)}`;
+                    return this.precioMaxActual !== '' ? `Hasta ${euro(this.precioMaxActual)}` : '';
+                },
+                async aplicarPrecio() {
+                    const min = String(this.precioMinEntrada ?? '').trim().replace(',', '.');
+                    const max = String(this.precioMaxEntrada ?? '').trim().replace(',', '.');
+                    if ([min, max].some(v => v !== '' && (!Number.isFinite(Number(v)) || Number(v) < 0)) || min !== '' && max !== '' && Number(min) > Number(max)) {
+                        this.errorPrecio = 'El precio mínimo no puede superar al máximo. Indica importes válidos.';
+                        return;
+                    }
+                    this.errorPrecio = '';
+                    this.precioMinActual = min;
+                    this.precioMaxActual = max;
+                    this.paginaActual = 1;
+                    await this.cargarProductos();
+                },
+                async quitarPrecio() {
+                    this.precioMinEntrada = this.precioMaxEntrada = '';
+                    await this.aplicarPrecio();
+                },
                 paginaActual: @Model.PageNumber,
                 totalItems: @Model.TotalItems,
                 totalPages: @Model.TotalPages,
@@ -343,6 +469,9 @@
                         if (event.state) {
                             this.categoriaActual = event.state.categoria;
                             this.busquedaActual = event.state.busqueda || '';
+                            this.precioMinEntrada = this.precioMinActual = event.state.precioMin ?? '';
+                            this.precioMaxEntrada = this.precioMaxActual = event.state.precioMax ?? '';
+                            this.errorPrecio = '';
                             window.dispatchEvent(new CustomEvent('catalogo-busqueda', { detail: this.busquedaActual }));
                             this.paginaActual = event.state.pagina || 1;
                             this.cargarProductos(false); // No actualizar URL
@@ -373,6 +502,8 @@
 
                 // Limpiar filtros
                 async limpiarFiltros() {
+                    this.precioMinEntrada = this.precioMaxEntrada = this.precioMinActual = this.precioMaxActual = '';
+                    this.errorPrecio = '';
                     this.categoriaActual = null;
                     this.busquedaActual = '';
                     window.dispatchEvent(new CustomEvent('catalogo-busqueda', { detail: '' }));
@@ -383,6 +514,9 @@
                 // Cargar productos con AJAX
                 async cargarProductos(actualizarUrl = true) {
                     if (this.busquedaActual.trim()) this.categoriaActual = null;
+                    if (this.controladorCatalogo) this.controladorCatalogo.abort();
+                    const controller = new AbortController();
+                    this.controladorCatalogo = controller;
                     this.cargando = true;
 
                     try {
@@ -391,9 +525,14 @@
                         if (this.categoriaActual) url += `&categoriaId=${this.categoriaActual}`;
                         if (this.busquedaActual) url += `&busqueda=${encodeURIComponent(this.busquedaActual)}`;
 
-                        const response = await fetch(url);
+                        if (this.precioMinActual !== '') url += `&precioMin=${encodeURIComponent(this.precioMinActual)}`;
+                        if (this.precioMaxActual !== '') url += `&precioMax=${encodeURIComponent(this.precioMaxActual)}`;
+                        const response = await fetch(url, { signal: controller.signal });
                         const data = await response.json();
 
+                        if (this.controladorCatalogo !== controller) return;
+                        if (!response.ok || !data.success) throw new Error(data.message || 'No se han podido cargar los productos. Vuelve a intentarlo.');
+                        this.errorPrecio = '';
                         if (data.success) {
                             // Actualizar contenedor con animación
                             const container = this.$refs.productosContainer;
@@ -401,6 +540,7 @@
                             container.style.transform = 'translateY(10px)';
                             
                             setTimeout(() => {
+                                if (this.controladorCatalogo !== controller) return;
                                 container.innerHTML = data.html;
                                 container.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
                                 container.style.opacity = '1';
@@ -418,9 +558,9 @@
                             }
                         }
                     } catch (error) {
-                        console.error('Error cargando productos:', error);
+                        if (error.name !== 'AbortError') this.errorPrecio = error.message;
                     } finally {
-                        this.cargando = false;
+                        if (this.controladorCatalogo === controller) this.cargando = false;
                     }
                 },
 
@@ -431,6 +571,8 @@
                     const params = new URLSearchParams();
                     
 
+                    if (this.precioMinActual !== '') params.set('precioMin', this.precioMinActual);
+                    if (this.precioMaxActual !== '') params.set('precioMax', this.precioMaxActual);
                     if (this.busquedaActual) params.set('busqueda', this.busquedaActual);
                     if (this.paginaActual > 1) params.set('page', this.paginaActual);
                     
@@ -439,7 +581,9 @@
                     const state = {
                         categoria: this.categoriaActual,
                         busqueda: this.busquedaActual,
-                        pagina: this.paginaActual
+                        pagina: this.paginaActual,
+                        precioMin: this.precioMinActual,
+                        precioMax: this.precioMaxActual
                     };
 
                     if (reemplazar) {
@@ -448,7 +592,7 @@
                         history.pushState(state, '', url);
                     }
                     const robots = document.querySelector('meta[name="robots"]');
-                    if (robots) robots.content = robots.dataset.publicIndexing === 'true' && !this.busquedaActual.trim() ? 'index, follow' : 'noindex, nofollow';
+                    if (robots) robots.content = robots.dataset.publicIndexing === 'true' && !this.busquedaActual.trim() && this.precioMinActual === '' && this.precioMaxActual === '' ? 'index, follow' : 'noindex, nofollow';
                     const canonical = document.querySelector('link[rel="canonical"][data-catalog-base]');
                     if (canonical && canonical.dataset.catalogBase) {
                         const categorySlug = this.categoriaActual && !this.busquedaActual.trim() ? this.categorias.find(c => String(c.id) === String(this.categoriaActual))?.slug : null;

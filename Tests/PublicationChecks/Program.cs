@@ -32,6 +32,20 @@ using (var original = new SKBitmap(1600, 1000))
 }
 
 
+// Price ranges are inclusive, accept Spanish decimals, and compare the price shown to cents.
+Check(CatalogPriceRange.TryCreate(null, "", out var unrestricted) && unrestricted.Contains(123.45), "Sin límites se conserva el catálogo");
+Check(CatalogPriceRange.TryCreate("50,25", "100.50", out var range) && range.Contains(50.25) && range.Contains(100.50), "Precios mínimo y máximo inclusivos con coma o punto");
+Check(!range.Contains(50.24) && !range.Contains(100.51), "Se excluyen precios fuera del rango");
+Check(range.Contains(100.500000000001), "Se comparan importes monetarios redondeados a céntimos");
+Check(CatalogPriceRange.TryCreate("0", null, out var zero) && zero.Contains(0), "El mínimo cero es un filtro válido");
+Check(CatalogPriceRange.TryCreate(null, "10", out var maximum) && maximum.Contains(10) && !maximum.Contains(10.01), "Se permite solo un máximo");
+Check(CatalogPriceRange.TryCreate("10", null, out var minimum) && minimum.Contains(999) && !minimum.Contains(9.99), "Se permite solo un mínimo");
+foreach (var bad in new[] { "-1", "NaN", "Infinity", "1.001", "texto", "99999999999999999999999999999999999", "1,000.00" })
+    Check(!CatalogPriceRange.TryCreate(bad, null, out _), "Se rechaza un precio inválido: " + bad);
+Check(!CatalogPriceRange.TryCreate("100", "50", out _), "Se rechazan límites invertidos");
+Check(CatalogPriceRange.TryCreate("25", "25", out var exact) && exact.Contains(25) && !exact.Contains(25.01), "Se permite buscar un precio exacto");
+Check(!unrestricted.Contains(double.NaN) && !unrestricted.Contains(double.PositiveInfinity), "Precios no finitos no coinciden");
+
 var ring = new ProductoDto { Id = 2792, Nombre = "02000090", CategoriaNombre = "Anillos · Oro de 18 quilates" };
 Check(PublicUrls.ProductPath(ring) == "/producto/anillos-oro-de-18-quilates-02000090", "URL descriptiva conserva referencia y ceros iniciales");
 Check(PublicUrls.ProductSlug(new ProductoDto { Nombre = "A/21 <script>", CategoriaNombre = "Colección de señora" }) == "coleccion-de-senora-a-21-script", "El slug elimina acentos, barras y caracteres de marcado");
