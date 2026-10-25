@@ -147,18 +147,21 @@
                     <input type="hidden" name="busqueda" :value="busquedaActual" value="@busqueda" />
                     <h2 id="tituloFiltroPrecio" class="font-serif text-2xl text-stone-900 mb-6">Precio</h2>
                     <div class="catalog-price-slider relative mx-3 h-10 text-emerald-800" x-on:pointerdown="elegirPrecioEnBarra($event)">
-                        <div class="catalog-price-track pointer-events-none absolute inset-x-0 top-1/2 h-1 -translate-y-1/2 rounded-full bg-stone-200"></div>
+                        <div class="catalog-price-track pointer-events-none absolute top-1/2 h-1 -translate-y-1/2 rounded-full bg-stone-200"></div>
                         <div class="catalog-price-selection pointer-events-none absolute top-1/2 h-1 -translate-y-1/2 rounded-full bg-emerald-800"
-                             :style="{ left: (precioInferior / precioTope * 100) + '%', right: (100 - precioSuperior / precioTope * 100) + '%' }"></div>
-                        <input id="precioMinBarra" type="range" min="0" step="0.01" :max="precioTope" :value="precioInferior"
-                               :aria-valuemax="precioSuperior" :aria-valuetext="formatearPrecio(precioInferior)"
+                             :style="estiloSeleccionPrecio"></div>
+                        <input id="precioMinBarra" type="range" min="0" max="10000" step="1" :value="Math.round(posicionPrecio(precioInferior) * 10000)"
+                               :aria-valuemax="Math.round(posicionPrecio(precioSuperior) * 10000)" :aria-valuetext="formatearPrecio(precioInferior)"
                                aria-label="Precio mínimo" class="catalog-price-handle"
-                               :style="{ zIndex: precioInferior >= precioTope ? 3 : 1 }"
-                               x-on:input="moverPrecio('min', $event.target.value)" x-on:change="aplicarBarraPrecio()" />
-                        <input id="precioMaxBarra" type="range" min="0" step="0.01" :max="precioTope" :value="precioSuperior"
-                               :aria-valuemin="precioInferior" :aria-valuetext="formatearPrecio(precioSuperior)"
-                               aria-label="Precio máximo" class="catalog-price-handle"
-                               x-on:input="moverPrecio('max', $event.target.value)" x-on:change="aplicarBarraPrecio()" />
+                               x-on:input="moverTiradorPrecio('min', $event)" x-on:keydown="tecladoPrecio('min', $event)" x-on:change="aplicarBarraPrecio()" />
+                        <input id="precioMaxBarra" type="range" min="0" max="10000" step="1" :value="Math.round(posicionPrecio(precioSuperior) * 10000)"
+                               :aria-valuemin="Math.round(posicionPrecio(precioInferior) * 10000)" :aria-valuetext="formatearPrecio(precioSuperior)"
+                               aria-label="Precio máximo" class="catalog-price-handle catalog-price-handle-max"
+                               x-on:input="moverTiradorPrecio('max', $event)" x-on:keydown="tecladoPrecio('max', $event)" x-on:change="aplicarBarraPrecio()" />
+                    </div>
+                    <div class="mt-1 flex flex-wrap items-center justify-between gap-2 text-xs text-stone-500">
+                        <span x-text="formatearPrecio(0)"></span>
+                        <span x-text="formatearPrecio(precioTope)"></span>
                     </div>
                     <div class="mt-3 grid grid-cols-2 gap-3">
                         <label for="precioMin" class="min-w-0 text-xs text-stone-600">Desde (€)
@@ -172,7 +175,7 @@
                                    class="mt-2 block w-full min-w-0 rounded-sm border border-stone-300 bg-white px-3 py-3 text-sm text-stone-900 focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700" />
                         </label>
                     </div>
-                    <p class="mt-3 text-xs leading-relaxed text-stone-500">Desliza los extremos para elegir tu rango. En artículos con tallas se usa el precio «Desde».</p>
+                    <p class="mt-3 text-xs leading-relaxed text-stone-500">La barra da más espacio a tu rango. Sus extremos siempre permiten volver a 0 € y al precio máximo. En artículos con tallas se usa el precio «Desde».</p>
                     <p x-show="errorPrecio" x-text="errorPrecio" x-cloak role="alert" class="mt-3 text-sm text-red-700"></p>
                     <div x-show="precioMinActual !== '' || precioMaxActual !== ''" x-cloak class="mt-4 space-y-2">
                         <p x-text="resumenPrecio" aria-live="polite" class="text-sm font-medium text-emerald-900"></p>
@@ -248,19 +251,21 @@
     <style>
         /* Both native ranges share one rail; only their thumbs receive pointer input. */
         .catalog-price-handle {
-            position: absolute; inset: 0; width: 100%; height: 40px; margin: 0;
+            position: absolute; top: 0; left: 0; width: calc(100% - 32px); height: 40px; margin: 0;
             appearance: none; -webkit-appearance: none; background: transparent;
             pointer-events: none; color: inherit; outline: none;
         }
+        .catalog-price-track { left: 14px; right: 14px; }
+        .catalog-price-handle-max { left: 32px; }
         .catalog-price-handle::-webkit-slider-runnable-track { height: 4px; background: transparent; }
         .catalog-price-handle::-moz-range-track { height: 4px; background: transparent; }
         .catalog-price-handle::-webkit-slider-thumb {
-            appearance: none; -webkit-appearance: none; margin-top: -10px;
-            width: 24px; height: 24px; border-radius: 6px; border: 2px solid currentColor;
+            appearance: none; -webkit-appearance: none; margin-top: -12px;
+            width: 28px; height: 28px; border-radius: 6px; border: 2px solid currentColor;
             background: var(--theme-surface, #fff); pointer-events: auto; cursor: ew-resize; touch-action: none;
         }
         .catalog-price-handle::-moz-range-thumb {
-            width: 20px; height: 20px; border-radius: 6px; border: 2px solid currentColor;
+            width: 24px; height: 24px; border-radius: 6px; border: 2px solid currentColor;
             background: var(--theme-surface, #fff); pointer-events: auto; cursor: ew-resize; touch-action: none;
         }
         .catalog-price-handle:focus-visible::-webkit-slider-thumb { outline: 3px solid currentColor; outline-offset: 4px; }
@@ -397,6 +402,84 @@
                 precioMinActual: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(precioMin)),
                 precioMaxActual: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(precioMax)),
                 precioTopeCatalogo: @Html.Raw(System.Text.Json.JsonSerializer.Serialize((double)(ViewBag.PrecioTope ?? 1d))),
+                escalaPrecioMin: 0,
+                escalaPrecioMax: 1,
+                get estiloSeleccionPrecio() {
+                    const min = this.posicionPrecio(this.precioInferior);
+                    const max = Math.max(min, this.posicionPrecio(this.precioSuperior));
+                    // Separate tracks reserve 32px between thumbs, even for identical prices.
+                    return { left: `calc(${min * 100}% + ${14 - 60 * min}px)`, right: `calc(${(1 - max) * 100}% + ${60 * max - 46}px)` };
+                },
+                ajustarEscalaPrecio(forzar = false) {
+                    if (this.precioMinActual === '' && this.precioMaxActual === '') {
+                        this.escalaPrecioMin = 0;
+                        this.escalaPrecioMax = this.precioTope;
+                        return;
+                    }
+                    let min = this.precioInferior;
+                    let max = Math.max(min, this.precioSuperior);
+                    // With one open side, magnify the remaining bound rather than shrinking it against the edge.
+                    if (max === this.precioTope && min > 0) {
+                        const padding = Math.max(5, min * 0.2);
+                        max = Math.min(this.precioTope, min + padding);
+                        min = Math.max(0, min - padding);
+                    } else if (min === 0 && max > this.precioTope * 0.6 && max < this.precioTope) {
+                        const padding = Math.max(5, (this.precioTope - max) * 0.2);
+                        min = Math.max(0, max - padding);
+                        max = Math.min(this.precioTope, max + padding);
+                    }
+                    const span = Math.max(1, max - min);
+                    const outside = min < this.escalaPrecioMin || max > this.escalaPrecioMax;
+                    if (!forzar && !outside && span >= (this.escalaPrecioMax - this.escalaPrecioMin) * 0.6) return;
+                    const padding = Math.max(5, span * 0.2);
+                    this.escalaPrecioMin = Math.max(0, Math.floor((min - padding) * 100) / 100);
+                    this.escalaPrecioMax = Math.min(this.precioTope, Math.ceil((max + padding) * 100) / 100);
+                    if (this.escalaPrecioMax <= this.escalaPrecioMin) this.escalaPrecioMin = Math.max(0, this.escalaPrecioMax - 1);
+                },
+                get tramosPrecio() {
+                    // Magnify the chosen interval while reserving both tails to reach 0 and the catalog maximum.
+                    return {
+                        precios: [0, this.escalaPrecioMin, this.escalaPrecioMax, this.precioTope],
+                        posiciones: [0, this.escalaPrecioMin > 0 ? 0.15 : 0, this.escalaPrecioMax < this.precioTope ? 0.85 : 1, 1]
+                    };
+                },
+                interpolarPrecio(value, origen, destino) {
+                    if (value <= origen[0]) return destino[0];
+                    for (let i = 1; i < origen.length; i++) {
+                        if (origen[i] > origen[i - 1] && value <= origen[i])
+                            return destino[i - 1] + (value - origen[i - 1]) / (origen[i] - origen[i - 1]) * (destino[i] - destino[i - 1]);
+                    }
+                    return destino[destino.length - 1];
+                },
+                posicionPrecio(price) {
+                    const tramos = this.tramosPrecio;
+                    return this.interpolarPrecio(price, tramos.precios, tramos.posiciones);
+                },
+                precioDesdePosicion(position) {
+                    const tramos = this.tramosPrecio;
+                    return this.interpolarPrecio(position, tramos.posiciones, tramos.precios);
+                },
+                moverTiradorPrecio(extremo, event) {
+                    const price = this.precioDesdePosicion(Number(event.target.value) / 10000);
+                    const clamped = this.moverPrecio(extremo, price);
+                    // Reset the actual native thumb too when it reaches the other price.
+                    event.target.value = Math.round(this.posicionPrecio(clamped) * 10000);
+                },
+                async tecladoPrecio(extremo, event) {
+                    const current = extremo === 'min' ? this.precioInferior : this.precioSuperior;
+                    const step = event.shiftKey ? 1 : 0.01;
+                    const values = {
+                        ArrowLeft: current - step, ArrowDown: current - step,
+                        ArrowRight: current + step, ArrowUp: current + step,
+                        PageDown: current - 10, PageUp: current + 10,
+                        Home: 0, End: this.precioTope
+                    };
+                    if (!(event.key in values)) return;
+                    event.preventDefault();
+                    const price = this.moverPrecio(extremo, values[event.key]);
+                    event.target.value = Math.round(this.posicionPrecio(price) * 10000);
+                    await this.aplicarBarraPrecio();
+                },
                 get precioTope() {
                     return Math.max(this.precioTopeCatalogo, Number(this.precioMinActual) || 0, Number(this.precioMaxActual) || 0);
                 },
@@ -411,9 +494,13 @@
                 },
                 moverPrecio(extremo, value) {
                     const number = Math.round(Number(value) * 100) / 100;
-                    if (extremo === 'min') this.precioMinEntrada = String(Math.min(number, this.precioSuperior));
-                    else this.precioMaxEntrada = String(Math.max(number, this.precioInferior));
+                    const clamped = extremo === 'min'
+                        ? Math.max(0, Math.min(number, this.precioSuperior))
+                        : Math.min(this.precioTope, Math.max(number, this.precioInferior));
+                    if (extremo === 'min') this.precioMinEntrada = String(clamped);
+                    else this.precioMaxEntrada = String(clamped);
                     this.errorPrecio = '';
+                    return clamped;
                 },
                 async aplicarBarraPrecio() {
                     if (Number(this.precioMinEntrada) === 0) this.precioMinEntrada = '';
@@ -423,7 +510,8 @@
                 async elegirPrecioEnBarra(event) {
                     if (event.target.matches('input')) return;
                     const rect = event.currentTarget.getBoundingClientRect();
-                    const value = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width)) * this.precioTope;
+                    const position = Math.max(0, Math.min(1, (event.clientX - rect.left - 14) / Math.max(1, rect.width - 28)));
+                    const value = this.precioDesdePosicion(position);
                     this.moverPrecio(Math.abs(value - this.precioInferior) <= Math.abs(value - this.precioSuperior) ? 'min' : 'max', value);
                     await this.aplicarBarraPrecio();
                 },
@@ -445,6 +533,7 @@
                     this.errorPrecio = '';
                     this.precioMinActual = min;
                     this.precioMaxActual = max;
+                    this.ajustarEscalaPrecio();
                     this.paginaActual = 1;
                     await this.cargarProductos();
                 },
@@ -460,6 +549,7 @@
                 init() {
                     // Guardar referencia global para los botones del partial
                     window.productosApp = this;
+                    this.ajustarEscalaPrecio(true);
                     
                     // Watch para guardar preferencia de vista
                     this.$watch('viewMode', val => localStorage.setItem('viewMode', val));
@@ -471,6 +561,7 @@
                             this.busquedaActual = event.state.busqueda || '';
                             this.precioMinEntrada = this.precioMinActual = event.state.precioMin ?? '';
                             this.precioMaxEntrada = this.precioMaxActual = event.state.precioMax ?? '';
+                            this.ajustarEscalaPrecio(true);
                             this.errorPrecio = '';
                             window.dispatchEvent(new CustomEvent('catalogo-busqueda', { detail: this.busquedaActual }));
                             this.paginaActual = event.state.pagina || 1;
@@ -503,6 +594,7 @@
                 // Limpiar filtros
                 async limpiarFiltros() {
                     this.precioMinEntrada = this.precioMaxEntrada = this.precioMinActual = this.precioMaxActual = '';
+                    this.ajustarEscalaPrecio();
                     this.errorPrecio = '';
                     this.categoriaActual = null;
                     this.busquedaActual = '';
