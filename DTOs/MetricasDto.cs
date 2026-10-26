@@ -2,6 +2,14 @@ namespace AldaJoyeros.DTOs
 {
     public class MetricasDto
     {
+        public int DiasPeriodo { get; set; } = 30;
+        public DateTime InicioPeriodo { get; set; }
+        public DateTime FinPeriodo { get; set; }
+        public DateTime GeneradasEn { get; set; }
+        public double VentasPeriodo { get; set; }
+        public int PedidosPeriodo { get; set; }
+        public double TicketPeriodo { get; set; }
+
         // Métricas generales
         public int TotalProductos { get; set; }
         public int TotalCategorias { get; set; }

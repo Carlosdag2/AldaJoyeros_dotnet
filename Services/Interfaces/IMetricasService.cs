@@ -4,6 +4,6 @@ namespace AldaJoyeros.Services.Interfaces
 {
     public interface IMetricasService
     {
-        Task<MetricasDto> GetMetricasAsync();
+        Task<MetricasDto> GetMetricasAsync(int dias = 30);
     }
 }

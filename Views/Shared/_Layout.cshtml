@@ -9,6 +9,11 @@
     <partial name="_SeoHead" />
     <meta name="cart-csrf" content="@Antiforgery.GetAndStoreTokens(Context).RequestToken" />
     <partial name="_Favicons" />
+    @if (AldaJoyeros.Helpers.TrafficPages.Resolve(Context.Request.Path) != null && Context.Response.StatusCode == 200 && !AldaJoyeros.Helpers.TrafficPages.IsAutomated(Context.Request))
+    {
+        <meta name="traffic-pulse-url" data-analytics="@AldaJoyeros.Helpers.VisitorConsent.AllowsAnalytics(Context.Request).ToString().ToLowerInvariant()" content="@Url.Action("Latido", "Trafico")" />
+        <script src="~/js/live-traffic.js" asp-append-version="true" defer></script>
+    }
 
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
@@ -399,5 +404,6 @@
     <script src="~/js/paginacion.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
     <partial name="_CookieNotice" />
+    <script src="~/js/cookie-consent.js" asp-append-version="true"></script>
 </body>
 </html>

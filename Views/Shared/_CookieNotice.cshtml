@@ -1,6 +1,6 @@
 @if (!AldaJoyeros.Helpers.VisitorConsent.HasChoice(Context.Request))
 {
-    <section aria-labelledby="cookies-title" class="fixed bottom-0 inset-x-0 z-[100] border-t border-gray-200 bg-white text-gray-800 shadow-2xl p-5 sm:p-6 max-h-[70vh] overflow-y-auto">
+    <section data-cookie-notice aria-labelledby="cookies-title" class="fixed bottom-0 inset-x-0 z-[100] border-t border-gray-200 bg-white text-gray-800 shadow-2xl p-5 sm:p-6 max-h-[70vh] overflow-y-auto transition duration-300 ease-out motion-reduce:transition-none">
         <div class="max-w-5xl mx-auto">
             <h2 id="cookies-title" class="text-lg font-bold">Tú decides sobre las cookies</h2>
             <p class="text-sm mt-2">Usamos cookies necesarias para la sesión y el carrito. Solo si lo permites, utilizaremos una cookie para nuestras estadísticas de visitas. Puedes cambiar tu elección en <a asp-controller="Home" asp-action="Cookies" class="underline">Cookies</a>.</p>
