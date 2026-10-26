@@ -8,6 +8,7 @@ using System.Security.Cryptography;
 
 namespace AldaJoyeros.Controllers
 {
+    [ServiceFilter(typeof(AldaJoyeros.Filters.CartSessionFilter))]
     [AutoValidateAntiforgeryToken]
     [Microsoft.AspNetCore.RateLimiting.EnableRateLimiting("auth-forms")]
     public class AuthController : BaseController
@@ -87,7 +88,8 @@ namespace AldaJoyeros.Controllers
                 
                 Response.Cookies.Append("jwt_token", token, cookieOptions);
 
-                await ProcessTempCarrito(usuario.Id);
+                var hadCart = TempCarritoHelper.HasItems(HttpContext);
+                if (!await ProcessTempCarrito(usuario.Id)) return RedirectToAction("Index", "Carrito");
 
                 if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                 {
@@ -100,7 +102,7 @@ namespace AldaJoyeros.Controllers
                     return RedirectToAction("Index", "Admin");
                 }
 
-                if (HttpContext.Items[AldaJoyeros.Services.StoreModeStore.ContextKey] is true && TempCarritoHelper.HasItems(HttpContext))
+                if (HttpContext.Items[AldaJoyeros.Services.StoreModeStore.ContextKey] is true && hadCart)
                 {
                     return RedirectToAction("Index", "Carrito");
                 }
@@ -174,7 +176,8 @@ namespace AldaJoyeros.Controllers
                 
                 Response.Cookies.Append("jwt_token", token, cookieOptions);
 
-                await ProcessTempCarrito(loggedUser.Id);
+                var hadCart = TempCarritoHelper.HasItems(HttpContext);
+                if (!await ProcessTempCarrito(loggedUser.Id)) return RedirectToAction("Index", "Carrito");
 
                 if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                 {
@@ -182,7 +185,7 @@ namespace AldaJoyeros.Controllers
                     return LocalRedirect(returnUrl);
                 }
 
-                if (HttpContext.Items[AldaJoyeros.Services.StoreModeStore.ContextKey] is true && TempCarritoHelper.HasItems(HttpContext))
+                if (HttpContext.Items[AldaJoyeros.Services.StoreModeStore.ContextKey] is true && hadCart)
                 {
                     TempData["Success"] = "¡Cuenta creada! Ahora puedes completar tu compra.";
                     return RedirectToAction("Index", "Carrito");
@@ -478,40 +481,13 @@ namespace AldaJoyeros.Controllers
             return number.ToString("D6");
         }
 
-        private async Task ProcessTempCarrito(long usuarioId)
+        private async Task<bool> ProcessTempCarrito(long usuarioId)
         {
-            if (HttpContext.Items[AldaJoyeros.Services.StoreModeStore.ContextKey] is not true) return;
-            var tempItems = TempCarritoHelper.GetItems(HttpContext);
-            
-            if (tempItems.Any())
-            {
-                var successCount = 0;
-                foreach (var item in tempItems)
-                {
-                    try
-                    {
-                        var carritoItemDto = new CarritoItemCreateDto
-                        {
-                            ProductoId = item.ProductoId,
-                            Cantidad = item.Cantidad
-                        };
-
-                        await _carritoService.AddItemAsync(usuarioId, carritoItemDto);
-                        successCount++;
-                    }
-                    catch (Exception)
-                    {
-                        continue;
-                    }
-                }
-                
-                TempCarritoHelper.Clear(HttpContext);
-                
-                if (successCount > 0)
-                {
-                    TempData["Info"] = $"Se han añadido {successCount} producto(s) a tu carrito.";
-                }
-            }
+            if (HttpContext.Items[AldaJoyeros.Services.StoreModeStore.ContextKey] is not true || !TempCarritoHelper.HasItems(HttpContext)) return true;
+            var cart = HttpContext.RequestServices.GetRequiredService<AldaJoyeros.Services.GuestCartService>();
+            var saved = await cart.MergeAsync(usuarioId);
+            if (cart.Notices.Count > 0) TempData["Warning"] = string.Join(" ", cart.Notices.Distinct());
+            return saved;
         }
     }
 }

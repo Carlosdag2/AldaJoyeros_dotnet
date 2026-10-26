@@ -20,7 +20,7 @@ return {
             try {
                 const response = await fetch('/Carrito/AgregarAjax', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    headers: window.aldaCarritoHeaders(),
                     body: `productoId=${productoId}&cantidad=1`
                 });
 

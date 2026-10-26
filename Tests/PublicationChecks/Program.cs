@@ -90,6 +90,7 @@ foreach (var publicMode in new[] { false, true })
     builder.Services.AddSingleton<ICategoriaService>(Stub.Make<ICategoriaService>());
     builder.Services.AddSingleton<IUsuarioService>(Stub.Make<IUsuarioService>());
     builder.Services.AddSingleton<ICarritoService>(Stub.Make<ICarritoService>());
+    builder.Services.AddScoped<AldaJoyeros.Filters.CartSessionFilter>();
     builder.Services.AddSingleton<IJwtService>(Stub.Make<IJwtService>());
     builder.Services.AddSingleton<IPasswordResetTokenRepository>(Stub.Make<IPasswordResetTokenRepository>());
     builder.Services.AddSingleton<IEmailService>(Stub.Make<IEmailService>());

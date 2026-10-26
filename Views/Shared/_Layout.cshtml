@@ -1,3 +1,4 @@
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
 <!DOCTYPE html>
 <html lang="es" class="scroll-smooth">
 <head>
@@ -6,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] | ALDA JOYEROS 1962</title>
     <partial name="_SeoHead" />
+    <meta name="cart-csrf" content="@Antiforgery.GetAndStoreTokens(Context).RequestToken" />
     <partial name="_Favicons" />
 
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -102,14 +104,10 @@
                 <div class="flex items-center gap-5">
                     <partial name="_ThemePicker" />
 
-                    @if (ViewBag.IsAuthenticated == true)
-                    {
-                        var currentUser = ViewBag.CurrentUser as AldaJoyeros.DTOs.UsuarioDto;
-
                         <!-- Cart -->
                         @if (ViewBag.EcommerceEnabled == true)
                         {
-                            <a asp-controller="Carrito" asp-action="Index" class="relative text-gray-600 hover:text-gray-900 transition-colors" data-carrito-link>
+                            <a asp-controller="Carrito" asp-action="Index" class="relative text-gray-600 hover:text-gray-900 transition-colors" data-carrito-link aria-label="Ver carrito">
                                 <i class="fas fa-shopping-bag" data-carrito-icon></i>
                                 <span data-carrito-count
                                       class="absolute -top-2 -right-2 w-4 h-4 bg-emerald-600 text-white text-[10px] font-medium rounded-full flex items-center justify-center @(ViewBag.CarritoCount > 0 ? "" : "hidden")">
@@ -117,6 +115,11 @@
                                 </span>
                             </a>
                         }
+
+
+                    @if (ViewBag.IsAuthenticated == true)
+                    {
+                        var currentUser = ViewBag.CurrentUser as AldaJoyeros.DTOs.UsuarioDto;
 
                         <!-- Account Dropdown -->
                         <div x-data="{ open: false }" class="relative">
@@ -175,13 +178,13 @@
                     }
                     else
                     {
-                        <a asp-controller="Auth" asp-action="Login" class="hidden lg:inline text-sm text-gray-600 hover:text-gray-900 transition-colors">
+                        <a asp-controller="Auth" asp-action="Login" asp-route-returnUrl="@ViewBag.ReturnUrl" class="hidden lg:inline text-sm text-gray-600 hover:text-gray-900 transition-colors">
                             Acceder
                         </a>
-                        <a asp-controller="Auth" asp-action="Register" class="hidden lg:inline text-sm bg-gray-900 text-white px-4 py-2 hover:bg-gray-800 transition-colors rounded">
+                        <a asp-controller="Auth" asp-action="Register" asp-route-returnUrl="@ViewBag.ReturnUrl" class="hidden lg:inline text-sm bg-gray-900 text-white px-4 py-2 hover:bg-gray-800 transition-colors rounded">
                             Registrarse
                         </a>
-                        <a asp-controller="Auth" asp-action="Login" class="lg:hidden text-gray-600">
+                        <a asp-controller="Auth" asp-action="Login" asp-route-returnUrl="@ViewBag.ReturnUrl" class="lg:hidden text-gray-600">
                             <i class="fas fa-user"></i>
                         </a>
                     }
@@ -251,10 +254,10 @@
                 else
                 {
                     <div class="pt-4 space-y-2">
-                        <a asp-controller="Auth" asp-action="Login" class="block py-2 text-center border border-gray-300 text-gray-700 rounded">
+                        <a asp-controller="Auth" asp-action="Login" asp-route-returnUrl="@ViewBag.ReturnUrl" class="block py-2 text-center border border-gray-300 text-gray-700 rounded">
                             Acceder
                         </a>
-                        <a asp-controller="Auth" asp-action="Register" class="block py-2 text-center bg-gray-900 text-white rounded">
+                        <a asp-controller="Auth" asp-action="Register" asp-route-returnUrl="@ViewBag.ReturnUrl" class="block py-2 text-center bg-gray-900 text-white rounded">
                             Registrarse
                         </a>
                     </div>

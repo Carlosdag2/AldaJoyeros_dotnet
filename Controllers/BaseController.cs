@@ -36,7 +36,7 @@ namespace AldaJoyeros.Controllers
         private async Task<int> GetCarritoCountAsync()
         {
             if (!IsAuthenticated || !CurrentUserId.HasValue)
-                return 0;
+                return AldaJoyeros.Helpers.TempCarritoHelper.GetItems(HttpContext).Sum(i => i.Cantidad);
 
             var carritoService = HttpContext.RequestServices.GetService<ICarritoService>();
             if (carritoService == null)

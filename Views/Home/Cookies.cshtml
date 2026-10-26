@@ -1,9 +1,13 @@
-@{ ViewData["Title"] = "Política de cookies"; }
-<div class="bg-gray-50 py-12 px-4 min-h-screen">
-<article class="max-w-3xl mx-auto rounded-2xl bg-white border border-gray-200 p-6 sm:p-10 space-y-6 text-gray-700">
-    <h1 class="text-3xl font-serif font-bold text-gray-900">Política de cookies</h1>
-    <p>Actualizada el 20 de octubre de 2026.</p>
-    <h2 class="text-xl font-bold">Cookies necesarias</h2>
+
+@{
+    Layout = "_LegalLayout";
+    ViewData["Title"] = "Política de cookies";
+    ViewData["LegalIcon"] = "fa-cookie-bite";
+    ViewData["LegalSummary"] = "Cookies, preferencias y control de tus opciones de navegación.";
+    ViewData["LegalUpdated"] = "20 de octubre de 2026";
+}
+
+<h2 class="text-xl font-bold">Cookies necesarias</h2>
     <p>La sesión de acceso (jwt_token), el carrito temporal (.AldaJoyeros.TempCart), los mensajes de navegación y la protección antifalsificación de formularios permiten utilizar la web. La duración del acceso depende de si eliges recordar la sesión; el carrito caduca tras 30 minutos de inactividad. La cookie .AldaJoyeros.Consent conserva tu elección durante seis meses.</p>
     <h2 class="text-xl font-bold">Estadísticas opcionales</h2>
     <p>Si aceptas, .AldaJoyeros.Visitor identifica de forma aleatoria una visita durante un día. Las páginas visitadas se contabilizan en las estadísticas internas de la tienda, mantenidas en memoria mientras funciona la aplicación. No instalamos Google Analytics ni cookies de publicidad.</p>
@@ -13,4 +17,3 @@
     <p>Estado: <strong>@(AldaJoyeros.Helpers.VisitorConsent.AllowsAnalytics(Context.Request) ? "Analítica permitida" : "Solo cookies necesarias")</strong>. Puedes aceptar o retirar tu permiso en cualquier momento. Al rechazar, se elimina la cookie de visitas de este navegador.</p>
     <partial name="_CookieChoices" />
     <p>También puedes borrar las cookies y los datos de este sitio desde la configuración de privacidad de tu navegador. <a asp-action="Privacy" class="underline">Consultar privacidad</a>.</p>
-</article></div>

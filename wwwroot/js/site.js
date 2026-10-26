@@ -53,3 +53,9 @@
         apply();
     });
 })();
+
+// Cart requests share the same antiforgery token for guests and signed-in customers.
+window.aldaCarritoHeaders = () => ({
+    'Content-Type': 'application/x-www-form-urlencoded',
+    'RequestVerificationToken': document.querySelector('meta[name="cart-csrf"]')?.content || ''
+});

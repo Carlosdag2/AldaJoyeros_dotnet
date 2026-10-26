@@ -1,356 +1,81 @@
 using Microsoft.AspNetCore.Mvc;
+using AldaJoyeros.Services;
 using AldaJoyeros.Services.Interfaces;
-using AldaJoyeros.DTOs;
-using AldaJoyeros.Helpers;
-using AldaJoyeros.Attributes;
 
-namespace AldaJoyeros.Controllers
+namespace AldaJoyeros.Controllers;
+
+[ServiceFilter(typeof(AldaJoyeros.Filters.CartSessionFilter))]
+[AutoValidateAntiforgeryToken]
+public class CarritoController(GuestCartService cart, IProductoImagenService images) : BaseController
 {
-    public class CarritoController : BaseController
+    public async Task<IActionResult> Index()
     {
-        private readonly ICarritoService _carritoService;
-        private readonly IProductoService _productoService;
-        private readonly IProductoImagenService _imagenService;
+        var items = await cart.GetAsync(CurrentUserId);
+        foreach (var item in items)
+            if (item.Producto != null && !item.Producto.TieneImagenes)
+                item.Producto.Imagenes = (await images.GetByProductoIdAsync(item.ProductoId)).ToList();
+        ViewBag.Total = items.Sum(i => i.Subtotal);
+        ViewBag.PendingCart = CurrentUserId.HasValue && cart.PendingMerge;
+        if (cart.Notices.Count > 0) TempData["Warning"] = string.Join(" ", cart.Notices.Distinct());
+        return View(items);
+    }
 
-        public CarritoController(
-            ICarritoService carritoService, 
-            IProductoService productoService,
-            IProductoImagenService imagenService)
-        {
-            _carritoService = carritoService;
-            _productoService = productoService;
-            _imagenService = imagenService;
-        }
+    [HttpPost]
+    public async Task<IActionResult> Agregar(long productoId, int cantidad = 1)
+    {
+        try { var name = await cart.AddAsync(CurrentUserId, productoId, cantidad); TempData["Success"] = $"'{name}' aÃ±adido al carrito"; }
+        catch (Exception ex) { TempData["Error"] = ex.Message; }
+        return RedirectToAction(nameof(Index));
+    }
+    [HttpPost]
+    public async Task<IActionResult> AgregarAjax(long productoId, int cantidad = 1)
+    {
+        try { var name = await cart.AddAsync(CurrentUserId, productoId, cantidad); return await SummaryAsync($"'{name}' aÃ±adido al carrito"); }
+        catch (Exception ex) { return Json(new { success = false, message = ex.Message }); }
+    }
+    [HttpPost]
+    public async Task<IActionResult> Actualizar(long itemId, int cantidad) {
+        try { await cart.UpdateAsync(CurrentUserId, itemId, cantidad); TempData["Success"] = "Cantidad actualizada"; }
+        catch (Exception ex) { TempData["Error"] = ex.Message; }
+        return RedirectToAction(nameof(Index));
+    }
+    [HttpPost]
+    public async Task<IActionResult> Eliminar(long itemId) {
+        try { await cart.RemoveAsync(CurrentUserId, itemId); TempData["Success"] = "Producto eliminado del carrito"; }
+        catch (Exception ex) { TempData["Error"] = ex.Message; }
+        return RedirectToAction(nameof(Index));
+    }
+    [HttpPost]
+    public async Task<IActionResult> Vaciar() {
+        try { await cart.ClearAsync(CurrentUserId); TempData["Success"] = "Carrito vaciado"; }
+        catch (Exception ex) { TempData["Error"] = ex.Message; }
+        return RedirectToAction(nameof(Index));
+    }
+    [HttpPost]
+    public async Task<IActionResult> ActualizarAjax(long itemId, int cantidad) {
+        try { await cart.UpdateAsync(CurrentUserId, itemId, cantidad); return await SummaryAsync("Cantidad actualizada", itemId); }
+        catch (Exception ex) { return Json(new { success = false, message = ex.Message }); }
+    }
+    [HttpPost]
+    public async Task<IActionResult> EliminarAjax(long itemId) {
+        try { await cart.RemoveAsync(CurrentUserId, itemId); return await SummaryAsync("Producto eliminado del carrito"); }
+        catch (Exception ex) { return Json(new { success = false, message = ex.Message }); }
+    }
+    [HttpPost]
+    public async Task<IActionResult> VaciarAjax() {
+        try { await cart.ClearAsync(CurrentUserId); return await SummaryAsync("Carrito vaciado"); }
+        catch (Exception ex) { return Json(new { success = false, message = ex.Message }); }
+    }
+    [HttpGet]
+    public Task<IActionResult> GetResumenAjax() => SummaryAsync("");
 
-        [JwtAuthorize]
-        public async Task<IActionResult> Index()
-        {
-            var items = await _carritoService.GetByUsuarioIdAsync(CurrentUser!.Id);
-            
-            foreach (var item in items)
-            {
-                if (item.Producto != null)
-                {
-                    var imagenes = await _imagenService.GetByProductoIdAsync(item.ProductoId);
-                    item.Producto.Imagenes = imagenes.ToList();
-                }
-            }
-            
-            var total = await _carritoService.GetTotalAsync(CurrentUser.Id);
-            
-            if (!items.Any())
-            {
-                TempData["Info"] = "Tu carrito está vacío. ¡Explora nuestras colecciones!";
-            }
-            
-            ViewBag.Total = total;
-            return View(items);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Agregar(long productoId, int cantidad = 1)
-        {
-            // Validar cantidad
-            if (cantidad < 1)
-            {
-                TempData["Error"] = "La cantidad debe ser al menos 1";
-                return RedirectToAction("Detalle", "Productos", new { id = productoId });
-            }
-
-            if (!IsAuthenticated)
-            {
-                TempCarritoHelper.AddItem(HttpContext, productoId, cantidad);
-                TempData["Info"] = "Producto guardado temporalmente. Inicia sesión para completar tu compra.";
-                
-                HttpContext.Session.SetString("ReturnUrl", Request.Headers["Referer"].ToString() ?? Url.Action("Index", "Productos")!);
-                
-                return RedirectToAction("Login", "Auth");
-            }
-
-            try
-            {
-                var producto = await _productoService.GetByIdAsync(productoId);
-                if (producto == null)
-                {
-                    TempData["Error"] = "El producto no existe";
-                    return RedirectToAction("Index", "Productos");
-                }
-
-                var carritoItemDto = new CarritoItemCreateDto
-                {
-                    ProductoId = productoId,
-                    Cantidad = cantidad
-                };
-
-                await _carritoService.AddItemAsync(CurrentUser!.Id, carritoItemDto);
-                TempData["Success"] = $"'{producto.Nombre}' añadido al carrito";
-                
-                return RedirectToAction("Index");
-            }
-            catch (Exception ex)
-            {
-                TempData["Error"] = $"No se pudo añadir al carrito: {ex.Message}";
-                return RedirectToAction("Detalle", "Productos", new { id = productoId });
-            }
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> AgregarAjax(long productoId, int cantidad = 1)
-        {
-            if (cantidad < 1)
-            {
-                return Json(new { success = false, message = "La cantidad debe ser al menos 1" });
-            }
-
-            if (!IsAuthenticated)
-            {
-                return Json(new { 
-                    success = false, 
-                    requiresLogin = true, 
-                    message = "Inicia sesión para añadir productos al carrito."
-                });
-            }
-
-            try
-            {
-                var producto = await _productoService.GetByIdAsync(productoId);
-                if (producto == null)
-                {
-                    return Json(new { success = false, message = "El producto no existe" });
-                }
-
-                var carritoItemDto = new CarritoItemCreateDto
-                {
-                    ProductoId = productoId,
-                    Cantidad = cantidad
-                };
-
-                await _carritoService.AddItemAsync(CurrentUser!.Id, carritoItemDto);
-                
-                var totalItems = await _carritoService.GetTotalItemsAsync(CurrentUser.Id);
-
-                return Json(new { 
-                    success = true, 
-                    message = $"'{producto.Nombre}' añadido al carrito",
-                    totalItems
-                });
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, message = $"No se pudo añadir al carrito: {ex.Message}" });
-            }
-        }
-
-        [HttpPost]
-        [JwtAuthorize]
-        public async Task<IActionResult> Actualizar(long itemId, int cantidad)
-        {
-            try
-            {
-                if (cantidad < 1)
-                {
-                    TempData["Warning"] = "La cantidad mínima es 1. Si deseas eliminar el producto, usa el botón eliminar.";
-                    return RedirectToAction("Index");
-                }
-
-                if (cantidad > 99)
-                {
-                    TempData["Warning"] = "La cantidad máxima por producto es 99";
-                    return RedirectToAction("Index");
-                }
-
-                var updateDto = new CarritoItemUpdateDto { Cantidad = cantidad };
-                await _carritoService.UpdateItemAsync(CurrentUser!.Id, itemId, updateDto);
-                TempData["Success"] = "Cantidad actualizada";
-            }
-            catch (Exception ex)
-            {
-                TempData["Error"] = $"Error al actualizar: {ex.Message}";
-            }
-
-            return RedirectToAction("Index");
-        }
-
-        [HttpPost]
-        [JwtAuthorize]
-        public async Task<IActionResult> Eliminar(long itemId)
-        {
-            try
-            {
-                await _carritoService.DeleteItemAsync(CurrentUser!.Id, itemId);
-                TempData["Success"] = "Producto eliminado del carrito";
-            }
-            catch (Exception ex)
-            {
-                TempData["Error"] = $"Error al eliminar: {ex.Message}";
-            }
-
-            return RedirectToAction("Index");
-        }
-
-        [HttpPost]
-        [JwtAuthorize]
-        public async Task<IActionResult> Vaciar()
-        {
-            try
-            {
-                var items = await _carritoService.GetByUsuarioIdAsync(CurrentUser!.Id);
-                if (!items.Any())
-                {
-                    TempData["Info"] = "El carrito ya está vacío";
-                    return RedirectToAction("Index");
-                }
-
-                await _carritoService.ClearCarritoAsync(CurrentUser!.Id);
-                TempData["Success"] = "Carrito vaciado exitosamente";
-            }
-            catch (Exception ex)
-            {
-                TempData["Error"] = $"Error al vaciar el carrito: {ex.Message}";
-            }
-
-            return RedirectToAction("Index");
-        }
-
-        #region API AJAX
-
-        /// <summary>
-        /// Actualizar cantidad de un item via AJAX
-        /// </summary>
-        [HttpPost]
-        [JwtAuthorize]
-        public async Task<IActionResult> ActualizarAjax(long itemId, int cantidad)
-        {
-            try
-            {
-                if (cantidad < 1)
-                {
-                    return Json(new { success = false, message = "La cantidad mínima es 1" });
-                }
-
-                if (cantidad > 99)
-                {
-                    return Json(new { success = false, message = "La cantidad máxima es 99" });
-                }
-
-                var updateDto = new CarritoItemUpdateDto { Cantidad = cantidad };
-                await _carritoService.UpdateItemAsync(CurrentUser!.Id, itemId, updateDto);
-
-                // Obtener datos actualizados
-                var items = await _carritoService.GetByUsuarioIdAsync(CurrentUser.Id);
-                var item = items.FirstOrDefault(i => i.Id == itemId);
-                var total = await _carritoService.GetTotalAsync(CurrentUser.Id);
-                var totalItems = await _carritoService.GetTotalItemsAsync(CurrentUser.Id);
-
-                return Json(new
-                {
-                    success = true,
-                    message = "Cantidad actualizada",
-                    subtotal = item?.Subtotal ?? 0,
-                    subtotalFormateado = (item?.Subtotal ?? 0).ToString("C"),
-                    total = total,
-                    totalFormateado = total.ToString("C"),
-                    totalItems = totalItems
-                });
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, message = ex.Message });
-            }
-        }
-
-        /// <summary>
-        /// Eliminar item del carrito via AJAX
-        /// </summary>
-        [HttpPost]
-        [JwtAuthorize]
-        public async Task<IActionResult> EliminarAjax(long itemId)
-        {
-            try
-            {
-                await _carritoService.DeleteItemAsync(CurrentUser!.Id, itemId);
-
-                var total = await _carritoService.GetTotalAsync(CurrentUser.Id);
-                var totalItems = await _carritoService.GetTotalItemsAsync(CurrentUser.Id);
-
-                return Json(new
-                {
-                    success = true,
-                    message = "Producto eliminado del carrito",
-                    total = total,
-                    totalFormateado = total.ToString("C"),
-                    totalItems = totalItems,
-                    carritoVacio = totalItems == 0
-                });
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, message = ex.Message });
-            }
-        }
-
-        /// <summary>
-        /// Vaciar carrito via AJAX
-        /// </summary>
-        [HttpPost]
-        [JwtAuthorize]
-        public async Task<IActionResult> VaciarAjax()
-        {
-            try
-            {
-                await _carritoService.ClearCarritoAsync(CurrentUser!.Id);
-
-                return Json(new
-                {
-                    success = true,
-                    message = "Carrito vaciado",
-                    totalItems = 0
-                });
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, message = ex.Message });
-            }
-        }
-
-        /// <summary>
-        /// Obtener resumen del carrito via AJAX
-        /// </summary>
-        [HttpGet]
-        [JwtAuthorize]
-        public async Task<IActionResult> GetResumenAjax()
-        {
-            try
-            {
-                var items = await _carritoService.GetByUsuarioIdAsync(CurrentUser!.Id);
-                var total = await _carritoService.GetTotalAsync(CurrentUser.Id);
-                var totalItems = await _carritoService.GetTotalItemsAsync(CurrentUser.Id);
-
-                var itemsData = items.Select(i => new
-                {
-                    id = i.Id,
-                    productoId = i.ProductoId,
-                    nombre = i.ProductoNombre,
-                    precio = i.Precio,
-                    cantidad = i.Cantidad,
-                    subtotal = i.Subtotal
-                });
-
-                return Json(new
-                {
-                    success = true,
-                    items = itemsData,
-                    total = total,
-                    totalFormateado = total.ToString("C"),
-                    totalItems = totalItems
-                });
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, message = ex.Message });
-            }
-        }
-
-        #endregion
+    private async Task<IActionResult> SummaryAsync(string message, long? itemId = null) {
+        var items = await cart.GetAsync(CurrentUserId);
+        var total = items.Sum(i => i.Subtotal);
+        var subtotal = items.FirstOrDefault(i => i.Id == itemId)?.Subtotal ?? 0;
+        return Json(new { success = true, message, total, totalFormateado = total.ToString("C"),
+            subtotal, subtotalFormateado = subtotal.ToString("C"), totalItems = items.Sum(i => i.Cantidad),
+            carritoVacio = items.Count == 0, items = items.Select(i => new { id = i.Id, productoId = i.ProductoId,
+                nombre = i.ProductoNombre, precio = i.Precio, cantidad = i.Cantidad, subtotal = i.Subtotal }) });
     }
 }
