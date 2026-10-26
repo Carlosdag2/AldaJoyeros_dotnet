@@ -1,5 +1,6 @@
-<form asp-controller="Consent" asp-action="Save" method="post" class="flex flex-wrap gap-3 mt-4">
+<form data-cookie-choices asp-controller="Consent" asp-action="Save" method="post" class="flex flex-wrap gap-3 mt-4">
     <input type="hidden" name="returnUrl" value="@(Context.Request.PathBase + Context.Request.Path + Context.Request.QueryString)" />
     <button type="submit" name="analytics" value="false" class="px-5 py-3 rounded-xl border-2 border-emerald-700 text-emerald-800 bg-white font-semibold">Solo necesarias</button>
     <button type="submit" name="analytics" value="true" class="px-5 py-3 rounded-xl border-2 border-emerald-700 text-emerald-800 bg-white font-semibold">Permitir analítica</button>
+    <p data-cookie-result role="status" aria-live="polite" hidden class="w-full text-sm text-gray-700"></p>
 </form>

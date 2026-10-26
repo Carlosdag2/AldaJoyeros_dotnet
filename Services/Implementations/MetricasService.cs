@@ -9,40 +9,41 @@ namespace AldaJoyeros.Services.Implementations
     public class MetricasService : IMetricasService
     {
         private readonly AldaJoyerosContext _context;
-        private readonly IProductoImagenService _imagenService;
 
-        public MetricasService(AldaJoyerosContext context, IProductoImagenService imagenService)
+        public MetricasService(AldaJoyerosContext context)
         {
             _context = context;
-            _imagenService = imagenService;
         }
 
-        public async Task<MetricasDto> GetMetricasAsync()
+        public async Task<MetricasDto> GetMetricasAsync(int dias = 30)
         {
-            var ahora = DateTime.Now;
-            var hace7Dias = ahora.AddDays(-7);
-            var hace30Dias = ahora.AddDays(-30);
+            var ahora = AldaJoyeros.Helpers.MetricsPeriod.MadridNow();
+            var periodo = AldaJoyeros.Helpers.MetricsPeriod.Create(ahora.Date, dias);
+            var hace7Dias = ahora.Date.AddDays(-6);
+            var hace30Dias = ahora.Date.AddDays(-29);
             var inicioHoy = ahora.Date;
 
-            var metricas = new MetricasDto();
+            var metricas = new MetricasDto { DiasPeriodo = periodo.Days, InicioPeriodo = periodo.Start, FinPeriodo = ahora.Date, GeneradasEn = ahora };
 
             // Métricas generales - consultas simples
             metricas.TotalProductos = await _context.Productos.CountAsync(p => !p.Eliminado);
             metricas.TotalCategorias = await _context.Categorias.CountAsync();
-            metricas.TotalPedidos = await _context.Pedidos.CountAsync();
             metricas.TotalUsuarios = await _context.Usuarios.CountAsync();
 
             // Pedidos por estado - consultas optimizadas
-            metricas.PedidosPendientes = await _context.Pedidos.CountAsync(p => p.Estado == EstadoPedido.PENDIENTE);
-            metricas.PedidosEnProceso = await _context.Pedidos.CountAsync(p => p.Estado == EstadoPedido.EN_PROCESO);
-            metricas.PedidosEnviados = await _context.Pedidos.CountAsync(p => p.Estado == EstadoPedido.ENVIADO);
-            metricas.PedidosEntregados = await _context.Pedidos.CountAsync(p => p.Estado == EstadoPedido.ENTREGADO);
-            metricas.PedidosCancelados = await _context.Pedidos.CountAsync(p => p.Estado == EstadoPedido.CANCELADO);
+            var estados = await _context.Pedidos.AsNoTracking().GroupBy(p => p.Estado).Select(g => new { Estado = g.Key, Total = g.Count() }).ToListAsync();
+            metricas.TotalPedidos = estados.Sum(s=>s.Total);
+            int Count(EstadoPedido status) => estados.FirstOrDefault(g=>g.Estado==status)?.Total ?? 0;
+            metricas.PedidosPendientes = Count(EstadoPedido.PENDIENTE);
+            metricas.PedidosEnProceso = Count(EstadoPedido.EN_PROCESO);
+            metricas.PedidosEnviados = Count(EstadoPedido.ENVIADO);
+            metricas.PedidosEntregados = Count(EstadoPedido.ENTREGADO);
+            metricas.PedidosCancelados = Count(EstadoPedido.CANCELADO);
 
             // Pedidos por período
-            metricas.PedidosHoy = await _context.Pedidos.CountAsync(p => p.Fecha >= inicioHoy);
-            metricas.PedidosUltimos7Dias = await _context.Pedidos.CountAsync(p => p.Fecha >= hace7Dias);
-            metricas.PedidosUltimos30Dias = await _context.Pedidos.CountAsync(p => p.Fecha >= hace30Dias);
+            metricas.PedidosHoy = await _context.Pedidos.CountAsync(p => p.Fecha >= inicioHoy && p.Fecha < periodo.End);
+            metricas.PedidosUltimos7Dias = await _context.Pedidos.CountAsync(p => p.Fecha >= hace7Dias && p.Fecha < periodo.End);
+            metricas.PedidosUltimos30Dias = await _context.Pedidos.CountAsync(p => p.Fecha >= hace30Dias && p.Fecha < periodo.End);
 
             // Ventas - usando proyección para evitar cargar entidades completas
             var ventasQuery = _context.Pedidos
@@ -53,23 +54,23 @@ namespace AldaJoyeros.Services.Implementations
             metricas.VentasTotales = await ventasQuery.SumAsync();
 
             metricas.VentasUltimos30Dias = await _context.Pedidos
-                .Where(p => p.Estado != EstadoPedido.CANCELADO && p.Fecha >= hace30Dias)
+                .Where(p => p.Estado != EstadoPedido.CANCELADO && p.Fecha >= hace30Dias && p.Fecha < periodo.End)
                 .SelectMany(p => p.LineasPedido)
                 .SumAsync(lp => lp.Cantidad * lp.Precio);
 
             metricas.VentasUltimos7Dias = await _context.Pedidos
-                .Where(p => p.Estado != EstadoPedido.CANCELADO && p.Fecha >= hace7Dias)
+                .Where(p => p.Estado != EstadoPedido.CANCELADO && p.Fecha >= hace7Dias && p.Fecha < periodo.End)
                 .SelectMany(p => p.LineasPedido)
                 .SumAsync(lp => lp.Cantidad * lp.Precio);
 
             metricas.VentasHoy = await _context.Pedidos
-                .Where(p => p.Estado != EstadoPedido.CANCELADO && p.Fecha >= inicioHoy)
+                .Where(p => p.Estado != EstadoPedido.CANCELADO && p.Fecha >= inicioHoy && p.Fecha < periodo.End)
                 .SelectMany(p => p.LineasPedido)
                 .SumAsync(lp => lp.Cantidad * lp.Precio);
 
             // Productos más vendidos - consulta optimizada
             metricas.ProductosMasVendidos = await _context.LineasPedido
-                .Where(lp => lp.Pedido != null && lp.Pedido.Estado != EstadoPedido.CANCELADO && lp.Producto != null)
+                .Where(lp => lp.Pedido != null && lp.Pedido.Fecha >= periodo.Start && lp.Pedido.Fecha < periodo.End && lp.Pedido.Estado != EstadoPedido.CANCELADO && lp.Producto != null)
                 .GroupBy(lp => new { lp.ProductoId, lp.Producto!.Nombre, CategoriaNombre = lp.Producto.Categoria!.Nombre })
                 .Select(g => new ProductoVendidoDto
                 {
@@ -83,25 +84,9 @@ namespace AldaJoyeros.Services.Implementations
                 .Take(10)
                 .ToListAsync();
 
-            // Obtener imágenes para los productos más vendidos
-            foreach (var producto in metricas.ProductosMasVendidos)
-            {
-                try
-                {
-                    var imagenes = await _imagenService.GetByProductoIdAsync(producto.Id);
-                    var imagenPrincipal = imagenes.FirstOrDefault(i => i.EsPrincipal) ?? imagenes.FirstOrDefault();
-                    producto.ImagenPrincipal = imagenPrincipal?.ImagenBase64;
-                }
-                catch
-                {
-                    // Si falla obtener imagen, continuar sin ella
-                    producto.ImagenPrincipal = null;
-                }
-            }
-
             // Categorías más populares
             metricas.CategoriasMasPopulares = await _context.LineasPedido
-                .Where(lp => lp.Pedido != null && lp.Pedido.Estado != EstadoPedido.CANCELADO && lp.Producto != null && lp.Producto.Categoria != null)
+                .Where(lp => lp.Pedido != null && lp.Pedido.Fecha >= periodo.Start && lp.Pedido.Fecha < periodo.End && lp.Pedido.Estado != EstadoPedido.CANCELADO && lp.Producto != null && lp.Producto.Categoria != null)
                 .GroupBy(lp => new { lp.Producto!.CategoriaId, lp.Producto.Categoria!.Nombre })
                 .Select(g => new CategoriaPopularDto
                 {
@@ -117,20 +102,20 @@ namespace AldaJoyeros.Services.Implementations
 
             // Usuarios activos
             metricas.UsuariosActivos = await _context.Pedidos
-                .Where(p => p.UsuarioId != null)
+                .Where(p => p.UsuarioId != null && p.Estado != EstadoPedido.CANCELADO)
                 .Select(p => p.UsuarioId)
                 .Distinct()
                 .CountAsync();
 
             // Ventas por día (últimos 30 días) - optimizado
             var ventasPorDiaData = await _context.Pedidos
-                .Where(p => p.Estado != EstadoPedido.CANCELADO && p.Fecha >= hace30Dias)
+                .Where(p => p.Estado != EstadoPedido.CANCELADO && p.Fecha >= periodo.Start && p.Fecha < periodo.End)
                 .GroupBy(p => p.Fecha!.Value.Date)
                 .Select(g => new { Fecha = g.Key, Total = g.SelectMany(p => p.LineasPedido).Sum(lp => lp.Cantidad * lp.Precio) })
                 .ToListAsync();
 
-            metricas.VentasPorDia = Enumerable.Range(0, 30)
-                .Select(i => hace30Dias.AddDays(i).Date)
+            metricas.VentasPorDia = Enumerable.Range(0, periodo.Days)
+                .Select(i => periodo.Start.AddDays(i))
                 .Select(fecha => new VentaDiariaDto
                 {
                     Fecha = fecha,
@@ -140,13 +125,13 @@ namespace AldaJoyeros.Services.Implementations
 
             // Pedidos por día (últimos 30 días) - optimizado
             var pedidosPorDiaData = await _context.Pedidos
-                .Where(p => p.Fecha >= hace30Dias)
+                .Where(p => p.Fecha >= periodo.Start && p.Fecha < periodo.End)
                 .GroupBy(p => p.Fecha!.Value.Date)
                 .Select(g => new { Fecha = g.Key, Cantidad = g.Count() })
                 .ToListAsync();
 
-            metricas.PedidosPorDia = Enumerable.Range(0, 30)
-                .Select(i => hace30Dias.AddDays(i).Date)
+            metricas.PedidosPorDia = Enumerable.Range(0, periodo.Days)
+                .Select(i => periodo.Start.AddDays(i))
                 .Select(fecha => new PedidoDiarioDto
                 {
                     Fecha = fecha,
@@ -156,7 +141,7 @@ namespace AldaJoyeros.Services.Implementations
 
             // Mejores clientes
             metricas.MejoresClientes = await _context.Pedidos
-                .Where(p => p.Estado != EstadoPedido.CANCELADO && p.Usuario != null)
+                .Where(p => p.Estado != EstadoPedido.CANCELADO && p.Fecha >= periodo.Start && p.Fecha < periodo.End && p.Usuario != null)
                 .GroupBy(p => new { p.UsuarioId, p.Usuario!.Email })
                 .Select(g => new ClienteTopDto
                 {
@@ -182,6 +167,10 @@ namespace AldaJoyeros.Services.Implementations
                 metricas.TasaCompletados = (double)metricas.PedidosEntregados / metricas.TotalPedidos * 100;
             }
 
+            metricas.VentasPeriodo = metricas.VentasPorDia.Sum(v=>v.Total);
+            metricas.PedidosPeriodo = metricas.PedidosPorDia.Sum(v=>v.Cantidad);
+            var pedidosValidosPeriodo = await _context.Pedidos.CountAsync(p=>p.Fecha>=periodo.Start && p.Fecha<periodo.End && p.Estado != EstadoPedido.CANCELADO);
+            metricas.TicketPeriodo = pedidosValidosPeriodo > 0 ? metricas.VentasPeriodo / pedidosValidosPeriodo : 0;
             return metricas;
         }
     }

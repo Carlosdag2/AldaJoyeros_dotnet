@@ -14,6 +14,6 @@
     <h2 class="text-xl font-bold">Preferencias y servicios externos</h2>
     <p>El tema y el alto contraste se recuerdan en el almacenamiento local del navegador. Algunos recursos visuales se solicitan a proveedores externos (fuentes, estilos e imágenes). Si utilizas el pago con tarjeta, Stripe procesa la operación según su propia política; estas preferencias no desactivan las funciones necesarias para pagar.</p>
     <h2 class="text-xl font-bold">Cambiar tu elección</h2>
-    <p>Estado: <strong>@(AldaJoyeros.Helpers.VisitorConsent.AllowsAnalytics(Context.Request) ? "Analítica permitida" : "Solo cookies necesarias")</strong>. Puedes aceptar o retirar tu permiso en cualquier momento. Al rechazar, se elimina la cookie de visitas de este navegador.</p>
+    <p>Estado: <strong data-cookie-status>@(AldaJoyeros.Helpers.VisitorConsent.AllowsAnalytics(Context.Request) ? "Analítica permitida" : "Solo cookies necesarias")</strong>. Puedes aceptar o retirar tu permiso en cualquier momento. Al rechazar, se elimina la cookie de visitas de este navegador.</p>
     <partial name="_CookieChoices" />
     <p>También puedes borrar las cookies y los datos de este sitio desde la configuración de privacidad de tu navegador. <a asp-action="Privacy" class="underline">Consultar privacidad</a>.</p>

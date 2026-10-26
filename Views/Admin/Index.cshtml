@@ -1,384 +1,76 @@
+@model AldaJoyeros.DTOs.AdminDashboardViewModel
+@using AldaJoyeros.Helpers
 @{
-    ViewData["Title"] = "Panel de Administración";
-    var totalCategorias = ViewBag.TotalCategorias ?? 0;
-    var totalProductos = ViewBag.TotalProductos ?? 0;
-    var totalPedidos = ViewBag.TotalPedidos ?? 0;
-    var totalUsuarios = ViewBag.TotalUsuarios ?? 0;
+    ViewData["Title"] = "Panel de Control";
+    var ecommerce = ViewBag.EcommerceEnabled == true;
+    var summaries = new[] {
+        (Controller:"AdminProductos",Title:"Productos",Count:Model.TotalProductos,Description:"Referencias activas del catálogo",Icon:"fa-gem"),
+        (Controller:"AdminCategorias",Title:"Categorías",Count:Model.TotalCategorias,Description:"Organiza cómo se encuentra cada pieza",Icon:"fa-tags"),
+        (Controller:"AdminPedidos",Title:"Pedidos",Count:Model.TotalPedidos,Description:"Consulta y gestiona las compras",Icon:"fa-bag-shopping"),
+        (Controller:"AdminUsuarios",Title:"Usuarios",Count:Model.TotalUsuarios,Description:"Administra las cuentas de tus clientes",Icon:"fa-users")
+    };
 }
+<div class="min-h-screen bg-slate-50 px-4 py-6 text-slate-800 sm:px-6 lg:py-10">
+<div class="mx-auto max-w-7xl space-y-7">
+    <header class="flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
+        <div><p class="mb-3 text-xs font-semibold uppercase tracking-widest text-emerald-700">Alda Joyeros · Administración</p><h1 class="text-3xl font-bold tracking-tight sm:text-4xl">Panel de Control</h1><p class="mt-3 max-w-xl text-sm leading-relaxed text-slate-500">Tu catálogo, tus pedidos y la imagen de tu tienda, en un solo lugar.</p></div>
+        <div class="flex flex-wrap gap-2"><a asp-controller="Home" asp-action="Index" class="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 hover:border-emerald-700 hover:text-emerald-800"><i class="fas fa-store" aria-hidden="true"></i>Ver tienda</a><a asp-action="Metricas" class="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-emerald-800 px-4 py-3 text-sm font-semibold text-white hover:bg-emerald-900"><i class="fas fa-chart-line" aria-hidden="true"></i>Métricas y tráfico</a></div>
+    </header>
+    <div class="flex flex-wrap items-center justify-between gap-3 text-xs"><a href="#configuracion" class="inline-flex items-center gap-2 rounded-full border px-3 py-2 font-semibold @(ecommerce ? "border-emerald-200 bg-emerald-50 text-emerald-800" : "border-amber-200 bg-amber-50 text-amber-800")"><i class="fas @(ecommerce ? "fa-bag-shopping" : "fa-eye")" aria-hidden="true"></i>@(ecommerce ? "Tienda online activa" : "Modo escaparate")<span class="ml-1 underline underline-offset-2">Cambiar modo</span></a><p class="text-slate-500">Datos de @Model.ActualizadoEn.ToString("dd/MM/yyyy HH:mm") · Madrid</p></div>
+    <nav aria-label="Secciones del panel" class="flex flex-wrap gap-2 text-xs font-medium text-slate-600"><a href="#configuracion" class="rounded-lg border border-slate-200 bg-white px-3 py-2 hover:border-emerald-600 hover:text-emerald-800">Modo de la web</a><a href="#proveedores" class="rounded-lg border border-slate-200 bg-white px-3 py-2 hover:border-emerald-600 hover:text-emerald-800">Proveedores</a><a href="#escaparate" class="rounded-lg border border-slate-200 bg-white px-3 py-2 hover:border-emerald-600 hover:text-emerald-800">Imagen de la tienda</a><a href="#pedidos" class="rounded-lg border border-slate-200 bg-white px-3 py-2 hover:border-emerald-600 hover:text-emerald-800">Pedidos</a></nav>
 
-<div class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
-    <!-- Hero Header -->
-    <div class="relative overflow-hidden bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900">
-        <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=%2260%22 height=%2260%22 viewBox=%220 0 60 60%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cg fill=%22none%22 fill-rule=%22evenodd%22%3E%3Cg fill=%22%239C92AC%22 fill-opacity=%220.05%22%3E%3Cpath d=%22M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-40"></div>
-        <div class="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
-        <div class="absolute bottom-0 left-0 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
-        
-        <div class="relative container mx-auto px-6 py-12">
-            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-                <div>
-                    <div class="flex items-center gap-4 mb-4">
-                        <div class="w-16 h-16 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-2xl flex items-center justify-center shadow-xl shadow-emerald-500/25 ring-4 ring-white/10">
-                            <i class="fas fa-gem text-white text-2xl"></i>
-                        </div>
-                        <div>
-                            <h1 class="text-3xl md:text-4xl font-bold text-white tracking-tight">Panel de Control</h1>
-                            <p class="text-slate-400 mt-1">Gestiona tu tienda desde un solo lugar</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="flex items-center gap-3">
-                    <div class="hidden md:flex items-center gap-2 px-4 py-2 bg-white/5 backdrop-blur-sm rounded-xl border border-white/10">
-                        <div class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
-                        <span class="text-sm text-slate-300">Sistema activo</span>
-                    </div>
-                    <a asp-action="Metricas" 
-                       class="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 backdrop-blur-sm rounded-xl text-white text-sm font-medium transition-all shadow-lg shadow-indigo-500/25">
-                        <i class="fas fa-chart-line text-xs"></i>
-                        Métricas
-                    </a>
-                    <a asp-controller="Home" asp-action="Index" 
-                       class="flex items-center gap-2 px-4 py-2.5 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-xl text-white text-sm font-medium transition-all border border-white/10 hover:border-white/20">
-                        <i class="fas fa-external-link-alt text-xs"></i>
-                        Ver tienda
-                    </a>
-                </div>
+    <div id="configuracion" class="scroll-mt-28"><partial name="_StoreModePanel" /></div>
+
+    <section id="proveedores" class="scroll-mt-28" aria-labelledby="proveedoresTitulo"><div class="mb-4"><h2 id="proveedoresTitulo" class="text-lg font-semibold">Actualización de proveedores</h2><p class="mt-1 text-sm text-slate-500">Revisa los cambios del catálogo y configura cuándo quieres actualizarlo.</p></div><div class="grid gap-4 lg:grid-cols-2">
+        <a asp-controller="AdminMunreco" asp-action="Index" class="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-colors hover:border-emerald-600 sm:p-6"><div class="flex items-center justify-between gap-3"><span class="flex h-11 w-11 items-center justify-center rounded-xl bg-slate-50 text-emerald-700"><i class="fas fa-arrows-rotate text-lg" aria-hidden="true"></i></span><span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">Catálogo online</span></div><h3 class="mt-4 text-lg font-semibold">Munreco</h3><p class="mt-2 text-sm leading-relaxed text-slate-500">Comprueba novedades, reposiciones y retirados. Consulta los informes y la programación mensual.</p><span class="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-emerald-800">Gestionar Munreco<i class="fas fa-arrow-right text-xs" aria-hidden="true"></i></span></a>
+        <a asp-controller="AdminPerezMora" asp-action="Index" class="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-colors hover:border-emerald-600 sm:p-6"><div class="flex items-center justify-between gap-3"><span class="flex h-11 w-11 items-center justify-center rounded-xl bg-slate-50 text-emerald-700"><i class="fas fa-file-excel text-lg" aria-hidden="true"></i></span><span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">Catálogo Excel</span></div><h3 class="mt-4 text-lg font-semibold">Pérez Mora</h3><p class="mt-2 text-sm leading-relaxed text-slate-500">Importa el Excel, revisa cambios y reposiciones, ajusta los coeficientes y configura las actualizaciones.</p><span class="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-emerald-800">Gestionar Pérez Mora<i class="fas fa-arrow-right text-xs" aria-hidden="true"></i></span></a>
+    </div></section>
+
+    <section id="escaparate" class="scroll-mt-28" aria-labelledby="escaparateTitulo"><div class="mb-4"><h2 id="escaparateTitulo" class="text-lg font-semibold">La imagen de tu tienda</h2><p class="mt-1 text-sm text-slate-500">Elige qué ven tus clientes en la web y en la tienda.</p></div><div class="grid gap-4 lg:grid-cols-2">
+        <a asp-controller="AdminDestacados" asp-action="Index" class="group flex items-start gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-colors hover:border-emerald-600 sm:p-6"><span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700"><i class="fas fa-star text-lg" aria-hidden="true"></i></span><div class="min-w-0 flex-1"><h3 class="font-semibold">Productos destacados</h3><p class="mt-2 text-sm leading-relaxed text-slate-500">Selecciona y ordena las piezas que aparecen en la página de inicio.</p><span class="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-emerald-800">Elegir destacados<i class="fas fa-arrow-right text-xs" aria-hidden="true"></i></span></div></a>
+        <a asp-controller="AdminPresentacion" asp-action="Index" class="group flex items-start gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-colors hover:border-emerald-600 sm:p-6"><span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700"><i class="fas fa-display text-lg" aria-hidden="true"></i></span><div class="min-w-0 flex-1"><h3 class="font-semibold">Presentación del catálogo</h3><p class="mt-2 text-sm leading-relaxed text-slate-500">Prepara las diapositivas de productos para mostrarlas en la tienda.</p><span class="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-emerald-800">Preparar presentación<i class="fas fa-arrow-right text-xs" aria-hidden="true"></i></span></div></a>
+    </div></section>
+
+    <section aria-label="Gestión principal" class="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-5">
+        @foreach(var item in summaries)
+        {
+            <a asp-controller="@item.Controller" asp-action="Index" class="group min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition-colors hover:border-emerald-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600 sm:p-5"><div class="mb-4 flex items-center justify-between"><span class="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700"><i class="fas @item.Icon" aria-hidden="true"></i></span><i class="fas fa-arrow-right text-xs text-slate-400 group-hover:text-emerald-700" aria-hidden="true"></i></div><h2 class="text-sm font-semibold text-slate-600">@item.Title</h2><p class="mt-2 break-words text-3xl font-bold tracking-tight text-slate-900">@item.Count.ToString("N0")</p><p class="mt-2 text-xs leading-relaxed text-slate-500">@item.Description</p></a>
+        }
+    </section>
+
+    <div class="grid items-start gap-6 xl:grid-cols-3">
+        <section id="pedidos" class="min-w-0 scroll-mt-28 space-y-4 xl:col-span-2" aria-labelledby="pedidosTitulo">
+            <div class="flex flex-wrap items-center justify-between gap-3"><div><h2 id="pedidosTitulo" class="text-lg font-semibold">Pedidos por atender</h2><p class="mt-1 text-sm text-slate-500">@(Model.Pendientes > 0 ? $"Tienes {Model.Pendientes} pedidos pendientes de gestionar." : "No hay nuevos pedidos pendientes.")</p></div><a asp-controller="AdminPedidos" asp-action="Index" class="text-sm font-semibold text-emerald-800 underline underline-offset-4">Ver todos</a></div>
+            <div class="grid grid-cols-3 gap-2 sm:gap-3">
+                @foreach(var item in new[] { (State:"PENDIENTE",Title:"Pendientes",Count:Model.Pendientes,Icon:"fa-clock"),(State:"EN_PROCESO",Title:"En preparación",Count:Model.EnProceso,Icon:"fa-box"),(State:"ENVIADO",Title:"Enviados",Count:Model.Enviados,Icon:"fa-truck") })
+                {
+                    <a asp-controller="AdminPedidos" asp-action="Index" asp-route-estado="@item.State" class="min-w-0 rounded-xl border border-slate-200 bg-white p-3 transition-colors hover:border-emerald-600 sm:p-4"><div class="mb-3 flex items-center gap-2 text-slate-500"><i class="fas @item.Icon text-xs" aria-hidden="true"></i><h3 class="break-words text-xs font-medium">@item.Title</h3></div><p class="text-2xl font-bold @(item.State=="PENDIENTE" && item.Count>0 ? "text-amber-700" : "text-slate-900")">@item.Count</p></a>
+                }
             </div>
-        </div>
+            <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"><div class="border-b border-slate-100 px-5 py-4"><h3 class="text-sm font-semibold">Últimos pedidos recibidos</h3><p class="mt-1 text-xs text-slate-500">Los cinco más recientes. Pulsa un pedido para ver su detalle.</p></div>
+                @if(Model.UltimosPedidos.Count > 0)
+                {
+                    <ol class="divide-y divide-slate-100">
+                        @foreach(var order in Model.UltimosPedidos)
+                        {
+                            var status = PedidoPresentacion.Desde(order.Estado?.ToString());
+                            <li><a asp-controller="AdminPedidos" asp-action="Detalle" asp-route-id="@order.Id" aria-label="Ver pedido #@order.Id" class="grid grid-cols-2 items-center gap-3 px-5 py-4 hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-emerald-600 sm:grid-cols-[minmax(0,1fr)_auto_auto]"><div class="min-w-0"><p class="font-semibold text-slate-900">Pedido #@order.Id</p><p class="mt-1 text-xs text-slate-500">@(order.Fecha?.ToString("dd/MM/yyyy HH:mm") ?? "Fecha no disponible")</p></div><strong class="text-right text-sm text-slate-900 sm:order-3">@order.Total.ToString("C")</strong><div class="col-span-2 sm:order-2 sm:col-span-1"><partial name="_PedidoEstado" model="status" /></div></a></li>
+                        }
+                    </ol>
+                }
+                else
+                {
+                    <div class="px-6 py-10 text-center"><i class="fas fa-bag-shopping text-2xl text-slate-300" aria-hidden="true"></i><p class="mt-3 text-sm font-semibold">Aún no hay pedidos</p><p class="mt-2 text-xs leading-relaxed text-slate-500">Cuando recibas una compra aparecerá aquí para que puedas gestionarla.</p></div>
+                }
+            </div>
+        </section>
+        <aside class="min-w-0 space-y-5" aria-label="Accesos rápidos">
+            <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"><header class="border-b border-slate-100 px-5 py-4"><h2 class="font-semibold">¿Qué quieres hacer?</h2><p class="mt-1 text-xs text-slate-500">Accede directamente a las tareas habituales.</p></header><ul class="divide-y divide-slate-100">
+                @foreach(var item in new[] { (Controller:"AdminProductos",Title:"Añadir un producto",Description:"Crea una nueva ficha de catálogo",Icon:"fa-plus"),(Controller:"AdminCategorias",Title:"Crear una categoría",Description:"Organiza mejor tus productos",Icon:"fa-folder-plus"),(Controller:"AdminUsuarios",Title:"Crear una cuenta",Description:"Añade un usuario desde el panel",Icon:"fa-user-plus") })
+                {<li><a asp-controller="@item.Controller" asp-action="Crear" class="group flex min-h-20 items-center gap-3 px-5 py-4 hover:bg-slate-50"><span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-emerald-700"><i class="fas @item.Icon" aria-hidden="true"></i></span><div class="min-w-0 flex-1"><h3 class="text-sm font-semibold">@item.Title</h3><p class="mt-1 text-xs leading-relaxed text-slate-500">@item.Description</p></div><i class="fas fa-chevron-right text-[10px] text-slate-400" aria-hidden="true"></i></a></li>}
+            </ul></section>
+            <a asp-action="Metricas" class="group block rounded-2xl border border-emerald-200 bg-emerald-50 p-5"><div class="mb-4 flex items-center justify-between text-emerald-800"><i class="fas fa-chart-line text-xl" aria-hidden="true"></i><i class="fas fa-arrow-right text-sm" aria-hidden="true"></i></div><h2 class="font-semibold text-emerald-900">¿Cómo va la tienda?</h2><p class="mt-2 text-sm leading-relaxed text-emerald-800">Consulta ventas, pedidos y visitantes en tiempo real.</p><span class="mt-4 inline-block text-sm font-semibold text-emerald-900 underline underline-offset-4">Abrir métricas y estadísticas</span></a>
+        </aside>
     </div>
 
-    <div class="container mx-auto px-6 -mt-8 relative z-10 pb-12">
-        <partial name="_StoreModePanel" />
-        <a asp-controller="AdminDestacados" asp-action="Index" class="mb-6 flex items-center justify-between gap-4 rounded-2xl border border-emerald-200 bg-white p-5 shadow-sm hover:bg-emerald-50">
-            <div class="flex items-center gap-4"><i class="fas fa-star text-xl text-emerald-600" aria-hidden="true"></i><div><span class="block font-semibold text-slate-800">Productos destacados</span><span class="text-sm text-slate-500">Elige y ordena los productos que aparecen en el inicio</span></div></div><i class="fas fa-chevron-right text-slate-400" aria-hidden="true"></i>
-        </a>
-        <a asp-controller="AdminPresentacion" asp-action="Index" class="mb-6 flex items-center justify-between gap-4 rounded-2xl border border-emerald-200 bg-white p-5 shadow-sm hover:bg-emerald-50">
-            <div class="flex items-center gap-4"><i class="fas fa-display text-xl text-emerald-700" aria-hidden="true"></i><div><span class="block font-semibold text-slate-800">Presentación del catálogo</span><span class="text-sm text-slate-500">Una pieza cada 5 segundos, en orden aleatorio y en bucle para la tienda</span></div></div><i class="fas fa-chevron-right text-slate-400" aria-hidden="true"></i>
-        </a>
-        <!-- Stats Cards -->
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-10">
-            <!-- Productos -->
-            <a asp-controller="AdminProductos" asp-action="Index" 
-               class="group bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 hover:border-emerald-200 hover:-translate-y-1">
-                <div class="flex items-start justify-between mb-4">
-                    <div class="w-12 h-12 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/20 group-hover:scale-110 transition-transform">
-                        <i class="fas fa-gem text-white text-lg"></i>
-                    </div>
-                    <span class="flex items-center gap-1 text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">
-                        <i class="fas fa-box text-[10px]"></i>
-                        Stock
-                    </span>
-                </div>
-                <div class="text-3xl font-bold text-slate-800 mb-1">@totalProductos</div>
-                <div class="text-sm text-slate-500">Productos</div>
-                <div class="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between">
-                    <span class="text-xs text-slate-400">Gestionar catálogo</span>
-                    <i class="fas fa-arrow-right text-emerald-500 text-xs group-hover:translate-x-1 transition-transform"></i>
-                </div>
-            </a>
-
-            <!-- Categorías -->
-            <a asp-controller="AdminCategorias" asp-action="Index" 
-               class="group bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 hover:border-violet-200 hover:-translate-y-1">
-                <div class="flex items-start justify-between mb-4">
-                    <div class="w-12 h-12 bg-gradient-to-br from-violet-400 to-violet-600 rounded-xl flex items-center justify-center shadow-lg shadow-violet-500/20 group-hover:scale-110 transition-transform">
-                        <i class="fas fa-tags text-white text-lg"></i>
-                    </div>
-                    <span class="flex items-center gap-1 text-xs font-medium text-violet-600 bg-violet-50 px-2 py-1 rounded-full">
-                        <i class="fas fa-folder text-[10px]"></i>
-                        Activas
-                    </span>
-                </div>
-                <div class="text-3xl font-bold text-slate-800 mb-1">@totalCategorias</div>
-                <div class="text-sm text-slate-500">Categorías</div>
-                <div class="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between">
-                    <span class="text-xs text-slate-400">Organizar productos</span>
-                    <i class="fas fa-arrow-right text-violet-500 text-xs group-hover:translate-x-1 transition-transform"></i>
-                </div>
-            </a>
-
-            <!-- Pedidos -->
-            <a asp-controller="AdminPedidos" asp-action="Index" 
-               class="group bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 hover:border-amber-200 hover:-translate-y-1">
-                <div class="flex items-start justify-between mb-4">
-                    <div class="w-12 h-12 bg-gradient-to-br from-amber-400 to-orange-500 rounded-xl flex items-center justify-center shadow-lg shadow-amber-500/20 group-hover:scale-110 transition-transform">
-                        <i class="fas fa-shopping-bag text-white text-lg"></i>
-                    </div>
-                    <span class="flex items-center gap-1 text-xs font-medium text-amber-600 bg-amber-50 px-2 py-1 rounded-full">
-                        <i class="fas fa-clock text-[10px]"></i>
-                        Total
-                    </span>
-                </div>
-                <div class="text-3xl font-bold text-slate-800 mb-1">@totalPedidos</div>
-                <div class="text-sm text-slate-500">Pedidos</div>
-                <div class="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between">
-                    <span class="text-xs text-slate-400">Ver todos los pedidos</span>
-                    <i class="fas fa-arrow-right text-amber-500 text-xs group-hover:translate-x-1 transition-transform"></i>
-                </div>
-            </a>
-
-            <!-- Usuarios -->
-            <a asp-controller="AdminUsuarios" asp-action="Index" 
-               class="group bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 hover:border-blue-200 hover:-translate-y-1">
-                <div class="flex items-start justify-between mb-4">
-                    <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20 group-hover:scale-110 transition-transform">
-                        <i class="fas fa-users text-white text-lg"></i>
-                    </div>
-                    <span class="flex items-center gap-1 text-xs font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded-full">
-                        <i class="fas fa-user-check text-[10px]"></i>
-                        Registrados
-                    </span>
-                </div>
-                <div class="text-3xl font-bold text-slate-800 mb-1">@totalUsuarios</div>
-                <div class="text-sm text-slate-500">Usuarios</div>
-                <div class="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between">
-                    <span class="text-xs text-slate-400">Gestionar cuentas</span>
-                    <i class="fas fa-arrow-right text-blue-500 text-xs group-hover:translate-x-1 transition-transform"></i>
-                </div>
-            </a>
-        </div>
-
-        <!-- Main Content Grid -->
-        <a asp-controller="AdminPerezMora" asp-action="Index" class="flex items-center justify-between gap-4 bg-white rounded-2xl p-6 shadow-sm border border-amber-200 mb-6 hover:shadow-lg transition-all">
-            <div><h2 class="font-semibold text-slate-800">Catálogo de Pérez Mora</h2><p class="text-sm text-slate-500 mt-1">Importar el Excel, revisar reposiciones y programar actualizaciones semanales.</p></div>
-            <i class="fas fa-arrow-right text-amber-600" aria-hidden="true"></i>
-        </a>
-        <a asp-controller="AdminMunreco" asp-action="Index" class="flex items-center justify-between gap-4 bg-white rounded-2xl p-6 shadow-sm border border-emerald-200 mb-6 hover:shadow-lg transition-all">
-            <div><h2 class="font-semibold text-slate-800">Catálogo de Munreco</h2><p class="text-sm text-slate-500 mt-1">Actualizar productos, programar la revisión mensual y consultar el historial.</p></div>
-            <i class="fas fa-sync-alt text-emerald-600 text-xl" aria-hidden="true"></i>
-        </a>
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
-            <!-- Quick Actions -->
-            <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                <div class="px-6 py-5 border-b border-slate-100 flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 bg-gradient-to-br from-slate-100 to-slate-200 rounded-xl flex items-center justify-center">
-                            <i class="fas fa-bolt text-slate-600"></i>
-                        </div>
-                        <div>
-                            <h2 class="font-semibold text-slate-800">Acciones Rápidas</h2>
-                            <p class="text-xs text-slate-400">Accede a las funciones más usadas</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="p-6">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <a asp-controller="AdminProductos" asp-action="Crear" 
-                           class="group flex items-center gap-4 p-4 rounded-xl bg-gradient-to-br from-emerald-50 to-green-50 hover:from-emerald-100 hover:to-green-100 border border-emerald-100 transition-all">
-                            <div class="w-12 h-12 bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl flex items-center justify-center shadow-md group-hover:scale-105 transition-transform">
-                                <i class="fas fa-plus text-white"></i>
-                            </div>
-                            <div class="flex-1">
-                                <div class="font-semibold text-slate-800">Nuevo Producto</div>
-                                <div class="text-xs text-slate-500">Añadir al catálogo</div>
-                            </div>
-                            <i class="fas fa-chevron-right text-emerald-400 group-hover:translate-x-1 transition-transform"></i>
-                        </a>
-
-                        <a asp-controller="AdminCategorias" asp-action="Crear" 
-                           class="group flex items-center gap-4 p-4 rounded-xl bg-gradient-to-br from-violet-50 to-purple-50 hover:from-violet-100 hover:to-purple-100 border border-violet-100 transition-all">
-                            <div class="w-12 h-12 bg-gradient-to-br from-violet-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md group-hover:scale-105 transition-transform">
-                                <i class="fas fa-folder-plus text-white"></i>
-                            </div>
-                            <div class="flex-1">
-                                <div class="font-semibold text-slate-800">Nueva Categoría</div>
-                                <div class="text-xs text-slate-500">Organizar productos</div>
-                            </div>
-                            <i class="fas fa-chevron-right text-violet-400 group-hover:translate-x-1 transition-transform"></i>
-                        </a>
-
-                        <a asp-controller="AdminUsuarios" asp-action="Crear" 
-                           class="group flex items-center gap-4 p-4 rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 border border-blue-100 transition-all">
-                            <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-md group-hover:scale-105 transition-transform">
-                                <i class="fas fa-user-plus text-white"></i>
-                            </div>
-                            <div class="flex-1">
-                                <div class="font-semibold text-slate-800">Nuevo Usuario</div>
-                                <div class="text-xs text-slate-500">Crear cuenta</div>
-                            </div>
-                            <i class="fas fa-chevron-right text-blue-400 group-hover:translate-x-1 transition-transform"></i>
-                        </a>
-
-                        <a asp-controller="AdminPedidos" asp-action="Index" 
-                           class="group flex items-center gap-4 p-4 rounded-xl bg-gradient-to-br from-amber-50 to-orange-50 hover:from-amber-100 hover:to-orange-100 border border-amber-100 transition-all">
-                            <div class="w-12 h-12 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center shadow-md group-hover:scale-105 transition-transform">
-                                <i class="fas fa-clipboard-list text-white"></i>
-                            </div>
-                            <div class="flex-1">
-                                <div class="font-semibold text-slate-800">Ver Pedidos</div>
-                                <div class="text-xs text-slate-500">Gestionar envíos</div>
-                            </div>
-                            <i class="fas fa-chevron-right text-amber-400 group-hover:translate-x-1 transition-transform"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Navigation Panel -->
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                <div class="px-6 py-5 border-b border-slate-100">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 bg-gradient-to-br from-slate-100 to-slate-200 rounded-xl flex items-center justify-center">
-                            <i class="fas fa-compass text-slate-600"></i>
-                        </div>
-                        <div>
-                            <h2 class="font-semibold text-slate-800">Navegación</h2>
-                            <p class="text-xs text-slate-400">Accesos directos</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="p-4">
-                    <nav class="space-y-1">
-                        <a asp-controller="AdminProductos" asp-action="Index" 
-                           class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-emerald-50 hover:text-emerald-700 transition-all group">
-                            <i class="fas fa-gem text-emerald-500 w-5"></i>
-                            <span class="font-medium">Productos</span>
-                            <i class="fas fa-chevron-right text-xs ml-auto opacity-0 group-hover:opacity-100 transition-opacity"></i>
-                        </a>
-                        <a asp-controller="AdminCategorias" asp-action="Index" 
-                           class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-violet-50 hover:text-violet-700 transition-all group">
-                            <i class="fas fa-tags text-violet-500 w-5"></i>
-                            <span class="font-medium">Categorías</span>
-                            <i class="fas fa-chevron-right text-xs ml-auto opacity-0 group-hover:opacity-100 transition-opacity"></i>
-                        </a>
-                        <a asp-controller="AdminPedidos" asp-action="Index" 
-                           class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-amber-50 hover:text-amber-700 transition-all group">
-                            <i class="fas fa-shopping-bag text-amber-500 w-5"></i>
-                            <span class="font-medium">Pedidos</span>
-                            <i class="fas fa-chevron-right text-xs ml-auto opacity-0 group-hover:opacity-100 transition-opacity"></i>
-                        </a>
-                        <a asp-controller="AdminUsuarios" asp-action="Index" 
-                           class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-blue-50 hover:text-blue-700 transition-all group">
-                            <i class="fas fa-users text-blue-500 w-5"></i>
-                            <span class="font-medium">Usuarios</span>
-                            <i class="fas fa-chevron-right text-xs ml-auto opacity-0 group-hover:opacity-100 transition-opacity"></i>
-                        </a>
-                    </nav>
-                </div>
-            </div>
-        </div>
-
-        <!-- Management Sections -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Catálogo Section -->
-            <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-6 text-white relative overflow-hidden group">
-                <div class="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl"></div>
-                
-                <div class="relative">
-                    <div class="flex items-center gap-3 mb-6">
-                        <div class="w-12 h-12 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
-                            <i class="fas fa-store text-white text-lg"></i>
-                        </div>
-                        <div>
-                            <h3 class="font-semibold text-lg">Catálogo</h3>
-                            <p class="text-slate-400 text-sm">Gestión de inventario</p>
-                        </div>
-                    </div>
-
-                    <div class="space-y-3">
-                        <a asp-controller="AdminProductos" asp-action="Index" 
-                           class="flex items-center justify-between p-4 bg-white/5 hover:bg-white/10 rounded-xl border border-white/10 hover:border-emerald-500/30 transition-all group/item">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 bg-emerald-500/20 rounded-lg flex items-center justify-center">
-                                    <i class="fas fa-gem text-emerald-400"></i>
-                                </div>
-                                <div>
-                                    <div class="font-medium">Productos</div>
-                                    <div class="text-xs text-slate-400">@totalProductos artículos</div>
-                                </div>
-                            </div>
-                            <i class="fas fa-arrow-right text-emerald-400 group-hover/item:translate-x-1 transition-transform"></i>
-                        </a>
-
-                        <a asp-controller="AdminCategorias" asp-action="Index" 
-                           class="flex items-center justify-between p-4 bg-white/5 hover:bg-white/10 rounded-xl border border-white/10 hover:border-violet-500/30 transition-all group/item">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 bg-violet-500/20 rounded-lg flex items-center justify-center">
-                                    <i class="fas fa-tags text-violet-400"></i>
-                                </div>
-                                <div>
-                                    <div class="font-medium">Categorías</div>
-                                    <div class="text-xs text-slate-400">@totalCategorias categorías</div>
-                                </div>
-                            </div>
-                            <i class="fas fa-arrow-right text-violet-400 group-hover/item:translate-x-1 transition-transform"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Gestión Section -->
-            <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-6 text-white relative overflow-hidden group">
-                <div class="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl"></div>
-                
-                <div class="relative">
-                    <div class="flex items-center gap-3 mb-6">
-                        <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
-                            <i class="fas fa-cogs text-white text-lg"></i>
-                        </div>
-                        <div>
-                            <h3 class="font-semibold text-lg">Gestión</h3>
-                            <p class="text-slate-400 text-sm">Pedidos y usuarios</p>
-                        </div>
-                    </div>
-
-                    <div class="space-y-3">
-                        <a asp-controller="AdminPedidos" asp-action="Index" 
-                           class="flex items-center justify-between p-4 bg-white/5 hover:bg-white/10 rounded-xl border border-white/10 hover:border-amber-500/30 transition-all group/item">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 bg-amber-500/20 rounded-lg flex items-center justify-center">
-                                    <i class="fas fa-shopping-bag text-amber-400"></i>
-                                </div>
-                                <div>
-                                    <div class="font-medium">Pedidos</div>
-                                    <div class="text-xs text-slate-400">@totalPedidos pedidos</div>
-                                </div>
-                            </div>
-                            <i class="fas fa-arrow-right text-amber-400 group-hover/item:translate-x-1 transition-transform"></i>
-                        </a>
-
-                        <a asp-controller="AdminUsuarios" asp-action="Index" 
-                           class="flex items-center justify-between p-4 bg-white/5 hover:bg-white/10 rounded-xl border border-white/10 hover:border-blue-500/30 transition-all group/item">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center">
-                                    <i class="fas fa-users text-blue-400"></i>
-                                </div>
-                                <div>
-                                    <div class="font-medium">Usuarios</div>
-                                    <div class="text-xs text-slate-400">@totalUsuarios registrados</div>
-                                </div>
-                            </div>
-                            <i class="fas fa-arrow-right text-blue-400 group-hover/item:translate-x-1 transition-transform"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-@section Styles {
-    <style>
-        @@keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .container > .grid > * {
-            animation: fadeInUp 0.5s ease-out forwards;
-            opacity: 0;
-        }
-
-        .container > .grid > *:nth-child(1) { animation-delay: 0.05s; }
-        .container > .grid > *:nth-child(2) { animation-delay: 0.1s; }
-        .container > .grid > *:nth-child(3) { animation-delay: 0.15s; }
-        .container > .grid > *:nth-child(4) { animation-delay: 0.2s; }
-    </style>
-}
+</div></div>

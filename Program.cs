@@ -169,6 +169,7 @@ namespace AldaJoyeros
 
             // Registrar Servicio de Métricas
             builder.Services.AddScoped<IMetricasService, MetricasService>();
+            builder.Services.AddScoped<AldaJoyeros.Services.AdminDashboardService>();
 
             // Registrar Servicio de Tráfico (Singleton para mantener estado en memoria)
             builder.Services.AddSingleton<ITraficoService, TraficoService>();
