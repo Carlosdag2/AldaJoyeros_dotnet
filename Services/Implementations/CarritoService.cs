@@ -32,6 +32,7 @@ namespace AldaJoyeros.Services.Implementations
 
         public async Task<CarritoItemDto> AddItemAsync(long usuarioId, CarritoItemCreateDto carritoItemCreateDto)
         {
+            if (carritoItemCreateDto.Cantidad is < 1 or > 99) throw new InvalidOperationException("La cantidad debe estar entre 1 y 99.");
             if (!await _catalogo.IsPurchasableAsync(carritoItemCreateDto.ProductoId))
                 throw new InvalidOperationException("Selecciona una talla disponible en la ficha del producto antes de añadirlo al carrito.");
             var producto = await _productoRepository.GetByIdAsync(carritoItemCreateDto.ProductoId);
@@ -44,6 +45,7 @@ namespace AldaJoyeros.Services.Implementations
             
             if (existingItem != null)
             {
+                if (existingItem.Cantidad > 99 - carritoItemCreateDto.Cantidad) throw new InvalidOperationException("La cantidad máxima por producto es 99.");
                 existingItem.Cantidad += carritoItemCreateDto.Cantidad;
                 var updatedItem = await _carritoRepository.UpdateAsync(existingItem);
                 return _mapper.Map<CarritoItemDto>(updatedItem);
@@ -70,6 +72,7 @@ namespace AldaJoyeros.Services.Implementations
                 throw new KeyNotFoundException("Item del carrito no encontrado");
             }
 
+            if (carritoItemUpdateDto.Cantidad is < 1 or > 99) throw new InvalidOperationException("La cantidad debe estar entre 1 y 99.");
             item.Cantidad = carritoItemUpdateDto.Cantidad;
             var updatedItem = await _carritoRepository.UpdateAsync(item);
             return _mapper.Map<CarritoItemDto>(updatedItem);

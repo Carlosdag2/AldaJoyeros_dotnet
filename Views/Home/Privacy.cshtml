@@ -1,8 +1,13 @@
 @inject Microsoft.Extensions.Options.IOptions<AldaJoyeros.Configuration.EmpresaSettings> Empresa
 @inject Microsoft.Extensions.Options.IOptions<AldaJoyeros.Configuration.PublicationOptions> Publication
-@{ ViewData["Title"] = "Política de privacidad"; }
-<div class="bg-gray-50 py-12 px-4 min-h-screen"><article class="max-w-3xl mx-auto rounded-2xl bg-white border border-gray-200 p-6 sm:p-10 space-y-6 text-gray-700">
-<h1 class="text-3xl font-serif font-bold text-gray-900">Política de privacidad</h1><p>Actualizada el 20 de octubre de 2026.</p>
+@{
+    Layout = "_LegalLayout";
+    ViewData["Title"] = "Política de privacidad";
+    ViewData["LegalIcon"] = "fa-user-shield";
+    ViewData["LegalSummary"] = "Cómo tratamos tus datos y cómo puedes ejercer tus derechos.";
+    ViewData["LegalUpdated"] = "20 de octubre de 2026";
+}
+
 <h2 class="text-xl font-bold">Responsable y contacto</h2>
 <p>@Empresa.Value.Nombre. Titular: @(string.IsNullOrWhiteSpace(Publication.Value.LegalOwner) ? "pendiente de completar antes de la publicación" : Publication.Value.LegalOwner). Puedes contactar en @Empresa.Value.Email o en @Empresa.Value.Direccion, @Empresa.Value.CodigoPostal @Empresa.Value.Ciudad. Consulta los datos completos en el <a asp-action="AvisoLegal" class="underline">aviso legal</a>.</p>
 <h2 class="text-xl font-bold">Datos, finalidades y base jurídica</h2>
@@ -13,4 +18,3 @@
 <p>Puedes solicitar acceso, rectificación, supresión, oposición, limitación y portabilidad cuando procedan, escribiendo a @Empresa.Value.Email. También puedes retirar el consentimiento sin afectar a la licitud del tratamiento anterior. Puedes presentar una reclamación ante la <a href="https://www.aepd.es/" class="underline" rel="noopener" target="_blank">Agencia Española de Protección de Datos</a>.</p>
 <h2 class="text-xl font-bold">Seguridad y servicios externos</h2>
 <p>Protegemos las sesiones, las contraseñas y los formularios con controles de acceso y medidas técnicas. La página utiliza recursos externos para fuentes, estilos y algunas imágenes; estos proveedores reciben los datos técnicos necesarios para atender las solicitudes. Antes de publicar se revisarán los proveedores definitivos de alojamiento y correo, los plazos aplicables y las posibles transferencias internacionales para completar esta información.</p>
-</article></div>

@@ -86,8 +86,19 @@ namespace AldaJoyeros.Controllers
         #region Checkout - Paso 1: Dirección
 
         [HttpGet]
+        [ServiceFilter(typeof(AldaJoyeros.Filters.CartSessionFilter))]
         public async Task<IActionResult> Checkout()
         {
+            if (AldaJoyeros.Helpers.TempCarritoHelper.HasItems(HttpContext))
+            {
+                var guestCart = HttpContext.RequestServices.GetRequiredService<AldaJoyeros.Services.GuestCartService>();
+                if (!await guestCart.MergeAsync(CurrentUser!.Id))
+                {
+                    TempData["Warning"] = "Tu carrito pendiente se conserva. Revisa el carrito antes de continuar.";
+                    return RedirectToAction("Index", "Carrito");
+                }
+                if (guestCart.Notices.Count > 0) TempData["Warning"] = string.Join(" ", guestCart.Notices.Distinct());
+            }
             // Limpiar sesión de checkout anterior
             ClearCheckoutSession();
 

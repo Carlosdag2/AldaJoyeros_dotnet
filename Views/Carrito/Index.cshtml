@@ -50,7 +50,18 @@
                             <div class="flex justify-between text-sm gap-3"><span class="text-gray-500">Subtotal</span><span id="subtotalGeneral" class="font-medium text-gray-900">@total.ToString("C")</span></div>
                             <div class="border-t border-gray-100 pt-5 flex justify-between items-center gap-3"><span class="font-semibold text-gray-900">Total</span><span id="totalCarrito" aria-live="polite" class="text-2xl font-semibold text-gray-900">@total.ToString("C")</span></div>
                             <partial name="_AvisoPrecios" />
+                            @if (ViewBag.IsAuthenticated != true)
+                            {
+                                <p class="rounded-xl bg-emerald-50 p-4 text-sm text-emerald-900">Puedes preparar tu carrito sin cuenta. Para continuar, inicia sesión o regístrate: conservaremos todos estos artículos.</p>
+                            }
+                            @if (ViewBag.PendingCart == true)
+                            {
+                                <p role="alert" class="text-sm text-red-700">Hay artículos pendientes de guardar. <a asp-action="Index" class="underline">Volver a intentarlo</a></p>
+                            }
+                            else
+                            {
                             <a asp-controller="Pedidos" asp-action="Checkout" class="flex items-center justify-center gap-3 w-full px-4 py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600">Continuar con la compra<i class="fas fa-arrow-right text-xs" aria-hidden="true"></i></a>
+                            }
                             <p class="text-xs leading-relaxed text-gray-500">En el siguiente paso podrás elegir la dirección de entrega y después el método de pago.</p>
                         </div>
                         <div class="p-5 bg-gray-50 border-t border-gray-100 flex items-center justify-center gap-3 text-gray-500 text-sm"><i class="fab fa-cc-visa text-xl" aria-label="Visa"></i><i class="fab fa-cc-mastercard text-xl" aria-label="Mastercard"></i><span class="text-xs">Tarjeta o contra reembolso</span></div>
@@ -126,7 +137,7 @@
                 try {
                     const response = await fetch('/Carrito/ActualizarAjax', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        headers: window.aldaCarritoHeaders(),
                         body: `itemId=${itemId}&cantidad=${cantidad}`
                     });
 
@@ -176,7 +187,7 @@
                 try {
                     const response = await fetch('/Carrito/EliminarAjax', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        headers: window.aldaCarritoHeaders(),
                         body: `itemId=${itemId}`
                     });
 
@@ -225,7 +236,7 @@
                 try {
                     const response = await fetch('/Carrito/VaciarAjax', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+                        headers: window.aldaCarritoHeaders()
                     });
 
                     const data = await response.json();

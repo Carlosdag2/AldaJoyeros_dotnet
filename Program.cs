@@ -145,6 +145,9 @@ namespace AldaJoyeros
             builder.Services.AddScoped<IProductoService, ProductoService>();
             builder.Services.AddScoped<AldaJoyeros.Services.CatalogoService>();
             builder.Services.AddScoped<ICarritoService, CarritoService>();
+            builder.Services.AddScoped<ICartCatalog>(sp => sp.GetRequiredService<AldaJoyeros.Services.CatalogoService>());
+            builder.Services.AddScoped<AldaJoyeros.Services.GuestCartService>();
+            builder.Services.AddScoped<AldaJoyeros.Filters.CartSessionFilter>();
             builder.Services.AddScoped<IDireccionService, DireccionService>();
             builder.Services.AddScoped<IPedidoService, PedidoService>();
             

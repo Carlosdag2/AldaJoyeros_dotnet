@@ -1,0 +1,46 @@
+@{
+    Layout = "_Layout";
+    var action = ViewContext.RouteData.Values["action"]?.ToString();
+    var pages = new[] {
+        (Action: "AvisoLegal", Title: "Aviso legal", Icon: "fa-scale-balanced"),
+        (Action: "Privacy", Title: "Privacidad", Icon: "fa-user-shield"),
+        (Action: "Cookies", Title: "Cookies", Icon: "fa-cookie-bite"),
+        (Action: "Terminos", Title: "Términos y condiciones", Icon: "fa-file-contract")
+    };
+}
+<div class="bg-gray-50 px-4 py-8 sm:px-6 sm:py-12 lg:py-16">
+    <div class="mx-auto max-w-4xl">
+        <nav aria-label="Información legal" class="mb-6 grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3">
+            @foreach (var legalPage in pages)
+            {
+                var active = action == legalPage.Action;
+                <a asp-controller="Home" asp-action="@legalPage.Action" aria-current="@(active ? "page" : null)"
+                   class="flex min-h-14 items-center justify-center gap-2 rounded-xl border px-3 py-3 text-center text-xs font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600 sm:text-sm @(active ? "border-emerald-800 bg-emerald-800 text-white" : "border-gray-200 bg-white text-gray-600 hover:border-emerald-700 hover:text-emerald-800")">
+                    <i class="fas @legalPage.Icon shrink-0" aria-hidden="true"></i><span>@legalPage.Title</span>
+                </a>
+            }
+        </nav>
+        <article class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm" aria-labelledby="legalTitle">
+            <header class="border-b border-gray-100 px-5 py-8 text-center sm:px-10 sm:py-10 md:px-12">
+                <span class="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700">
+                    <i class="fas @(ViewData["LegalIcon"] ?? "fa-file-contract") text-2xl" aria-hidden="true"></i>
+                </span>
+                <p class="mb-3 text-xs font-semibold uppercase tracking-widest text-emerald-700">Alda Joyeros · Información legal</p>
+                <h1 id="legalTitle" class="break-words font-serif text-3xl leading-tight text-gray-900 sm:text-4xl">@ViewData["Title"]</h1>
+                <p class="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-gray-500 sm:text-base">@ViewData["LegalSummary"]</p>
+                @if (ViewData["LegalUpdated"] is string date)
+                {
+                    <p class="mt-4 text-xs text-gray-500">Última actualización: <time datetime="2026-10-20">@date</time></p>
+                }
+            </header>
+            <div class="space-y-5 break-words px-5 py-7 text-sm leading-relaxed text-gray-600 sm:px-10 sm:py-10 sm:text-base md:px-12 [&_h2]:mt-8 [&_h2]:border-t [&_h2]:border-gray-100 [&_h2]:pt-6 [&_h2]:text-lg [&_h2]:font-semibold [&_h2]:leading-snug [&_h2]:text-gray-900 sm:[&_h2]:text-xl [&_h2:first-child]:mt-0 [&_h2:first-child]:border-0 [&_h2:first-child]:pt-0 [&_a]:font-medium [&_a]:text-emerald-800 [&_a]:underline [&_a]:underline-offset-4 [&_a:hover]:text-emerald-600 [&_dd]:mt-1 [&_dd]:break-words [&_dt]:text-gray-900">
+                @RenderBody()
+            </div>
+            <footer class="border-t border-gray-100 bg-gray-50 px-5 py-6 text-center sm:px-10 md:px-12">
+                <a asp-controller="Home" asp-action="Index" class="inline-flex w-full items-center justify-center gap-3 rounded-xl bg-emerald-800 px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-emerald-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600 sm:w-auto">
+                    <i class="fas fa-arrow-left" aria-hidden="true"></i><span>Volver a la tienda</span>
+                </a>
+            </footer>
+        </article>
+    </div>
+</div>

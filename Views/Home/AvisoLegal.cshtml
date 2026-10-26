@@ -1,8 +1,13 @@
 @inject Microsoft.Extensions.Options.IOptions<AldaJoyeros.Configuration.EmpresaSettings> Empresa
 @inject Microsoft.Extensions.Options.IOptions<AldaJoyeros.Configuration.PublicationOptions> Publication
-@{ ViewData["Title"] = "Aviso legal"; var e = Empresa.Value; }
-<div class="bg-gray-50 py-12 px-4 min-h-screen"><article class="max-w-3xl mx-auto rounded-2xl bg-white border border-gray-200 p-6 sm:p-10 space-y-6 text-gray-700">
-<h1 class="text-3xl font-serif font-bold text-gray-900">Aviso legal</h1>
+@{
+    Layout = "_LegalLayout";
+    ViewData["Title"] = "Aviso legal";
+    ViewData["LegalIcon"] = "fa-scale-balanced";
+    ViewData["LegalSummary"] = "Identificación, contacto y uso del sitio web.";
+    var e = Empresa.Value;
+}
+
 <h2 class="text-xl font-bold">Identificación y contacto</h2>
 <dl class="space-y-3">
 <div><dt class="font-semibold">Nombre comercial</dt><dd>@e.Nombre</dd></div>
@@ -14,5 +19,3 @@
 </dl>
 <h2 class="text-xl font-bold">Uso del sitio</h2><p>El catálogo muestra los productos de Alda Joyeros. La compra en línea está disponible únicamente cuando la tienda tiene activado el comercio electrónico. Las condiciones de compra, disponibilidad y entrega se indican en el catálogo y durante la compra.</p>
 <p>Los textos e imágenes no pueden reutilizarse sin la autorización de sus titulares. Para comunicar errores o incidencias utiliza los datos de contacto indicados.</p>
-<p><a asp-action="Privacy" class="underline">Privacidad</a> · <a asp-action="Cookies" class="underline">Cookies</a> · <a asp-action="Terminos" class="underline">Condiciones de compra</a></p>
-</article></div>
