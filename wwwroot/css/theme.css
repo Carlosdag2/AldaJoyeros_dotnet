@@ -268,7 +268,7 @@ html[data-theme="dark"] .glass-nav { background:rgba(13,21,33,.96) !important; }
 html[data-theme="dark"] :is(.card,.dropdown-menu,.modal-content,.list-group-item,.table) { background:var(--theme-surface); color:var(--theme-text); border-color:var(--theme-border); }
 html[data-theme="dark"] :is(table,thead,tbody,th,td) { border-color:var(--theme-border); }
 html[data-theme="dark"] [class~="even:bg-gray-50"]:nth-child(even) { background:var(--theme-raised) !important; }
-html[data-theme="dark"] :is(input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),select:not([data-theme-select]),textarea) {
+html[data-theme="dark"] :is(input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="range"]),select:not([data-theme-select]),textarea) {
     background-color:#0d1928 !important; color:var(--theme-text) !important; border-color:#53677f !important; color-scheme:dark;
 }
 html[data-theme="dark"] :is(input,textarea)::placeholder { color:#a3b4ca !important; opacity:1; }

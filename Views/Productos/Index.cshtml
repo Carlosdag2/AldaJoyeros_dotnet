@@ -270,6 +270,10 @@
         }
         .catalog-price-handle:focus-visible::-webkit-slider-thumb { outline: 3px solid currentColor; outline-offset: 4px; }
         .catalog-price-handle:focus-visible::-moz-range-thumb { outline: 3px solid currentColor; outline-offset: 4px; }
+        /* Keep the overlapping ranges transparent so neither can cover the rail or the other thumb. */
+        html[data-theme="dark"] .catalog-price-handle { background: transparent; border: 0; color: #86efac; }
+        html[data-theme="dark"] .catalog-price-track { background: #64748b !important; }
+        html[data-theme="dark"] .catalog-price-selection { background: #86efac !important; }
         html[data-theme="high-contrast"] .catalog-price-slider { color: #ffff00 !important; }
         html[data-theme="high-contrast"] .catalog-price-track { background: #fff !important; }
         html[data-theme="high-contrast"] .catalog-price-handle { border: 0 !important; background: transparent !important; color: #ffff00 !important; }
