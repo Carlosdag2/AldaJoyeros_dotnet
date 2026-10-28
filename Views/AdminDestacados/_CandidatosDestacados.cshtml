@@ -1,0 +1,17 @@
+@model AldaJoyeros.Models.FeaturedProductsViewModel
+<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+@foreach (var product in Model.Candidates.Items)
+{
+var selectedItem = Model.Selected.FirstOrDefault(p => p.Id == product.Id || p.Product?.Id == product.Id);
+var selected = selectedItem.Id > 0;
+<article class="flex flex-col rounded-xl border border-slate-200 bg-white p-4" data-candidate-id="@product.Id">
+@if (product.TieneImagenes) { <img src="@product.ImagenPrincipal" alt="@product.Nombre" loading="lazy" class="mb-3 h-36 w-full rounded-lg bg-slate-50 object-contain" /> }
+else { <div class="mb-3 flex h-36 items-center justify-center rounded-lg bg-slate-50 text-3xl text-slate-300"><i class="fas fa-gem" aria-hidden="true"></i></div> }
+<h3 class="break-words text-sm font-semibold">@product.Nombre</h3><p class="mt-1 text-xs text-slate-500">#@product.Id · @product.CategoriaNombre</p><p class="mb-4 mt-2 font-semibold">@product.Precio.ToString("C")</p>
+<form asp-controller="AdminDestacados" asp-action="Cambiar" data-featured-change method="post" class="mt-auto"><input type="hidden" name="id" value="@(selected ? selectedItem.Id : product.Id)" /><input type="hidden" name="busqueda" value="@Model.Search" /><input type="hidden" name="page" value="@Model.Candidates.PageNumber" /><input type="hidden" name="categoriaId" value="@Model.CategoryId" />
+<button name="accion" value="@(selected ? "quitar" : "añadir")" class="w-full rounded-lg border px-3 py-2.5 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-40 @(selected ? "border-emerald-200 bg-emerald-50 text-emerald-800" : "border-slate-200 text-slate-700 hover:bg-slate-50")">@(selected ? "Destacado · Quitar" : Model.Selected.Count >= 8 ? "Reemplazar un destacado" : "Añadir al inicio")</button></form></article>
+}
+</div>
+@if (Model.Candidates.TotalItems == 0) { <p class="rounded-xl border border-dashed border-slate-300 bg-white p-8 text-center text-slate-500">No hay productos que coincidan. Prueba otra búsqueda.</p> }
+@if (Model.Candidates.TotalPages > 1) { @await Html.PartialAsync("_Pagination", (Model.Candidates.PageNumber, Model.Candidates.TotalPages, "destacadosPagina", "paginacionDestacados", true)) }
+<p class="my-5 text-center text-xs text-slate-500">Mostrando @Model.Candidates.StartItem–@Model.Candidates.EndItem de @Model.Candidates.TotalItems productos visibles</p>

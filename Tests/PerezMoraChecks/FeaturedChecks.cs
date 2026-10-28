@@ -56,6 +56,18 @@ static class FeaturedChecks
             await RejectOrder(reverse.Skip(1).ToArray(), reverse, "Ordenar no permite quitar productos");
             Check((await store.GetIdsAsync()).SequenceEqual(reverse), "Los cambios inválidos conservan la selección guardada");
             await store.ReorderAsync(previous, reverse);
+            Check(!await store.AddOrReplaceAsync(10), "Selección llena solicita reemplazo sin modificar productos");
+            Check((await store.GetIdsAsync()).SequenceEqual(previous), "Pedir un reemplazo no modifica el orden");
+            Check(await store.AddOrReplaceAsync(10, previous[2], previous), "Reemplaza un destacado en una única operación");
+            var replaced = await store.GetIdsAsync();
+            Check(replaced.Count == 8 && replaced.Distinct().Count() == 8 && replaced[2] == 10, "Conserva la posición y el máximo de ocho sin duplicados");
+            Check(await store.AddOrReplaceAsync(10, previous[2], previous) && (await store.GetIdsAsync()).SequenceEqual(replaced), "Reintentar el mismo reemplazo no cambia otras posiciones");
+            try { await store.AddOrReplaceAsync(previous[2], replaced[0], previous); throw new Exception("Debe rechazar una selección obsoleta"); }
+            catch (InvalidOperationException) { Check(true, "No reemplaza con una selección desactualizada"); }
+            try { await store.AddOrReplaceAsync(11, replaced[0], replaced); throw new Exception("Debe rechazar productos ocultos"); }
+            catch (ArgumentException) { Check(true, "Reemplazar tampoco permite productos ocultos"); }
+            await store.AddOrReplaceAsync(previous[2], 10, replaced);
+            Check(await store.AddOrReplaceAsync(10, equivalents: new[] { previous[0] }) && (await store.GetIdsAsync()).SequenceEqual(previous), "Una familia ya destacada no duplica sus tallas");
             Check((await new FeaturedProductsStore(testConfig).GetIdsAsync()).SequenceEqual(await store.GetIdsAsync()), "Selección persistente tras reiniciar el servicio");
             await store.ChangeAsync(9, "quitar");
             async Task<bool> Add(long id) { try { await store.ChangeAsync(id, "añadir"); return true; } catch (ArgumentException) { return false; } }

@@ -71,6 +71,15 @@
         </nav>
     </div>
 
+    @if (ViewBag.IsAdmin == true)
+    {
+        <div class="container mx-auto px-4 md:px-8 mb-6"><section data-featured-product data-product-id="@Model.Id" class="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-emerald-200 bg-emerald-50 p-4">
+            <div><p class="text-sm font-semibold text-emerald-900"><i class="fas fa-star mr-2" aria-hidden="true"></i>Destacados del inicio</p><p data-featured-product-status role="status" aria-live="polite" class="mt-1 text-xs text-slate-600">Gestiona este producto sin salir de su ficha.</p></div>
+            <button type="button" data-featured-product-toggle disabled class="min-h-11 rounded-lg bg-emerald-800 px-5 py-3 text-sm font-semibold text-white hover:bg-emerald-900 disabled:opacity-50">Comprobando selección…</button>
+        </section></div>
+        <partial name="_FeaturedReplacement" />
+    }
+
     <div class="container mx-auto px-4 md:px-8 pb-20">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 xl:gap-20">
 
@@ -313,6 +322,7 @@
 </div>
 
 @section Styles {
+    @if (ViewBag.IsAdmin == true) { <link rel="stylesheet" href="~/css/featured.css" asp-append-version="true" /> }
     <style>
         .scrollbar-hide::-webkit-scrollbar {
             display: none;
@@ -340,6 +350,10 @@
 }
 
 @section Scripts {
+    @if (ViewBag.IsAdmin == true) {
+        <script src="~/js/featured-actions.js" asp-append-version="true" defer></script>
+        <script src="~/js/featured-product.js" asp-append-version="true" defer></script>
+    }
     <script>
         function carritoDetalle() {
             const base = carritoNotificacion();
