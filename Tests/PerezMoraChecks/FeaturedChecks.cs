@@ -8,7 +8,7 @@ using System.Text.Json;
 
 static class FeaturedChecks
 {
-    public static async Task Run(string project, IConfiguration config)
+    public static async Task Run(string project, IConfiguration config, bool storeOnly = false)
     {
         void Check(bool value, string message) { if (!value) throw new Exception(message); Console.WriteLine("PASS: " + message); }
         var database = "alda_featured_test_" + Guid.NewGuid().ToString("N");
@@ -40,6 +40,22 @@ static class FeaturedChecks
             Check((await store.GetIdsAsync())[^2] == 9, "Permite ordenar destacados");
             await store.ChangeAsync(9, "bajar");
             Check((await store.GetIdsAsync())[^1] == 9, "Permite bajar destacados");
+            var previous = await store.GetIdsAsync();
+            var reverse = previous.AsEnumerable().Reverse().ToArray();
+            await store.ReorderAsync(reverse, previous);
+            Check((await new FeaturedProductsStore(testConfig).GetIdsAsync()).SequenceEqual(reverse), "El orden completo se conserva tras reiniciar el servicio");
+            async Task RejectOrder(long[] order, long[] before, string label)
+            {
+                try { await store.ReorderAsync(order, before); }
+                catch (Exception error) when (error is ArgumentException or InvalidOperationException) { Check(true, label); return; }
+                throw new Exception(label);
+            }
+            await RejectOrder(reverse, previous.ToArray(), "Rechaza sobrescribir un orden cambiado en otra pestaña");
+            await RejectOrder(Enumerable.Repeat(reverse[0], 8).ToArray(), reverse, "Rechaza referencias duplicadas al ordenar");
+            await RejectOrder(reverse.Append(999L).ToArray(), reverse, "Ordenar no permite añadir productos");
+            await RejectOrder(reverse.Skip(1).ToArray(), reverse, "Ordenar no permite quitar productos");
+            Check((await store.GetIdsAsync()).SequenceEqual(reverse), "Los cambios inválidos conservan la selección guardada");
+            await store.ReorderAsync(previous, reverse);
             Check((await new FeaturedProductsStore(testConfig).GetIdsAsync()).SequenceEqual(await store.GetIdsAsync()), "Selección persistente tras reiniciar el servicio");
             await store.ChangeAsync(9, "quitar");
             async Task<bool> Add(long id) { try { await store.ChangeAsync(id, "añadir"); return true; } catch (ArgumentException) { return false; } }
@@ -50,6 +66,7 @@ static class FeaturedChecks
         }
         finally { await Execute($"DROP DATABASE `{database}`"); }
 
+        if (storeOnly) return;
         const string host = "http://127.0.0.1:5096";
         string B64(byte[] value) => Convert.ToBase64String(value).TrimEnd('=').Replace('+', '-').Replace('/', '_');
         string Token(string role)

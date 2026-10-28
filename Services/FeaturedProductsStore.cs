@@ -42,6 +42,25 @@ public sealed class FeaturedProductsStore(IConfiguration configuration)
         return JsonSerializer.Deserialize<List<long>>((string)(await query.ExecuteScalarAsync())!)!;
     }
 
+    public async Task ReorderAsync(IReadOnlyList<long> order, IReadOnlyList<long> previous)
+    {
+        if (order == null || previous == null || order.Count > Limit || order.Any(id => id <= 0) ||
+            order.Distinct().Count() != order.Count || !order.Order().SequenceEqual(previous.Order()))
+            throw new ArgumentException("El orden solicitado no es válido. Recarga la selección y vuelve a intentarlo.");
+        await EnsureAsync();
+        await using var connection = Connection();
+        await connection.OpenAsync();
+        await using var transaction = await connection.BeginTransactionAsync();
+        await using var query = new MySqlCommand("SELECT productos_json FROM productos_destacados_config WHERE id=1 FOR UPDATE", connection, transaction);
+        var current = JsonSerializer.Deserialize<List<long>>((string)(await query.ExecuteScalarAsync())!)!;
+        if (!current.SequenceEqual(previous))
+            throw new InvalidOperationException("La selección ha cambiado en otra pestaña. Recarga para ver el orden actual.");
+        await using var save = new MySqlCommand("UPDATE productos_destacados_config SET productos_json=@ids WHERE id=1", connection, transaction);
+        save.Parameters.AddWithValue("@ids", JsonSerializer.Serialize(order));
+        await save.ExecuteNonQueryAsync();
+        await transaction.CommitAsync();
+    }
+
     public async Task ChangeAsync(long id, string action)
     {
         if (id <= 0 || action is not ("añadir" or "quitar" or "subir" or "bajar"))
