@@ -1,0 +1,29 @@
+.site-icon-button { display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; border: 1px solid transparent; border-radius: .75rem; color: #57534e; }
+.site-icon-button:hover, .site-account-button:hover { background: #f5f5f4; color: #166534; }
+.site-account-button { display: inline-flex; align-items: center; justify-content: center; gap: .6rem; min-height: 44px; min-width: 44px; border-radius: .75rem; color: #57534e; padding: .5rem; }
+.site-nav-link { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; min-height: 44px; padding: .6rem .9rem; border-radius: .65rem; color: #57534e; font-size: .875rem; font-weight: 500; white-space: nowrap; }
+.site-nav-link:hover, .site-mobile-link:hover, .site-account-link:hover { color: #166534; background: #f0fdf4; }
+.site-nav-active { color: #166534; background: #f0fdf4; font-weight: 600; }
+.site-mobile-link { display: flex; align-items: center; justify-content: space-between; gap: 1rem; min-height: 48px; padding: .75rem; border-radius: .65rem; color: #44403c; font-size: 1rem; }
+.site-account-link { display: flex; align-items: center; gap: .8rem; min-height: 44px; padding: .75rem; border-radius: .6rem; color: #44403c; font-size: .875rem; }
+.site-account-link.text-red-700 { color: #b91c1c; }
+.site-mobile-menu { max-height: calc(100dvh - 72px); overflow-y: auto; }
+.site-header #site-account-menu { max-height: calc(100dvh - 100px); overflow-y: auto; }
+@media (min-width: 1024px) { .site-header [aria-controls="site-mobile-menu"] { display: none; } }
+.site-header .site-account-chevron { display: none; }
+@media (min-width: 1024px) { .site-header .site-account-chevron { display: block; } }
+.site-header :is(.fas,.fab), .site-footer :is(.fas,.fab) { margin-right: 0; }
+.site-footer { background: #092c23; }
+.site-footer-logo { filter: brightness(0) invert(1); }
+.site-footer-link { display: inline-flex; min-height: 44px; align-items: center; padding: .5rem 0; color: #dcfce7; }
+.site-footer-link:hover { color: #fff; text-decoration: underline; text-underline-offset: 4px; }
+.site-social-link { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border: 1px solid #ffffff40; border-radius: .75rem; color: #dcfce7; }
+.site-social-link:hover { color: #fff; background: #ffffff15; border-color: #ffffff80; }
+html[data-theme="dark"] :is(.site-icon-button,.site-account-button,.site-nav-link,.site-mobile-link,.site-account-link) { color: var(--theme-text); }
+html[data-theme="dark"] :is(.site-icon-button,.site-account-button,.site-nav-link,.site-mobile-link,.site-account-link):hover,
+html[data-theme="dark"] .site-nav-active { background: #163b2d; color: #bbf7d0; }
+html[data-theme="dark"] .site-account-link.text-red-700 { color: #fca5a5; }
+html[data-theme="dark"] .site-footer { background: #081c17; }
+html[data-theme="high-contrast"] :is(.site-icon-button,.site-account-button,.site-nav-link,.site-mobile-link,.site-account-link,.site-social-link,.site-footer-link) { color: #ffff00 !important; }
+html[data-theme="high-contrast"] .site-nav-active { outline: 2px solid #ffff00; outline-offset: -2px; }
+@media (prefers-reduced-motion: reduce) { .site-header *, .site-footer * { transition: none !important; } }

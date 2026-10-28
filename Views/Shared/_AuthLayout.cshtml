@@ -1,0 +1,58 @@
+@{
+    Layout = "_Layout";
+    var register = ViewData["AuthRegister"] is true;
+    var recovery = ViewData["AuthRecovery"] as int? ?? 0;
+    var heading = ViewData["AuthHeading"] as string ?? (register ? "Crea tu cuenta" : "Bienvenido de nuevo");
+    var description = ViewData["AuthDescription"] as string ?? (register ? "Solo necesitas tu correo y una contraseña para empezar." : "Introduce tus datos para acceder a tu cuenta.");
+    var success = recovery > 0 ? TempData["Success"] as string : null;
+    if (recovery > 0) TempData.Remove("Success");
+    var error = TempData["Error"] as string;
+    var warning = TempData["Warning"] as string;
+    var info = TempData["Info"] as string;
+    TempData.Remove("Error"); TempData.Remove("Warning"); TempData.Remove("Info");
+}
+<div class="auth-page px-4 py-8 sm:px-6 sm:py-12 lg:py-16">
+    <div class="mx-auto max-w-5xl">
+        <a asp-controller="Productos" asp-action="Index" asp-route-categoria="" class="mb-6 inline-flex min-h-[44px] items-center gap-3 text-sm font-semibold text-stone-600 hover:text-emerald-800"><i class="fas fa-arrow-left text-xs" aria-hidden="true"></i>Volver al catálogo</a>
+        <div class="grid overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-sm lg:grid-cols-5">
+            <aside class="auth-story hidden flex-col justify-between p-10 text-white lg:col-span-2 lg:flex" aria-label="Alda Joyeros">
+                <div><span class="mb-8 inline-flex h-12 w-12 items-center justify-center rounded-xl border border-white/25"><i class="fas fa-gem text-xl" aria-hidden="true"></i></span><p class="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-emerald-200">Alda Joyeros · Desde 1962</p><h2 class="font-serif text-4xl leading-tight">@(recovery > 0 ? "Volvamos a encontrarnos." : register ? "Tu próxima historia empieza aquí." : "Qué alegría volver a verte.")</h2><p class="mt-5 text-sm leading-relaxed text-emerald-100">@(recovery > 0 ? "Recupera el acceso a tu cuenta: solicita el correo, verifica el código y elige una nueva contraseña." : ViewBag.EcommerceEnabled == true ? "Una cuenta para continuar tus compras y consultar tus pedidos cuando lo necesites." : "Descubre nuestra colección de joyas y relojes, con la atención cercana de nuestra tienda de Illescas.")</p>
+                <div class="mt-9 space-y-5"><div class="flex items-start gap-3"><i class="fas fa-gem mt-1 text-emerald-300" aria-hidden="true"></i><div><p class="text-sm font-semibold">Piezas para cada ocasión</p><p class="mt-1 text-xs leading-relaxed text-emerald-100">Encuentra ese detalle que va contigo.</p></div></div><div class="flex items-start gap-3"><i class="fas fa-comments mt-1 text-emerald-300" aria-hidden="true"></i><div><p class="text-sm font-semibold">Te ayudamos a elegir</p><p class="mt-1 text-xs leading-relaxed text-emerald-100">Asesoramiento en nuestra tienda de Illescas.</p></div></div></div></div>
+                <div class="mt-10 border-t border-white/20 pt-5"><p class="mb-2 text-xs text-emerald-100">¿Necesitas ayuda?</p><a href="tel:+34925541227" class="text-sm font-semibold hover:underline">925 54 12 27</a></div>
+            </aside>
+            <section class="min-w-0 px-5 py-7 sm:px-9 sm:py-9 lg:col-span-3 lg:px-10 lg:py-10" aria-labelledby="auth-title">
+                @if (recovery > 0)
+                {
+                    <ol aria-label="Pasos para recuperar el acceso" class="mb-8 grid grid-cols-3 gap-2">
+                    @foreach (var step in new[] { (Number: 1, Label: "Correo"), (Number: 2, Label: "Código"), (Number: 3, Label: "Nueva clave") })
+                    { <li aria-current="@(recovery == step.Number ? "step" : null)" class="min-w-0 rounded-lg border px-1 py-3 text-center text-xs @(recovery == step.Number ? "border-emerald-300 bg-emerald-50 font-semibold text-emerald-900" : "border-stone-200 text-stone-500")"><span class="mb-1 block text-sm font-semibold">@step.Number</span>@step.Label</li> }
+                    </ol>
+                }
+                else
+                {
+                <nav aria-label="Acceso a tu cuenta" class="mb-8 grid grid-cols-2 gap-1 rounded-xl bg-stone-100 p-1">
+                    <a asp-controller="Auth" asp-action="Login" asp-route-returnUrl="@ViewBag.ReturnUrl" aria-current="@(!register ? "page" : null)" class="rounded-lg px-2 py-3 text-center text-sm font-semibold @(!register ? "bg-white text-emerald-800 shadow-sm" : "text-stone-600 hover:text-emerald-800")">Iniciar sesión</a>
+                    <a asp-controller="Auth" asp-action="Register" asp-route-returnUrl="@ViewBag.ReturnUrl" aria-current="@(register ? "page" : null)" class="rounded-lg px-2 py-3 text-center text-sm font-semibold @(register ? "bg-white text-emerald-800 shadow-sm" : "text-stone-600 hover:text-emerald-800")">Crear cuenta</a>
+                </nav>
+                }
+                <p class="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-emerald-800">@(recovery > 0 ? "Recupera tu acceso" : "Tu espacio en Alda")</p>
+                <h1 id="auth-title" class="font-serif text-3xl tracking-tight text-stone-900 sm:text-4xl">@heading</h1>
+                <p class="mb-7 mt-3 text-sm leading-relaxed text-stone-600">@description</p>
+                @if (!string.IsNullOrEmpty(success)) { <div class="mb-5 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm leading-relaxed text-emerald-900" role="status">@success</div> }
+                @if (!string.IsNullOrEmpty(info)) { <div class="mb-5 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm leading-relaxed text-emerald-900" role="status">@info</div> }
+                @if (!string.IsNullOrEmpty(error)) { <div class="mb-5 rounded-xl border border-red-200 bg-red-50 p-4 text-sm leading-relaxed text-red-800" role="alert">@error</div> }
+                else if (!string.IsNullOrEmpty(warning)) { <div class="mb-5 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm leading-relaxed text-amber-900" role="alert">@warning</div> }
+                @RenderBody()
+                <p class="mt-6 border-t border-stone-100 pt-5 text-xs leading-relaxed text-stone-500">Consulta cómo tratamos tus datos en nuestra <a asp-controller="Home" asp-action="Privacy" class="font-semibold text-emerald-800 underline underline-offset-4">Política de privacidad</a>.</p>
+            </section>
+        </div>
+    </div>
+</div>
+@section Styles {
+    <link rel="stylesheet" href="~/css/auth.css" asp-append-version="true" />
+    @await RenderSectionAsync("Styles", required: false)
+}
+@section Scripts {
+    @await RenderSectionAsync("Scripts", required: false)
+    <script src="~/js/auth-forms.js" asp-append-version="true" defer></script>
+}

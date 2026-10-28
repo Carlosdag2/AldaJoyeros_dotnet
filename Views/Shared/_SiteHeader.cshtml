@@ -1,0 +1,77 @@
+@{
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    var action = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+    var home = controller == "Home" && action == "Index";
+    var catalog = controller == "Productos";
+    var admin = controller.StartsWith("Admin", StringComparison.OrdinalIgnoreCase);
+    var authenticated = ViewBag.IsAuthenticated == true;
+    var ecommerce = ViewBag.EcommerceEnabled == true;
+    var user = ViewBag.CurrentUser as AldaJoyeros.DTOs.UsuarioDto;
+    var username = user?.Email?.Split('@')[0] ?? "Mi cuenta";
+    var returnUrl = ViewBag.ReturnUrl as string;
+    if (returnUrl == null && controller != "Auth") returnUrl = (Context.Request.PathBase + Context.Request.Path + Context.Request.QueryString).ToString();
+}
+<header class="site-header sticky top-0 z-50 border-b border-stone-200 bg-white" x-data="{ mobileOpen: false, accountOpen: false }"
+        x-on:click.outside="mobileOpen = false; accountOpen = false"
+        x-on:resize.window.debounce.100ms="if (window.innerWidth >= 1024) mobileOpen = false"
+        x-on:keydown.escape.prevent.stop="if (accountOpen) { accountOpen = false; $refs.accountToggle.focus(); } else if (mobileOpen) { mobileOpen = false; $refs.menuToggle.focus(); }">
+    <div class="container mx-auto px-4 sm:px-6">
+        <div class="grid min-h-[72px] grid-cols-[44px_minmax(0,1fr)_auto] items-center gap-2 py-2 lg:flex lg:h-20 lg:justify-between lg:gap-6 lg:py-0">
+            <button type="button" x-ref="menuToggle" @@click="mobileOpen = !mobileOpen; accountOpen = false" :aria-expanded="mobileOpen" aria-controls="site-mobile-menu" :aria-label="mobileOpen ? 'Cerrar menú de navegación' : 'Abrir menú de navegación'" class="site-icon-button lg:hidden"><i class="fas" :class="mobileOpen ? 'fa-xmark' : 'fa-bars'" aria-hidden="true"></i></button>
+            <a asp-controller="Home" asp-action="Index" class="min-w-0 justify-self-center lg:shrink-0" aria-label="Alda Joyeros, ir al inicio"><img src="~/images/logo.png" alt="Alda Joyeros desde 1962" width="160" height="80" class="h-14 w-28 max-w-full object-cover sm:w-36 lg:h-16 lg:w-40" /></a>
+            <nav aria-label="Principal" class="hidden items-center gap-1 lg:flex xl:gap-2">
+                <a asp-controller="Home" asp-action="Index" aria-current="@(home ? "page" : null)" class="site-nav-link @(home ? "site-nav-active" : "")">Inicio</a>
+                <a asp-controller="Productos" asp-action="Index" asp-route-categoria="" aria-current="@(catalog ? "page" : null)" class="site-nav-link @(catalog ? "site-nav-active" : "")">Catálogo</a>
+                <a asp-controller="Home" asp-action="Index" asp-fragment="visitanos" class="site-nav-link">La tienda</a>
+                @if (ViewBag.IsAdmin == true) { <a asp-controller="Admin" asp-action="Index" aria-current="@(admin ? "page" : null)" class="site-nav-link @(admin ? "site-nav-active" : "")"><i class="fas fa-sliders mr-2 text-xs" aria-hidden="true"></i>Admin</a> }
+            </nav>
+            <div class="flex shrink-0 items-center gap-1 sm:gap-2 lg:gap-3">
+                <partial name="_ThemePicker" />
+                @if (ecommerce)
+                {
+                    <a asp-controller="Carrito" asp-action="Index" class="site-icon-button relative" data-carrito-link aria-label="Ver carrito"><i class="fas fa-shopping-bag" data-carrito-icon aria-hidden="true"></i><span data-carrito-count class="absolute right-0 top-0 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-emerald-700 px-1 text-[10px] font-semibold text-white @(ViewBag.CarritoCount > 0 ? "" : "hidden")">@(ViewBag.CarritoCount ?? 0)</span></a>
+                }
+                @if (authenticated)
+                {
+                    <div class="relative">
+                        <button type="button" x-ref="accountToggle" @@click="accountOpen = !accountOpen; mobileOpen = false" :aria-expanded="accountOpen" aria-controls="site-account-menu" aria-label="Abrir opciones de mi cuenta" class="site-account-button"><i class="fas fa-user" aria-hidden="true"></i><span class="hidden max-w-[7rem] truncate text-sm lg:block">@username</span><i class="fas fa-chevron-down site-account-chevron text-[10px] transition-transform" :class="accountOpen && 'rotate-180'" aria-hidden="true"></i></button>
+                        <div id="site-account-menu" x-show="accountOpen" x-cloak x-transition.opacity.duration.150ms x-on:focusout="if (!$el.parentElement.contains($event.relatedTarget)) accountOpen = false" class="absolute right-0 top-full mt-3 w-64 max-w-[calc(100vw-2rem)] overflow-hidden rounded-xl border border-stone-200 bg-white shadow-xl">
+                            <div class="border-b border-stone-100 bg-stone-50 px-4 py-4"><p class="text-sm font-semibold text-stone-900">Mi cuenta</p><p class="mt-1 break-all text-xs leading-relaxed text-stone-500">@user?.Email</p></div>
+                            <nav aria-label="Mi cuenta" class="p-2">
+                                @if (ViewBag.IsAdmin == true) { <a asp-controller="Admin" asp-action="Index" class="site-account-link"><i class="fas fa-sliders" aria-hidden="true"></i>Panel de administración</a> }
+                                @if (ecommerce) {
+                                    <a asp-controller="Pedidos" asp-action="Index" class="site-account-link"><i class="fas fa-box" aria-hidden="true"></i>Mis pedidos</a>
+                                    <a asp-controller="Carrito" asp-action="Index" class="site-account-link"><i class="fas fa-shopping-bag" aria-hidden="true"></i>Mi carrito<span data-carrito-count-menu class="text-xs text-stone-500 @(ViewBag.CarritoCount > 0 ? "" : "hidden")">(<span data-carrito-count-value>@(ViewBag.CarritoCount ?? 0)</span>)</span></a>
+                                }
+                                <a asp-controller="Auth" asp-action="Logout" class="site-account-link text-red-700"><i class="fas fa-arrow-right-from-bracket" aria-hidden="true"></i>Cerrar sesión</a>
+                            </nav>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <a asp-controller="Auth" asp-action="Login" asp-route-returnUrl="@returnUrl" class="site-account-button" aria-label="Acceder a mi cuenta"><i class="fas fa-user" aria-hidden="true"></i><span class="hidden text-sm lg:block">Acceder</span></a>
+                    <a asp-controller="Auth" asp-action="Register" asp-route-returnUrl="@returnUrl" class="hidden rounded-lg bg-emerald-800 px-4 py-3 text-sm font-semibold text-white hover:bg-emerald-900 xl:block">Crear cuenta</a>
+                }
+            </div>
+        </div>
+    </div>
+    <div id="site-mobile-menu" x-show="mobileOpen" x-cloak x-transition.opacity.duration.150ms class="site-mobile-menu border-t border-stone-200 bg-white lg:hidden">
+        <nav aria-label="Principal móvil" class="container mx-auto space-y-1 px-4 py-4 sm:px-6">
+            <p class="px-3 pb-2 text-xs font-semibold uppercase tracking-widest text-stone-400">Explora Alda Joyeros</p>
+            <a asp-controller="Home" asp-action="Index" aria-current="@(home ? "page" : null)" class="site-mobile-link @(home ? "site-nav-active" : "")"><span>Inicio</span><i class="fas fa-arrow-right text-xs" aria-hidden="true"></i></a>
+            <a asp-controller="Productos" asp-action="Index" asp-route-categoria="" aria-current="@(catalog ? "page" : null)" class="site-mobile-link @(catalog ? "site-nav-active" : "")"><span>Catálogo</span><i class="fas fa-arrow-right text-xs" aria-hidden="true"></i></a>
+            <a asp-controller="Home" asp-action="Index" asp-fragment="visitanos" @@click="mobileOpen = false" class="site-mobile-link"><span>La tienda</span><i class="fas fa-arrow-right text-xs" aria-hidden="true"></i></a>
+            @if (ViewBag.IsAdmin == true) { <a asp-controller="Admin" asp-action="Index" class="site-mobile-link @(admin ? "site-nav-active" : "")" aria-current="@(admin ? "page" : null)"><span>Panel de administración</span><i class="fas fa-sliders text-xs" aria-hidden="true"></i></a> }
+            @if (ecommerce) {
+                <a asp-controller="Carrito" asp-action="Index" class="site-mobile-link"><span>Mi carrito</span><i class="fas fa-shopping-bag text-xs" aria-hidden="true"></i></a>
+                @if (authenticated) { <a asp-controller="Pedidos" asp-action="Index" class="site-mobile-link"><span>Mis pedidos</span><i class="fas fa-box text-xs" aria-hidden="true"></i></a> }
+            }
+            <div class="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-stone-100 px-3 pt-4 text-sm">
+                <a href="tel:+34925541227" class="font-semibold text-emerald-800"><i class="fas fa-phone mr-2" aria-hidden="true"></i>925 54 12 27</a>
+                @if (authenticated) { <a asp-controller="Auth" asp-action="Logout" class="py-2 text-red-700">Cerrar sesión</a> }
+                else { <a asp-controller="Auth" asp-action="Register" asp-route-returnUrl="@returnUrl" class="rounded-lg bg-emerald-800 px-4 py-3 text-sm font-semibold text-white">Crear cuenta</a> }
+            </div>
+        </nav>
+    </div>
+</header>

@@ -1,0 +1,21 @@
+.auth-page { background: #f6f4ef; }
+.auth-story { background: #123c2e; }
+.auth-form .validation-summary-valid { display: none; }
+.auth-form .validation-summary-errors { margin-bottom: 1.25rem; padding: 1rem; border: 1px solid #fecaca; border-radius: .75rem; background: #fef2f2; color: #991b1b; font-size: .875rem; }
+.auth-form :is(input[type="email"],input[type="password"],input[type="text"]) { font-size: 16px; }
+.auth-password-toggle { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: .5rem; color: #57534e; }
+.auth-password-toggle[hidden] { display: none; }
+.auth-password-toggle:hover { background: #f5f5f4; color: #166534; }
+.auth-form :is(input,button,a):focus-visible { outline: 2px solid #15803d; outline-offset: 3px; }
+html[data-theme="dark"] .auth-page { background: #111e29; }
+html[data-theme="dark"] .auth-story { background: #142d25; }
+html[data-theme="dark"] .auth-page [aria-label="Acceso a tu cuenta"] { background: #0d1928 !important; }
+html[data-theme="dark"] .auth-page [aria-label="Acceso a tu cuenta"] [aria-current="page"] { background: #233247 !important; box-shadow: inset 0 0 0 1px #53677f; }
+html[data-theme="dark"] .auth-password-toggle { color: var(--theme-text); }
+html[data-theme="dark"] .auth-password-toggle:hover { background: #233247; }
+html[data-theme="dark"] .auth-form .validation-summary-errors { background: #3b2025; color: #fecaca; border-color: #f87171; }
+html[data-theme="high-contrast"] :is(.auth-page,.auth-story) { background: #000; }
+html[data-theme="high-contrast"] .auth-form .validation-summary-errors { background: #000; color: #ffb3b3; border-color: #ffb3b3; }
+html[data-theme="high-contrast"] .auth-password-toggle { color: #ffff00; }
+.auth-form input.auth-code { font-size: 24px; letter-spacing: .35em; text-indent: .35em; font-variant-numeric: tabular-nums; }
+html[data-theme="high-contrast"] .auth-page [aria-current="step"] { outline: 2px solid #ffff00; outline-offset: -2px; }
