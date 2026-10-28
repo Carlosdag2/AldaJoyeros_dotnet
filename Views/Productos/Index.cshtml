@@ -27,11 +27,10 @@
                 <h1 id="catalog-title" class="break-words font-serif text-4xl tracking-tight text-stone-900 sm:text-5xl"><span x-show="nombreCategoria" x-text="nombreCategoria" style="@(categoriaActual == null ? "display:none" : null)">@categoriaActual?.Nombre</span><span x-show="!nombreCategoria" style="@(categoriaActual != null ? "display:none" : null)">Encuentra tu <em class="font-normal text-emerald-800">próxima joya.</em></span></h1>
                 <p class="mt-4 max-w-lg text-sm leading-relaxed text-stone-600">Joyas y relojes para cada ocasión. Explora nuestras categorías y elige el rango de precio que va contigo.</p>
             </div>
-            <div class="min-w-0">            <div class="w-full min-w-0 relative"
+            <div class="min-w-0">            <div class="w-full min-w-0 relative z-20"
                  x-data="buscadorProductos()"
                  x-on:catalogo-busqueda.window="restablecer($event.detail)"
-                 x-on:click.away="cerrarSugerencias()"
-                 style="z-index: 100;">
+                 x-on:click.away="cerrarSugerencias()">
 
                 <form asp-action="Index" method="get" class="relative group">
 

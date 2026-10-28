@@ -2,7 +2,8 @@
 
 @{
     ViewData["Title"] = $"{Model.CategoriaNombre} {Model.Nombre}";
-    var imagenes = Model.Imagenes ?? new List<AldaJoyeros.DTOs.ProductoImagenDto>();
+    var imagenes = (Model.Imagenes ?? new List<AldaJoyeros.DTOs.ProductoImagenDto>())
+        .OrderByDescending(i => i.EsPrincipal).ThenBy(i => i.Orden).ThenBy(i => i.Id).ToList();
     var relativeProductUrl = AldaJoyeros.Helpers.PublicUrls.ProductLink(Context.Request, Model);
     var productUrl = $"{Context.Request.Scheme}://{Context.Request.Host}{relativeProductUrl}";
     var shareText = $"{Model.Nombre} - {Model.Precio.ToString("C")}";

@@ -11,5 +11,6 @@ namespace AldaJoyeros.Services.Interfaces
         Task DeleteAsync(long id);
         Task DeleteByStringIdAsync(string id);
         Task SetAsPrincipalAsync(string id);
+        Task ReordenarAsync(long productoId, IReadOnlyList<string> ids, IReadOnlyList<string> anterior);
     }
 }

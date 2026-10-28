@@ -7,6 +7,8 @@ using AldaJoyeros.Attributes;
 namespace AldaJoyeros.Controllers
 {
     [JwtAuthorize("ADMIN")]
+    [AutoValidateAntiforgeryToken]
+    [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
     public class AdminProductosController : BaseController
     {
         private readonly IProductoService _productoService;
@@ -19,13 +21,17 @@ namespace AldaJoyeros.Controllers
             _categoriaService = categoriaService;
         }
 
-        public async Task<IActionResult> Index(string busqueda = "", string filtro = "activos", int page = 1)
+        public async Task<IActionResult> Index(string busqueda = "", string filtro = "activos", int page = 1, long? categoriaId = null, string orden = "recientes", int tamano = 20)
         {
+            busqueda = (busqueda ?? "").Trim();
+            filtro = filtro is "eliminados" or "todos" ? filtro : "activos";
+            tamano = tamano is 10 or 20 or 50 ? tamano : 20;
+            orden = orden is "nombre" or "precio-asc" or "precio-desc" ? orden : "recientes";
             // Obtener todos los productos incluyendo eliminados para admin
             var productos = await _productoService.GetAllIncludingDeletedAsync(cargarImagenes: false);
             var todosProductos = productos.ToList();
             
-            // EstadÌsticas
+            // Estad√≠sticas
             var totalActivos = todosProductos.Count(p => !p.Eliminado);
             var totalEliminados = todosProductos.Count(p => p.Eliminado);
             
@@ -40,7 +46,7 @@ namespace AldaJoyeros.Controllers
                 _ => todosProductos.Where(p => !p.Eliminado) // activos por defecto
             };
             
-            // Aplicar b˙squeda
+            // Aplicar b√∫squeda
             if (!string.IsNullOrWhiteSpace(busqueda))
             {
                 productosFiltrados = productosFiltrados.Where(p => 
@@ -51,12 +57,23 @@ namespace AldaJoyeros.Controllers
                 ).ToList();
             }
 
-            var pagedResult = PagedResult<ProductoDto>.Create(productosFiltrados, page, PageSize);
+            if (categoriaId.HasValue) productosFiltrados = productosFiltrados.Where(p => p.CategoriaId == categoriaId);
+            productosFiltrados = orden switch
+            {
+                "nombre" => productosFiltrados.OrderBy(p => p.Nombre).ThenBy(p => p.Id),
+                "precio-asc" => productosFiltrados.OrderBy(p => p.Precio).ThenBy(p => p.Id),
+                "precio-desc" => productosFiltrados.OrderByDescending(p => p.Precio).ThenBy(p => p.Id),
+                _ => productosFiltrados.OrderByDescending(p => p.Id)
+            };
+            var pagedResult = PagedResult<ProductoDto>.Create(productosFiltrados, page, tamano);
             await _productoService.CargarImagenesAsync(pagedResult.Items);
             ViewBag.Busqueda = busqueda;
             ViewBag.Filtro = filtro;
+            ViewBag.CategoriaId = categoriaId;
+            ViewBag.Orden = orden;
+            ViewBag.Tamano = tamano;
 
-            // Si es peticiÛn AJAX, devolver partial con datos de estadÌsticas en el response header
+            // Si es petici√≥n AJAX, devolver partial con datos de estad√≠sticas en el response header
             if (Request.Headers.XRequestedWith == "XMLHttpRequest")
             {
                 Response.Headers.Append("X-Stats-Activos", totalActivos.ToString());
@@ -66,7 +83,48 @@ namespace AldaJoyeros.Controllers
                 return PartialView("_ProductosList", pagedResult);
             }
 
+            ViewBag.Categorias = (await _categoriaService.GetAllAsync()).OrderBy(c => c.Nombre).ToList();
             return View(pagedResult);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Editor(long id = 0)
+        {
+            var producto = id == 0 ? null : await _productoService.GetByIdAsync(id);
+            if (id != 0 && producto == null) return NotFound();
+            if (producto?.Eliminado == true) return Conflict("Restaura el producto antes de editarlo.");
+            ViewBag.ProductoId = id;
+            ViewBag.Categorias = (await _categoriaService.GetAllAsync()).OrderBy(c => c.Nombre).ToList();
+            return PartialView("_ProductoEditor", new ProductoUpdateDto {
+                Nombre = producto?.Nombre ?? "", Descripcion = producto?.Descripcion,
+                Precio = producto?.Precio ?? 0, CategoriaId = producto?.CategoriaId ?? 0
+            });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Guardar(long id, ProductoUpdateDto productoDto)
+        {
+            var categorias = await _categoriaService.GetAllAsync();
+            if (!categorias.Any(c => c.Id == productoDto.CategoriaId)) ModelState.AddModelError("CategoriaId", "Selecciona una categor√≠a v√°lida.");
+            if (!double.IsFinite(productoDto.Precio)) ModelState.AddModelError("Precio", "Introduce un precio v√°lido.");
+            if (!ModelState.IsValid) return BadRequest(new { success = false, message = "Revisa los campos indicados.", errors = ModelState.Where(x => x.Value!.Errors.Count > 0).ToDictionary(x => x.Key, x => x.Value!.Errors.Select(e => string.IsNullOrWhiteSpace(e.ErrorMessage) ? "Valor no v√°lido." : e.ErrorMessage).ToArray()) });
+            try
+            {
+                if (id == 0)
+                {
+                    var created = await _productoService.CreateAsync(new ProductoCreateDto { Nombre = productoDto.Nombre, Descripcion = productoDto.Descripcion, Precio = productoDto.Precio, CategoriaId = productoDto.CategoriaId });
+                    return Json(new { success = true, id = created.Id, message = "Producto creado. Puedes a√±adir sus fotos desde Im√°genes." });
+                }
+                var current = await _productoService.GetByIdAsync(id);
+                if (current == null) return NotFound(new { message = "El producto ya no existe." });
+                if (current.Eliminado) return Conflict(new { message = "El producto est√° en la papelera. Rest√°uralo antes de editarlo." });
+                await _productoService.UpdateAsync(id, productoDto);
+                return Json(new { success = true, id, message = "Producto actualizado." });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { message = "No se ha podido guardar. Revisa la lista antes de intentarlo de nuevo." });
+            }
         }
 
         [HttpGet]
@@ -75,7 +133,7 @@ namespace AldaJoyeros.Controllers
             var categorias = await _categoriaService.GetAllAsync();
             if (!categorias.Any())
             {
-                TempData["Warning"] = "Debes crear al menos una categorÌa antes de aÒadir productos";
+                TempData["Warning"] = "Debes crear al menos una categor√≠a antes de a√±adir productos";
                 return RedirectToAction("Index", "AdminCategorias");
             }
             
@@ -96,7 +154,7 @@ namespace AldaJoyeros.Controllers
             try
             {
                 var producto = await _productoService.CreateAsync(productoDto);
-                TempData["Success"] = $"Producto '{productoDto.Nombre}' creado exitosamente. °Ahora puedes aÒadir im·genes!";
+                TempData["Success"] = $"Producto '{productoDto.Nombre}' creado exitosamente. ¬°Ahora puedes a√±adir im√°genes!";
                 return RedirectToAction("Gestionar", "AdminImagenes", new { id = producto.Id });
             }
             catch (Exception ex)
@@ -119,7 +177,7 @@ namespace AldaJoyeros.Controllers
 
             if (producto.Eliminado)
             {
-                TempData["Warning"] = "Este producto est· eliminado. Rest·uralo primero para editarlo.";
+                TempData["Warning"] = "Este producto est√° eliminado. Rest√°uralo primero para editarlo.";
             }
 
             var updateDto = new ProductoUpdateDto
@@ -223,7 +281,7 @@ namespace AldaJoyeros.Controllers
                 
                 if (producto != null && !producto.Eliminado)
                 {
-                    TempData["Error"] = "Solo puedes eliminar permanentemente productos que estÈn en la papelera";
+                    TempData["Error"] = "Solo puedes eliminar permanentemente productos que est√©n en la papelera";
                     return RedirectToAction("Index");
                 }
                 

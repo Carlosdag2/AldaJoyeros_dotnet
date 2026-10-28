@@ -6,7 +6,7 @@ using AldaJoyeros.Repositories.Interfaces;
 namespace AldaJoyeros.Repositories.Implementations
 {
     /// <summary>
-    /// ImplementaciÛn del repositorio de im·genes en MongoDB
+    /// Implementaci√≥n del repositorio de im√°genes en MongoDB
     /// </summary>
     public class ProductoImagenMongoRepository : IProductoImagenMongoRepository
     {
@@ -57,6 +57,15 @@ namespace AldaJoyeros.Repositories.Implementations
             var filter = Builders<ProductoImagenMongo>.Filter.Eq(img => img.Id, id);
             var result = await _imagenes.ReplaceOneAsync(filter, imagen);
             return result.ModifiedCount > 0;
+        }
+
+        public async Task<bool> ActualizarOrdenAsync(string id, long productoId, int orden, int anterior)
+        {
+            var filter = Builders<ProductoImagenMongo>.Filter;
+            var result = await _imagenes.UpdateOneAsync(filter.And(filter.Eq(i => i.Id, id),
+                filter.Eq(i => i.ProductoId, productoId), filter.Eq(i => i.Orden, anterior)),
+                Builders<ProductoImagenMongo>.Update.Set(i => i.Orden, orden));
+            return result.MatchedCount == 1;
         }
 
         public async Task<bool> DeleteAsync(string id)

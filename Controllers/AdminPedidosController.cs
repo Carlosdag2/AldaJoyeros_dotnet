@@ -90,6 +90,43 @@ namespace AldaJoyeros.Controllers
         }
 
         [HttpGet]
+        [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
+        public async Task<IActionResult> EstadoEditor(long id)
+        {
+            var pedido = await _pedidoService.GetByIdAsync(id);
+            return pedido == null ? NotFound() : PartialView("_EstadoEditor", pedido);
+        }
+
+        [HttpGet]
+        [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
+        public async Task<IActionResult> EstadoActual(long id)
+        {
+            var pedido = await _pedidoService.GetByIdAsync(id);
+            return pedido == null ? NotFound() : PartialView("_EstadoActual", pedido);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> GuardarEstado(long id, PedidoUpdateEstadoDto pedidoDto, string estadoAnterior)
+        {
+            if (!Request.Form.ContainsKey("Estado") || !Enum.IsDefined(pedidoDto.Estado)) ModelState.AddModelError("Estado", "Selecciona un estado válido.");
+            if (!ModelState.IsValid) return BadRequest(new { message = "Revisa el estado y la fecha de entrega." });
+            try
+            {
+                var current = await _pedidoService.GetByIdAsync(id);
+                if (current == null) return NotFound(new { message = "El pedido ya no existe." });
+                if (!string.Equals(current.Estado, estadoAnterior, StringComparison.Ordinal))
+                    return Conflict(new { message = "El estado ha cambiado desde que abriste la ventana. Ciérrala y vuelve a abrirla para revisar el estado actual." });
+                await _pedidoService.UpdateEstadoAsync(id, pedidoDto);
+                return Json(new { success = true, message = $"Pedido #{id}: {PedidoPresentacion.Desde(pedidoDto.Estado.ToString()).Etiqueta}." });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { message = "No se ha podido confirmar el cambio. Revisa el pedido antes de intentarlo de nuevo." });
+            }
+        }
+
+        [HttpGet]
         public async Task<IActionResult> EditarEstado(long id)
         {
             var pedido = await _pedidoService.GetByIdAsync(id);
