@@ -1,0 +1,13 @@
+.image-viewer { width:min(64rem,calc(100% - 2rem)); max-height:90dvh; overflow-y:auto; }
+.image-viewer::backdrop { background:#000c; }
+.image-viewer-photo { max-height:65dvh; }
+body:has(.image-viewer[open]) { overflow:hidden; }
+[data-image-drop].is-over { outline:3px solid #15803d; outline-offset:3px; }
+.image-drag-handle { cursor:grab; touch-action:pan-y; }
+[data-image-id].is-dragging { opacity:.55; }
+[data-image-id].is-drop-target { outline:3px solid #15803d; outline-offset:2px; }
+[data-image-manager] :is(button,a,input):focus-visible { outline:2px solid #15803d; outline-offset:3px; }
+[data-image-manager] button:disabled { cursor:default; }
+html[data-theme="dark"] :is([data-image-drop].is-over,[data-image-id].is-drop-target) { outline-color:#86efac; }
+html[data-theme="high-contrast"] :is([data-image-drop].is-over,[data-image-id].is-drop-target,[data-image-manager] :focus-visible) { outline:3px solid #0ff !important; }
+html[data-theme="high-contrast"] [data-principal="true"] { border:3px solid #ffe45c !important; }

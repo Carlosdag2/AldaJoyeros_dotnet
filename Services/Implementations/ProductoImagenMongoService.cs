@@ -7,10 +7,11 @@ using AldaJoyeros.Services.Interfaces;
 namespace AldaJoyeros.Services.Implementations
 {
     /// <summary>
-    /// Servicio de im�genes usando MongoDB
+    /// Servicio de imágenes usando MongoDB
     /// </summary>
     public class ProductoImagenMongoService : IProductoImagenService
     {
+        private static readonly System.Collections.Concurrent.ConcurrentDictionary<long, SemaphoreSlim> OrderLocks = new();
         private readonly IProductoImagenMongoRepository _repository;
         private readonly IMapper _mapper;
         private readonly ILogger<ProductoImagenMongoService> _logger;
@@ -44,7 +45,7 @@ namespace AldaJoyeros.Services.Implementations
             {
                 var imagen = _mapper.Map<ProductoImagenMongo>(imagenDto);
                 
-                // Calcular tama�o
+                // Calcular tamaño
                 imagen.TamanoBytes = imagenDto.ImagenData.Length;
                 
                 // Si es la primera imagen, marcarla como principal
@@ -56,7 +57,7 @@ namespace AldaJoyeros.Services.Implementations
                 }
                 else if (imagen.EsPrincipal)
                 {
-                    // Quitar principal de las dem�s
+                    // Quitar principal de las demás
                     await _repository.QuitarPrincipalAsync(imagenDto.ProductoId);
                 }
 
@@ -104,7 +105,7 @@ namespace AldaJoyeros.Services.Implementations
                 throw new InvalidOperationException("El archivo debe ser una imagen");
             }
 
-            // Validar tama�o (m�ximo 5MB)
+            // Validar tamaño (máximo 5MB)
             if (imagenData.Length > 5 * 1024 * 1024)
             {
                 throw new InvalidOperationException("La imagen no puede superar los 5MB");
@@ -211,6 +212,46 @@ namespace AldaJoyeros.Services.Implementations
             }
         }
 
+        public async Task ReordenarAsync(long productoId, IReadOnlyList<string> ids, IReadOnlyList<string> anterior)
+        {
+            var gate = OrderLocks.GetOrAdd(productoId, _ => new SemaphoreSlim(1, 1));
+            await gate.WaitAsync();
+            try
+            {
+                var images = (await _repository.GetByProductoIdAsync(productoId)).OrderBy(i => i.Orden).ThenBy(i => i.Id).ToList();
+                var current = images.Select(i => i.Id).ToArray();
+                if (!current.SequenceEqual(anterior) || ids.Count != current.Length || ids.Distinct().Count() != ids.Count || !ids.ToHashSet().SetEquals(current))
+                    throw new InvalidOperationException("Las imágenes han cambiado. Actualiza la galería y vuelve a ordenar.");
+                if (current.SequenceEqual(ids)) return;
+                var original = images.ToDictionary(i => i.Id, i => i.Orden);
+                async Task PlaceAsync(IReadOnlyDictionary<string, int> positions)
+                {
+                    var snapshot = (await _repository.GetByProductoIdAsync(productoId)).ToList();
+                    if (!positions.Keys.ToHashSet().SetEquals(snapshot.Select(i => i.Id))) throw new InvalidOperationException("La galería ha cambiado.");
+                    var used = snapshot.Select(i => i.Orden).ToHashSet();
+                    var temporary = new Dictionary<string, int>();
+                    var slot = int.MinValue;
+                    // Free the final positions first: MongoDB has a unique (product, order) index.
+                    foreach (var image in snapshot)
+                    {
+                        while (used.Contains(slot)) slot = checked(slot + 1);
+                        if (!await _repository.ActualizarOrdenAsync(image.Id, productoId, slot, image.Orden)) throw new InvalidOperationException("La galería ha cambiado.");
+                        temporary[image.Id] = slot; used.Add(slot);
+                    }
+                    foreach (var position in positions)
+                        if (!await _repository.ActualizarOrdenAsync(position.Key, productoId, position.Value, temporary[position.Key])) throw new InvalidOperationException("La galería ha cambiado.");
+                }
+                try { await PlaceAsync(ids.Select((id, index) => (id, index)).ToDictionary(i => i.id, i => i.index)); }
+                catch
+                {
+                    try { await PlaceAsync(original); }
+                    catch (Exception rollbackError) { _logger.LogError(rollbackError, "No se pudo recuperar el orden de imágenes del producto {ProductoId}", productoId); }
+                    throw new InvalidOperationException("No se ha podido confirmar el orden. Actualiza la galería antes de intentarlo de nuevo.");
+                }
+            }
+            finally { gate.Release(); }
+        }
+
         public async Task SetAsPrincipalAsync(string id)
         {
             try
@@ -221,7 +262,7 @@ namespace AldaJoyeros.Services.Implementations
                     throw new KeyNotFoundException("Imagen no encontrada");
                 }
 
-                // Quitar principal de las dem�s
+                // Quitar principal de las demás
                 await _repository.QuitarPrincipalAsync(imagen.ProductoId, imagen.Id);
 
                 // Marcar como principal

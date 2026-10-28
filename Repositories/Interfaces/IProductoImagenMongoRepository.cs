@@ -3,12 +3,12 @@ using AldaJoyeros.Models.MongoDB;
 namespace AldaJoyeros.Repositories.Interfaces
 {
     /// <summary>
-    /// Interfaz de repositorio para im·genes en MongoDB
+    /// Interfaz de repositorio para im√°genes en MongoDB
     /// </summary>
     public interface IProductoImagenMongoRepository
     {
         /// <summary>
-        /// Obtiene todas las im·genes de un producto
+        /// Obtiene todas las im√°genes de un producto
         /// </summary>
         Task<IEnumerable<ProductoImagenMongo>> GetByProductoIdAsync(long productoId);
 
@@ -31,6 +31,7 @@ namespace AldaJoyeros.Repositories.Interfaces
         /// Actualiza una imagen existente
         /// </summary>
         Task<bool> UpdateAsync(string id, ProductoImagenMongo imagen);
+        Task<bool> ActualizarOrdenAsync(string id, long productoId, int orden, int anterior);
 
         /// <summary>
         /// Elimina una imagen
@@ -38,12 +39,12 @@ namespace AldaJoyeros.Repositories.Interfaces
         Task<bool> DeleteAsync(string id);
 
         /// <summary>
-        /// Elimina todas las im·genes de un producto
+        /// Elimina todas las im√°genes de un producto
         /// </summary>
         Task<long> DeleteByProductoIdAsync(long productoId);
 
         /// <summary>
-        /// Cuenta el n˙mero de im·genes de un producto
+        /// Cuenta el n√∫mero de im√°genes de un producto
         /// </summary>
         Task<long> CountByProductoIdAsync(long productoId);
 
@@ -53,7 +54,7 @@ namespace AldaJoyeros.Repositories.Interfaces
         Task<bool> ExistsOrdenAsync(long productoId, int orden, string? excludeId = null);
 
         /// <summary>
-        /// Quita la marca principal de todas las im·genes de un producto
+        /// Quita la marca principal de todas las im√°genes de un producto
         /// </summary>
         Task QuitarPrincipalAsync(long productoId, string? excludeId = null);
     }

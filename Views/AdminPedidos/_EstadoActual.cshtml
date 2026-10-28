@@ -1,0 +1,4 @@
+@model AldaJoyeros.DTOs.PedidoDto
+<div data-order-badge><partial name="_PedidoEstado" model="AldaJoyeros.Helpers.PedidoPresentacion.Desde(Model.Estado)" /></div>
+<div data-order-delivery>@(Model.FechaEntregaReal?.ToString("dd/MM/yyyy") ?? "Sin registrar")</div>
+<div data-order-tracking><partial name="_SeguimientoPedido" model="Model" /></div>

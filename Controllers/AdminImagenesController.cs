@@ -2,125 +2,129 @@ using Microsoft.AspNetCore.Mvc;
 using AldaJoyeros.Services.Interfaces;
 using AldaJoyeros.DTOs;
 using AldaJoyeros.Attributes;
+using SkiaSharp;
 
-namespace AldaJoyeros.Controllers
+namespace AldaJoyeros.Controllers;
+
+[JwtAuthorize("ADMIN")]
+[AutoValidateAntiforgeryToken]
+[ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
+public class AdminImagenesController(IProductoImagenService imagenes, IProductoService productos,
+    ILogger<AdminImagenesController> logger) : BaseController
 {
-    [JwtAuthorize("ADMIN")]
-    public class AdminImagenesController : BaseController
+    private bool Ajax => Request.Headers.XRequestedWith == "XMLHttpRequest";
+    private IActionResult Reply(bool success, string message, long productoId, int status = 400)
     {
-        private readonly IProductoImagenService _imagenService;
-        private readonly IProductoService _productoService;
+        if (Ajax) return StatusCode(success ? 200 : status, new { success, message });
+        TempData[success ? "Success" : "Error"] = message;
+        return RedirectToAction("Gestionar", new { id = productoId });
+    }
 
-        public AdminImagenesController(
-            IProductoImagenService imagenService,
-            IProductoService productoService)
+    [HttpGet]
+    public async Task<IActionResult> Gestionar(long id)
+    {
+        var producto = await productos.GetByIdAsync(id);
+        if (producto != null) return View(producto);
+        TempData["Error"] = "Producto no encontrado.";
+        return RedirectToAction("Index", "AdminProductos");
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Galeria(long id)
+    {
+        var producto = await productos.GetByIdAsync(id);
+        return producto == null ? NotFound() : PartialView("_Galeria", producto);
+    }
+
+    [HttpPost]
+    [RequestSizeLimit(6 * 1024 * 1024)]
+    public async Task<IActionResult> Subir(long productoId, IFormFile? archivo)
+    {
+        if (archivo == null || archivo.Length == 0) return Reply(false, "Selecciona una imagen.", productoId);
+        if (archivo.Length > 5 * 1024 * 1024) return Reply(false, "Cada imagen puede ocupar como m√°ximo 5 MB.", productoId);
+        var extension = Path.GetExtension(archivo.FileName).ToLowerInvariant();
+        if (!new[] { ".jpg", ".jpeg", ".png", ".webp", ".gif" }.Contains(extension))
+            return Reply(false, "Usa una imagen JPG, PNG, WEBP o GIF.", productoId);
+        try
         {
-            _imagenService = imagenService;
-            _productoService = productoService;
+            var producto = await productos.GetByIdAsync(productoId);
+            if (producto == null) return Reply(false, "El producto ya no existe.", productoId, 404);
+            using var stream = new MemoryStream();
+            await archivo.CopyToAsync(stream);
+            var bytes = stream.ToArray();
+            using var data = SKData.CreateCopy(bytes);
+            using var codec = SKCodec.Create(data);
+            var mime = codec?.EncodedFormat switch {
+                SKEncodedImageFormat.Jpeg => "image/jpeg", SKEncodedImageFormat.Png => "image/png",
+                SKEncodedImageFormat.Webp => "image/webp", SKEncodedImageFormat.Gif => "image/gif", _ => null
+            };
+            if (mime == null || codec!.Info.Width <= 0 || codec.Info.Height <= 0)
+                return Reply(false, "No se puede leer esta imagen. Comprueba que el archivo no est√© da√±ado.", productoId);
+            var content = "base64," + Convert.ToBase64String(bytes);
+            if (producto.Imagenes.Any(i => i.ImagenBase64.EndsWith(content, StringComparison.Ordinal)))
+                return Reply(true, "Esta imagen ya estaba en la galer√≠a. No se ha duplicado.", productoId);
+            await imagenes.CreateAsync(new ProductoImagenCreateDto {
+                ProductoId = productoId, ImagenData = bytes, TipoMime = mime,
+                NombreArchivo = Path.GetFileName(archivo.FileName),
+                Orden = producto.Imagenes.Count == 0 ? 0 : checked(producto.Imagenes.Max(i => i.Orden) + 1)
+            });
+            return Reply(true, "Imagen subida.", productoId);
         }
-
-        // GET: AdminImagenes/Gestionar/5
-        [HttpGet]
-        public async Task<IActionResult> Gestionar(long id)
+        catch (Exception ex)
         {
-            var producto = await _productoService.GetByIdAsync(id);
-            if (producto == null)
-            {
-                TempData["Error"] = "Producto no encontrado";
-                return RedirectToAction("Index", "AdminProductos");
-            }
-
-            if (producto.Imagenes == null || !producto.Imagenes.Any())
-            {
-                TempData["Info"] = "Este producto a˙n no tiene im·genes. °AÒade algunas!";
-            }
-
-            ViewBag.Producto = producto;
-            return View(producto);
+            logger.LogError(ex, "Error al subir imagen del producto {ProductoId}", productoId);
+            return Reply(false, "No se pudo confirmar la subida. Actualiza la galer√≠a antes de repetirla.", productoId, 500);
         }
+    }
 
-        // POST: AdminImagenes/Subir
-        [HttpPost]
-        public async Task<IActionResult> Subir(long productoId, IFormFile archivo, int orden = 0, bool esPrincipal = false)
+    [HttpPost]
+    public async Task<IActionResult> Eliminar(string id, long productoId)
+    {
+        try
         {
-            try
-            {
-                if (archivo == null || archivo.Length == 0)
-                {
-                    TempData["Warning"] = "Debes seleccionar una imagen para subir";
-                    return RedirectToAction("Gestionar", new { id = productoId });
-                }
-
-                // Validar tipo de archivo
-                var extensionesPermitidas = new[] { ".jpg", ".jpeg", ".png", ".webp", ".gif" };
-                var extension = Path.GetExtension(archivo.FileName).ToLowerInvariant();
-                
-                if (!extensionesPermitidas.Contains(extension))
-                {
-                    TempData["Error"] = "Formato de imagen no permitido. Usa: JPG, PNG, WEBP o GIF";
-                    return RedirectToAction("Gestionar", new { id = productoId });
-                }
-
-                // Validar tamaÒo (m·ximo 5MB)
-                if (archivo.Length > 5 * 1024 * 1024)
-                {
-                    TempData["Error"] = "La imagen es demasiado grande. M·ximo permitido: 5MB";
-                    return RedirectToAction("Gestionar", new { id = productoId });
-                }
-
-                var uploadDto = new ProductoImagenUploadDto
-                {
-                    ProductoId = productoId,
-                    Archivo = archivo,
-                    Orden = orden,
-                    EsPrincipal = esPrincipal
-                };
-
-                await _imagenService.CreateFromFileAsync(uploadDto);
-                TempData["Success"] = $"Imagen '{archivo.FileName}' subida exitosamente";
-            }
-            catch (Exception ex)
-            {
-                TempData["Error"] = $"Error al subir la imagen: {ex.Message}";
-            }
-
-            return RedirectToAction("Gestionar", new { id = productoId });
+            var images = await imagenes.GetByProductoIdAsync(productoId);
+            if (!images.Any(i => i.Id == id)) return Reply(false, "La imagen ya no est√° en este producto. Actualiza la galer√≠a.", productoId, 404);
+            await imagenes.DeleteByStringIdAsync(id);
+            return Reply(true, "Imagen eliminada. Si era la principal, se ha elegido la siguiente disponible.", productoId);
         }
-
-        // POST: AdminImagenes/Eliminar
-        [HttpPost]
-        public async Task<IActionResult> Eliminar(string id, long productoId)
+        catch (Exception ex)
         {
-            try
-            {
-                // El ID de MongoDB es string, usar el mÈtodo apropiado
-                await _imagenService.DeleteByStringIdAsync(id);
-                TempData["Success"] = "Imagen eliminada exitosamente";
-            }
-            catch (Exception ex)
-            {
-                TempData["Error"] = $"Error al eliminar la imagen: {ex.Message}";
-            }
-
-            return RedirectToAction("Gestionar", new { id = productoId });
+            logger.LogError(ex, "Error al eliminar imagen de {ProductoId}", productoId);
+            return Reply(false, "No se pudo confirmar la eliminaci√≥n. Actualiza la galer√≠a.", productoId, 500);
         }
+    }
 
-        // POST: AdminImagenes/EstablecerPrincipal
-        [HttpPost]
-        public async Task<IActionResult> EstablecerPrincipal(string id, long productoId)
+    [HttpPost]
+    public async Task<IActionResult> EstablecerPrincipal(string id, long productoId)
+    {
+        try
         {
-            try
-            {
-                // El ID de MongoDB ya es string, usarlo directamente
-                await _imagenService.SetAsPrincipalAsync(id);
-                TempData["Success"] = "Imagen principal actualizada. Esta imagen se mostrar· primero en el cat·logo.";
-            }
-            catch (Exception ex)
-            {
-                TempData["Error"] = $"Error al actualizar la imagen principal: {ex.Message}";
-            }
+            var images = await imagenes.GetByProductoIdAsync(productoId);
+            if (!images.Any(i => i.Id == id)) return Reply(false, "La imagen ya no est√° en este producto. Actualiza la galer√≠a.", productoId, 404);
+            await imagenes.SetAsPrincipalAsync(id);
+            return Reply(true, "Imagen principal actualizada.", productoId);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error al establecer imagen principal de {ProductoId}", productoId);
+            return Reply(false, "No se pudo confirmar el cambio. Actualiza la galer√≠a.", productoId, 500);
+        }
+    }
 
-            return RedirectToAction("Gestionar", new { id = productoId });
+    [HttpPost]
+    public async Task<IActionResult> Ordenar(long productoId, string[] ids, string[] anterior)
+    {
+        if (!ModelState.IsValid || ids == null || anterior == null || ids.Length == 0 || anterior.Length == 0) return Reply(false, "Actualiza la galer√≠a antes de ordenar.", productoId);
+        try
+        {
+            await imagenes.ReordenarAsync(productoId, ids, anterior);
+            return Reply(true, "Orden de las im√°genes guardado.", productoId);
+        }
+        catch (InvalidOperationException ex) { return Reply(false, ex.Message, productoId, 409); }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error al ordenar im√°genes de {ProductoId}", productoId);
+            return Reply(false, "No se pudo confirmar el orden. Actualiza la galer√≠a.", productoId, 500);
         }
     }
 }

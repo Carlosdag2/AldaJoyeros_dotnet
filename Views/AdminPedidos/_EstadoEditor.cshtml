@@ -1,0 +1,20 @@
+@model AldaJoyeros.DTOs.PedidoDto
+@using AldaJoyeros.Helpers
+<form asp-action="GuardarEstado" method="post" data-admin-editor>
+    <input type="hidden" name="id" value="@Model.Id" /><input type="hidden" name="estadoAnterior" value="@Model.Estado" />
+    <p class="mb-2 text-sm text-slate-500">Pedido #@Model.Id · Estado actual: <strong>@PedidoPresentacion.Desde(Model.Estado).Etiqueta</strong></p>
+    <p class="mb-5 text-sm leading-relaxed text-slate-500">Selecciona el nuevo estado. El seguimiento se actualizará aquí mismo al guardar.</p>
+    <div data-editor-status role="alert" tabindex="-1" class="mb-4 text-sm text-red-700"></div>
+    <fieldset data-editor-fields>
+        <legend class="mb-3 text-sm font-semibold">Nuevo estado</legend>
+        <div class="grid gap-3 sm:grid-cols-2">
+        @foreach (var code in new[]{"PENDIENTE","EN_PROCESO","ENVIADO","ENTREGADO","CANCELADO"})
+        {
+            var estado = PedidoPresentacion.Desde(code);
+            <label class="admin-state-option flex cursor-pointer items-start gap-3 rounded-xl border border-slate-200 p-4"><input type="radio" name="Estado" value="@code" checked="@(Model.Estado == code)" required class="mt-1 shrink-0" /><span><span class="block text-sm font-semibold"><i class="fas @estado.Icono mr-2" aria-hidden="true"></i>@estado.Etiqueta</span><span class="mt-1 block text-xs leading-relaxed text-slate-500">@(code == "CANCELADO" ? "Conserva el registro del pedido como cancelado." : estado.Descripcion)</span></span></label>
+        }
+        </div>
+        <div class="mt-5" data-delivery-field hidden="@(Model.Estado != "ENTREGADO")"><label for="orderDeliveryDate" class="mb-2 block text-sm font-semibold">Fecha de entrega real <span class="font-normal text-slate-500">(opcional)</span></label><input id="orderDeliveryDate" name="FechaEntregaReal" type="date" value="@Model.FechaEntregaReal?.ToString("yyyy-MM-dd")" disabled="@(Model.Estado != "ENTREGADO")" class="admin-input" /></div>
+    </fieldset>
+    <div class="mt-6 flex flex-wrap justify-end gap-3"><button type="button" data-dialog-close class="admin-row-action border-slate-300 text-slate-600">Cancelar</button><button type="submit" class="min-h-11 rounded-lg bg-emerald-800 px-5 py-3 text-sm font-semibold text-white disabled:opacity-50">Guardar estado</button></div>
+</form>
