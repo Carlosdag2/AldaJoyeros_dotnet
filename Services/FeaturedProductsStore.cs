@@ -61,6 +61,35 @@ public sealed class FeaturedProductsStore(IConfiguration configuration)
         await transaction.CommitAsync();
     }
 
+    public async Task<bool> AddOrReplaceAsync(long id, long? replaceId = null, IReadOnlyList<long>? previous = null, IReadOnlyCollection<long>? equivalents = null)
+    {
+        if (id <= 0 || replaceId <= 0) throw new ArgumentException("El producto solicitado no es válido.");
+        await EnsureAsync();
+        await using var connection = Connection();
+        await connection.OpenAsync();
+        await using var transaction = await connection.BeginTransactionAsync();
+        await using var query = new MySqlCommand("SELECT productos_json FROM productos_destacados_config WHERE id=1 FOR UPDATE", connection, transaction);
+        var ids = JsonSerializer.Deserialize<List<long>>((string)(await query.ExecuteScalarAsync())!)!;
+        // A size variant and its parent must not occupy two featured positions.
+        if (ids.Any(current => current == id || equivalents?.Contains(current) == true)) return true;
+        await using var active = new MySqlCommand("SELECT COUNT(*) FROM producto WHERE id=@id AND eliminado=0", connection, transaction);
+        active.Parameters.AddWithValue("@id", id);
+        if (Convert.ToInt32(await active.ExecuteScalarAsync()) != 1) throw new ArgumentException("Solo puedes destacar productos visibles del catálogo.");
+        if (replaceId.HasValue)
+        {
+            if (previous == null || !ids.SequenceEqual(previous) || !ids.Contains(replaceId.Value))
+                throw new InvalidOperationException("La selección ha cambiado en otra pestaña. Elige de nuevo qué producto reemplazar.");
+            ids[ids.IndexOf(replaceId.Value)] = id;
+        }
+        else if (ids.Count >= Limit) return false;
+        else ids.Add(id);
+        await using var save = new MySqlCommand("UPDATE productos_destacados_config SET productos_json=@ids WHERE id=1", connection, transaction);
+        save.Parameters.AddWithValue("@ids", JsonSerializer.Serialize(ids));
+        await save.ExecuteNonQueryAsync();
+        await transaction.CommitAsync();
+        return true;
+    }
+
     public async Task ChangeAsync(long id, string action)
     {
         if (id <= 0 || action is not ("añadir" or "quitar" or "subir" or "bajar"))
