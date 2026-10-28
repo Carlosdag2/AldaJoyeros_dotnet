@@ -237,6 +237,12 @@ namespace AldaJoyeros.Controllers
                 return View();
             }
 
+            // Protected TempData keeps the same next step even for an unknown address.
+            var tokenValue = GenerateSecureToken();
+            TempData["Recovery.Token"] = tokenValue;
+            TempData["Recovery.Expires"] = DateTimeOffset.UtcNow.AddHours(1).ToUnixTimeSeconds().ToString();
+            TempData["Recovery.Attempts"] = 0;
+
             try
             {
                 var usuario = await _usuarioService.GetByEmailAsync(email);
@@ -245,7 +251,6 @@ namespace AldaJoyeros.Controllers
                 {
                     await _passwordResetTokenRepository.InvalidateUserTokensAsync(usuario.Id);
                     
-                    var tokenValue = GenerateSecureToken();
                     var verificationCode = GenerateVerificationCode();
                     
                     var resetToken = new PasswordResetToken
@@ -275,18 +280,13 @@ namespace AldaJoyeros.Controllers
                     }
                 }
                 
-                TempData["Success"] = "Si el email está registrado, recibirás instrucciones para restablecer tu contraseña.";
-                TempData["EmailSent"] = true;
-                
-                return View();
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error en ForgotPassword para {Email}", email);
-                TempData["Success"] = "Si el email está registrado, recibirás instrucciones para restablecer tu contraseña.";
-                TempData["EmailSent"] = true;
-                return View();
             }
+
+            return RedirectToAction("VerifyCode", new { token = tokenValue });
         }
 
         [HttpGet]
@@ -300,20 +300,20 @@ namespace AldaJoyeros.Controllers
 
             var resetToken = await _passwordResetTokenRepository.GetByTokenAsync(token);
             
-            if (resetToken == null)
+            if (resetToken == null && !HasPendingRecovery(token))
             {
                 TempData["Error"] = "El enlace ha expirado o ya fue utilizado. Solicita uno nuevo.";
                 return RedirectToAction("ForgotPassword");
             }
 
-            if (resetToken.CodeVerified)
+            if (resetToken?.CodeVerified == true)
             {
                 return RedirectToAction("ResetPassword", new { token = token });
             }
 
-            TempData["Info"] = "Hemos enviado un código de verificación a tu email. Revisa tu bandeja de entrada.";
+            TempData["Info"] = "Si el correo está registrado, recibirás un código. Cópialo aquí o utiliza el enlace del correo. Revisa también la carpeta de spam.";
             ViewBag.Token = token;
-            ViewBag.Attempts = resetToken.Attempts;
+            ViewBag.Attempts = resetToken?.Attempts ?? PendingRecoveryAttempts;
             return View();
         }
 
@@ -340,6 +340,20 @@ namespace AldaJoyeros.Controllers
                 
                 if (resetToken == null)
                 {
+                    if (HasPendingRecovery(token))
+                    {
+                        var attempts = PendingRecoveryAttempts;
+                        if (attempts >= 5)
+                        {
+                            ClearPendingRecovery(token);
+                            TempData["Error"] = "Has superado el número máximo de intentos. Por seguridad, solicita un nuevo código.";
+                            return RedirectToAction("ForgotPassword");
+                        }
+                        TempData["Recovery.Attempts"] = ++attempts;
+                        ViewBag.Attempts = attempts;
+                        TempData["Error"] = $"Código incorrecto. Te quedan {5 - attempts} intento(s).";
+                        return View();
+                    }
                     TempData["Error"] = "El enlace ha expirado o ya fue utilizado. Solicita uno nuevo.";
                     return RedirectToAction("ForgotPassword");
                 }
@@ -348,6 +362,7 @@ namespace AldaJoyeros.Controllers
                 {
                     resetToken.Used = true;
                     await _passwordResetTokenRepository.UpdateAsync(resetToken);
+                    ClearPendingRecovery(token);
                     TempData["Error"] = "Has superado el número máximo de intentos. Por seguridad, solicita un nuevo código.";
                     return RedirectToAction("ForgotPassword");
                 }
@@ -365,6 +380,7 @@ namespace AldaJoyeros.Controllers
 
                 resetToken.CodeVerified = true;
                 await _passwordResetTokenRepository.UpdateAsync(resetToken);
+                ClearPendingRecovery(token);
                 
                 _logger.LogInformation("Código verificado correctamente para usuario {UserId}", resetToken.UserId);
                 
@@ -459,6 +475,23 @@ namespace AldaJoyeros.Controllers
                 TempData["Error"] = "Error al restablecer la contraseña. Inténtalo de nuevo.";
                 return View();
             }
+        }
+
+        private int PendingRecoveryAttempts => TempData.Peek("Recovery.Attempts") is int attempts ? attempts : 0;
+
+        private bool HasPendingRecovery(string token)
+        {
+            return TempData.Peek("Recovery.Token") is string pending && pending == token
+                && long.TryParse(TempData.Peek("Recovery.Expires") as string, out var expires)
+                && expires > DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        }
+
+        private void ClearPendingRecovery(string token)
+        {
+            if (TempData.Peek("Recovery.Token") as string != token) return;
+            TempData.Remove("Recovery.Token");
+            TempData.Remove("Recovery.Expires");
+            TempData.Remove("Recovery.Attempts");
         }
 
         private static string GenerateSecureToken()

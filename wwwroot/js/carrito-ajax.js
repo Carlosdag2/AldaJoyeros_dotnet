@@ -5,8 +5,6 @@
  */
 function carritoNotificacion() {
 return {
-    mostrarNotificacion: false,
-    mensajeNotificacion: '',
     cargandoProducto: null,
     animando: false,
 
@@ -33,20 +31,25 @@ return {
                 } else if (data.requiresLogin) {
                     window.location.href = '/Auth/Login';
                 } else {
-                    this.activarNotificacion(data.message || 'Error al añadir al carrito');
+                    this.activarNotificacion(data.message || 'Error al añadir al carrito', 'error');
                 }
             } catch (error) {
                 console.error('Error al añadir al carrito:', error);
-                this.activarNotificacion('Error al añadir al carrito');
+                this.activarNotificacion('Error al añadir al carrito', 'error');
             } finally {
                 this.cargandoProducto = null;
             }
         },
 
-        activarNotificacion(mensaje) {
-            this.mensajeNotificacion = mensaje;
-            this.mostrarNotificacion = true;
-            setTimeout(() => { this.mostrarNotificacion = false; }, 4000);
+        activarNotificacion(mensaje, tipo = 'success') {
+            const card = window.AldaNotifications.show(mensaje, tipo);
+            if (tipo === 'success') {
+                const link = document.createElement('a');
+                link.href = '/Carrito';
+                link.className = 'alda-notice-action';
+                link.textContent = 'Ver carrito';
+                card.querySelector('.alda-notice-body').append(link);
+            }
         },
 
         actualizarContadorCarrito(totalItems) {

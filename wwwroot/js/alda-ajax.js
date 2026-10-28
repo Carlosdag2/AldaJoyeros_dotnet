@@ -70,66 +70,7 @@ const AldaAjax = {
 // ========================================
 // NOTIFICACIONES TOAST
 // ========================================
-const AldaToast = {
-    container: null,
-
-    init() {
-        if (!this.container) {
-            this.container = document.createElement('div');
-            this.container.id = 'alda-toast-container';
-            this.container.className = 'fixed bottom-6 right-6 z-50 flex flex-col gap-3';
-            document.body.appendChild(this.container);
-        }
-    },
-
-    show(message, type = 'info', duration = 4000) {
-        this.init();
-
-        const toast = document.createElement('div');
-        toast.className = `
-            flex items-center gap-3 px-5 py-4 rounded-lg shadow-xl transform translate-x-full
-            transition-all duration-300 ease-out max-w-sm
-            ${type === 'success' ? 'bg-emerald-900 text-white' : ''}
-            ${type === 'error' ? 'bg-red-600 text-white' : ''}
-            ${type === 'warning' ? 'bg-amber-500 text-white' : ''}
-            ${type === 'info' ? 'bg-slate-800 text-white' : ''}
-        `;
-
-        const icons = {
-            success: 'fa-check-circle',
-            error: 'fa-times-circle',
-            warning: 'fa-exclamation-triangle',
-            info: 'fa-info-circle'
-        };
-
-        toast.innerHTML = `
-            <i class="fas ${icons[type]} text-lg"></i>
-            <span class="flex-1 text-sm">${message}</span>
-            <button onclick="this.parentElement.remove()" class="opacity-70 hover:opacity-100">
-                <i class="fas fa-times"></i>
-            </button>
-        `;
-
-        this.container.appendChild(toast);
-
-        // Animar entrada
-        requestAnimationFrame(() => {
-            toast.classList.remove('translate-x-full');
-            toast.classList.add('translate-x-0');
-        });
-
-        // Auto-eliminar
-        setTimeout(() => {
-            toast.classList.add('translate-x-full', 'opacity-0');
-            setTimeout(() => toast.remove(), 300);
-        }, duration);
-    },
-
-    success(message) { this.show(message, 'success'); },
-    error(message) { this.show(message, 'error'); },
-    warning(message) { this.show(message, 'warning'); },
-    info(message) { this.show(message, 'info'); }
-};
+const AldaToast = window.AldaNotifications;
 
 // ========================================
 // LOADING OVERLAY
