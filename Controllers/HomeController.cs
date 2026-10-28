@@ -28,6 +28,8 @@ namespace AldaJoyeros.Controllers
             var categorias = await _categoriaService.GetAllAsync();
             await _catalogo.AssignCategoryUrlsAsync(categorias);
             foreach (var c in categorias) c.CantidadProductos = families.Count(f => f.Product.CategoriaId == c.Id);
+            foreach (var parent in categorias.Where(c => !c.Nombre.Contains(" · ")))
+                parent.CantidadProductos += categorias.Where(c => c.Nombre.StartsWith(parent.Nombre + " · ", StringComparison.Ordinal)).Sum(c => c.CantidadProductos);
             
             ViewBag.Categorias = categorias.Where(c => c.CantidadProductos > 0 && c.Grupo != "Pendientes de organizar")
                 .OrderBy(c => AldaJoyeros.Catalog.CatalogTaxonomy.GroupOrder(c.Grupo)).ThenBy(c => c.Nombre).ToArray();

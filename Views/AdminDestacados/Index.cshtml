@@ -6,12 +6,15 @@
 <section class="mb-8 rounded-xl border border-slate-200 bg-white p-4 md:p-6" aria-labelledby="seleccionTitulo">
 <div class="mb-5 flex justify-between gap-3"><h2 id="seleccionTitulo" class="text-lg font-semibold">Tu selección</h2><span class="rounded-lg bg-emerald-50 px-3 py-1 text-sm font-semibold text-emerald-800">@Model.Selected.Count / 8</span></div>
 @if (Model.Selected.Count == 0) { <p class="p-6 text-sm text-slate-500">Todavía no hay destacados. Añade productos desde el catálogo de abajo.</p> }
-<ol class="space-y-3" id="seleccionDestacados">
+<p id="ayudaOrdenDestacados" class="mb-4 text-sm text-slate-500">Usa las flechas o arrastra desde el tirador para cambiar la posición. El orden se guarda al soltar.</p>
+<form asp-controller="AdminDestacados" asp-action="Ordenar" method="post" id="ordenDestacados" hidden></form>
+<div class="mb-4 flex flex-wrap items-center gap-3 text-sm"><p id="estadoOrdenDestacados" role="status" aria-live="polite"></p><a href="@(Context.Request.PathBase + Context.Request.Path + Context.Request.QueryString)" id="recargarDestacados" hidden class="font-semibold text-emerald-800 underline">Recargar selección</a></div>
+<ol class="space-y-3" id="seleccionDestacados" aria-describedby="ayudaOrdenDestacados">
 @for (var index = 0; index < Model.Selected.Count; index++)
 {
 var item = Model.Selected[index];
 <li data-featured-id="@item.Id" class="flex flex-col gap-3 rounded-lg border border-slate-200 p-3 md:flex-row md:items-center">
-<div class="flex min-w-0 flex-1 items-center gap-3"><span class="w-5 shrink-0 text-sm font-bold text-slate-400">@(index + 1)</span>
+<div class="flex min-w-0 flex-1 items-center gap-3"><button type="button" data-featured-drag hidden aria-label="Arrastrar producto @(item.Product?.Nombre ?? item.Id.ToString())" title="Arrastrar para cambiar de posición" class="featured-drag-handle h-11 w-11 shrink-0 touch-none rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50"><i class="fas fa-grip-vertical" aria-hidden="true"></i></button><span data-featured-position class="w-5 shrink-0 text-sm font-bold text-slate-400">@(index + 1)</span>
 @if (item.Product?.TieneImagenes == true) { <img src="@item.Product.ImagenPrincipal" alt="" class="h-14 w-14 shrink-0 rounded-lg bg-slate-50 object-contain" /> }
 else { <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-400"><i class="fas fa-gem" aria-hidden="true"></i></span> }
 <div class="min-w-0"><span class="block break-words text-sm font-semibold">@(item.Product?.Nombre ?? "Producto no disponible")</span><span class="text-xs text-slate-500">#@item.Id · @(item.Product?.CategoriaNombre ?? "Sin categoría")</span>
@@ -46,5 +49,16 @@ else { <div class="mb-3 flex h-36 items-center justify-center rounded-lg bg-slat
 <p class="my-5 text-center text-xs text-slate-500">Mostrando @Model.Candidates.StartItem–@Model.Candidates.EndItem de @Model.Candidates.TotalItems productos visibles</p></section>
 </div></main>
 @section Scripts {
+<script src="~/js/admin-featured.js" asp-append-version="true" defer></script>
 <script>window.destacadosPagina = function (pagina) { const url = new URL(window.location.href); url.searchParams.set('page', pagina); window.location.assign(url); };</script>
+}
+@section Styles {
+<style>
+    #seleccionDestacados [data-featured-id].is-dragging { outline: 2px solid var(--theme-focus, #15803d); outline-offset: 2px; opacity: .8; }
+    html[data-theme="dark"] #seleccionDestacados [data-featured-id].is-dragging { outline-color: #86efac; }
+    html[data-theme="high-contrast"] #seleccionDestacados [data-featured-id].is-dragging { outline-color: #ffff00; }
+    .featured-drag-handle { cursor: grab; }
+    .featured-drag-handle:active { cursor: grabbing; }
+    #seleccionDestacados[aria-busy="true"] { opacity: .7; }
+</style>
 }

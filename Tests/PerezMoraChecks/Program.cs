@@ -18,6 +18,7 @@ var config=new ConfigurationBuilder().SetBasePath(project).AddJsonFile("appsetti
 if(args.Contains("--categories-web")){await CategoryWebChecks.Run(project,config);return;}
 if(args.Contains("--admin-ui-web")){await AdminUIWebChecks.Run(project,config);return;}
 if(args.Contains("--featured")){await FeaturedChecks.Run(project,config);return;}
+if(args.Contains("--featured-store-only")){await FeaturedChecks.Run(project,config,storeOnly:true);return;}
 if(args.Contains("--catalog-search")){await CatalogSearchChecks.Run(project);return;}
 if(args.Contains("--store-mode")){await StoreModeChecks.Run(project,config);return;}
 var output=Path.Combine(project,"App_Data","PerezMora","checks");Directory.CreateDirectory(output);

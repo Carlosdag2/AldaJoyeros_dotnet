@@ -1,0 +1,12 @@
+.home-hero { background: #f6f4ef; }
+.home-hero-visual { height: 340px; background: #19372d; }
+.home-hero-shade { background: linear-gradient(180deg, transparent 35%, rgba(0, 25, 16, .85)); }
+.home-photo-caption { color: #fff; }
+.home-story { background: #edf2eb; }
+@media (min-width: 640px) { .home-hero-visual { height: 440px; } }
+@media (min-width: 1024px) { .home-hero-visual { height: auto; min-height: 620px; } }
+html[data-theme="dark"] .home-hero { background: #111e29; }
+html[data-theme="dark"] .home-story { background: #142a24; }
+html[data-theme="high-contrast"] :is(.home-hero, .home-story) { background: #000; }
+html[data-theme="high-contrast"] .home-photo-caption { color: #fff !important; text-shadow: 0 1px 4px #000, 0 0 8px #000; }
+@media (prefers-reduced-motion: reduce) { .home-page *, .home-page *::before, .home-page *::after { transition: none !important; } }

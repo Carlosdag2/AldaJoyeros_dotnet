@@ -27,6 +27,24 @@ public sealed class AdminDestacadosController(IProductoService products, Feature
     }
 
     [HttpPost, ValidateAntiForgeryToken]
+    public async Task<IActionResult> Ordenar(long[] orden, long[] anterior)
+    {
+        Response.Headers.CacheControl = "no-store";
+        try
+        {
+            await featured.ReorderAsync(orden, anterior);
+            return Json(new { success = true, message = "Orden guardado. Ya se muestra así en el inicio." });
+        }
+        catch (ArgumentException error) { return BadRequest(new { message = error.Message }); }
+        catch (InvalidOperationException error) { return Conflict(new { message = error.Message }); }
+        catch (Exception error)
+        {
+            HttpContext.RequestServices.GetRequiredService<ILogger<AdminDestacadosController>>().LogError(error, "No se pudo guardar el orden de los destacados");
+            return StatusCode(500, new { message = "No se ha podido guardar el orden. Recarga para comprobar la selección y vuelve a intentarlo." });
+        }
+    }
+
+    [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Cambiar(long id, string accion, string busqueda = "", int page = 1)
     {
         try

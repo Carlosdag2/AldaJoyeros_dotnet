@@ -1,0 +1,6 @@
+.catalog-header { background: #f6f4ef; }
+html[data-theme="dark"] .catalog-header { background: #111e29; }
+html[data-theme="high-contrast"] .catalog-header { background: #000; }
+[data-catalog-filters] > summary::-webkit-details-marker { display: none; }
+[data-catalog-filters][open] > summary > .fa-chevron-down { transform: rotate(180deg); }
+@media (prefers-reduced-motion: reduce) { .catalog-page *, .catalog-page *::before, .catalog-page *::after { transition: none !important; } }

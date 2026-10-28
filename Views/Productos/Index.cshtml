@@ -10,7 +10,7 @@
     var categoriaActual = categorias?.FirstOrDefault(c => c.Id == categoriaSeleccionada);
 }
 
-<div class="min-h-screen bg-stone-50 font-sans text-stone-800 selection:bg-emerald-900 selection:text-white"
+<div class="catalog-page min-h-screen bg-stone-50 font-sans text-stone-800 selection:bg-emerald-900 selection:text-white"
  x-data="carritoNotificacion()">
 
 @if (ViewBag.EcommerceEnabled == true)
@@ -19,35 +19,15 @@
 }
 
 <div x-data="productosApp()">
-<section class="relative pt-32 pb-20 lg:pt-40 lg:pb-32 bg-emerald-950">
-        <div class="absolute inset-0 z-0 overflow-hidden">
-            <img src="https://images.unsplash.com/photo-1573408301185-9146fe634ad0?q=80&w=2075&auto=format&fit=crop"
-                 alt="Background"
-                 class="w-full h-full object-cover opacity-20" />
-            <div class="absolute inset-0 bg-gradient-to-b from-emerald-950/80 via-emerald-950/60 to-emerald-950"></div>
-        </div>
-
-        <div class="relative z-10 container mx-auto px-6 text-center">
-            <nav class="flex items-center justify-center gap-3 text-xs uppercase tracking-[0.2em] text-stone-400 mb-8 font-medium">
-                <a asp-controller="Home" asp-action="Index" class="hover:text-white transition-colors">Inicio</a>
-                <span>/</span>
-                <span class="text-white">Catálogo</span>
-                <span x-show="nombreCategoria" class="inline-flex items-center gap-3" style="@(categoriaActual == null ? "display: none;" : null)">
-                    <span>/</span>
-                    <span class="text-emerald-200" x-text="nombreCategoria">@categoriaActual?.Nombre</span>
-                </span>
-            </nav>
-
-            <h1 class="font-serif text-5xl md:text-7xl text-white mb-6 leading-tight">
-                <span x-show="nombreCategoria" x-text="nombreCategoria" style="@(categoriaActual == null ? "display: none;" : null)">@categoriaActual?.Nombre</span>
-                <span x-show="!nombreCategoria" style="@(categoriaActual != null ? "display: none;" : null)">Todos los <i class="font-light italic text-emerald-200">Productos</i></span>
-            </h1>
-
-            <p class="text-stone-300 text-lg md:text-xl font-light max-w-2xl mx-auto mb-12 leading-relaxed">
-                Descubre la excelencia en cada detalle. Piezas diseñadas para capturar la esencia de tus momentos más preciados.
-            </p>
-
-            <div class="max-w-xl mx-auto relative"
+<section class="catalog-header border-b border-stone-200 py-8 sm:py-12" aria-labelledby="catalog-title">
+    <div class="container mx-auto px-4 sm:px-6">
+        <nav aria-label="Ruta de navegación" class="mb-6 flex flex-wrap items-center gap-2 text-xs text-stone-500"><a asp-controller="Home" asp-action="Index" class="hover:text-emerald-800">Inicio</a><span aria-hidden="true">/</span><span>Catálogo</span><span x-show="nombreCategoria" x-cloak aria-hidden="true">/</span><span x-show="nombreCategoria" x-text="nombreCategoria" class="text-emerald-800">@categoriaActual?.Nombre</span></nav>
+        <div class="grid items-center gap-7 lg:grid-cols-2 lg:gap-16">
+            <div class="min-w-0"><p class="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-emerald-800">La colección Alda</p>
+                <h1 id="catalog-title" class="break-words font-serif text-4xl tracking-tight text-stone-900 sm:text-5xl"><span x-show="nombreCategoria" x-text="nombreCategoria" style="@(categoriaActual == null ? "display:none" : null)">@categoriaActual?.Nombre</span><span x-show="!nombreCategoria" style="@(categoriaActual != null ? "display:none" : null)">Encuentra tu <em class="font-normal text-emerald-800">próxima joya.</em></span></h1>
+                <p class="mt-4 max-w-lg text-sm leading-relaxed text-stone-600">Joyas y relojes para cada ocasión. Explora nuestras categorías y elige el rango de precio que va contigo.</p>
+            </div>
+            <div class="min-w-0">            <div class="w-full min-w-0 relative"
                  x-data="buscadorProductos()"
                  x-on:catalogo-busqueda.window="restablecer($event.detail)"
                  x-on:click.away="cerrarSugerencias()"
@@ -55,8 +35,9 @@
 
                 <form asp-action="Index" method="get" class="relative group">
 
-                    <div class="relative flex items-center">
-                        <input type="text"
+                    <div class="relative">
+                        <label for="catalogSearch" class="mb-2 block text-sm font-semibold text-stone-800">Encuentra tu próxima pieza</label>
+                        <input id="catalogSearch" type="search"
                                name="busqueda"
                                value="@busqueda"
                                x-model="consulta"
@@ -66,11 +47,11 @@
                                x-on:keydown.arrow-up.prevent="navegarArriba()"
                                x-on:keydown.enter="seleccionarActual($event)"
                                x-on:keydown.escape="cerrarSugerencias()"
-                               placeholder="Buscar anillos, collares..."
+                               placeholder="Nombre, referencia o tipo de joya…"
                                autocomplete="off"
-                               class="w-full bg-white/10 backdrop-blur-md border border-white/20 text-white placeholder-stone-400 px-6 py-4 rounded-sm focus:outline-none focus:bg-white/15 focus:border-emerald-400 transition-all font-light tracking-wide text-lg" />
+                               class="w-full rounded-xl border border-stone-300 bg-white py-4 pl-4 pr-14 text-sm text-stone-900 placeholder-stone-500 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-200" />
 
-                        <button type="submit" class="absolute right-2 p-3 text-stone-300 hover:text-white transition-colors">
+                        <button type="submit" aria-label="Buscar en el catálogo" class="absolute bottom-1 right-1 flex h-11 w-11 items-center justify-center rounded-lg text-emerald-800 hover:bg-emerald-50">
                             <i class="fas fa-search" x-show="!cargando"></i>
                             <i class="fas fa-circle-notch fa-spin" x-show="cargando" x-cloak></i>
                         </button>
@@ -81,7 +62,7 @@
                          x-transition:enter-start="opacity-0 translate-y-2"
                          x-transition:enter-end="opacity-100 translate-y-0"
                          x-cloak
-                         class="absolute left-0 right-0 top-full mt-2 bg-white rounded-sm shadow-2xl overflow-visible z-50 text-left border border-stone-200 max-h-96">
+                         class="absolute left-0 right-0 top-full mt-2 bg-white rounded-xl shadow-xl overflow-visible z-50 text-left border border-stone-200 max-h-96">
 
                         <div class="px-4 py-3 bg-stone-50 border-b border-stone-100 text-xs font-bold uppercase tracking-widest text-stone-500">
                             Resultados Sugeridos
@@ -91,14 +72,14 @@
                             <template x-for="(producto, index) in sugerencias" :key="producto.id">
                                 <li>
                                     <a :href="producto.url"
-                                       class="flex items-center gap-4 px-4 py-3 transition-colors group border-b border-stone-100 last:border-b-0"
+                                       class="flex items-center gap-2 px-3 py-3 transition-colors group border-b border-stone-100 last:border-b-0"
                                        :class="indiceActivo === index ? 'bg-stone-100' : 'hover:bg-stone-50'"
                                        x-on:mouseenter="indiceActivo = index"
                                        x-on:click="seleccionarProducto(producto)">
 
-                                        <div class="w-12 h-12 bg-stone-100 flex-shrink-0 flex items-center justify-center overflow-hidden">
+                                        <div class="product-media w-12 h-12 bg-white flex-shrink-0 flex items-center justify-center overflow-hidden">
                                             <template x-if="producto.tieneImagen">
-                                                <img :src="producto.imagen" class="w-full h-full object-cover mix-blend-multiply" :alt="producto.nombre">
+                                                <img :src="producto.imagen" class="w-full h-full object-contain" :alt="producto.nombre">
                                             </template>
                                             <template x-if="!producto.tieneImagen">
                                                 <i class="fas fa-gem text-stone-300"></i>
@@ -107,45 +88,38 @@
 
                                         <div class="flex-1 min-w-0">
                                             <div class="text-stone-900 font-serif truncate group-hover:text-emerald-900 transition-colores" x-text="producto.nombre"></div>
-                                            <div class="text-xs text-stone-500 uppercase tracking-wide" x-text="producto.categoria"></div>
+                                            <div class="text-xs text-stone-500 break-words" x-text="producto.categoria"></div>
                                         </div>
 
-                                        <div class="font-serif text-emerald-800 font-medium whitespace-nowrap" x-text="producto.precioFormateado"></div>
+                                        <div class="text-xs font-semibold text-emerald-800 whitespace-nowrap" x-text="producto.precioFormateado"></div>
                                     </a>
                                 </li>
                             </template>
                         </ul>
 
-                        <a href="#" @@click.prevent="$el.closest('form').submit()" class="block w-full text-center py-3 bg-stone-50 text-xs uppercase tracking-widest font-bold text-stone-600 hover:text-emerald-900 border-t border-stone-100 transition-colors">
+                        <a href="#" @@click.prevent="$el.closest('form').submit()" class="block w-full rounded-b-xl text-center py-3 bg-stone-50 text-xs uppercase tracking-widest font-bold text-stone-600 hover:text-emerald-900 border-t border-stone-100 transition-colors">
                             Ver todos los resultados
                         </a>
                     </div>
                 </form>
 
-                @if (!string.IsNullOrWhiteSpace(busqueda))
-                {
-                    <div class="absolute -bottom-12 left-0 right-0 flex justify-center">
-                        <div class="inline-flex items-center gap-3 px-4 py-2 bg-white/10 rounded-full backdrop-blur-sm border border-white/10">
-                            <span class="text-stone-300 text-sm">Resultados para: <span class="text-white font-serif italic">"@busqueda"</span></span>
-                            <a asp-action="Index" asp-route-categoria="@categoriaActual?.UrlSlug" class="text-stone-400 hover:text-white transition-colors">
-                                <i class="fas fa-times"></i>
-                            </a>
-                        </div>
-                    </div>
-                }
             </div>
+<p class="mt-3 text-xs leading-relaxed text-stone-500">Prueba, por ejemplo, «anillo 18k». El buscador explora todo el catálogo.</p></div>
         </div>
-    </section>
+    </div>
+</section>
+    <div class="container mx-auto px-4 py-6 sm:px-6 sm:py-10">
+        <div class="grid grid-cols-1 items-start gap-6 lg:grid-cols-4 lg:gap-7 xl:gap-10">
 
-    <div class="container mx-auto px-6 py-16">
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-12">
-
-            <aside class="lg:col-span-1 space-y-12">
-
+            <aside class="min-w-0 lg:sticky lg:top-28">
+                <details data-catalog-filters open :open="filtrosAbiertos || escritorio" x-on:toggle="if (!escritorio) filtrosAbiertos = $el.open" class="rounded-2xl border border-stone-200 bg-white">
+                    <summary class="flex min-h-14 cursor-pointer list-none items-center justify-between gap-3 p-4 text-sm font-semibold text-stone-900 lg:hidden"><span><i class="fas fa-sliders mr-2 text-emerald-800" aria-hidden="true"></i>Filtros y categorías</span><i class="fas fa-chevron-down text-xs" aria-hidden="true"></i></summary>
+                    <div class="space-y-6 p-5 lg:max-h-[calc(100dvh-9rem)] lg:overflow-y-auto">
+                        <div class="hidden items-center justify-between gap-2 lg:flex"><h2 class="text-sm font-semibold text-stone-900">Afina tu selección</h2><i class="fas fa-sliders text-emerald-800" aria-hidden="true"></i></div>
                 <form method="get" action="@(Context.Request.PathBase + AldaJoyeros.Helpers.PublicUrls.CatalogPath(categoriaActual?.UrlSlug))"
-                      x-on:submit.prevent="aplicarPrecio()" class="border-b border-stone-200 pb-8" aria-labelledby="tituloFiltroPrecio">
+                      x-on:submit.prevent="aplicarPrecio()" class="border-b border-stone-200 pb-6" aria-labelledby="tituloFiltroPrecio">
                     <input type="hidden" name="busqueda" :value="busquedaActual" value="@busqueda" />
-                    <h2 id="tituloFiltroPrecio" class="font-serif text-2xl text-stone-900 mb-6">Precio</h2>
+                    <h2 id="tituloFiltroPrecio" class="font-serif text-xl text-stone-900 mb-3">Precio</h2>
                     <div class="catalog-price-slider relative mx-3 h-10 text-emerald-800" x-on:pointerdown="elegirPrecioEnBarra($event)">
                         <div class="catalog-price-track pointer-events-none absolute top-1/2 h-1 -translate-y-1/2 rounded-full bg-stone-200"></div>
                         <div class="catalog-price-selection pointer-events-none absolute top-1/2 h-1 -translate-y-1/2 rounded-full bg-emerald-800"
@@ -167,77 +141,50 @@
                         <label for="precioMin" class="min-w-0 text-xs text-stone-600">Desde (€)
                             <input id="precioMin" name="precioMin" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0"
                                    value="@precioMin" x-model="precioMinEntrada" x-on:change="aplicarPrecio()"
-                                   class="mt-2 block w-full min-w-0 rounded-sm border border-stone-300 bg-white px-3 py-3 text-sm text-stone-900 focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700" />
+                                   class="mt-2 block w-full min-w-0 rounded-lg border border-stone-300 bg-white px-3 py-3 text-sm text-stone-900 focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700" />
                         </label>
                         <label for="precioMax" class="min-w-0 text-xs text-stone-600">Hasta (€)
                             <input id="precioMax" name="precioMax" type="number" min="0" step="0.01" inputmode="decimal" :placeholder="precioTope"
                                    value="@precioMax" x-model="precioMaxEntrada" x-on:change="aplicarPrecio()"
-                                   class="mt-2 block w-full min-w-0 rounded-sm border border-stone-300 bg-white px-3 py-3 text-sm text-stone-900 focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700" />
+                                   class="mt-2 block w-full min-w-0 rounded-lg border border-stone-300 bg-white px-3 py-3 text-sm text-stone-900 focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700" />
                         </label>
                     </div>
-                    <p class="mt-3 text-xs leading-relaxed text-stone-500">La barra da más espacio a tu rango. Sus extremos siempre permiten volver a 0 € y al precio máximo. En artículos con tallas se usa el precio «Desde».</p>
+                    <p class="mt-3 text-xs leading-relaxed text-stone-500">Ajusta los extremos o escribe el importe. En artículos con tallas se usa el precio «Desde».</p>
                     <p x-show="errorPrecio" x-text="errorPrecio" x-cloak role="alert" class="mt-3 text-sm text-red-700"></p>
                     <div x-show="precioMinActual !== '' || precioMaxActual !== ''" x-cloak class="mt-4 space-y-2">
                         <p x-text="resumenPrecio" aria-live="polite" class="text-sm font-medium text-emerald-900"></p>
                         <button type="button" x-on:click="quitarPrecio()" class="text-sm text-stone-600 underline hover:text-emerald-900">Quitar filtro de precio</button>
                     </div>
                 </form>
-
-                <div class="hidden lg:block">
-                    <h3 class="font-serif text-2xl text-stone-900 mb-6">Categorías</h3>
-                    <ul class="space-y-4" id="listaCategorias">
-                        <li>
-                            <button type="button" 
-                                    @@click="filtrarCategoria(null)" :aria-pressed="categoriaActual === null"
-                                    class="categoria-link group w-full text-left flex items-center justify-between text-sm uppercase tracking-widest transition-all duration-300"
-                                    :class="categoriaActual === null ? 'text-emerald-900 font-bold pl-2 border-l-2 border-emerald-900' : 'text-stone-500 hover:text-stone-900 hover:pl-2 hover:border-l-2 hover:border-stone-300 border-l-2 border-transparent'">
-                                <span>Todas</span>
-                                <span class="text-xs text-stone-300 group-hover:text-emerald-900">(@(ViewBag.TotalCatalogProducts ?? 0))</span>
-                            </button>
-                        </li>
-                        @if (categorias != null)
-                        {
-                            <partial name="_CategoriasCatalogo" model="categorias" />
-                        }
-                    </ul>
-
-                    <div class="mt-12 p-8 bg-stone-100 text-center">
-                        <i class="fas fa-shipping-fast text-2xl text-stone-400 mb-4"></i>
-                        <h4 class="font-serif text-lg text-stone-900 mb-2">@(ViewBag.EcommerceEnabled == true ? "Envío Gratuito" : "Visítanos en Illescas")</h4>
-                        <p class="text-xs text-stone-500 leading-relaxed mb-4">@(ViewBag.EcommerceEnabled == true ? "Disfruta de envío asegurado sin coste en pedidos superiores a 50€." : "Consulta disponibilidad y recibe asesoramiento personalizado en nuestra tienda.")</p>
+                        <div>
+                            <h2 class="mb-3 font-serif text-xl text-stone-900">Categorías</h2>
+                            <ul class="space-y-2" id="listaCategorias">
+                                <li><button type="button" @@click="filtrarCategoria(null)" :aria-pressed="categoriaActual === null" class="categoria-link flex min-h-11 w-full items-center justify-between gap-3 rounded-lg px-3 py-2 text-left text-sm" :class="categoriaActual === null ? 'bg-emerald-50 text-emerald-900 font-semibold' : 'text-stone-600 hover:bg-stone-100'"><span>Todo el catálogo</span><span class="text-xs">@(ViewBag.TotalCatalogProducts ?? 0)</span></button></li>
+                                @if (categorias != null) { <partial name="_CategoriasCatalogo" model="categorias" /> }
+                            </ul>
+                        </div>
+                        <div class="rounded-xl bg-stone-50 p-4"><p class="text-sm font-semibold text-stone-900"><i class="fas fa-comments mr-2 text-emerald-800" aria-hidden="true"></i>¿Te ayudamos a elegir?</p><p class="mt-2 text-xs leading-relaxed text-stone-600">Te esperamos en nuestra tienda de Illescas para asesorarte.</p><a href="tel:+34925541227" class="mt-3 inline-block text-sm font-semibold text-emerald-800 underline underline-offset-4">925 54 12 27</a></div>
                     </div>
-                </div>
-
-                <div x-data="{ open: false }" x-on:catalogo-categoria-seleccionada.window="open = false" class="lg:hidden">
-                    <button @@click="open = !open" class="w-full flex items-center justify-between px-6 py-4 bg-white border border-stone-200 uppercase tracking-widest text-xs font-bold">
-                        <span>Filtrar por categoría</span>
-                        <i class="fas fa-chevron-down transition-transform" :class="open ? 'rotate-180' : ''"></i>
-                    </button>
-                    <div x-show="open" class="bg-white border-x border-b border-stone-200 p-6 space-y-4 max-h-96 overflow-y-auto" x-collapse>
-                        <button type="button" @@click="filtrarCategoria(null); open = false" class="block text-sm text-stone-600 w-full text-left hover:text-emerald-900">Todas las joyas</button>
-                        @if (categorias != null)
-                        {
-                            <ul class="space-y-2"><partial name="_CategoriasCatalogo" model="categorias" /></ul>
-                        }
-                    </div>
-                </div>
+                </details>
             </aside>
 
-            <div class="lg:col-span-3">
-                <!-- Loading overlay -->
-                <div x-show="cargando" class="fixed inset-0 bg-white/80 z-40 flex items-center justify-center" x-cloak>
-                    <div class="text-center">
-                        <i class="fas fa-circle-notch fa-spin text-4xl text-emerald-900 mb-4"></i>
-                        <p class="text-stone-600 font-serif">Cargando productos...</p>
-                    </div>
+            <div class="min-w-0 lg:col-span-3">
+                <p x-show="errorPrecio && !escritorio && !filtrosAbiertos" x-text="errorPrecio" x-cloak role="alert" class="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700"></p>
+                <div x-show="categoriaActual || busquedaActual || precioMinActual !== '' || precioMaxActual !== ''" x-cloak class="mb-4 flex flex-wrap items-center gap-2" aria-label="Filtros activos">
+                    <span class="text-xs text-stone-500">Tu selección:</span>
+                    <button type="button" x-show="categoriaActual" @@click="filtrarCategoria(null)" aria-label="Quitar categoría" class="inline-flex max-w-full items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-900"><span class="break-words" x-text="nombreCategoria"></span><i class="fas fa-xmark shrink-0" aria-hidden="true"></i></button>
+                    <span x-show="busquedaActual" class="max-w-full break-words rounded-full border border-stone-200 bg-white px-3 py-2 text-xs text-stone-700" x-text="'Búsqueda: ' + busquedaActual"></span>
+                    <button type="button" x-show="precioMinActual !== '' || precioMaxActual !== ''" @@click="quitarPrecio()" aria-label="Quitar rango de precio" class="inline-flex items-center gap-2 rounded-full border border-stone-200 bg-white px-3 py-2 text-xs text-stone-700"><span x-text="resumenPrecio"></span><i class="fas fa-xmark" aria-hidden="true"></i></button>
+                    <button type="button" @@click="limpiarFiltros()" class="px-2 py-2 text-xs font-semibold text-stone-600 underline underline-offset-4">Limpiar filtros</button>
                 </div>
+                <div class="mb-2 min-h-6"><p x-show="cargando" x-cloak role="status" class="flex items-center gap-2 text-sm text-emerald-800"><i class="fas fa-circle-notch fa-spin" aria-hidden="true"></i>Actualizando productos…</p></div>
 
                 <div class="mb-4">
                     <partial name="_AvisoPrecios" />
                 </div>
 
                 <!-- Contenedor de productos (se actualiza con AJAX) -->
-                <div id="productosContainer" x-ref="productosContainer">
+                <div id="productosContainer" x-ref="productosContainer" :aria-busy="cargando" class="scroll-mt-28">
                     @await Html.PartialAsync("_ProductosGrid", Model)
                 </div>
             </div>
@@ -248,6 +195,7 @@
 </div>
 
 @section Styles {
+    <link rel="stylesheet" href="~/css/catalog.css" asp-append-version="true" />
     <style>
         /* Both native ranges share one rail; only their thumbs receive pointer input. */
         .catalog-price-handle {
@@ -395,6 +343,8 @@
                 // Estado
                 viewMode: localStorage.getItem('viewMode') || 'grid',
                 cargando: false,
+                filtrosAbiertos: false,
+                escritorio: window.matchMedia('(min-width: 1024px)').matches,
                 categoriaActual: @(categoriaSeleccionada.HasValue ? categoriaSeleccionada.Value.ToString() : "null"),
                 categorias: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(categorias?.Select(c => new { id = c.Id, nombre = c.Nombre, slug = c.UrlSlug, url = (Context.Request.PathBase + AldaJoyeros.Helpers.PublicUrls.CatalogPath(c.UrlSlug)).ToString() }) ?? Enumerable.Empty<object>())),
                 get nombreCategoria() {
@@ -553,6 +503,7 @@
                 init() {
                     // Guardar referencia global para los botones del partial
                     window.productosApp = this;
+                    window.matchMedia('(min-width: 1024px)').addEventListener('change', event => { this.escritorio = event.matches; });
                     this.ajustarEscalaPrecio(true);
                     
                     // Watch para guardar preferencia de vista
@@ -580,6 +531,7 @@
                 // Filtrar por categoría
                 async filtrarCategoria(categoriaId) {
                     this.categoriaActual = categoriaId;
+                    if (!this.escritorio) this.filtrosAbiertos = false;
                     window.dispatchEvent(new CustomEvent('catalogo-categoria-seleccionada'));
                     this.busquedaActual = '';
                     window.dispatchEvent(new CustomEvent('catalogo-busqueda', { detail: '' }));

@@ -1,206 +1,140 @@
 @model IEnumerable<AldaJoyeros.DTOs.ProductoDto>
-
 @{
     ViewData["Title"] = "Inicio";
+    var destacados = Model?.Take(8).ToArray() ?? Array.Empty<AldaJoyeros.DTOs.ProductoDto>();
+    var tiposPrincipales = new[] { "Anillos", "Pendientes", "Pulseras", "Collares", "Relojes", "Smartwatches" };
+    var categorias = (ViewBag.Categorias as IEnumerable<AldaJoyeros.DTOs.CategoriaDto> ?? Array.Empty<AldaJoyeros.DTOs.CategoriaDto>())
+        .GroupBy(c => c.Nombre.Split(" · ")[0])
+        .OrderBy(g => Array.IndexOf(tiposPrincipales, g.Key) is var i && i >= 0 ? i : tiposPrincipales.Length)
+        .ThenBy(g => g.Key).Take(6).Select(g => g.OrderBy(c => c.Nombre.Contains(" · ")).First()).ToArray();
+    var ecommerce = ViewBag.EcommerceEnabled == true;
 }
 
-<div x-data="carritoNotificacion()">
+<div class="home-page" x-data="carritoNotificacion()">
+    @if (ecommerce) { <partial name="_CarritoNotificacion" /> }
 
-@if (ViewBag.EcommerceEnabled == true)
-{
-    <partial name="_CarritoNotificacion" />
-}
-
-<!-- Hero Section -->
-    <section class="relative h-screen w-full overflow-hidden">
-        <!-- Background Image with Overlay -->
-        <div class="absolute inset-0">
-            <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70 z-10"></div>
-            <img src="https://images.unsplash.com/photo-1573408301185-9146fe634ad0?q=80&w=2400&auto=format&fit=crop"
-                 class="w-full h-full object-cover scale-105 animate-float"
-                 alt="" fetchpriority="high" decoding="async">
-        </div>
-
-        <!-- Hero Content -->
-        <div class="relative z-20 container mx-auto h-full flex flex-col justify-center items-center text-center text-white px-6">
-            <span class="text-emerald-300 text-xs md:text-sm tracking-[0.3em] uppercase mb-4 opacity-0 animate-fade-in-up"
-                  style="animation-delay: 0.2s; animation-fill-mode: forwards;">
-                <i class="fas fa-gem mr-2"></i>Nuestra colección
-            </span>
-
-            <h1 class="font-serif text-5xl md:text-7xl lg:text-8xl font-bold mb-6 opacity-0 animate-fade-in-up luxury-text-shadow"
-                style="animation-delay: 0.4s; animation-fill-mode: forwards;">
-                Alda Joyeros 1962
-            </h1>
-
-            <p class="text-lg md:text-xl text-gray-200 max-w-2xl mx-auto mb-10 font-light opacity-0 animate-fade-in-up"
-               style="animation-delay: 0.6s; animation-fill-mode: forwards;">
-                Elegancia atemporal para tus momentos más especiales.<br />
-                Descubre la excelencia en cada pieza.
-            </p>
-
-            <div class="flex flex-wrap justify-center gap-4 opacity-0 animate-fade-in-up"
-                 style="animation-delay: 0.8s; animation-fill-mode: forwards;">
-                <a asp-controller="Productos" asp-action="Index" asp-route-categoria=""
-                   class="inline-flex items-center px-8 py-4 bg-white/10 backdrop-blur-md border border-white/30 text-white text-sm uppercase tracking-[0.2em] hover:bg-white hover:text-black transition-all duration-500 rounded-sm">
-                    <i class="fas fa-shopping-bag mr-3"></i>
-                    Explorar Catálogo
-                </a>
-
+    <section class="home-hero" aria-labelledby="home-title">
+        <div class="container mx-auto grid lg:grid-cols-2">
+            <div class="flex flex-col justify-center px-6 py-12 sm:px-10 sm:py-16 lg:py-24 lg:pr-16">
+                <p class="mb-6 flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.2em] text-emerald-800">
+                    <span class="h-px w-8 bg-emerald-700" aria-hidden="true"></span>Illescas · Desde 1962
+                </p>
+                <h1 id="home-title" class="max-w-xl font-serif text-5xl leading-[1.08] tracking-tight text-stone-900 sm:text-6xl xl:text-7xl">
+                    Hay momentos<br />que merecen<br /><em class="font-normal text-emerald-800">una joya.</em>
+                </h1>
+                <p class="mt-6 max-w-md text-base leading-relaxed text-stone-600 sm:text-lg">Joyas y relojes para acompañarte cada día y celebrar lo que de verdad importa. Encuentra tu próxima pieza en Alda Joyeros.</p>
+                <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+                    <a asp-controller="Productos" asp-action="Index" asp-route-categoria="" class="inline-flex items-center justify-center gap-4 rounded-lg bg-emerald-800 px-7 py-4 text-sm font-semibold text-white transition-colors hover:bg-emerald-900">
+                        Descubrir el catálogo <i class="fas fa-arrow-right text-xs" aria-hidden="true"></i>
+                    </a>
+                    <a href="#visitanos" class="inline-flex items-center justify-center gap-3 rounded-lg border border-stone-300 px-6 py-4 text-sm font-semibold text-stone-800 transition-colors hover:bg-white">Conoce nuestra tienda</a>
+                </div>
+                <p class="mt-8 text-xs leading-relaxed text-stone-500"><i class="fas fa-location-dot mr-2 text-emerald-700" aria-hidden="true"></i>Tu joyería en Illescas, Toledo.</p>
             </div>
-        </div>
-
-        <!-- Scroll Indicator -->
-        <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 z-20 animate-bounce">
-            <i class="fas fa-chevron-down text-white text-2xl opacity-50"></i>
-        </div>
-    </section>
-
-    <!-- Features Section -->
-    <section class="py-20 bg-stone-50">
-        <div class="container mx-auto px-6">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- Feature 1 -->
-                <div class="text-center p-8 bg-white rounded-lg shadow-sm hover:shadow-xl transition-shadow duration-300">
-                    <div class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i class="fas fa-shipping-fast text-2xl text-emerald-600"></i>
-                    </div>
-                    <h3 class="font-serif text-xl font-bold text-gray-900 mb-2">@(ViewBag.EcommerceEnabled == true ? "Envío Gratis" : "Visítanos")</h3>
-                    <p class="text-gray-600 text-sm">@(ViewBag.EcommerceEnabled == true ? "En compras superiores a 50€. Entrega en 3-5 días laborables." : "Descubre nuestras piezas y recibe asesoramiento en nuestra tienda de Illescas.")</p>
-                </div>
-
-                <!-- Feature 2 -->
-                <div class="text-center p-8 bg-white rounded-lg shadow-sm hover:shadow-xl transition-shadow duration-300">
-                    <div class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i class="fas fa-certificate text-2xl text-emerald-600"></i>
-                    </div>
-                    <h3 class="font-serif text-xl font-bold text-gray-900 mb-2">Garantía de Autenticidad</h3>
-                    <p class="text-gray-600 text-sm">Cada pieza incluye certificado de autenticidad y garantía de por vida.</p>
-                </div>
-
-                <!-- Feature 3 -->
-                <div class="text-center p-8 bg-white rounded-lg shadow-sm hover:shadow-xl transition-shadow duration-300">
-                    <div class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i class="fas fa-headset text-2xl text-emerald-600"></i>
-                    </div>
-                    <h3 class="font-serif text-xl font-bold text-gray-900 mb-2">Atención Personalizada</h3>
-                    <p class="text-gray-600 text-sm">Asesoramiento experto para ayudarte a encontrar la joya perfecta.</p>
+            <div class="home-hero-visual relative min-w-0 overflow-hidden">
+                <img src="https://images.unsplash.com/photo-1573408301185-9146fe634ad0?q=80&amp;w=1400&amp;auto=format&amp;fit=crop"
+                     alt="Detalles de una colección de joyas" width="1000" height="1100" fetchpriority="high" decoding="async" class="h-full w-full object-cover" />
+                <div class="home-hero-shade absolute inset-0" aria-hidden="true"></div>
+                <div class="absolute inset-x-0 bottom-0 p-6 sm:p-10">
+                    <p class="home-photo-caption text-xs uppercase tracking-[0.25em]">Alda Joyeros 1962</p>
+                    <p class="home-photo-caption mt-3 max-w-sm font-serif text-3xl sm:text-4xl">Pequeños detalles.<br />Grandes recuerdos.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Featured Products Section -->
-    <section id="productos-destacados" class="py-20 bg-white">
-        <div class="container mx-auto px-6">
-            <!-- Section Header -->
-            <div class="text-center mb-16">
-                <span class="text-emerald-600 text-xs uppercase tracking-[0.3em] mb-2 block">Selección Exclusiva</span>
-                <h2 class="font-serif text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-                    Productos Destacados
-                </h2>
-                <div class="w-20 h-px bg-emerald-500 mx-auto"></div>
-            </div>
-
-            @if (Model != null && Model.Any())
+    <section class="border-y border-stone-200 bg-white" aria-label="La experiencia Alda Joyeros">
+        <div class="container mx-auto grid gap-6 px-6 py-7 sm:grid-cols-3 sm:gap-8">
+            @foreach (var item in new[] {
+                (Icon: "fa-gem", Title: "Una historia desde 1962", Text: "La joyería de siempre, cerca de ti."),
+                (Icon: "fa-comments", Title: "Te ayudamos a elegir", Text: "Atención personal en nuestra tienda."),
+                (Icon: ecommerce ? "fa-lock" : "fa-store", Title: ecommerce ? "Compra a tu manera" : "Descubre y ven a vernos", Text: ecommerce ? "Online o en nuestra tienda de Illescas." : "Explora el catálogo y consulta tus favoritos.") })
             {
-                <!-- Products Grid -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                    @foreach (var producto in Model.Take(8))
+                <div class="flex items-start gap-4">
+                    <i class="fas @item.Icon mt-1 text-lg text-emerald-800" aria-hidden="true"></i>
+                    <div><h2 class="text-sm font-semibold text-stone-900">@item.Title</h2><p class="mt-1 text-xs leading-relaxed text-stone-600">@item.Text</p></div>
+                </div>
+            }
+        </div>
+    </section>
+
+    @if (categorias.Length > 0)
+    {
+        <section class="bg-stone-50 py-12 sm:py-16" aria-labelledby="home-categories-title">
+            <div class="container mx-auto px-6">
+                <div class="mb-7 flex flex-wrap items-end justify-between gap-4">
+                    <div><p class="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-emerald-800">Encuentra tu estilo</p><h2 id="home-categories-title" class="font-serif text-3xl text-stone-900 sm:text-4xl">¿Qué estás buscando?</h2></div>
+                    <a asp-controller="Productos" asp-action="Index" asp-route-categoria="" class="text-sm font-semibold text-emerald-800 underline underline-offset-4">Ver todas las categorías</a>
+                </div>
+                <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                    @foreach (var categoria in categorias)
                     {
-                        <div class="group">
-                            <!-- Product Image -->
-                            <div class="relative aspect-[3/4] overflow-hidden bg-stone-50 mb-4 rounded-lg">
-                                @if (producto.TieneImagenes)
-                                {
-                                    <img src="@producto.ImagenPrincipal"
-                                         alt="@producto.CategoriaNombre, referencia @producto.Nombre" decoding="async" loading="lazy"
-                                         class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                                         onerror="this.onerror=null; this.src='/images/placeholder-product.jpg';" />
-                                }
-                                else
-                                {
-                                    <div class="w-full h-full flex items-center justify-center">
-                                        <i class="fas fa-gem text-6xl text-emerald-300 opacity-30"></i>
-                                    </div>
-                                }
-
-                                <!-- Category Badge -->
-                                @if (!string.IsNullOrEmpty(producto.CategoriaNombre))
-                                {
-                                    <div class="absolute top-3 left-3">
-                                        <span class="bg-white/90 backdrop-blur-sm text-gray-900 px-3 py-1 rounded-full text-xs font-semibold">
-                                            @producto.CategoriaNombre
-                                        </span>
-                                    </div>
-                                }
-
-                                <!-- Quick Add Button -->
-                                <div class="absolute inset-x-0 bottom-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-                                    @if (ViewBag.EcommerceEnabled == true)
-                                    {
-                                        @if (producto.TieneTallas)
-                                        { <a href="@AldaJoyeros.Helpers.PublicUrls.ProductLink(Context.Request, producto)" data-product-id="@producto.Id" class="inline-flex w-full items-center justify-center rounded-lg bg-emerald-900 px-4 py-3 text-xs font-semibold uppercase tracking-widest text-white hover:bg-emerald-800">Elegir talla</a> }
-                                        else { <button type="button"
-                                                @@click="agregarAlCarrito(@producto.Id, '@producto.Nombre.Replace("'", "\\'").Replace("\"", "\\\"")', $event)"
-                                                class="w-full bg-emerald-600 text-white py-3 text-xs uppercase tracking-widest hover:bg-emerald-700 transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                                                :disabled="cargandoProducto === @producto.Id">
-                                            <span x-show="cargandoProducto !== @producto.Id">
-                                                <i class="fas fa-cart-plus mr-2"></i>Añadir al Carrito
-                                            </span>
-                                            <span x-show="cargandoProducto === @producto.Id" class="flex items-center gap-2">
-                                                <i class="fas fa-circle-notch fa-spin"></i> Añadiendo...
-                                            </span>
-                                        </button> }
-                                    }
-                                </div>
-                            </div>
-
-                            <!-- Product Info -->
-                            <div class="text-center">
-                                <h3 class="font-sans text-sm uppercase tracking-wider text-gray-900 mb-2 group-hover:text-emerald-600 transition-colors">
-                                    <a href="@AldaJoyeros.Helpers.PublicUrls.ProductLink(Context.Request, producto)" data-product-id="@producto.Id" class="hover:underline">
-                                        @producto.Nombre
-                                    </a>
-                                </h3>
-                                <p class="text-emerald-600 font-serif text-xl font-semibold">
-                                    @(producto.PrecioDesde ? "Desde " : "")@producto.Precio.ToString("C")
-                                </p>
-
-                                <!-- View Details Link -->
-                                <a href="@AldaJoyeros.Helpers.PublicUrls.ProductLink(Context.Request, producto)" data-product-id="@producto.Id"
-                                   class="inline-block mt-3 text-xs uppercase tracking-widest text-gray-600 hover:text-emerald-600 transition-colors border-b border-transparent hover:border-emerald-600 pb-1">
-                                    Ver Detalles
-                                </a>
-                            </div>
-                        </div>
+                        <a href="@(Context.Request.PathBase + AldaJoyeros.Helpers.PublicUrls.CatalogPath(categoria.UrlSlug))" class="group flex min-w-0 items-center justify-between gap-4 rounded-xl border border-stone-200 bg-white p-5 text-stone-900 transition-colors hover:border-emerald-700 hover:bg-emerald-50">
+                            <span class="min-w-0 break-words font-serif text-xl">@categoria.Nombre</span><i class="fas fa-arrow-right shrink-0 text-sm text-emerald-800" aria-hidden="true"></i>
+                        </a>
                     }
                 </div>
+            </div>
+        </section>
+    }
 
-                <!-- View All Button -->
-                <div class="text-center mt-16">
-                    <a asp-controller="Productos" asp-action="Index" asp-route-categoria=""
-                       class="inline-flex items-center px-8 py-4 bg-dark-900 text-white text-sm uppercase tracking-[0.2em] hover:bg-emerald-600 hover:text-white transition-all duration-300 rounded-sm">
-                        <i class="fas fa-th mr-3"></i>
-                        Ver Todo el Catálogo
-                        <i class="fas fa-arrow-right ml-3"></i>
-                    </a>
+    <section id="productos-destacados" class="scroll-mt-24 bg-white py-14 sm:py-20" aria-labelledby="home-featured-title">
+        <div class="container mx-auto px-6">
+            <div class="mb-9 flex flex-wrap items-end justify-between gap-5">
+                <div><p class="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-emerald-800">Nuestra selección</p><h2 id="home-featured-title" class="font-serif text-3xl text-stone-900 sm:text-5xl">Piezas que enamoran</h2><p class="mt-4 max-w-xl text-sm leading-relaxed text-stone-600">Una selección de nuestra tienda para inspirarte. Descubre sus detalles y encuentra la que va contigo.</p></div>
+                <a asp-controller="Productos" asp-action="Index" asp-route-categoria="" class="inline-flex items-center gap-3 text-sm font-semibold text-emerald-800">Explorar todo <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+            </div>
+            @if (destacados.Length > 0)
+            {
+                <div class="grid grid-cols-2 gap-x-4 gap-y-8 sm:gap-x-6 lg:grid-cols-4">
+                    @foreach (var producto in destacados)
+                    {
+                        var link = AldaJoyeros.Helpers.PublicUrls.ProductLink(Context.Request, producto);
+                        <article class="group flex min-w-0 flex-col" data-home-product>
+                            <a href="@link" data-product-id="@producto.Id" class="product-media relative block aspect-square overflow-hidden rounded-xl border border-stone-200 bg-white p-3 sm:p-6" aria-label="Ver @producto.CategoriaNombre, referencia @producto.Nombre">
+                                @if (producto.TieneImagenes)
+                                {
+                                    <img src="@producto.ImagenPrincipal" alt="@producto.CategoriaNombre, referencia @producto.Nombre" loading="lazy" decoding="async" width="400" height="400" class="h-full w-full object-contain transition-transform duration-500 motion-safe:group-hover:scale-105" onerror="this.hidden=true;this.nextElementSibling.hidden=false;" />
+                                    <span hidden class="absolute inset-0 items-center justify-center p-6 text-center text-sm text-stone-500">Imagen no disponible</span>
+                                }
+                                else
+                                { <span class="flex h-full items-center justify-center"><i class="fas fa-gem text-4xl text-stone-300" aria-hidden="true"></i></span> }
+                            </a>
+                            <div class="flex flex-1 flex-col pt-4">
+                                <p class="mb-2 break-words text-xs text-stone-500">@producto.CategoriaNombre</p>
+                                <h3 class="break-words text-sm font-semibold text-stone-900"><a href="@link" data-product-id="@producto.Id" class="hover:underline">@producto.Nombre</a></h3>
+                                <p class="mt-2 font-serif text-xl text-emerald-800">@(producto.PrecioDesde ? "Desde " : "")@producto.Precio.ToString("C")</p>
+                                <div class="mt-auto pt-4">
+                                    @if (ecommerce && !producto.TieneTallas)
+                                    {
+                                        <button type="button" data-product-name="@producto.Nombre" @@click="agregarAlCarrito(@producto.Id, $el.dataset.productName, $event)" :disabled="cargandoProducto === @producto.Id" class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg border border-emerald-800 px-3 py-3 text-xs font-semibold text-emerald-800 transition-colors hover:bg-emerald-50 disabled:opacity-50">
+                                            <i class="fas fa-plus" aria-hidden="true"></i><span x-text="cargandoProducto === @producto.Id ? 'Añadiendo…' : 'Añadir al carrito'">Añadir al carrito</span>
+                                        </button>
+                                    }
+                                    else
+                                    { <a href="@link" data-product-id="@producto.Id" class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg border border-stone-300 px-3 py-3 text-xs font-semibold text-stone-800 transition-colors hover:border-emerald-700 hover:text-emerald-800">@(ecommerce && producto.TieneTallas ? "Elegir talla" : "Descubrir pieza")<i class="fas fa-arrow-right text-xs" aria-hidden="true"></i></a> }
+                                </div>
+                            </div>
+                        </article>
+                    }
                 </div>
             }
             else
             {
-                <!-- Empty State -->
-                <div class="text-center py-20">
-                    <i class="fas fa-gem text-6xl text-gray-300 mb-6"></i>
-                    <h3 class="font-serif text-2xl text-gray-700 mb-2">Próximamente</h3>
-                    <p class="text-gray-500">Estamos preparando nuestra colección exclusiva para ti.</p>
-                </div>
+                <div class="rounded-2xl border border-stone-200 bg-stone-50 px-6 py-12 text-center"><i class="fas fa-gem mb-4 text-3xl text-emerald-800" aria-hidden="true"></i><h3 class="font-serif text-2xl text-stone-900">Tu próxima joya te espera</h3><p class="mt-3 text-sm text-stone-600">Explora nuestro catálogo y descubre todas las piezas de la tienda.</p><a asp-controller="Productos" asp-action="Index" asp-route-categoria="" class="mt-5 inline-flex rounded-lg bg-emerald-800 px-6 py-3 text-sm font-semibold text-white">Ir al catálogo</a></div>
             }
         </div>
     </section>
 
+    <section class="home-story py-12 sm:py-16" aria-labelledby="home-story-title">
+        <div class="container mx-auto grid items-center gap-8 px-6 md:grid-cols-3 md:gap-12">
+            <div><p class="text-xs uppercase tracking-[0.2em] text-emerald-800">Alda Joyeros</p><p class="mt-2 font-serif text-6xl text-emerald-900">1962<span class="mt-2 block font-sans text-xs uppercase tracking-[0.2em] text-stone-600">El comienzo de nuestra historia</span></p></div>
+            <div class="md:col-span-2"><h2 id="home-story-title" class="font-serif text-3xl text-stone-900 sm:text-4xl">La confianza de siempre.<br />La ilusión de cada ocasión.</h2><p class="mt-4 max-w-2xl text-sm leading-relaxed text-stone-600">Llevamos más de seis décadas formando parte de los momentos de nuestros clientes. Ven a nuestra tienda de Illescas: te ayudamos a elegir con calma, de cerca y a tu manera.</p><a href="#visitanos" class="mt-5 inline-flex items-center gap-3 text-sm font-semibold text-emerald-800 underline underline-offset-4">Te esperamos en la tienda <i class="fas fa-arrow-down text-xs" aria-hidden="true"></i></a></div>
+        </div>
+    </section>
+
     <!-- Store Location Section -->
-    <section class="py-16 sm:py-20 lg:py-28 bg-white" aria-labelledby="store-location-title">
+    <section id="visitanos" class="scroll-mt-24 py-16 sm:py-20 lg:py-28 bg-white" aria-labelledby="store-location-title">
         <div class="container mx-auto px-6">
             <!-- Section Header -->
             <div class="text-center mb-16">
@@ -217,7 +151,7 @@
                 </p>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-5 gap-0 shadow-2xl overflow-hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-0 rounded-2xl border border-stone-200 overflow-hidden">
                 <!-- Map -->
                 <div class="relative h-72 min-w-0 overflow-hidden bg-gray-100 sm:h-96 lg:col-span-3 lg:h-auto lg:min-h-[550px]">
                     <iframe 
@@ -279,7 +213,7 @@
                                 <div class="text-white/80 text-sm space-y-1">
                                     <p>Lun - Vie: 10:15 - 13:30 / 17:00 - 20:00</p>
                                     <p>Sábados: 10:15 - 13:30</p>
-                                    <p class="text-emerald-700">Domingos: Cerrado</p>
+                                    <p class="text-emerald-300">Domingos: Cerrado</p>
                                 </div>
                             </div>
                         </div>
@@ -298,94 +232,8 @@
         </div>
     </section>
 
-    <!-- Trust Badges Section -->
-    <section class="py-16 bg-stone-50 border-t border-gray-200">
-        <div class="container mx-auto px-6">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-                <div>
-                    <div class="text-3xl font-bold text-emerald-600 mb-2">
-                        <i class="fas fa-award"></i>
-                    </div>
-                    <p class="text-sm text-gray-600 uppercase tracking-wider">Calidad Premium</p>
-                </div>
-                <div>
-                    <div class="text-3xl font-bold text-emerald-600 mb-2">
-                        <i class="fas fa-shield-alt"></i>
-                    </div>
-                    <p class="text-sm text-gray-600 uppercase tracking-wider">@(ViewBag.EcommerceEnabled == true ? "Compra Segura" : "Asesoramiento Personal")</p>
-                </div>
-                <div>
-                    <div class="text-3xl font-bold text-emerald-600 mb-2">
-                        <i class="fas fa-undo"></i>
-                    </div>
-                    <p class="text-sm text-gray-600 uppercase tracking-wider">@(ViewBag.EcommerceEnabled == true ? "30 Días Devolución" : "Atención en Tienda")</p>
-                </div>
-                <div>
-                    <div class="text-3xl font-bold text-emerald-600 mb-2">
-                        <i class="fas fa-gift"></i>
-                    </div>
-                    <p class="text-sm text-gray-600 uppercase tracking-wider">@(ViewBag.EcommerceEnabled == true ? "Envío Premium" : "Presentación Cuidada")</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
 </div>
 
 @section Styles {
-    <style>
-        /* Smooth scroll behavior */
-        html {
-            scroll-behavior: smooth;
-        }
-
-        /* Fade in up animation */
-        @@keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .animate-fade-in-up {
-            animation: fadeInUp 0.8s ease-out;
-        }
-
-        /* Float animation for hero image */
-        @@keyframes float {
-            0%, 100% {
-                transform: scale(1.05) translateY(0);
-            }
-
-            50% {
-                transform: scale(1.05) translateY(-20px);
-            }
-        }
-
-        .animate-float {
-            animation: float 8s ease-in-out infinite;
-        }
-
-        /* Green gradient text */
-        .text-gradient {
-            background: linear-gradient(135deg, #22C55E 0%, #DCFCE7 50%, #22C55E 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        /* Luxury text shadow */
-        .luxury-text-shadow {
-            text-shadow: 0 4px 6px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.2);
-        }
-
-        [x-cloak] {
-            display: none !important;
-        }
-    </style>
+    <link rel="stylesheet" href="~/css/home.css" asp-append-version="true" />
 }
