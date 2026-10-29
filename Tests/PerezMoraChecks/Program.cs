@@ -21,7 +21,7 @@ if(args.Contains("--featured")){await FeaturedChecks.Run(project,config);return;
 if(args.Contains("--featured-store-only")){await FeaturedChecks.Run(project,config,storeOnly:true);return;}
 if(args.Contains("--catalog-search")){await CatalogSearchChecks.Run(project);return;}
 if(args.Contains("--store-mode")){await StoreModeChecks.Run(project,config);return;}
-var output=Path.Combine(project,"App_Data","PerezMora","checks");Directory.CreateDirectory(output);
+var output=Environment.GetEnvironmentVariable("ALDA_PM_CHECK_OUTPUT")??Path.Combine(project,"App_Data","PerezMora","checks");Directory.CreateDirectory(output);
 if(args.Contains("--verify-real")) {
     var latest=(await new PerezMoraStore(config).Jobs()).First(x=>x.Trigger=="manual");
     if(latest.State!="completed")throw new InvalidOperationException("La importación aún no terminó: "+latest.State);
@@ -99,6 +99,8 @@ var testName="alda_pm_test_"+Guid.NewGuid().ToString("N");
 var mongo=new MongoClient(config["MongoDbSettings:ConnectionString"]!);var mongoDb=mongo.GetDatabase(testName);
 await using(var sql=new MySqlConnection(sqlBuilder.ConnectionString)){await sql.OpenAsync();await using var cmd=new MySqlCommand("CREATE DATABASE `"+testName+"`",sql);await cmd.ExecuteNonQueryAsync();}
 try {
+    await mongoDb.GetCollection<BsonDocument>("ProductoImagenes").Indexes.CreateOneAsync(new CreateIndexModel<BsonDocument>(
+        Builders<BsonDocument>.IndexKeys.Ascending("producto_id").Ascending("orden"),new CreateIndexOptions{Unique=true,Name="producto_orden_index"}));
     sqlBuilder.Database=testName;
     var testConfig=new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string,string?>{{"ConnectionStrings:DefaultConnection",sqlBuilder.ConnectionString}}).Build();
     var store=new PerezMoraStore(testConfig);await store.Ensure();
@@ -208,6 +210,32 @@ try {
     Check(await Price("HIGH")==2000.04m&&await new PerezMoraStore(testConfig).Bands()==bands,"Bands persist after restart and repeated application does not compound prices");
     await Import(Data(Row("0024",image:newImage),Row("0024/14",price:"100"),Row("SOLDOUT",stock:"5",price:"100.01"),Row("COLLISION"),Row("NEWPRICE",price:"501"),Row("HIGH",price:"99"),Row("NEWBAND",price:"600")));
     Check(await Price("NEWPRICE")==2004&&await Price("HIGH")==198&&await Price("NEWBAND")==2400,"Future imports price new products and move existing products between cost bands");
+    // A real installation has a unique (product, order) index. Keep an admin cover
+    // and occupied positions while replacing and retrying supplier pictures.
+    const long imageProduct=999999;
+    var manualPicture=new BsonDocument{{"_id",ObjectId.GenerateNewId()},{"producto_id",new BsonInt64(imageProduct)},
+        {"imagen_data",new BsonBinaryData(png.Concat(new byte[]{3}).ToArray())},{"orden",0},{"es_principal",true},{"nombre_archivo","foto-del-admin.png"}};
+    await imageCollection.InsertOneAsync(manualPicture);
+    var firstPicture=new CachedImage("https://joseperezmora.es/fotos/test.png",Catalog.Hash(png),Path.Combine(cache,Catalog.Hash("https://joseperezmora.es/fotos/test.png")+".image"),"image/png");
+    var secondBytes=await File.ReadAllBytesAsync(Path.Combine(cache,Catalog.Hash(newImage)+".image"));
+    var secondPicture=new CachedImage(newImage,Catalog.Hash(secondBytes),Path.Combine(cache,Catalog.Hash(newImage)+".image"),"image/png");
+    var firstIds=await ImageCache.Store(imageCollection,imageProduct,[firstPicture],[]);
+    var secondIds=await ImageCache.Store(imageCollection,imageProduct,[secondPicture],firstIds);
+    await ImageCache.RemoveOld(imageCollection,imageProduct,firstIds,secondIds);
+    Check((await imageCollection.Find(Builders<BsonDocument>.Filter.Eq("_id",manualPicture["_id"])).SingleAsync()).Equals(manualPicture),"Manual picture, cover and occupied position zero remain unchanged");
+    var retryIds=await ImageCache.Store(imageCollection,imageProduct,[secondPicture],firstIds);
+    Check(retryIds.SequenceEqual(secondIds)&&await imageCollection.CountDocumentsAsync(Builders<BsonDocument>.Filter.Eq("producto_id",imageProduct))==2,"Retry after replacement preserves identities without duplicate images");
+    var currentSupplier=await imageCollection.Find(Builders<BsonDocument>.Filter.Eq("_id",ObjectId.Parse(secondIds[0]))).SingleAsync();
+    var savedOrder=currentSupplier["orden"];
+    await imageCollection.UpdateManyAsync(Builders<BsonDocument>.Filter.Eq("producto_id",imageProduct),Builders<BsonDocument>.Update.Set("es_principal",false));
+    await imageCollection.UpdateOneAsync(Builders<BsonDocument>.Filter.Eq("_id",currentSupplier["_id"]),Builders<BsonDocument>.Update.Set("es_principal",true));
+    await ImageCache.Store(imageCollection,imageProduct,[secondPicture],secondIds);
+    var preserved=await imageCollection.Find(Builders<BsonDocument>.Filter.Eq("_id",currentSupplier["_id"])).SingleAsync();
+    Check(preserved["orden"]==savedOrder&&preserved["es_principal"].AsBoolean,"Admin-chosen supplier cover and image order survive repeat imports");
+    await imageCollection.DeleteOneAsync(Builders<BsonDocument>.Filter.Eq("_id",manualPicture["_id"]));
+    var nextIds=await ImageCache.Store(imageCollection,imageProduct,[firstPicture],secondIds);
+    await ImageCache.RemoveOld(imageCollection,imageProduct,secondIds,nextIds);
+    Check(await imageCollection.CountDocumentsAsync(Builders<BsonDocument>.Filter.Eq("producto_id",imageProduct)&Builders<BsonDocument>.Filter.Eq("es_principal",true))==1,"Replacing the old supplier cover assigns a remaining cover with the unique index enabled");
 }finally {
     Environment.SetEnvironmentVariable("ALDA_PEREZMORA_CONNECTIONS",null);
     if(!testName.StartsWith("alda_pm_test_")||testName.Length!=45)throw new Exception("Unsafe test cleanup name");
