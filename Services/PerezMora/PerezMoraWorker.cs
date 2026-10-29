@@ -52,7 +52,8 @@ public sealed class PerezMoraWorker(PerezMoraStore store,PerezMoraSource source,
             await process.WaitForExitAsync(ct);var error=await errors;
             var result=Path.Combine(run,preview?"comparacion.json":"resultado.json");
             if(process.ExitCode!=0||!File.Exists(result)) {
-                await File.WriteAllTextAsync(Path.Combine(run,"error.json"),JsonSerializer.Serialize(new{message=error.Trim(),interruptedAt=DateTime.UtcNow}),ct);
+                var errorType=System.Text.RegularExpressions.Regex.Match(error,@"\(([A-Za-z][A-Za-z0-9]*Exception)\)").Groups[1].Value;
+                await File.WriteAllTextAsync(Path.Combine(run,"error.json"),JsonSerializer.Serialize(new{message=error.Trim(),errorType,interruptedAt=DateTime.UtcNow}),ct);
                 await store.Update(job.Id,"failed","La importación se ha detenido. Consulta el informe; puedes reintentar sin duplicar productos.");return;
             }
             var json=await File.ReadAllTextAsync(result,ct);using var parsed=JsonDocument.Parse(json);

@@ -23,6 +23,8 @@ await Pdf("resultado-perez-mora","resultado",new{products=1200,added=2,restocked
 await Pdf("sin-cambios","comparacion",new{products=1,added=0,restocked=0,soldOut=0,modified=0,removed=0,changes=Array.Empty<object>()},state:"previewed");
 await Pdf("revision","revision",new[]{new{reference="000013",reasons=new[]{"Sin existencias","Sin imágenes"},failedImages=new[]{"https://example.invalid/SECRET_DOWNLOAD_TOKEN"}}});
 await Pdf("incidencia","error",new{errorType="TimeoutException",message="DO_NOT_PRINT_SECRET"},state:"failed");
+await Pdf("incidencia-imagenes","error",new{errorType="MongoWriteException",message="DO_NOT_PRINT_SECRET"},state:"failed");
+await Pdf("incidencia-historica-imagenes","error",new{message="Importación interrumpida (MongoWriteException). DO_NOT_PRINT_SECRET"},state:"failed");
 await Pdf("historico-sin-detalle","resultado",new{products=12,added=1});
 await Pdf("resultado-munreco","resultado",new{products=100,added=1,restocked=1,soldOut=1,removed=1,modified=1,existingPricesPreserved=true,
     visibility=new{hidden=1,shown=1,manualPreserved=2,originalCatalogPreserved=3,items=new[]{new{reference="REF-OCULTA",hidden=true,reason="sin_existencias"},new{reference="REF-ACTIVA",hidden=false,reason="disponible"}}}},provider:"Munreco",

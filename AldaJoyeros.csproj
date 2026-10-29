@@ -40,7 +40,12 @@
     <Copy SourceFiles="@(MunrecoPublishFiles)" DestinationFiles="@(MunrecoPublishFiles->'$(PublishDir)MunrecoRunner/%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
   </Target>
   <Target Name="CopyPerezMoraRunner" AfterTargets="Build">
-    <ItemGroup><PerezMoraRunnerFiles Include="Tools/PerezMoraSync/bin/$(Configuration)/net10.0/**/*" /></ItemGroup>
+    <MSBuild Projects="Tools/PerezMoraSync/PerezMoraSync.csproj" Targets="GetTargetPath" Properties="Configuration=$(Configuration)">
+      <Output TaskParameter="TargetOutputs" ItemName="PerezMoraRunnerTarget" />
+    </MSBuild>
+    <Error Condition="'@(PerezMoraRunnerTarget)' == ''" Text="No se ha localizado el importador compilado de Pérez Mora." />
+    <PropertyGroup><PerezMoraRunnerDirectory>@(PerezMoraRunnerTarget->'%(RootDir)%(Directory)')</PerezMoraRunnerDirectory></PropertyGroup>
+    <ItemGroup><PerezMoraRunnerFiles Include="$(PerezMoraRunnerDirectory)**/*" /></ItemGroup>
     <Copy SourceFiles="@(PerezMoraRunnerFiles)" DestinationFiles="@(PerezMoraRunnerFiles->'$(OutDir)PerezMoraRunner/%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
   </Target>
   <Target Name="PublishPerezMoraRunner" AfterTargets="Publish">

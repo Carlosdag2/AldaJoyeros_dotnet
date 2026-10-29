@@ -108,7 +108,14 @@ public static class SupplierReportPdf
         else if (type == "resultado") notices.Add("La actualización ha terminado. Los cambios detectados en el proveedor se distinguen de las acciones de visibilidad aplicadas en la tienda; se respetan las protecciones de productos y los cambios manuales.");
         else if (type == "revision") notices.Add("Comprueba en administración los datos o imágenes indicados. Los productos sin existencias o con datos incompletos pueden permanecer ocultos; se respetan las decisiones manuales.");
         if (Field(report, "existingPricesPreserved").ValueKind == JsonValueKind.True) notices.Add("Se han conservado los precios de venta de los productos existentes, aunque el proveedor haya cambiado su PVP.");
-        if (failed) notices.Add(state == "needs_login" ? "Renueva el acceso del proveedor desde el panel y vuelve a comprobar el catálogo." : Text(report,"errorType") switch {
+        var failureType = Text(report, "errorType");
+        // Older runner reports stored only a sanitized message. Recognize the type,
+        // but never print raw exception text, private paths or connection details.
+        if (failureType.Length == 0) failureType = System.Text.RegularExpressions.Regex.Match(Text(report,"message"), @"\(([A-Za-z][A-Za-z0-9]*Exception)\)").Groups[1].Value;
+        if (failed) notices.Add(state == "needs_login" ? "Renueva el acceso del proveedor desde el panel y vuelve a comprobar el catálogo." : failureType switch {
+            "MongoWriteException" or "MongoBulkWriteException" => "El catálogo se pudo leer, pero el proceso se detuvo al guardar las imágenes. Revisa el almacenamiento de imágenes y vuelve a comprobar los cambios antes de reintentar.",
+            "MongoConnectionException" or "MongoServerSelectionException" => "No se pudo conectar con el almacenamiento de imágenes. Comprueba la conexión a MongoDB antes de reintentar.",
+            "MySqlException" => "La actualización se detuvo al acceder a los productos. Comprueba la conexión y el estado de la base de datos MySQL antes de reintentar.",
             "TimeoutException" or "TaskCanceledException" => "El proveedor no respondió dentro del tiempo disponible. Revisa la conexión y vuelve a intentarlo.",
             "InvalidDataException" => "Los datos recibidos no superaron las comprobaciones de importación. Revisa el archivo o catálogo del proveedor antes de reintentar.",
             _ => "Comprueba el acceso al proveedor y el archivo de entrada. Si vuelve a ocurrir, facilita al soporte el identificador de ejecución que aparece al pie del informe."
