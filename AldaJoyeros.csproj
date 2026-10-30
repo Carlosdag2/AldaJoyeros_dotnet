@@ -14,6 +14,7 @@
     <Content Update="appsettings.json" CopyToPublishDirectory="Never" />
     <Content Update="package.json;package-lock.json" CopyToPublishDirectory="Never" />
     <ProjectReference Include="Tools/MunrecoSync/MunrecoSync.csproj" ReferenceOutputAssembly="false" Private="false" />
+    <ProjectReference Include="Tools/DuwardSync/DuwardSync.csproj" ReferenceOutputAssembly="false" Private="false" />
     <ProjectReference Include="Tools/PerezMoraSync/PerezMoraSync.csproj" ReferenceOutputAssembly="false" Private="false" />
     <PackageReference Include="SkiaSharp" Version="3.119.4" />
     <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="3.119.4" />
@@ -52,4 +53,12 @@
     <ItemGroup><PerezMoraPublishFiles Include="$(OutDir)PerezMoraRunner/**/*" /></ItemGroup>
     <Copy SourceFiles="@(PerezMoraPublishFiles)" DestinationFiles="@(PerezMoraPublishFiles->'$(PublishDir)PerezMoraRunner/%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
   </Target>
+  <Target Name="CopyDuwardRunner" AfterTargets="Build">
+    <MSBuild Projects="Tools/DuwardSync/DuwardSync.csproj" Targets="GetTargetPath" Properties="Configuration=$(Configuration)"><Output TaskParameter="TargetOutputs" ItemName="DuwardRunnerTarget" /></MSBuild>
+    <Error Condition="'@(DuwardRunnerTarget)' == ''" Text="No se ha localizado el importador Duward compilado." />
+    <PropertyGroup><DuwardRunnerDirectory>@(DuwardRunnerTarget->'%(RootDir)%(Directory)')</DuwardRunnerDirectory></PropertyGroup>
+    <ItemGroup><DuwardRunnerFiles Include="$(DuwardRunnerDirectory)**/*" /></ItemGroup>
+    <Copy SourceFiles="@(DuwardRunnerFiles)" DestinationFiles="@(DuwardRunnerFiles->'$(OutDir)DuwardRunner/%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+  </Target>
+  <Target Name="PublishDuwardRunner" AfterTargets="Publish"><ItemGroup><DuwardPublishFiles Include="$(OutDir)DuwardRunner/**/*" /></ItemGroup><Copy SourceFiles="@(DuwardPublishFiles)" DestinationFiles="@(DuwardPublishFiles->'$(PublishDir)DuwardRunner/%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" /></Target>
 </Project>

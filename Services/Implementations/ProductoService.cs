@@ -1,4 +1,4 @@
-using AutoMapper;
+﻿using AutoMapper;
 using AldaJoyeros.DTOs;
 using AldaJoyeros.Repositories.Interfaces;
 using AldaJoyeros.Services.Interfaces;
@@ -208,12 +208,12 @@ namespace AldaJoyeros.Services.Implementations
         /// </summary>
         public static void CompletarDatosProveedor(Entities.Producto producto, ProductoDto dto)
         {
-            var proveedor = producto.Proveedores.FirstOrDefault(p => (p.Proveedor == "Munreco" || p.Proveedor == "PerezMora") && p.Estado == "completo");
+            var proveedor = producto.Proveedores.FirstOrDefault(p => (p.Proveedor == "Munreco" || p.Proveedor == "PerezMora" || p.Proveedor == "Duward") && p.Estado == "completo");
             if (proveedor == null) return;
             dto.Marca = proveedor.Marca;
             dto.Coleccion = proveedor.Coleccion;
             if (proveedor.CreadoPorImportacion && !string.IsNullOrWhiteSpace(proveedor.DescripcionCompleta))
-                dto.DescripcionCompleta = proveedor.Proveedor == "PerezMora" && producto.Descripcion != proveedor.DescripcionCompleta
+                dto.DescripcionCompleta = (proveedor.Proveedor is "PerezMora" or "Duward") && producto.Descripcion != proveedor.DescripcionCompleta
                     ? producto.Descripcion ?? "" : proveedor.DescripcionCompleta;
             using var json = System.Text.Json.JsonDocument.Parse(proveedor.CaracteristicasJson);
             static IEnumerable<System.Text.Json.JsonElement> Valores(System.Text.Json.JsonElement node)
