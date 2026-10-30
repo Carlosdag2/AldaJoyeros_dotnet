@@ -1,5 +1,6 @@
 <Solution>
   <Project Path="AldaJoyeros.csproj" />
+  <Project Path="Tools/DuwardSync/DuwardSync.csproj" />
   <Project Path="Tools/MunrecoSync/MunrecoSync.csproj" />
   <Project Path="Tools/PerezMoraSync/PerezMoraSync.csproj" />
 </Solution>

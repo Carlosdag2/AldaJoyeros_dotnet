@@ -57,7 +57,11 @@
     <MSBuild Projects="Tools/DuwardSync/DuwardSync.csproj" Targets="GetTargetPath" Properties="Configuration=$(Configuration)"><Output TaskParameter="TargetOutputs" ItemName="DuwardRunnerTarget" /></MSBuild>
     <Error Condition="'@(DuwardRunnerTarget)' == ''" Text="No se ha localizado el importador Duward compilado." />
     <PropertyGroup><DuwardRunnerDirectory>@(DuwardRunnerTarget->'%(RootDir)%(Directory)')</DuwardRunnerDirectory></PropertyGroup>
-    <ItemGroup><DuwardRunnerFiles Include="$(DuwardRunnerDirectory)**/*" /></ItemGroup>
+    <ItemGroup>
+      <DuwardRunnerRequired Include="$(DuwardRunnerDirectory)DuwardSync.dll;$(DuwardRunnerDirectory)DuwardSync.deps.json;$(DuwardRunnerDirectory)DuwardSync.runtimeconfig.json" />
+      <DuwardRunnerFiles Include="$(DuwardRunnerDirectory)**/*" />
+    </ItemGroup>
+    <Error Condition="!Exists('%(DuwardRunnerRequired.Identity)')" Text="Falta %(DuwardRunnerRequired.Filename)%(DuwardRunnerRequired.Extension). Abre AldaJoyeros.slnx con todos sus proyectos cargados y ejecuta Recompilar solución para generar el importador Duward." />
     <Copy SourceFiles="@(DuwardRunnerFiles)" DestinationFiles="@(DuwardRunnerFiles->'$(OutDir)DuwardRunner/%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
   </Target>
   <Target Name="PublishDuwardRunner" AfterTargets="Publish"><ItemGroup><DuwardPublishFiles Include="$(OutDir)DuwardRunner/**/*" /></ItemGroup><Copy SourceFiles="@(DuwardPublishFiles)" DestinationFiles="@(DuwardPublishFiles->'$(PublishDir)DuwardRunner/%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" /></Target>
