@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using System.Text.Json;
 using AldaJoyeros.Services.Munreco;
 using QuestPDF.Fluent;
@@ -49,7 +49,7 @@ public static class SupplierReportPdf
         var failed = type == "error" || state is "failed" or "interrupted" or "needs_login";
         var title = type switch { "comparacion" => "Comprobación de cambios", "revision" => "Productos para revisar", "error" => "Incidencia en la actualización", "verificacion-mensual" => "Verificación del catálogo", _ => "Resultado de la actualización" };
         var stateLabel = state switch { "completed" => "Actualización completada", "previewed" => "Comprobación completada", "needs_login" => "Es necesario renovar el acceso", "interrupted" => "Proceso interrumpido", "failed" => "Proceso detenido", _ => "Consultar el estado en el panel" };
-        var origin = trigger switch { "weekly" => "Programación semanal", "monthly" => "Programación mensual", "preview_upload" => "Comprobación de Excel subido", "manual_upload" => "Actualización desde Excel", "preview" => "Comprobación manual", _ => "Actualización manual" };
+        var origin = trigger switch { "weekly" => "Programación semanal", "monthly" => "Programación mensual", "preview_csv" => "Comprobación de CSV subidos", "manual_csv" => "Actualización desde CSV", "preview_upload" => "Comprobación de Excel subido", "manual_upload" => "Actualización desde Excel", "preview" => "Comprobación manual", _ => "Actualización manual" };
         var summary = new List<(string Label, string Value)>();
         void Metric(JsonElement node, string key, string label)
         {
@@ -63,7 +63,7 @@ public static class SupplierReportPdf
             ("collisions", "Referencias coincidentes pendientes"), ("verifiedProducts", "Productos verificados"),
             ("totalProducts", "Productos totales en la tienda"), ("supplierProducts", "Productos vinculados al proveedor"),
             ("previousProductsPreserved", "Productos anteriores conservados"),
-            ("linkedImages", "Imágenes enlazadas"), ("imageDownloadFailures", "Imágenes que no se pudieron descargar")
+            ("imagesRecovered", "Productos con imágenes recuperadas de Duward"), ("dataWarnings", "Productos con avisos en sus datos"), ("linkedImages", "Imágenes enlazadas"), ("imageDownloadFailures", "Imágenes que no se pudieron descargar")
         }) Metric(report, key, label);
         var visibility = Field(report, "visibility");
         foreach (var (key, label) in new[] { ("hidden", "Productos ocultados"), ("shown", "Productos activados"), ("manualPreserved", "Decisiones manuales conservadas"), ("originalCatalogPreserved", "Productos originales protegidos") }) Metric(visibility, key, label);
@@ -103,11 +103,16 @@ public static class SupplierReportPdf
         var errors = Items(Field(report, "errors")).Count();
         if (errors > 0) summary.Add(("Incidencias detectadas", errors.ToString("N0", Spanish)));
         var notices = new List<string>();
+        var collections = Items(Field(source, "collections")).Select(x=>x.ToString()).ToArray();
+        if(collections.Length>0) notices.Add("Colecciones incluidas: "+string.Join(", ",collections)+". Las otras colecciones no se retiran.");
+        if(Field(source,"retirementEnabled").ValueKind==JsonValueKind.False) notices.Add("No se ocultan referencias por estar ausentes del CSV; esta opción estaba desactivada.");
         if (preview) notices.Add("Esta comprobación no modifica los productos de la tienda. Las cifras describen lo detectado en el proveedor; pulsa Actualizar en el panel para aplicar los cambios.");
         else if (failed) notices.Add("El proceso no terminó correctamente. Puede haber cambios parciales: revisa el catálogo y vuelve a comprobar los cambios antes de reintentar. La importación permite reintentar sin crear productos duplicados.");
         else if (type == "resultado") notices.Add("La actualización ha terminado. Los cambios detectados en el proveedor se distinguen de las acciones de visibilidad aplicadas en la tienda; se respetan las protecciones de productos y los cambios manuales.");
         else if (type == "revision") notices.Add("Comprueba en administración los datos o imágenes indicados. Los productos sin existencias o con datos incompletos pueden permanecer ocultos; se respetan las decisiones manuales.");
         if (Field(report, "existingPricesPreserved").ValueKind == JsonValueKind.True) notices.Add("Se han conservado los precios de venta de los productos existentes, aunque el proveedor haya cambiado su PVP.");
+        if(failed && Text(report,"validationReason")=="retirement_limit") notices.Add("Se bloqueó una retirada superior al 15% de las colecciones incluidas. Revisa que los CSV estén completos antes de volver a aplicar.");
+        if(failed && Text(report,"validationReason")=="reference_changed") notices.Add("Apareció una referencia coincidente durante la importación. Vuelve a comprobar el catálogo; no se ha fusionado con el producto existente.");
         var failureType = Text(report, "errorType");
         // Older runner reports stored only a sanitized message. Recognize the type,
         // but never print raw exception text, private paths or connection details.

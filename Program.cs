@@ -1,4 +1,4 @@
-using AldaJoyeros.Extensions;
+﻿using AldaJoyeros.Extensions;
 using Microsoft.EntityFrameworkCore;
 using AldaJoyeros.Data;
 using AldaJoyeros.Configuration;
@@ -34,6 +34,10 @@ namespace AldaJoyeros
             builder.Services.AddSingleton<MunrecoStore>();
             builder.Services.AddSingleton<MunrecoSession>();
             builder.Services.AddHostedService<MunrecoWorker>();
+            builder.Services.Configure<AldaJoyeros.Services.Duward.DuwardOptions>(builder.Configuration.GetSection("Duward"));
+            builder.Services.AddSingleton<AldaJoyeros.Services.Duward.DuwardStore>();
+            builder.Services.AddSingleton<AldaJoyeros.Services.Duward.DuwardSource>();
+            builder.Services.AddHostedService<AldaJoyeros.Services.Duward.DuwardWorker>();
             builder.Services.Configure<PerezMoraOptions>(builder.Configuration.GetSection("PerezMora"));
             builder.Services.AddSingleton<PerezMoraStore>();
             builder.Services.AddSingleton<PerezMoraSource>();

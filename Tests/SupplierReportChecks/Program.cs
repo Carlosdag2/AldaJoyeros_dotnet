@@ -1,4 +1,4 @@
-using System.Text.Json;
+﻿using System.Text.Json;
 using AldaJoyeros.Services;
 
 var output=Path.GetFullPath(args.FirstOrDefault()??Path.Combine(Path.GetTempPath(),"alda-supplier-reports-"+Guid.NewGuid().ToString("N")));
@@ -31,4 +31,6 @@ await Pdf("resultado-munreco","resultado",new{products=100,added=1,restocked=1,s
     comparison:new{changes=new[]{new{reference="REF-PRECIO",type="datos_o_pvp_modificados",previousPvp="100.00",currentPriceText="120,00 €"}}});
 await Pdf("verificacion","verificacion-mensual",new{totalProducts=27814,supplierProducts=2699,previousProductsPreserved=27814,linkedImages=7613,errors=Array.Empty<string>()},provider:"Munreco");
 await Pdf("muchas-referencias","comparacion",new{products=180,modified=180,changes=Enumerable.Range(0,180).Select(i=>new{reference=$"REF-{i:D5}-VARIANTE-LARGA",type="datos_o_pvp_modificados",previousPvp="125.50",currentPriceText="139,00 €"})},provider:"Munreco",state:"previewed");
+await Pdf("duward-comprobacion","comparacion",new{products=333,added=333,imagesRecovered=157,dataWarnings=70,needsReview=19,collections=new[]{"Sport","Aquastar","Lady"},retirementEnabled=false,changes=new[]{new{reference="D14023.13",action="nuevo",stock=100,review=false,currentPriceText="49,90 €"}}},provider:"Duward",state:"previewed");
+await Pdf("duward-retirada-bloqueada","error",new{validationReason="retirement_limit",message="DO_NOT_PRINT_SECRET"},provider:"Duward",state:"failed");
 Console.WriteLine("PDFs de prueba: "+output);
