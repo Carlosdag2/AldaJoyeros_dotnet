@@ -52,3 +52,11 @@ Configuración opcional del servidor (sin contraseñas):
 `RunnerPath` solo es necesario si el servidor instala el importador en una ruta distinta. La cuenta del servidor necesita acceso de escritura a la carpeta privada y salida HTTPS a Duward y a su CDN. Si la aplicación se reinicia durante un trabajo, el historial lo marca como interrumpido; se puede revisar y reintentar sin duplicar los productos ya vinculados.
 
 El panel y sus informes requieren una cuenta administradora. Las acciones de carga también validan el token de protección de formularios.
+
+## Si Visual Studio no encuentra el importador
+
+Abre `AldaJoyeros.slnx`, con todos sus proyectos cargados. La solución debe mostrar la web y los importadores MunrecoSync, PerezMoraSync y DuwardSync. Después de detener la web, utiliza **Compilar → Recompilar solución** y vuelve a iniciarla.
+
+En una copia anterior donde DuwardSync no aparezca, pulsa con el botón derecho sobre la solución, **Agregar → Proyecto existente**, y selecciona `Tools/DuwardSync/DuwardSync.csproj`. Guarda la solución y recompílala.
+
+La compilación copia `DuwardSync.dll`, `DuwardSync.deps.json`, `DuwardSync.runtimeconfig.json` y sus dependencias a `DuwardRunner`, dentro de la salida de la web. Si faltan los archivos principales, la compilación se detiene con un mensaje explicativo para evitar una web compilada sin importador. No hace falta ejecutar DuwardSync como proyecto de inicio; el proyecto de inicio sigue siendo AldaJoyeros.
