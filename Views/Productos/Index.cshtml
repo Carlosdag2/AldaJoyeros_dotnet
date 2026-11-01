@@ -115,6 +115,15 @@
                     <summary class="flex min-h-14 cursor-pointer list-none items-center justify-between gap-3 p-4 text-sm font-semibold text-stone-900 lg:hidden"><span><i class="fas fa-sliders mr-2 text-emerald-800" aria-hidden="true"></i>Filtros y categorías</span><i class="fas fa-chevron-down text-xs" aria-hidden="true"></i></summary>
                     <div class="space-y-6 p-5 lg:max-h-[calc(100dvh-9rem)] lg:overflow-y-auto">
                         <div class="hidden items-center justify-between gap-2 lg:flex"><h2 class="text-sm font-semibold text-stone-900">Afina tu selección</h2><i class="fas fa-sliders text-emerald-800" aria-hidden="true"></i></div>
+                        <div class="border-b border-stone-200 pb-6">
+                            <label for="ordenCatalogo" class="mb-3 block font-serif text-xl text-stone-900">Ordenar por</label>
+                            <select id="ordenCatalogo" name="orden" x-model="ordenActual" x-on:change="cambiarOrden()"
+                                    class="min-h-11 w-full min-w-0 rounded-lg border border-stone-300 bg-white px-3 py-3 text-sm text-stone-900 focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700">
+                                <option value="">Recomendados</option>
+                                <option value="precio-asc">Precio: de menor a mayor</option>
+                                <option value="precio-desc">Precio: de mayor a menor</option>
+                            </select>
+                        </div>
                 <form method="get" action="@(Context.Request.PathBase + AldaJoyeros.Helpers.PublicUrls.CatalogPath(categoriaActual?.UrlSlug))"
                       x-on:submit.prevent="aplicarPrecio()" class="border-b border-stone-200 pb-6" aria-labelledby="tituloFiltroPrecio">
                     <input type="hidden" name="busqueda" :value="busquedaActual" value="@busqueda" />
@@ -350,6 +359,11 @@
                     return this.categorias.find(c => String(c.id) === String(this.categoriaActual))?.nombre || '';
                 },
                 busquedaActual: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(busqueda)),
+                ordenActual: @Html.Raw(System.Text.Json.JsonSerializer.Serialize((string)(ViewBag.Orden ?? ""))),
+                async cambiarOrden() {
+                    this.paginaActual = 1;
+                    await this.cargarProductos();
+                },
                 precioMinEntrada: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(precioMin)),
                 precioMaxEntrada: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(precioMax)),
                 precioMinActual: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(precioMin)),
@@ -513,6 +527,7 @@
                         if (event.state) {
                             this.categoriaActual = event.state.categoria;
                             this.busquedaActual = event.state.busqueda || '';
+                            this.ordenActual = event.state.orden || '';
                             this.precioMinEntrada = this.precioMinActual = event.state.precioMin ?? '';
                             this.precioMaxEntrada = this.precioMaxActual = event.state.precioMax ?? '';
                             this.ajustarEscalaPrecio(true);
@@ -574,6 +589,7 @@
 
                         if (this.precioMinActual !== '') url += `&precioMin=${encodeURIComponent(this.precioMinActual)}`;
                         if (this.precioMaxActual !== '') url += `&precioMax=${encodeURIComponent(this.precioMaxActual)}`;
+                        if (this.ordenActual) url += `&orden=${encodeURIComponent(this.ordenActual)}`;
                         const response = await fetch(url, { signal: controller.signal });
                         const data = await response.json();
 
@@ -621,6 +637,7 @@
                     if (this.precioMinActual !== '') params.set('precioMin', this.precioMinActual);
                     if (this.precioMaxActual !== '') params.set('precioMax', this.precioMaxActual);
                     if (this.busquedaActual) params.set('busqueda', this.busquedaActual);
+                    if (this.ordenActual) params.set('orden', this.ordenActual);
                     if (this.paginaActual > 1) params.set('page', this.paginaActual);
                     
                     if (params.toString()) url += '?' + params.toString();
@@ -628,6 +645,7 @@
                     const state = {
                         categoria: this.categoriaActual,
                         busqueda: this.busquedaActual,
+                        orden: this.ordenActual,
                         pagina: this.paginaActual,
                         precioMin: this.precioMinActual,
                         precioMax: this.precioMaxActual
@@ -639,7 +657,7 @@
                         history.pushState(state, '', url);
                     }
                     const robots = document.querySelector('meta[name="robots"]');
-                    if (robots) robots.content = robots.dataset.publicIndexing === 'true' && !this.busquedaActual.trim() && this.precioMinActual === '' && this.precioMaxActual === '' ? 'index, follow' : 'noindex, nofollow';
+                    if (robots) robots.content = robots.dataset.publicIndexing === 'true' && !this.busquedaActual.trim() && !this.ordenActual && this.precioMinActual === '' && this.precioMaxActual === '' ? 'index, follow' : 'noindex, nofollow';
                     const canonical = document.querySelector('link[rel="canonical"][data-catalog-base]');
                     if (canonical && canonical.dataset.catalogBase) {
                         const categorySlug = this.categoriaActual && !this.busquedaActual.trim() ? this.categorias.find(c => String(c.id) === String(this.categoriaActual))?.slug : null;
