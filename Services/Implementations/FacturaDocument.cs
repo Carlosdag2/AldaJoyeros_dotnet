@@ -100,7 +100,8 @@ internal sealed class FacturaDocument(FacturaDto factura) : IDocument
                 column.Spacing(4);
                 Label(column, "EMISOR");
                 column.Item().PaddingTop(4).Text(factura.Empresa.Nombre).SemiBold().FontSize(11);
-                if (!string.IsNullOrWhiteSpace(factura.Empresa.Cif)) column.Item().Text($"CIF: {factura.Empresa.Cif}").FontColor(Muted);
+                if (!string.IsNullOrWhiteSpace(factura.Empresa.Titular)) column.Item().Text(factura.Empresa.Titular).FontColor(Muted);
+                if (!string.IsNullOrWhiteSpace(factura.Empresa.Cif)) column.Item().Text($"NIF: {factura.Empresa.Cif}").FontColor(Muted);
                 column.Item().Text(factura.Empresa.Direccion).FontColor(Muted);
                 column.Item().Text($"{factura.Empresa.CodigoPostal} {factura.Empresa.Ciudad}").FontColor(Muted);
                 column.Item().Text(factura.Empresa.Provincia).FontColor(Muted);

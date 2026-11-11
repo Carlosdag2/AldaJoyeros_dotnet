@@ -132,6 +132,25 @@ foreach (var publicMode in new[] { false, true })
         var refused = await Choose(false, "https://evil.invalid/");
         Check(refused.Headers.Location!.ToString() == "/" && !jar.GetCookies(client.BaseAddress).Cast<Cookie>().Any(c => c.Name == VisitorConsent.VisitorCookie), "Retirar elimina la cookie y evita redirecciones externas");
         Check((await client.PostAsync("/Consent/Save", new FormUrlEncodedContent(new Dictionary<string,string> { ["analytics"] = "true" }))).StatusCode == HttpStatusCode.BadRequest, "Sin token no se altera el consentimiento");
+        async Task<HttpResponseMessage> Preferences(string endpoint, Dictionary<string,string> values) {
+            values["__RequestVerificationToken"] = token;
+            return await client.PostAsync(endpoint, new FormUrlEncodedContent(values));
+        }
+        string? ConsentValue() => jar.GetCookies(client.BaseAddress).Cast<Cookie>().FirstOrDefault(c => c.Name == VisitorConsent.CookieName)?.Value;
+        await Preferences("/Consent/Save", new() { ["choice"] = "all" });
+        Check(ConsentValue() == "v2.all", "Aceptar opcionales autoriza expresamente analítica y mapa");
+        await Preferences("/Consent/Maps", new() { ["maps"] = "false" });
+        Check(ConsentValue() == "v2.analytics", "Retirar el mapa mantiene el permiso de analítica");
+        await Preferences("/Consent/Save", new() { ["choice"] = "necessary" });
+        Check(ConsentValue() == "v2.necessary", "Solo necesarias retira ambas finalidades");
+        await Preferences("/Consent/Maps", new() { ["maps"] = "true" });
+        Check(ConsentValue() == "v2.maps" && !jar.GetCookies(client.BaseAddress).Cast<Cookie>().Any(c => c.Name == VisitorConsent.VisitorCookie), "Permitir solo Google Maps no permite ni crea analítica");
+        await Preferences("/Consent/Save", new() { ["choice"] = "selected", ["analytics"] = "true" });
+        Check(ConsentValue() == "v2.analytics", "Guardar selección permite analítica sin mapa");
+        Check((await Preferences("/Consent/Save", new() { ["choice"] = "unknown" })).StatusCode == HttpStatusCode.BadRequest && ConsentValue() == "v2.analytics", "Una elección inválida no cambia permisos");
+        Check((await client.PostAsync("/Consent/Maps", new FormUrlEncodedContent(new Dictionary<string,string> { ["maps"] = "true" }))).StatusCode == HttpStatusCode.BadRequest, "El mapa también exige protección antifalsificación");
+        var legacyContext = new DefaultHttpContext(); legacyContext.Request.Headers.Cookie = VisitorConsent.CookieName + "=v1.analytics";
+        Check(VisitorConsent.AllowsAnalytics(legacyContext.Request) && !VisitorConsent.AllowsMaps(legacyContext.Request), "Un permiso antiguo de analítica nunca autoriza Google Maps");
         var missing = await client.GetAsync("/pagina-no-existente");
         Check(missing.StatusCode == HttpStatusCode.NotFound && (await missing.Content.ReadAsStringAsync()).Contains("No encontramos esta página"), "Una ruta inexistente muestra la 404 y conserva el estado HTTP");
         var robots = await client.GetStringAsync("/robots.txt");

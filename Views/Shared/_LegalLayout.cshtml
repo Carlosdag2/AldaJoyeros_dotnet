@@ -1,11 +1,12 @@
 @{
     Layout = "_Layout";
+    var ecommerce = Context.Items[AldaJoyeros.Services.StoreModeStore.ContextKey] is true;
     var action = ViewContext.RouteData.Values["action"]?.ToString();
     var pages = new[] {
         (Action: "AvisoLegal", Title: "Aviso legal", Icon: "fa-scale-balanced"),
         (Action: "Privacy", Title: "Privacidad", Icon: "fa-user-shield"),
         (Action: "Cookies", Title: "Cookies", Icon: "fa-cookie-bite"),
-        (Action: "Terminos", Title: "Términos y condiciones", Icon: "fa-file-contract")
+        (Action: "Terminos", Title: ecommerce ? "Condiciones de compra" : "Condiciones de uso", Icon: "fa-file-contract")
     };
 }
 <div class="bg-gray-50 px-4 py-8 sm:px-6 sm:py-12 lg:py-16">
@@ -26,11 +27,12 @@
                     <i class="fas @(ViewData["LegalIcon"] ?? "fa-file-contract") text-2xl" aria-hidden="true"></i>
                 </span>
                 <p class="mb-3 text-xs font-semibold uppercase tracking-widest text-emerald-700">Alda Joyeros · Información legal</p>
+                <p data-legal-store-mode="@(ecommerce ? "ecommerce" : "showcase")" class="mb-3 text-xs font-semibold text-emerald-700">@(ecommerce ? "Tienda online" : "Catálogo en modo escaparate")</p>
                 <h1 id="legalTitle" class="break-words font-serif text-3xl leading-tight text-gray-900 sm:text-4xl">@ViewData["Title"]</h1>
                 <p class="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-gray-500 sm:text-base">@ViewData["LegalSummary"]</p>
                 @if (ViewData["LegalUpdated"] is string date)
                 {
-                    <p class="mt-4 text-xs text-gray-500">Última actualización: <time datetime="2026-10-20">@date</time></p>
+                    <p class="mt-4 text-xs text-gray-500">Última actualización: <time datetime="@(ViewData["LegalUpdatedIso"] ?? "2026-10-20")">@date</time></p>
                 }
             </header>
             <div class="space-y-5 break-words px-5 py-7 text-sm leading-relaxed text-gray-600 sm:px-10 sm:py-10 sm:text-base md:px-12 [&_h2]:mt-8 [&_h2]:border-t [&_h2]:border-gray-100 [&_h2]:pt-6 [&_h2]:text-lg [&_h2]:font-semibold [&_h2]:leading-snug [&_h2]:text-gray-900 sm:[&_h2]:text-xl [&_h2:first-child]:mt-0 [&_h2:first-child]:border-0 [&_h2:first-child]:pt-0 [&_a]:font-medium [&_a]:text-emerald-800 [&_a]:underline [&_a]:underline-offset-4 [&_a:hover]:text-emerald-600 [&_dd]:mt-1 [&_dd]:break-words [&_dt]:text-gray-900">

@@ -153,7 +153,16 @@
 
             <div class="grid grid-cols-1 lg:grid-cols-5 gap-0 rounded-2xl border border-stone-200 overflow-hidden">
                 <!-- Map -->
-                <div class="relative h-72 min-w-0 overflow-hidden bg-gray-100 sm:h-96 lg:col-span-3 lg:h-auto lg:min-h-[550px]">
+                <div class="relative h-72 min-w-0 overflow-hidden bg-gray-100 sm:h-96 lg:col-span-3 lg:h-auto lg:min-h-[550px]" x-data="{ mapaActivo: @AldaJoyeros.Helpers.VisitorConsent.AllowsMaps(Context.Request).ToString().ToLowerInvariant() }" x-on:alda:consent-changed.window="mapaActivo = $event.detail.maps === true">
+                    <div x-show="!mapaActivo" class="flex h-full flex-col items-center justify-center gap-3 p-6 text-center">
+                        <p class="font-serif text-xl text-stone-900">Encuentra nuestra tienda</p>
+                        <p class="max-w-sm text-sm text-stone-600">El mapa es un servicio de Google. Al cargarlo, Google recibe datos de tu navegador y puede utilizar cookies. Puedes consultar nuestra <a asp-controller="Home" asp-action="Cookies" class="underline">política de cookies</a>.</p>
+                        <form data-cookie-choices asp-controller="Consent" asp-action="Maps" method="post">
+                            <button type="submit" name="maps" value="true" class="min-h-11 rounded-lg bg-emerald-800 px-5 py-3 text-sm font-semibold text-white">Aceptar y cargar mapa</button>
+                            <p data-cookie-result role="status" hidden class="mt-2 text-sm text-stone-600"></p>
+                        </form>
+                    </div>
+                    <template x-if="mapaActivo">
                     <iframe 
                         src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3040.262772693775!2d-3.850095!3d40.1228119!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd41f1eb52287a03%3A0x7ea236ec19f47b25!2sAlda%20Joyeros%201962!5e0!3m2!1ses!2ses!4v1703123456789!5m2!1ses!2ses"
                         width="100%"
@@ -162,9 +171,14 @@
                         style="border:0;"
                         allowfullscreen=""
                         loading="lazy"
-                        referrerpolicy="no-referrer-when-downgrade"
+                        referrerpolicy="no-referrer"
                         class="w-full h-full absolute inset-0">
                     </iframe>
+                    </template>
+                    <form data-cookie-choices asp-controller="Consent" asp-action="Maps" method="post" x-show="mapaActivo" x-cloak class="absolute top-3 right-3 z-10">
+                        <button type="submit" name="maps" value="false" aria-label="Cerrar mapa y retirar permiso" class="min-h-11 rounded-lg border border-stone-300 bg-white px-3 py-2 text-xs font-semibold text-stone-900">Retirar permiso</button>
+                        <p data-cookie-result role="status" hidden class="mt-2 rounded-lg bg-white p-2 text-sm text-stone-900"></p>
+                    </form>
                 </div>
 
                 <!-- Contact Info -->

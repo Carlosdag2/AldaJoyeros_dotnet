@@ -14,13 +14,16 @@ namespace AldaJoyeros.Services.Implementations
     public sealed class FacturaService : IFacturaService
     {
         private readonly EmpresaSettings _empresaSettings;
+        private readonly PublicationOptions _publication;
         private readonly ILogger<FacturaService> _logger;
 
         public FacturaService(
             IOptions<EmpresaSettings> empresaSettings,
-            ILogger<FacturaService> logger)
+            ILogger<FacturaService> logger,
+            IOptions<PublicationOptions> publication)
         {
             _empresaSettings = empresaSettings.Value;
+            _publication = publication.Value;
             _logger = logger;
 
             // Configurar licencia de QuestPDF (Community es gratuita)
@@ -56,7 +59,8 @@ namespace AldaJoyeros.Services.Implementations
                 Empresa = new DatosEmpresaDto
                 {
                     Nombre = _empresaSettings.Nombre,
-                    Cif = _empresaSettings.Cif,
+                    Titular = _publication.EffectiveLegalOwner,
+                    Cif = _empresaSettings.Nif,
                     Direccion = _empresaSettings.Direccion,
                     CodigoPostal = _empresaSettings.CodigoPostal,
                     Ciudad = _empresaSettings.Ciudad,

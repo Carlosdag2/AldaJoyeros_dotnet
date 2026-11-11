@@ -2,20 +2,42 @@
 @inject Microsoft.Extensions.Options.IOptions<AldaJoyeros.Configuration.PublicationOptions> Publication
 @{
     Layout = "_LegalLayout";
+    var ecommerce = Context.Items[AldaJoyeros.Services.StoreModeStore.ContextKey] is true;
     ViewData["Title"] = "Aviso legal";
     ViewData["LegalIcon"] = "fa-scale-balanced";
-    ViewData["LegalSummary"] = "Identificación, contacto y uso del sitio web.";
+    ViewData["LegalSummary"] = "Quién está detrás de Alda Joyeros y cómo contactar con la titular.";
+    ViewData["LegalUpdated"] = "11 de noviembre de 2026";
+    ViewData["LegalUpdatedIso"] = "2026-11-11";
     var e = Empresa.Value;
+    var titular = Publication.Value.EffectiveLegalOwner;
 }
 
-<h2 class="text-xl font-bold">Identificación y contacto</h2>
+<h2>1. Titular del sitio y contacto</h2>
+<p>Este sitio pertenece a una actividad de comercio de joyería y relojería ejercida por una empresaria individual (autónoma). Alda Joyeros es el nombre comercial de la actividad, no una sociedad mercantil independiente.</p>
 <dl class="space-y-3">
+<div><dt class="font-semibold">Titular</dt><dd>@titular</dd></div>
+<div><dt class="font-semibold">NIF</dt><dd>@e.Nif</dd></div>
 <div><dt class="font-semibold">Nombre comercial</dt><dd>@e.Nombre</dd></div>
-<div><dt class="font-semibold">Titular</dt><dd>@(string.IsNullOrWhiteSpace(Publication.Value.LegalOwner) ? "Pendiente de completar antes de la publicación." : Publication.Value.LegalOwner)</dd></div>
-<div><dt class="font-semibold">NIF / CIF</dt><dd>@(string.IsNullOrWhiteSpace(e.Cif) ? "Pendiente de completar antes de la publicación." : e.Cif)</dd></div>
-<div><dt class="font-semibold">Dirección</dt><dd>@e.Direccion, @e.CodigoPostal @e.Ciudad, @e.Provincia</dd></div>
-<div><dt class="font-semibold">Contacto</dt><dd>@e.Email · @e.Telefono</dd></div>
+<div><dt class="font-semibold">Establecimiento y dirección de contacto</dt><dd>@e.Direccion, @e.CodigoPostal @e.Ciudad (@e.Provincia), España</dd></div>
+<div><dt class="font-semibold">Correo electrónico</dt><dd><a href="mailto:@e.Email">@e.Email</a></dd></div>
+<div><dt class="font-semibold">Teléfono</dt><dd><a href="tel:@e.Telefono">@e.Telefono</a></dd></div>
 @if (!string.IsNullOrWhiteSpace(Publication.Value.RegistryDetails)) { <div><dt class="font-semibold">Datos registrales</dt><dd>@Publication.Value.RegistryDetails</dd></div> }
 </dl>
-<h2 class="text-xl font-bold">Uso del sitio</h2><p>El catálogo muestra los productos de Alda Joyeros. La compra en línea está disponible únicamente cuando la tienda tiene activado el comercio electrónico. Las condiciones de compra, disponibilidad y entrega se indican en el catálogo y durante la compra.</p>
-<p>Los textos e imágenes no pueden reutilizarse sin la autorización de sus titulares. Para comunicar errores o incidencias utiliza los datos de contacto indicados.</p>
+<h2>2. Objeto y condiciones de uso</h2>
+@if (ecommerce)
+{
+<p>La web está en modo tienda online: permite consultar el catálogo y realizar pedidos mediante el carrito y el proceso de compra. Se aplican las <a asp-action="Terminos">condiciones de compra</a>. Consultar una ficha no equivale a realizar un pedido ni a consentir publicidad o cookies opcionales.</p>
+}
+else
+{
+<p>La web está en modo escaparate: permite consultar productos, precios y características y contactar con la tienda. No se pueden realizar nuevas compras, utilizar el carrito ni pagar a través de esta web. Consulta las <a asp-action="Terminos">condiciones de uso del escaparate</a>. Navegar o enviar una consulta no formaliza por sí solo una compra ni supone aceptar cookies opcionales.</p>
+}
+<p>Utiliza el sitio de forma lícita y no intentes acceder a cuentas ajenas, eludir las medidas de seguridad o alterar su funcionamiento. La titular podrá adoptar medidas proporcionadas frente a usos fraudulentos, respetando los derechos de los usuarios.</p>
+<h2>3. Información de productos y responsabilidad</h2>
+<p>Las referencias, características, precios y disponibilidad se muestran en las fichas de producto. Si detectas una diferencia o un posible error, contacta con la tienda. La mención «salvo error tipográfico» no autoriza a modificar unilateralmente un contrato celebrado ni limita los derechos legales del consumidor.</p>
+<p>Se procura mantener el sitio disponible y la información actualizada. Pueden existir interrupciones por mantenimiento o incidencias. Esta información no excluye las responsabilidades que legalmente correspondan a la titular.</p>
+<h2>4. Propiedad intelectual y enlaces</h2>
+<p>Los contenidos, fotografías, marcas y diseños pertenecen a la titular o a sus respectivos propietarios y se utilizan con la autorización o los derechos correspondientes. No se permite su explotación sin permiso cuando la ley lo exija. Se respetan los usos permitidos legalmente.</p>
+<p>Los enlaces a servicios externos permiten acceder a información de terceros, sujetos a sus propias condiciones. Su inclusión no elimina la responsabilidad que corresponda legalmente por los contenidos o servicios ofrecidos en esta web.</p>
+<h2>5. Privacidad, cookies y consultas</h2>
+<p>Consulta la <a asp-action="Privacy">política de privacidad</a> y la <a asp-action="Cookies">política de cookies</a>. Puedes dirigir consultas, incidencias y reclamaciones a los datos de contacto anteriores. Las compras y reclamaciones se rigen por la legislación española y por las normas imperativas de protección del consumidor que resulten aplicables, sin renunciar al fuero legal que corresponda al consumidor.</p>

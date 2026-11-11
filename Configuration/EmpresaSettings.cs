@@ -6,7 +6,10 @@ namespace AldaJoyeros.Configuration
     public sealed class EmpresaSettings
     {
         public string Nombre { get; set; } = "Alda Joyeros 1962";
+        // Cif se mantiene para admitir la configuración existente; el identificador público es NIF.
+        public const string DefaultNif = "52974088M";
         public string Cif { get; set; } = string.Empty;
+        public string Nif => string.IsNullOrWhiteSpace(Cif) ? DefaultNif : Cif.Trim();
         public string Direccion { get; set; } = "C/ Sor Livia Alcorta, 24";
         public string CodigoPostal { get; set; } = "45200";
         public string Ciudad { get; set; } = "Illescas";
