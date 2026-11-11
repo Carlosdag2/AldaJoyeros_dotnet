@@ -1,19 +1,41 @@
-
+@inject Microsoft.Extensions.Options.IOptions<AldaJoyeros.Configuration.EmpresaSettings> Empresa
+@inject Microsoft.Extensions.Options.IOptions<AldaJoyeros.Configuration.PublicationOptions> Publication
 @{
     Layout = "_LegalLayout";
+    var ecommerce = Context.Items[AldaJoyeros.Services.StoreModeStore.ContextKey] is true;
     ViewData["Title"] = "Política de cookies";
     ViewData["LegalIcon"] = "fa-cookie-bite";
-    ViewData["LegalSummary"] = "Cookies, preferencias y control de tus opciones de navegación.";
-    ViewData["LegalUpdated"] = "20 de octubre de 2026";
+    ViewData["LegalSummary"] = "Qué se guarda en tu navegador y cómo aceptar, rechazar o retirar el permiso.";
+    ViewData["LegalUpdated"] = "11 de noviembre de 2026";
+    ViewData["LegalUpdatedIso"] = "2026-11-11";
+    var e = Empresa.Value;
+    var titular = Publication.Value.EffectiveLegalOwner;
 }
 
-<h2 class="text-xl font-bold">Cookies necesarias</h2>
-    <p>La sesión de acceso (jwt_token), el carrito temporal (.AldaJoyeros.TempCart), los mensajes de navegación y la protección antifalsificación de formularios permiten utilizar la web. La duración del acceso depende de si eliges recordar la sesión; el carrito caduca tras 30 minutos de inactividad. La cookie .AldaJoyeros.Consent conserva tu elección durante seis meses.</p>
-    <h2 class="text-xl font-bold">Estadísticas opcionales</h2>
-    <p>Si aceptas, .AldaJoyeros.Visitor identifica de forma aleatoria una visita durante un día. Las páginas visitadas se contabilizan en las estadísticas internas de la tienda, mantenidas en memoria mientras funciona la aplicación. No instalamos Google Analytics ni cookies de publicidad.</p>
-    <h2 class="text-xl font-bold">Preferencias y servicios externos</h2>
-    <p>El tema y el alto contraste se recuerdan en el almacenamiento local del navegador. Algunos recursos visuales se solicitan a proveedores externos (fuentes, estilos e imágenes). Si utilizas el pago con tarjeta, Stripe procesa la operación según su propia política; estas preferencias no desactivan las funciones necesarias para pagar.</p>
-    <h2 class="text-xl font-bold">Cambiar tu elección</h2>
-    <p>Estado: <strong data-cookie-status>@(AldaJoyeros.Helpers.VisitorConsent.AllowsAnalytics(Context.Request) ? "Analítica permitida" : "Solo cookies necesarias")</strong>. Puedes aceptar o retirar tu permiso en cualquier momento. Al rechazar, se elimina la cookie de visitas de este navegador.</p>
-    <partial name="_CookieChoices" />
-    <p>También puedes borrar las cookies y los datos de este sitio desde la configuración de privacidad de tu navegador. <a asp-action="Privacy" class="underline">Consultar privacidad</a>.</p>
+<h2>1. Responsable y finalidad</h2>
+<p>La responsable de este sitio es @titular, NIF @e.Nif, bajo el nombre comercial @e.Nombre. Contacto: @e.Email y @e.Direccion, @e.CodigoPostal @e.Ciudad (@e.Provincia), España. Las cookies guardan información en el navegador; el almacenamiento local y de sesión cumple funciones similares y también se describe aquí.</p>
+<p>Las funciones necesarias para una acción que solicitas no requieren el consentimiento reservado a las opcionales. Rechazar la analítica permite seguir consultando el catálogo y utilizar las funciones de cuenta disponibles.@if (ecommerce) { <text> También puedes utilizar las funciones de compra.</text> } else { <text> En modo escaparate no hay carrito ni nuevos pagos en línea.</text> } Navegar, desplazarte por la página o cerrar el aviso no equivale a aceptar.</p>
+<h2>2. Cookies propias necesarias</h2>
+<dl class="space-y-3"><div><dt class="font-semibold">jwt_token · acceso</dt><dd>Mantiene la autenticación. Caduca normalmente a las 24 horas; si eliges «Recordarme», la cookie puede durar hasta 30 días, sin ampliar por sí sola la validez del token. Se elimina al cerrar sesión.</dd></div>
+<div><dt class="font-semibold">.AldaJoyeros.TempCart · sesión funcional</dt><dd>@if (ecommerce) { <text>Identifica la sesión del carrito temporal y del proceso de compra. El carrito vinculado a una cuenta se conserva en el servidor, no en esta cookie.</text> } else { <text>Puede mantenerse o utilizarse para funciones necesarias de sesión y cuenta, como la recuperación de acceso. Su nombre técnico no significa que esté habilitada una compra; en modo escaparate no se utiliza para crear nuevos pedidos.</text> } La cookie es de sesión; los datos de sesión caducan tras 30 minutos de inactividad.</dd></div>
+<div><dt class="font-semibold">.AspNetCore.Antiforgery.* · seguridad</dt><dd>Protege los formularios frente a envíos no autorizados. Cookie de sesión; el sufijo puede variar según la instalación.</dd></div>
+<div><dt class="font-semibold">.AspNetCore.Mvc.CookieTempDataProvider · mensajes</dt><dd>Transporta avisos entre peticiones, por ejemplo el resultado de una operación. Cookie de sesión que se consume o elimina al leer el mensaje.</dd></div>
+<div><dt class="font-semibold">.AldaJoyeros.Consent · tu elección</dt><dd>Recuerda por separado si permites la analítica propia y Google Maps, o solo lo necesario, durante 180 días. Las preferencias antiguas de analítica no autorizan el mapa. Ambas elecciones se guardan del mismo modo y pueden cambiarse más abajo.</dd></div></dl>
+<h2>3. Analítica propia opcional</h2>
+<p><strong>.AldaJoyeros.Visitor</strong> contiene un identificador aleatorio durante un día para contar visitas y presencia por secciones. Solo se crea o utiliza tras permitir la analítica. Si retiras el permiso, se elimina y dejan de registrarse nuevas visitas opcionales de ese navegador; se retiran los datos de presencia y visitas asociados que mantiene el sistema en memoria. No usamos Google Analytics ni cookies publicitarias propias.</p>
+<p>Las estadísticas actuales se procesan en el servidor de la tienda, sin enviar ese identificador a una plataforma analítica externa. Los periodos de las estadísticas se detallan en <a asp-action="Privacy">Privacidad</a>.</p>
+<h2>4. Almacenamiento de preferencias</h2>
+<p><strong>alda-theme-preference</strong> recuerda el tema elegido, y <strong>viewMode</strong> la vista de cuadrícula o lista, en el almacenamiento local, sin una fecha de caducidad automática: permanecen hasta que los cambies o borres los datos del sitio. Puede existir la clave heredada <strong>hc-theme-preference</strong> de versiones anteriores. No tienen una finalidad publicitaria ni se utilizan para seguirte entre sitios.</p>
+<p>La analítica puede utilizar un identificador técnico de pestaña mantenido durante su apertura. No sustituye la necesidad de permiso para la analítica ni se comparte como identificador publicitario.</p>
+<h2>5. @(ecommerce ? "Mapa, pago y recursos de terceros" : "Mapa y recursos de terceros")</h2>
+<p>El mapa de Google permanece bloqueado hasta que permitas Google Maps en las preferencias, pulses «Aceptar opcionales» o elijas «Aceptar y cargar mapa». Ese permiso se recuerda durante 180 días y el mapa podrá cargarse automáticamente en visitas posteriores. Google recibe datos técnicos y puede utilizar cookies según tu navegador y tu sesión de Google. Puedes retirar únicamente el permiso del mapa con el botón de su esquina superior derecha, o cambiar las opciones aquí. Al retirarlo, el mapa se elimina y permanece bloqueado en las siguientes visitas; esto no modifica por sí solo tu elección sobre la analítica. Los datos ya recibidos por Google se rigen por <a href="https://policies.google.com/privacy?hl=es" target="_blank" rel="noopener noreferrer">su política</a>.</p>
+@if (ecommerce)
+{
+<p>En la pantalla de pago interviene Stripe, que puede utilizar tecnologías necesarias para procesar el pago y prevenir fraude. Su uso no permite activar la analítica propia sin tu permiso. Consulta <a href="https://stripe.com/es/legal/cookies-policy" target="_blank" rel="noopener noreferrer">las cookies de Stripe</a>.</p>
+}
+
+<p>Las fuentes, iconos, scripts e imágenes actuales también se solicitan a proveedores externos. Antes de la apertura pública debe verificarse con la configuración final si depositan tecnologías no necesarias y completar, en su caso, sus nombres, duración y finalidad; no se atribuye a las cookies necesarias una autorización general para el seguimiento externo.</p>
+<h2>6. Cambiar o retirar la elección</h2>
+<p>Estado actual: <strong data-cookie-status>@AldaJoyeros.Helpers.VisitorConsent.Description(AldaJoyeros.Helpers.VisitorConsent.AllowsAnalytics(Context.Request), AldaJoyeros.Helpers.VisitorConsent.AllowsMaps(Context.Request))</strong>. Puedes cambiarlo tantas veces como quieras, con la misma facilidad que al aceptarlo.</p>
+<partial name="_CookieChoices" />
+<p>También puedes borrar o bloquear cookies y almacenamiento desde los ajustes de privacidad de tu navegador. El bloqueo de las necesarias puede impedir que funcionen el acceso y los formularios.@if (ecommerce) { <text> También puede afectar al carrito y al proceso de compra.</text> } Si borras la elección, volverá a mostrarse el aviso. Ante un cambio relevante de finalidades o proveedores, se deberá renovar el consentimiento antes de activar las nuevas tecnologías opcionales.</p>

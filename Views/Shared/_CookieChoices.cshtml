@@ -1,6 +1,15 @@
+@using AldaJoyeros.Helpers
 <form data-cookie-choices asp-controller="Consent" asp-action="Save" method="post" class="flex flex-wrap gap-3 mt-4">
     <input type="hidden" name="returnUrl" value="@(Context.Request.PathBase + Context.Request.Path + Context.Request.QueryString)" />
-    <button type="submit" name="analytics" value="false" class="px-5 py-3 rounded-xl border-2 border-emerald-700 text-emerald-800 bg-white font-semibold">Solo necesarias</button>
-    <button type="submit" name="analytics" value="true" class="px-5 py-3 rounded-xl border-2 border-emerald-700 text-emerald-800 bg-white font-semibold">Permitir analítica</button>
+    <button type="submit" name="choice" value="necessary" class="px-5 py-3 rounded-xl border-2 border-emerald-700 text-emerald-800 bg-white font-semibold">Solo necesarias</button>
+    <button type="submit" name="choice" value="all" class="px-5 py-3 rounded-xl border-2 border-emerald-700 text-emerald-800 bg-white font-semibold">Aceptar opcionales</button>
+    <details class="w-full text-sm">
+        <summary class="cursor-pointer py-2 font-semibold underline">Elegir qué permitir</summary>
+        <div class="mt-2 space-y-3">
+            <label class="flex items-start gap-3"><input type="checkbox" name="analytics" value="true" checked="@VisitorConsent.AllowsAnalytics(Context.Request)" class="mt-1" /><span>Estadísticas propias de visitas (opcional).</span></label>
+            <label class="flex items-start gap-3"><input type="checkbox" name="maps" value="true" checked="@VisitorConsent.AllowsMaps(Context.Request)" class="mt-1" /><span>Mapa de Google Maps (opcional): Google recibe datos técnicos y puede utilizar cookies según su política.</span></label>
+            <button type="submit" name="choice" value="selected" class="px-5 py-3 rounded-xl border-2 border-emerald-700 text-emerald-800 bg-white font-semibold">Guardar mi selección</button>
+        </div>
+    </details>
     <p data-cookie-result role="status" aria-live="polite" hidden class="w-full text-sm text-gray-700"></p>
 </form>

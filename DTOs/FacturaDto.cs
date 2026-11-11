@@ -23,6 +23,7 @@ namespace AldaJoyeros.DTOs
     public sealed record DatosEmpresaDto
     {
         public required string Nombre { get; init; }
+        public string Titular { get; init; } = "";
         public required string Cif { get; init; }
         public required string Direccion { get; init; }
         public required string CodigoPostal { get; init; }

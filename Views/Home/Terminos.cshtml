@@ -1,38 +1,52 @@
+@inject Microsoft.Extensions.Options.IOptions<AldaJoyeros.Configuration.EmpresaSettings> Empresa
+@inject Microsoft.Extensions.Options.IOptions<AldaJoyeros.Configuration.PublicationOptions> Publication
 @{
     Layout = "_LegalLayout";
-    ViewData["Title"] = "Términos y Condiciones";
+    var ecommerce = Context.Items[AldaJoyeros.Services.StoreModeStore.ContextKey] is true;
+    ViewData["Title"] = ecommerce ? "Condiciones de compra" : "Condiciones de uso del escaparate";
     ViewData["LegalIcon"] = "fa-file-contract";
-    ViewData["LegalSummary"] = "Condiciones de uso, productos y proceso de compra.";
+    ViewData["LegalSummary"] = ecommerce ? "Información sobre la compra, entregas, desistimiento, garantías y reclamaciones." : "Consulta del catálogo, contacto con la tienda y derechos sobre pedidos anteriores.";
+    ViewData["LegalUpdated"] = "11 de noviembre de 2026";
+    ViewData["LegalUpdatedIso"] = "2026-11-11";
+    var e = Empresa.Value;
+    var titular = Publication.Value.EffectiveLegalOwner;
 }
 
-<p class="lead text-lg text-gray-700">Por favor, lea estos Términos y Condiciones ("Términos") cuidadosamente antes de utilizar los servicios y el sitio web de Alda Joyeros.</p>
+@if (ecommerce)
+{
+<h2>1. Vendedora y ámbito</h2>
+<p>La vendedora es @titular, NIF @e.Nif, empresaria individual (autónoma), bajo el nombre comercial @e.Nombre. Dirección: @e.Direccion, @e.CodigoPostal @e.Ciudad (@e.Provincia), España. Contacto: <a href="mailto:@e.Email">@e.Email</a> y @e.Telefono.</p>
+<p>Estas condiciones se dirigen a consumidores que compran para fines ajenos a su actividad profesional. La contratación se realiza en castellano. La web permite contratar a través del proceso de compra cuando está activado el modo tienda online.</p>
+<div class="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900" role="note"><strong>Información de venta pendiente de completar.</strong> Antes de abrir la venta en línea deben publicarse los destinos admitidos, los gastos de envío, el plazo de entrega y quién asume el transporte de una devolución por desistimiento. Estos datos todavía no están definidos. Este texto no anuncia una venta en línea lista para contratar.</div>
+<h2>2. Productos, tallas, precios y disponibilidad</h2>
+<p>Las fichas identifican los artículos y sus características. En productos con tallas, el precio «Desde» es el de la variante más económica disponible; al elegir talla se muestra el precio de esa variante. Las fotografías son orientativas respecto al color que pueda representar cada pantalla, sin limitar la obligación de entregar un producto conforme con su descripción.</p>
+<p>Los precios se expresan en euros e incluyen los impuestos aplicables. El importe total y cualquier coste adicional deben informarse antes de efectuar un pago. Los cambios de precio afectan a compras futuras; no modifican por sí mismos los pedidos ya contratados. Una errata se tratará conforme a la normativa aplicable, sin imponer un incremento posterior del precio al cliente.</p>
+<p>«Disponible en 72 horas» se refiere a la disponibilidad prevista del proveedor; no equivale por sí solo a una garantía de entrega en el domicilio en ese plazo. Si un artículo contratado no está disponible, se informará al cliente y se devolverán sin demora indebida los importes abonados cuando no pueda cumplirse el pedido. No se sustituirá por otro artículo sin acuerdo del cliente.</p>
+<h2>3. Pasos para comprar y corregir errores</h2>
+<ol class="list-decimal space-y-2 pl-5"><li>Selecciona los artículos y, cuando proceda, la talla. Revisa cantidades y precios en el carrito; puedes modificarlos o eliminar artículos antes de pagar.</li><li>Inicia sesión o crea una cuenta; el carrito preparado sin cuenta se conserva al acceder.</li><li>Indica y revisa la dirección de entrega. Puedes volver al carrito o al paso de dirección para corregir datos.</li><li>Elige un método de pago disponible. Revisa el total y las condiciones antes de una acción que implique pago.</li><li>Completa la confirmación del pedido. Recibirás su información por correo y podrás consultarla en «Mis pedidos».</li></ol>
+<p>El pago con tarjeta se procesa mediante Stripe. Si está disponible, el contra reembolso supone pagar al recibir el pedido. No se añadirán servicios ni costes opcionales sin aceptación expresa. Guarda el correo y una copia de las condiciones que se te faciliten: la confirmación de un pedido no puede depender de aceptar cambios posteriores de estas condiciones.</p>
+<h2>4. Entrega e incidencias</h2>
+<p>El territorio de entrega, su coste y su plazo deben quedar determinados antes de contratar; siguen pendientes de definición para la apertura de la tienda en línea. Salvo otro plazo acordado válidamente, la entrega debe realizarse sin demora indebida y, como máximo, en 30 días naturales desde la celebración del contrato. Si hay retraso, se aplicarán los derechos de cumplimiento o resolución previstos legalmente.</p>
+<p>La vendedora responde de la entrega hasta que el consumidor o la persona que indique adquiera la posesión material, con las excepciones previstas por la ley cuando el consumidor contrate por su cuenta un transportista no propuesto por la tienda. Un problema con el transportista no elimina los derechos frente a la vendedora.</p>
+<h2>5. Derecho de desistimiento</h2>
+<p>En las compras a distancia dispones de 14 días naturales desde que tú, o un tercero que designes distinto del transportista, recibas el bien para comunicar que desistes, sin necesidad de justificarlo. En pedidos con entregas separadas se aplicará el cómputo legal desde la recepción del último bien. Puedes comunicarlo a <a href="mailto:@e.Email">@e.Email</a> o por escrito a la dirección de la tienda. Basta una declaración inequívoca enviada dentro de plazo; no es obligatorio usar el modelo siguiente.</p>
+<p>Después de comunicarlo, debes devolver los bienes sin demora y dentro de los 14 días naturales siguientes, a @e.Direccion, @e.CodigoPostal @e.Ciudad (@e.Provincia), España. Conserva el justificante de envío. Solo responderás de una disminución de valor causada por una manipulación distinta de la necesaria para comprobar la naturaleza, características y funcionamiento del producto.</p>
+<p>La asignación del coste directo del transporte de devolución está pendiente de definición. Si no se te informó antes de contratar de que ese coste te correspondía, no se te podrá exigir. Las devoluciones por falta de conformidad no deben ocasionarte gastos.</p>
+<p>Se reembolsarán los pagos recibidos, incluido el coste de entrega ordinaria cuando corresponda, dentro de los 14 días naturales desde la comunicación, por el mismo medio de pago salvo acuerdo expreso sin costes para ti. Puede retenerse el reembolso hasta recibir los bienes o una prueba de devolución, lo que suceda primero. No se reintegra el suplemento de una entrega más cara elegida voluntariamente frente a la ordinaria ofrecida.</p>
+<h2>6. Excepciones al desistimiento</h2>
+<p>La excepción de personalización solo se aplica a artículos confeccionados según las especificaciones del consumidor o claramente personalizados, por ejemplo un grabado encargado expresamente. Elegir una talla estándar, comprar una oferta o que el artículo se solicite al proveedor no elimina por sí solo el desistimiento. Para invocar una excepción por higiene deben cumplirse todos los requisitos legales de producto precintado no apto para devolución por protección de la salud o higiene y desprecintado después de la entrega; no se excluyen todos los pendientes por su categoría. Se informará de cualquier excepción aplicable antes de contratar. Las excepciones no eliminan la garantía por falta de conformidad.</p>
+<h2>7. Modelo de comunicación de desistimiento</h2>
+<div class="rounded-xl border border-gray-200 bg-gray-50 p-4"><p>A la atención de @titular (@e.Nombre), @e.Direccion, @e.CodigoPostal @e.Ciudad (@e.Provincia), España; @e.Email.</p><p>Por la presente comunico que desisto del contrato de compra del siguiente bien: __________.</p><p>Número de pedido: __________. Fecha del pedido: __________. Fecha de recepción: __________.</p><p>Nombre y apellidos del consumidor: __________. Domicilio: __________. Correo para la respuesta: __________.</p><p>Fecha: __________. Firma (solo si se presenta en papel): __________.</p></div>
+<p>Puedes copiar este modelo y remitirlo por correo electrónico o en papel. No envíes datos de tarjeta ni contraseñas.</p>
+<h2>8. Garantía legal y atención posventa</h2>
+<p>Para bienes nuevos, la vendedora responde por las faltas de conformidad que se manifiesten durante los tres años desde la entrega, sin perjuicio de las reglas específicas aplicables a bienes con elementos digitales y sus actualizaciones. Según los requisitos legales, podrás solicitar reparación o sustitución gratuitas y, cuando proceda, reducción del precio o resolución del contrato. No es obligatorio reclamar primero al fabricante. Una garantía comercial adicional no reduce estos derechos.</p>
+<p>Comunica la incidencia a @e.Email o @e.Telefono, indicando el pedido y el problema. Se te facilitarán instrucciones para la atención de la garantía sin gastos cuando corresponda.</p>
+<h2>9. Reclamaciones y ley aplicable</h2>
+<p>Puedes presentar una reclamación en @e.Email o en la dirección de la tienda. Se facilitará constancia de la reclamación y se responderá en el plazo legal, como máximo quince días desde su presentación. Puedes acudir a los servicios públicos de consumo y a los órganos judiciales competentes, manteniendo el fuero y los derechos imperativos del consumidor.</p>
+<p>No se anuncia adhesión a arbitraje de consumo ni a una entidad de resolución alternativa, porque no se ha confirmado. Cuando una reclamación no se resuelva, se informará en soporte duradero sobre la entidad competente y la participación de la tienda cuando legalmente proceda. No se remite a la antigua plataforma europea de litigios en línea, que ha sido suprimida.</p>
 
-                <h2 class="text-xl font-bold text-gray-800 mt-8 mb-4 flex items-center gap-2">
-                    <i class="fas fa-check-circle text-emerald-600"></i>
-                    1. Aceptación de los Términos
-                </h2>
-                <p>Al acceder, navegar o utilizar este sitio de cualquier manera, indica que comprende y acepta estos Términos. Si no está de acuerdo, por favor absténgase de utilizar nuestros servicios.</p>
-
-                <h2 class="text-xl font-bold text-gray-800 mt-8 mb-4 flex items-center gap-2">
-                    <i class="fas fa-gem text-emerald-600"></i>
-                    2. Productos y Servicios
-                </h2>
-                <p>En Alda Joyeros, intentamos mostrar los colores e imágenes de nuestros productos con la mayor precisión posible. No obstante, no podemos garantizar que la pantalla de su monitor refleje el color exacto del artículo real.</p>
-                <ul class="list-disc pl-5 space-y-2">
-                    <li>Los precios están sujetos a cambios sin previo aviso.</li>
-                    <li>Nos reservamos el derecho de limitar las ventas de productos u ofrecer promociones por tiempos limitados.</li>
-                    <li>Podemos descontinuar cualquier producto en cualquier momento de nuestro catálogo.</li>
-                </ul>
-
-                <h2 class="text-xl font-bold text-gray-800 mt-8 mb-4 flex items-center gap-2">
-                    <i class="fas fa-truck text-emerald-600"></i>
-                    3. Pagos y Envíos
-                </h2>
-                <p>El cliente es responsable de asegurarse de proporcionar información precisa al tramitar el pago. Todos los pedidos realizados son sujetos a aprobación y disponibilidad.</p>
-                <p>Las tarifas de envío y tiempos estimados se proporcionarán al final de la compra. Alda Joyeros no se hace responsable por demoras que ocurran debido a causas ajenas o de fuerza mayor durante el transporte y proceso de aduana.</p>
-
-                <h2 class="text-xl font-bold text-gray-800 mt-8 mb-4 flex items-center gap-2">
-                    <i class="fas fa-undo-alt text-emerald-600"></i>
-                    4. Devoluciones y Reembolsos
-                </h2>
-                <p>Ofrecemos una política de devoluciones sujeta a ciertas restricciones. Los anillos personalizados, bisutería grabada, u ofertas especiales pueden ser artículos no retornables o de venta final.</p>
+}
+else
+{
+    <partial name="_CondicionesEscaparate" />
+}

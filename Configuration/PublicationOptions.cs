@@ -6,7 +6,9 @@ public sealed class PublicationOptions
     public bool IndexingEnabled { get; set; }
     public bool RedirectToPublicOrigin { get; set; }
     public string PublicBaseUrl { get; set; } = "";
-    public string LegalOwner { get; set; } = "";
+    public const string DefaultLegalOwner = "Patricia García Guzmán";
+    public string LegalOwner { get; set; } = DefaultLegalOwner;
+    public string EffectiveLegalOwner => string.IsNullOrWhiteSpace(LegalOwner) ? DefaultLegalOwner : LegalOwner.Trim();
     public string RegistryDetails { get; set; } = "";
     public string? PublicOrigin => Uri.TryCreate(PublicBaseUrl, UriKind.Absolute, out var uri)
         && uri.Scheme == "https" && !uri.IsLoopback && string.IsNullOrEmpty(uri.Query)
