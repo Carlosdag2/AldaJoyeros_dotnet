@@ -28,11 +28,19 @@ void Verify(EmailService service, string origin)
         ("GetNewOrderNotificationEmailTemplate", new object[] { order, "cliente@example.invalid", "Tarjeta" }, "/AdminPedidos/Detalle/42")
     }) {
         var html=WebUtility.HtmlDecode(Render(service,method,args));
+        Check(html.Contains("Alda Joyeros 1962") && !Regex.IsMatch(html, @"\bAlda\s*Joyeros\b(?! 1962)"), "El correo identifica la tienda con su nombre completo");
         var urls=Regex.Matches(html,"href=\"([^\"]+)\"").Select(m=>m.Groups[1].Value).ToArray();
         Check(urls.Contains(origin+path),method+" apunta a "+origin+path);
         Check(!urls.Any(u=>u.StartsWith("http")&&!u.StartsWith(origin+"/",StringComparison.Ordinal)),"Sin enlaces a otro servidor en "+method);
     }
 }
+foreach (var name in new[] { "Alda", "AldaJoyeros", "ALDA JOYEROS", "Alda Joyeros desde 1962", "Alda Joyeros 1968", "Alda Joyeros 1962" })
+{
+    Check(new EmailSettings { SenderName = name }.SenderName == "Alda Joyeros 1962", "El remitente normaliza el nombre anterior: " + name);
+    Check(new EmpresaSettings { Nombre = name }.Nombre == "Alda Joyeros 1962", "La identidad de facturación normaliza el nombre anterior: " + name);
+}
+Check(new EmailSettings().SenderName == "Alda Joyeros 1962", "El remitente vacío utiliza la identidad pública");
+Check(new EmpresaSettings { Nombre = "Otra actividad" }.Nombre == "Otra actividad", "No se modifican nombres ajenos a esta marca");
 foreach (var test in cases)
 {
     var context=new DefaultHttpContext();context.Request.Scheme=test.Scheme;context.Request.Host=new HostString(test.Host);context.Request.PathBase=test.Path;

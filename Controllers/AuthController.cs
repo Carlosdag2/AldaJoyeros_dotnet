@@ -181,7 +181,7 @@ namespace AldaJoyeros.Controllers
 
                 if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                 {
-                    TempData["Success"] = $"¡Bienvenido a Alda Joyeros, {loggedUser.Email.Split('@')[0]}! Tu cuenta ha sido creada.";
+                    TempData["Success"] = $"¡Bienvenido a Alda Joyeros 1962, {loggedUser.Email.Split('@')[0]}! Tu cuenta ha sido creada.";
                     return LocalRedirect(returnUrl);
                 }
 
@@ -191,7 +191,7 @@ namespace AldaJoyeros.Controllers
                     return RedirectToAction("Index", "Carrito");
                 }
 
-                TempData["Success"] = $"¡Bienvenido a Alda Joyeros! Tu cuenta ha sido creada exitosamente.";
+                TempData["Success"] = $"¡Bienvenido a Alda Joyeros 1962! Tu cuenta ha sido creada exitosamente.";
                 return RedirectToAction("Index", "Home");
             }
             catch (Exception ex)

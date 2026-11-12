@@ -7,7 +7,8 @@ namespace AldaJoyeros.Configuration
         public string SenderEmail { get; set; } = string.Empty;
         // Si está vacío, los avisos de pedidos se envían al remitente de la tienda.
         public string OwnerEmail { get; set; } = string.Empty;
-        public string SenderName { get; set; } = string.Empty;
+        private string senderName = AldaJoyeros.Helpers.StoreBrand.Name;
+        public string SenderName { get => AldaJoyeros.Helpers.StoreBrand.NormalizeName(senderName); set => senderName = value; }
         public string Username { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
         public bool EnableSsl { get; set; } = true;

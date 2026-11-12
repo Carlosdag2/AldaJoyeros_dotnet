@@ -23,7 +23,7 @@
     <div class="container mx-auto px-4 sm:px-6">
         <nav aria-label="Ruta de navegación" class="mb-6 flex flex-wrap items-center gap-2 text-xs text-stone-500"><a asp-controller="Home" asp-action="Index" class="hover:text-emerald-800">Inicio</a><span aria-hidden="true">/</span><span>Catálogo</span><span x-show="nombreCategoria" x-cloak aria-hidden="true">/</span><span x-show="nombreCategoria" x-text="nombreCategoria" class="text-emerald-800">@categoriaActual?.Nombre</span></nav>
         <div class="grid items-center gap-7 lg:grid-cols-2 lg:gap-16">
-            <div class="min-w-0"><p class="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-emerald-800">La colección Alda</p>
+            <div class="min-w-0"><p class="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-emerald-800">La colección Alda Joyeros 1962</p>
                 <h1 id="catalog-title" class="break-words font-serif text-4xl tracking-tight text-stone-900 sm:text-5xl"><span x-show="nombreCategoria" x-text="nombreCategoria" style="@(categoriaActual == null ? "display:none" : null)">@categoriaActual?.Nombre</span><span x-show="!nombreCategoria" style="@(categoriaActual != null ? "display:none" : null)">Encuentra tu <em class="font-normal text-emerald-800">próxima joya.</em></span></h1>
                 <p class="mt-4 max-w-lg text-sm leading-relaxed text-stone-600">Joyas y relojes para cada ocasión. Explora nuestras categorías y elige el rango de precio que va contigo.</p>
             </div>

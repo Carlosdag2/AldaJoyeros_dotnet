@@ -20,7 +20,7 @@ internal sealed class FacturaDocument(FacturaDto factura) : IDocument
     public DocumentMetadata GetMetadata() => new()
     {
         Title = $"Factura {factura.NumeroFactura}", Author = factura.Empresa.Nombre,
-        Subject = $"Factura del pedido #{factura.Pedido.Id}", Creator = "Alda Joyeros - Facturación"
+        Subject = $"Factura del pedido #{factura.Pedido.Id}", Creator = "Alda Joyeros 1962 - Facturación"
     };
 
     public void Compose(IDocumentContainer container)
@@ -40,7 +40,7 @@ internal sealed class FacturaDocument(FacturaDto factura) : IDocument
                 column.Item().ShowEntire().Element(Totals);
                 column.Item().ShowEntire().Background(Paper).BorderLeft(2).BorderColor(Gold).Padding(14).Column(note =>
                 {
-                    note.Item().Text("Gracias por confiar en AldaJoyeros.").SemiBold().FontSize(11);
+                    note.Item().Text("Gracias por confiar en Alda Joyeros 1962.").SemiBold().FontSize(11);
                     note.Item().PaddingTop(5).Text("Conserva esta factura como justificante de tu compra. Para cualquier consulta, indica el número de factura o de pedido.").FontSize(9).FontColor(Muted);
                 });
             });
@@ -56,8 +56,8 @@ internal sealed class FacturaDocument(FacturaDto factura) : IDocument
             {
                 row.RelativeItem().Column(brand =>
                 {
-                    brand.Item().Text("ALDA").FontFamily("Georgia").FontSize(30).FontColor(Colors.White);
-                    brand.Item().PaddingTop(3).Text("JOYEROS · DESDE 1962").FontSize(9).FontColor("#d9c69f");
+                    brand.Item().Text("Alda Joyeros 1962").FontFamily("Georgia").FontSize(20).FontColor(Colors.White);
+                    brand.Item().PaddingTop(3).Text("JOYERÍA Y RELOJERÍA").FontSize(9).FontColor("#d9c69f");
                 });
                 row.ConstantItem(125).AlignRight().AlignMiddle().Column(title =>
                 {

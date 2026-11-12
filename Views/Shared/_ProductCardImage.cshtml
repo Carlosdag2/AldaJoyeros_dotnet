@@ -1,0 +1,26 @@
+@model (AldaJoyeros.DTOs.ProductoDto Product, string Link, string MediaClass)
+@{
+    var product = Model.Product;
+    var photos = product.Imagenes.OrderByDescending(i => i.EsPrincipal).ThenBy(i => i.Orden).ThenBy(i => i.Id)
+        .Select(i => i.ImagenBase64).Where(url => !string.IsNullOrWhiteSpace(url)).Distinct().ToArray();
+}
+<a href="@Model.Link" data-product-id="@product.Id" class="@Model.MediaClass"
+   aria-label="Ver @product.CategoriaNombre, referencia @product.Nombre"
+   data-product-gallery data-image-count="@photos.Length"
+   data-gallery-images="@System.Text.Json.JsonSerializer.Serialize(photos)"
+   style="@(photos.Length > 1 ? "touch-action:pan-y pinch-zoom" : null)">
+    @if (photos.Length > 0)
+    {
+        <img data-gallery-image src="@photos[0]" alt="@product.CategoriaNombre, referencia @product.Nombre"
+             draggable="false" width="400" height="400" decoding="async" loading="lazy"
+             class="h-full w-full object-contain transition-transform duration-500 motion-safe:group-hover:scale-105"
+             onerror="this.hidden=true;this.nextElementSibling.hidden=false;" />
+        <span data-gallery-error hidden class="absolute inset-0 p-4 text-center text-xs text-stone-500">Imagen no disponible</span>
+        @if (photos.Length > 1)
+        {
+            <span data-gallery-counter aria-live="polite" aria-atomic="true" class="absolute bottom-2 right-2 rounded-full border border-stone-200 bg-white px-2 py-1 text-xs font-semibold text-stone-700 shadow-sm">1 / @photos.Length</span>
+        }
+    }
+    else
+    { <span class="flex h-full items-center justify-center text-stone-300"><i class="fas fa-gem text-4xl" aria-hidden="true"></i></span> }
+</a>
