@@ -128,8 +128,8 @@ namespace AldaJoyeros
             // Configurar políticas de autorización
             builder.Services.AddAuthorization(AuthorizationPolicies.ConfigurePolicies);
 
-            // Configurar AutoMapper
-            builder.Services.AddAutoMapper(typeof(Program));
+            // Conversiones explicitas de entidades y formularios
+            builder.Services.AddSingleton<AldaJoyeros.Mappings.AppMapper>();
 
             // Registrar Repositorios MySQL
             builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();

@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+﻿using AldaJoyeros.Mappings;
 using AldaJoyeros.DTOs;
 using AldaJoyeros.Repositories.Interfaces;
 using AldaJoyeros.Services.Interfaces;
@@ -9,12 +9,12 @@ namespace AldaJoyeros.Services.Implementations
     {
         private readonly IProductoRepository _productoRepository;
         private readonly IProductoImagenService _imagenService;
-        private readonly IMapper _mapper;
+        private readonly AppMapper _mapper;
 
         public ProductoService(
             IProductoRepository productoRepository,
             IProductoImagenService imagenService,
-            IMapper mapper)
+            AppMapper mapper)
         {
             _productoRepository = productoRepository;
             _imagenService = imagenService;

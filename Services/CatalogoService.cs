@@ -3,13 +3,13 @@ using AldaJoyeros.DTOs;
 using AldaJoyeros.Helpers;
 using AldaJoyeros.Services.Interfaces;
 using AldaJoyeros.Services.Implementations;
-using AutoMapper;
+using AldaJoyeros.Mappings;
 using Microsoft.EntityFrameworkCore;
 
 namespace AldaJoyeros.Services;
 
 // Vista pública de las familias. Los registros del proveedor, administración y pedidos se conservan individuales.
-public sealed class CatalogoService(AldaJoyerosContext sql, IMapper mapper, PublicImageService images, CatalogUrlStore urls) : ICartCatalog
+public sealed class CatalogoService(AldaJoyerosContext sql, AppMapper mapper, PublicImageService images, CatalogUrlStore urls) : ICartCatalog
 {
     private Task<IReadOnlyList<ProductFamily>>? snapshot;
     public Task<IReadOnlyList<ProductFamily>> FamiliesAsync() => snapshot ??= LoadAsync();
