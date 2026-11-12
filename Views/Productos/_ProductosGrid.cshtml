@@ -13,15 +13,7 @@
         {
             var link = AldaJoyeros.Helpers.PublicUrls.ProductLink(Context.Request, producto);
             <article class="producto-card group flex min-w-0 flex-col" data-producto-id="@producto.Id">
-                <a href="@link" class="product-media relative block aspect-square overflow-hidden rounded-xl border border-stone-200 bg-white p-3 sm:p-5" aria-label="Ver @producto.CategoriaNombre, referencia @producto.Nombre">
-                    @if (producto.TieneImagenes)
-                    {
-                        <img src="@producto.ImagenPrincipal" alt="@producto.CategoriaNombre, referencia @producto.Nombre" width="400" height="400" decoding="async" loading="lazy" class="h-full w-full object-contain transition-transform duration-500 motion-safe:group-hover:scale-105" onerror="this.hidden=true;this.nextElementSibling.hidden=false;" />
-                        <span hidden class="absolute inset-0 p-4 text-center text-xs text-stone-500">Imagen no disponible</span>
-                    }
-                    else
-                    { <span class="flex h-full items-center justify-center text-stone-300"><i class="fas fa-gem text-4xl" aria-hidden="true"></i></span> }
-                </a>
+                <partial name="_ProductCardImage" model='(producto, link, "product-media relative block aspect-square overflow-hidden rounded-xl border border-stone-200 bg-white p-3 sm:p-5")' />
                 <div class="flex flex-1 flex-col pt-3 sm:pt-4">
                     <p class="mb-2 break-words text-xs leading-relaxed text-stone-500">@producto.CategoriaNombre</p>
                     <h2 class="break-words text-sm font-semibold text-stone-900"><a href="@link" class="hover:underline">@producto.Nombre</a></h2>
@@ -43,12 +35,7 @@
         {
             var link = AldaJoyeros.Helpers.PublicUrls.ProductLink(Context.Request, producto);
             <article class="producto-card flex min-w-0 gap-3 rounded-xl border border-stone-200 bg-white p-3 sm:gap-6 sm:p-5" data-producto-id="@producto.Id">
-                <a href="@link" class="product-media relative block aspect-square h-24 w-24 shrink-0 overflow-hidden rounded-lg bg-white p-2 sm:h-40 sm:w-40" aria-label="Ver @producto.CategoriaNombre, referencia @producto.Nombre">
-                    @if (producto.TieneImagenes)
-                    { <img src="@producto.ImagenPrincipal" alt="@producto.CategoriaNombre, referencia @producto.Nombre" decoding="async" loading="lazy" width="200" height="200" class="h-full w-full object-contain" onerror="this.hidden=true;this.nextElementSibling.hidden=false;" /><span hidden class="absolute inset-0 p-2 text-xs text-stone-500">Imagen no disponible</span> }
-                    else
-                    { <span class="flex h-full items-center justify-center text-stone-300"><i class="fas fa-gem text-3xl" aria-hidden="true"></i></span> }
-                </a>
+                <partial name="_ProductCardImage" model='(producto, link, "product-media relative block aspect-square h-24 w-24 shrink-0 overflow-hidden rounded-lg bg-white p-2 sm:h-40 sm:w-40")' />
                 <div class="flex min-w-0 flex-1 flex-col justify-center">
                     <p class="mb-2 break-words text-xs text-stone-500">@producto.CategoriaNombre</p><h2 class="break-words text-sm font-semibold text-stone-900 sm:text-base"><a href="@link" class="hover:underline">@producto.Nombre</a></h2>
                     <div class="hidden sm:block"><p class="mt-2 text-sm leading-relaxed text-stone-600 line-clamp-2">@producto.Descripcion</p></div>

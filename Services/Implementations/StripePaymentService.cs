@@ -42,7 +42,7 @@ namespace AldaJoyeros.Services.Implementations
                 {
                     Amount = amountInCents,
                     Currency = currency.ToLower(),
-                    Description = description ?? "Compra en Alda Joyeros",
+                    Description = description ?? "Compra en Alda Joyeros 1962",
                     AutomaticPaymentMethods = new PaymentIntentAutomaticPaymentMethodsOptions
                     {
                         Enabled = true,

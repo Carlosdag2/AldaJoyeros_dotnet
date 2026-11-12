@@ -5,7 +5,8 @@ namespace AldaJoyeros.Configuration
     /// </summary>
     public sealed class EmpresaSettings
     {
-        public string Nombre { get; set; } = "Alda Joyeros 1962";
+        private string nombre = AldaJoyeros.Helpers.StoreBrand.Name;
+        public string Nombre { get => AldaJoyeros.Helpers.StoreBrand.NormalizeName(nombre); set => nombre = value; }
         // Cif se mantiene para admitir la configuración existente; el identificador público es NIF.
         public const string DefaultNif = "52974088M";
         public string Cif { get; set; } = string.Empty;

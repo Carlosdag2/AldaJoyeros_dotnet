@@ -261,7 +261,7 @@ namespace AldaJoyeros.Controllers
                 var result = await _paymentService.CreatePaymentIntentAsync(
                     total,
                     "EUR",
-                    $"Pedido Alda Joyeros - Usuario {CurrentUser.Id}",
+                    $"Pedido Alda Joyeros 1962 - Usuario {CurrentUser.Id}",
                     new Dictionary<string, string>
                     {
                         { "userId", CurrentUser.Id.ToString() },

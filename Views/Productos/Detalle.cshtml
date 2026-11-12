@@ -60,13 +60,16 @@
             <div class="lg:col-span-7" x-data="{ activeImage: 0 }">
                 <div class="lg:sticky lg:top-8 space-y-6">
 
-                    <div class="product-media relative aspect-square md:aspect-[4/3] bg-gray-50 rounded-lg overflow-hidden border border-gray-100 group">
+                    <div class="product-media relative aspect-square md:aspect-[4/3] bg-gray-50 rounded-lg overflow-hidden border border-gray-100 group"
+                         data-product-gallery data-image-count="@imagenes.Count" style="touch-action:pan-y pinch-zoom"
+                         role="region" aria-label="Imágenes del producto" tabindex="@(imagenes.Count > 1 ? "0" : null)"
+                         x-on:alda:image-step="activeImage = (activeImage + $event.detail + @imagenes.Count) % @(Math.Max(1, imagenes.Count))">
                         @if (imagenes.Any())
                         {
                             @foreach (var (imagen, index) in imagenes.Select((img, i) => (img, i)))
                             {
                                 <img src="@imagen.ImagenBase64"
-                                     alt="@Model.Nombre"
+                                     alt="@Model.Nombre" draggable="false"
                                      class="absolute inset-0 w-full h-full object-contain p-8 md:p-12 transition-all duration-700"
                                      x-show="activeImage === @index"
                                      x-transition:enter="transition ease-out duration-500"
@@ -77,11 +80,11 @@
                             @if (imagenes.Count > 1)
                             {
                                 <div class="absolute inset-0 flex items-center justify-between px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                    <button @@click="activeImage = activeImage === 0 ? @(imagenes.Count - 1) : activeImage - 1"
+                                    <button type="button" aria-label="Imagen anterior" @@click="activeImage = activeImage === 0 ? @(imagenes.Count - 1) : activeImage - 1"
                                             class="w-10 h-10 rounded-full bg-white shadow-lg text-dark-900 hover:text-emerald-600 flex items-center justify-center transition-transform hover:scale-110">
                                         <i class="fas fa-chevron-left"></i>
                                     </button>
-                                    <button @@click="activeImage = activeImage === @(imagenes.Count - 1) ? 0 : activeImage + 1"
+                                    <button type="button" aria-label="Imagen siguiente" @@click="activeImage = activeImage === @(imagenes.Count - 1) ? 0 : activeImage + 1"
                                             class="w-10 h-10 rounded-full bg-white shadow-lg text-dark-900 hover:text-emerald-600 flex items-center justify-center transition-transform hover:scale-110">
                                         <i class="fas fa-chevron-right"></i>
                                     </button>
@@ -106,7 +109,7 @@
                         <div class="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
                             @foreach (var (imagen, index) in imagenes.Select((img, i) => (img, i)))
                             {
-                                <button @@click="activeImage = @index" :aria-pressed="activeImage === @index"
+                                <button type="button" aria-label="Ver imagen @(index + 1)" @@click="activeImage = @index" :aria-pressed="activeImage === @index"
                                         class="relative w-20 h-20 md:w-24 md:h-24 flex-shrink-0 bg-gray-50 rounded-md border transition-all duration-300 overflow-hidden"
                                         :class="activeImage === @index ? 'border-emerald-600 ring-1 ring-emerald-600 ring-offset-2' : 'border-gray-200 hover:border-gray-300'">
                                     <img src="@imagen.ImagenBase64" alt="Vista de @Model.CategoriaNombre, referencia @Model.Nombre" loading="lazy" decoding="async" class="w-full h-full object-contain p-2" />
@@ -241,15 +244,6 @@
                         <div>
                             <h4 class="font-serif font-bold text-dark-900 text-sm">@(ViewBag.EcommerceEnabled == true ? "Envío Asegurado" : "Atención Personalizada")</h4>
                             <p class="text-xs text-gray-500 mt-1">@(ViewBag.EcommerceEnabled == true ? "Disponible en 72 horas. Envío gratuito y seguro." : "Disponible en 72 horas. Consulta esta pieza en tienda.")</p>
-                        </div>
-                    </div>
-                    <div class="flex items-start gap-4">
-                        <div class="w-8 h-8 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-600 flex-shrink-0 mt-1">
-                            <i class="fas fa-certificate text-xs"></i>
-                        </div>
-                        <div>
-                            <h4 class="font-serif font-bold text-dark-900 text-sm">Autenticidad Garantizada</h4>
-                            <p class="text-xs text-gray-500 mt-1">Incluye certificado oficial de calidad Alda Joyeros.</p>
                         </div>
                     </div>
                 </div>

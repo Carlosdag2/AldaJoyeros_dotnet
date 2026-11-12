@@ -143,7 +143,7 @@ public static class SupplierReportPdf
             page.Size(PageSizes.A4); page.Margin(36); page.DefaultTextStyle(x => x.FontSize(10).FontColor("#243b32"));
             page.Header().PaddingBottom(16).Row(row =>
             {
-                row.RelativeItem().Column(col => { col.Item().Text("ALDA JOYEROS").FontSize(16).SemiBold().FontColor("#123d2d"); col.Item().Text("Administración del catálogo").FontSize(9).FontColor("#68766d"); });
+                row.RelativeItem().Column(col => { col.Item().Text("Alda Joyeros 1962").FontSize(16).SemiBold().FontColor("#123d2d"); col.Item().Text("Administración del catálogo").FontSize(9).FontColor("#68766d"); });
                 row.AutoItem().AlignRight().Text(provider).FontSize(13).SemiBold();
             });
             page.Content().Column(col =>

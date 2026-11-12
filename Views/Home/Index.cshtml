@@ -22,7 +22,7 @@
                 <h1 id="home-title" class="max-w-xl font-serif text-5xl leading-[1.08] tracking-tight text-stone-900 sm:text-6xl xl:text-7xl">
                     Hay momentos<br />que merecen<br /><em class="font-normal text-emerald-800">una joya.</em>
                 </h1>
-                <p class="mt-6 max-w-md text-base leading-relaxed text-stone-600 sm:text-lg">Joyas y relojes para acompañarte cada día y celebrar lo que de verdad importa. Encuentra tu próxima pieza en Alda Joyeros.</p>
+                <p class="mt-6 max-w-md text-base leading-relaxed text-stone-600 sm:text-lg">Joyas y relojes para acompañarte cada día y celebrar lo que de verdad importa. Encuentra tu próxima pieza en Alda Joyeros 1962.</p>
                 <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                     <a asp-controller="Productos" asp-action="Index" asp-route-categoria="" class="inline-flex items-center justify-center gap-4 rounded-lg bg-emerald-800 px-7 py-4 text-sm font-semibold text-white transition-colors hover:bg-emerald-900">
                         Descubrir el catálogo <i class="fas fa-arrow-right text-xs" aria-hidden="true"></i>
@@ -43,7 +43,7 @@
         </div>
     </section>
 
-    <section class="border-y border-stone-200 bg-white" aria-label="La experiencia Alda Joyeros">
+    <section class="border-y border-stone-200 bg-white" aria-label="La experiencia Alda Joyeros 1962">
         <div class="container mx-auto grid gap-6 px-6 py-7 sm:grid-cols-3 sm:gap-8">
             @foreach (var item in new[] {
                 (Icon: "fa-gem", Title: "Una historia desde 1962", Text: "La joyería de siempre, cerca de ti."),
@@ -91,15 +91,7 @@
                     {
                         var link = AldaJoyeros.Helpers.PublicUrls.ProductLink(Context.Request, producto);
                         <article class="group flex min-w-0 flex-col" data-home-product>
-                            <a href="@link" data-product-id="@producto.Id" class="product-media relative block aspect-square overflow-hidden rounded-xl border border-stone-200 bg-white p-3 sm:p-6" aria-label="Ver @producto.CategoriaNombre, referencia @producto.Nombre">
-                                @if (producto.TieneImagenes)
-                                {
-                                    <img src="@producto.ImagenPrincipal" alt="@producto.CategoriaNombre, referencia @producto.Nombre" loading="lazy" decoding="async" width="400" height="400" class="h-full w-full object-contain transition-transform duration-500 motion-safe:group-hover:scale-105" onerror="this.hidden=true;this.nextElementSibling.hidden=false;" />
-                                    <span hidden class="absolute inset-0 items-center justify-center p-6 text-center text-sm text-stone-500">Imagen no disponible</span>
-                                }
-                                else
-                                { <span class="flex h-full items-center justify-center"><i class="fas fa-gem text-4xl text-stone-300" aria-hidden="true"></i></span> }
-                            </a>
+                            <partial name="_ProductCardImage" model='(producto, link, "product-media relative block aspect-square overflow-hidden rounded-xl border border-stone-200 bg-white p-3 sm:p-6")' />
                             <div class="flex flex-1 flex-col pt-4">
                                 <p class="mb-2 break-words text-xs text-stone-500">@producto.CategoriaNombre</p>
                                 <h3 class="break-words text-sm font-semibold text-stone-900"><a href="@link" data-product-id="@producto.Id" class="hover:underline">@producto.Nombre</a></h3>
@@ -128,7 +120,7 @@
 
     <section class="home-story py-12 sm:py-16" aria-labelledby="home-story-title">
         <div class="container mx-auto grid items-center gap-8 px-6 md:grid-cols-3 md:gap-12">
-            <div><p class="text-xs uppercase tracking-[0.2em] text-emerald-800">Alda Joyeros</p><p class="mt-2 font-serif text-6xl text-emerald-900">1962<span class="mt-2 block font-sans text-xs uppercase tracking-[0.2em] text-stone-600">El comienzo de nuestra historia</span></p></div>
+            <div><p class="text-xs uppercase tracking-[0.2em] text-emerald-800">Alda Joyeros 1962</p><p class="mt-2 font-serif text-6xl text-emerald-900">1962<span class="mt-2 block font-sans text-xs uppercase tracking-[0.2em] text-stone-600">El comienzo de nuestra historia</span></p></div>
             <div class="md:col-span-2"><h2 id="home-story-title" class="font-serif text-3xl text-stone-900 sm:text-4xl">La confianza de siempre.<br />La ilusión de cada ocasión.</h2><p class="mt-4 max-w-2xl text-sm leading-relaxed text-stone-600">Llevamos más de seis décadas formando parte de los momentos de nuestros clientes. Ven a nuestra tienda de Illescas: te ayudamos a elegir con calma, de cerca y a tu manera.</p><a href="#visitanos" class="mt-5 inline-flex items-center gap-3 text-sm font-semibold text-emerald-800 underline underline-offset-4">Te esperamos en la tienda <i class="fas fa-arrow-down text-xs" aria-hidden="true"></i></a></div>
         </div>
     </section>
@@ -186,8 +178,8 @@
                     <div class="space-y-8 sm:space-y-10">
                         <!-- Logo -->
                         <div class="mb-4">
-                            <p class="font-serif text-3xl tracking-wider">ALDA</p>
-                            <p class="text-emerald-400 text-sm tracking-[0.3em]">JOYEROS 1962</p>
+                            <p class="font-serif text-2xl tracking-wider sm:text-3xl">Alda Joyeros 1962</p>
+                            <p class="text-emerald-400 text-sm tracking-[0.3em]">JOYERÍA Y RELOJERÍA</p>
                         </div>
 
                         <!-- Address -->

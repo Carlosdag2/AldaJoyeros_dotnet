@@ -5,7 +5,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Catálogo en tienda | Alda Joyeros</title>
+    <title>Catálogo en tienda | Alda Joyeros 1962</title>
     <partial name="_Favicons" />
     <script src="~/js/site.js" asp-append-version="true"></script>
     <link href="~/css/tailwind.css" rel="stylesheet" asp-append-version="true" />
@@ -25,7 +25,7 @@
 <body class="catalog-presentation min-h-screen bg-stone-50 text-stone-900" data-catalog-url="@Url.Action("Catalogo", new { categoriaId = Model?.Id })" data-repeat="@(Model == null ? "true" : "false")">
     <main class="relative flex min-h-screen flex-col">
         <header class="flex items-center justify-between gap-4 px-5 py-5 sm:px-10">
-            <div><p class="display-serif text-xl tracking-wide sm:text-2xl">ALDA JOYEROS</p><p class="mt-1 text-[10px] uppercase tracking-[.25em] text-stone-500">Desde 1962</p></div>
+            <div><p class="display-serif text-xl tracking-wide sm:text-2xl">Alda Joyeros 1962</p><p class="mt-1 text-[10px] uppercase tracking-[.25em] text-stone-500">Desde 1962</p></div>
             <div class="flex max-w-[60%] items-center gap-3"><p class="break-words text-right text-xs font-medium text-emerald-800">@(Model?.Nombre ?? "Todo el catálogo")</p><partial name="_ThemePicker" /></div>
         </header>
         <section id="slide" hidden class="flex flex-1 flex-col items-center justify-center gap-5 px-5 pb-24 sm:px-10 lg:flex-row lg:gap-12">

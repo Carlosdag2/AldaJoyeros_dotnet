@@ -34,7 +34,7 @@ internal static class EmailTemplates
                 </p>
                 """
             : "";
-        var content = Hero("TU PEDIDO", "Una elección especial.", "Gracias por confiar en AldaJoyeros. Hemos recibido tu pedido; puedes consultar su estado y todos sus detalles desde tu cuenta.")
+        var content = Hero("TU PEDIDO", "Una elección especial.", "Gracias por confiar en Alda Joyeros 1962. Hemos recibido tu pedido; puedes consultar su estado y todos sus detalles desde tu cuenta.")
             + Summary(pedido, invoice)
             + SectionTitle("Tu selección")
             + $"""
@@ -65,7 +65,7 @@ internal static class EmailTemplates
         var payment = paymentMethod == "Contra Reembolso"
             ? "Contra reembolso: pendiente de cobro al entregar."
             : paymentMethod == "Tarjeta" ? "Tarjeta: pago confirmado." : paymentMethod;
-        var content = Hero("NUEVO PEDIDO", $"Has recibido el pedido #{pedido.Id}.", "Un cliente ha realizado un pedido en AldaJoyeros. Consulta los detalles y gestiona su preparación desde el panel de administración.")
+        var content = Hero("NUEVO PEDIDO", $"Has recibido el pedido #{pedido.Id}.", "Un cliente ha realizado un pedido en Alda Joyeros 1962. Consulta los detalles y gestiona su preparación desde el panel de administración.")
             + Notice("Datos del pedido", $"Fecha: {H(pedido.Fecha?.ToString("d MMMM yyyy · HH:mm", Spanish) ?? "No disponible")}<br>Cliente: {H(customerEmail)}<br>Método de pago: {H(payment)}")
             + SectionTitle("Artículos del pedido")
             + $"""
@@ -82,7 +82,7 @@ internal static class EmailTemplates
     {
         var url = OrderUrl(baseUrl, pedido.Id);
         return Layout("Tu factura", $"La factura {invoice} de tu pedido #{pedido.Id}, adjunta en PDF.",
-            Hero("TU FACTURA", "Todo en su sitio.", "Aquí tienes una copia de la factura de tu compra en AldaJoyeros. Gracias por elegirnos.")
+            Hero("TU FACTURA", "Todo en su sitio.", "Aquí tienes una copia de la factura de tu compra en Alda Joyeros 1962. Gracias por elegirnos.")
             + Summary(pedido, invoice)
             + Notice("Documento PDF adjunto", "Abre el archivo adjunto para consultar o guardar tu factura. Este correo es un reenvío del documento; no supone una nueva compra ni un nuevo cobro.")
             + $"<p style=\"margin:0 0 28px;font-size:15px;line-height:24px;color:#626d66;\">Total del pedido: <strong style=\"color:#192e27;\">{Money(pedido.Total)}</strong></p>"
@@ -91,7 +91,7 @@ internal static class EmailTemplates
 
     public static string Password(string verifyLink, string code)
     {
-        return Layout("Recuperar contraseña", "Tu código para recuperar el acceso a AldaJoyeros. Válido durante una hora.",
+        return Layout("Recuperar contraseña", "Tu código para recuperar el acceso a Alda Joyeros 1962. Válido durante una hora.",
             Hero("TU CUENTA", "Vuelve a entrar.", "Hemos recibido una solicitud para restablecer tu contraseña. Utiliza este código en la página de verificación para recuperar el acceso a tu cuenta.")
             + $"""
                 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 28px;background-color:#f3f6f2;border:1px solid #dce5dc;">
@@ -163,7 +163,7 @@ internal static class EmailTemplates
           <meta charset="utf-8">
           <meta name="viewport" content="width=device-width,initial-scale=1">
           <meta name="color-scheme" content="light">
-          <title>{{H(title)}} · AldaJoyeros</title>
+          <title>{{H(title)}} · Alda Joyeros 1962</title>
           <style>
             body,table,td,a { -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; }
             table,td { mso-table-lspace:0pt; mso-table-rspace:0pt; }
@@ -183,8 +183,8 @@ internal static class EmailTemplates
               <!--[if mso]><table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0"><tr><td><![endif]-->
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:600px;background-color:#ffffff;border:1px solid #e1e5dd;">
                 <tr><td class="brand-padding" align="center" bgcolor="#102d23" style="padding:36px 24px;background-color:#102d23;border-bottom:3px solid #b69b65;">
-                  <p style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-size:34px;letter-spacing:7px;line-height:40px;color:#ffffff;">ALDA</p>
-                  <p style="margin:0 0 12px;font-size:11px;letter-spacing:5px;line-height:18px;color:#d9c69f;">JOYEROS</p>
+                  <p style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-size:26px;letter-spacing:2px;line-height:34px;color:#ffffff;">Alda Joyeros 1962</p>
+                  <p style="margin:0 0 12px;font-size:11px;letter-spacing:5px;line-height:18px;color:#d9c69f;">JOYERÍA Y RELOJERÍA</p>
                   <p style="margin:0;font-size:10px;letter-spacing:2px;line-height:16px;color:#c2cfc5;">DESDE 1962</p>
                 </td></tr>
                 <tr><td class="content-padding" style="padding:38px 40px 10px;">{{content}}</td></tr>
