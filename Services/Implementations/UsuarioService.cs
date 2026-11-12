@@ -1,4 +1,4 @@
-using AutoMapper;
+using AldaJoyeros.Mappings;
 using AldaJoyeros.DTOs;
 using AldaJoyeros.Entities;
 using AldaJoyeros.Repositories.Interfaces;
@@ -9,9 +9,9 @@ namespace AldaJoyeros.Services.Implementations
     public class UsuarioService : IUsuarioService
     {
         private readonly IUsuarioRepository _usuarioRepository;
-        private readonly IMapper _mapper;
+        private readonly AppMapper _mapper;
 
-        public UsuarioService(IUsuarioRepository usuarioRepository, IMapper mapper)
+        public UsuarioService(IUsuarioRepository usuarioRepository, AppMapper mapper)
         {
             _usuarioRepository = usuarioRepository;
             _mapper = mapper;

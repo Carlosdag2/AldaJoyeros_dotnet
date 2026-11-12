@@ -1,4 +1,4 @@
-using AutoMapper;
+using AldaJoyeros.Mappings;
 using AldaJoyeros.DTOs;
 using AldaJoyeros.Entities;
 using AldaJoyeros.Repositories.Interfaces;
@@ -10,12 +10,12 @@ namespace AldaJoyeros.Services.Implementations
     public class CategoriaService : ICategoriaService
     {
         private readonly ICategoriaRepository _categoriaRepository;
-        private readonly IMapper _mapper;
+        private readonly AppMapper _mapper;
         private readonly ILogger<CategoriaService> _logger;
 
         public CategoriaService(
             ICategoriaRepository categoriaRepository, 
-            IMapper mapper,
+            AppMapper mapper,
             ILogger<CategoriaService> logger)
         {
             _categoriaRepository = categoriaRepository;

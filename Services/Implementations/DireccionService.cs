@@ -1,4 +1,4 @@
-using AutoMapper;
+using AldaJoyeros.Mappings;
 using AldaJoyeros.DTOs;
 using AldaJoyeros.Entities;
 using AldaJoyeros.Repositories.Interfaces;
@@ -10,12 +10,12 @@ namespace AldaJoyeros.Services.Implementations
     {
         private readonly IDireccionRepository _direccionRepository;
         private readonly IUsuarioRepository _usuarioRepository;
-        private readonly IMapper _mapper;
+        private readonly AppMapper _mapper;
 
         public DireccionService(
             IDireccionRepository direccionRepository,
             IUsuarioRepository usuarioRepository,
-            IMapper mapper)
+            AppMapper mapper)
         {
             _direccionRepository = direccionRepository;
             _usuarioRepository = usuarioRepository;

@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+﻿using AldaJoyeros.Mappings;
 using AldaJoyeros.DTOs;
 using AldaJoyeros.Entities;
 using AldaJoyeros.Repositories.Interfaces;
@@ -11,13 +11,13 @@ namespace AldaJoyeros.Services.Implementations
         private readonly IPedidoRepository _pedidoRepository;
         private readonly ICarritoRepository _carritoRepository;
         private readonly IDireccionRepository _direccionRepository;
-        private readonly IMapper _mapper;
+        private readonly AppMapper _mapper;
 
         public PedidoService(
             IPedidoRepository pedidoRepository,
             ICarritoRepository carritoRepository,
             IDireccionRepository direccionRepository,
-            IMapper mapper)
+            AppMapper mapper)
         {
             _pedidoRepository = pedidoRepository;
             _carritoRepository = carritoRepository;

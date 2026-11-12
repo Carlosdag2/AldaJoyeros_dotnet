@@ -1,0 +1,7 @@
+<Project>
+  <PropertyGroup>
+    <!-- Audit direct and transitive dependencies in the web, importers and checks. -->
+    <NuGetAudit>true</NuGetAudit>
+    <NuGetAuditMode>all</NuGetAuditMode>
+  </PropertyGroup>
+</Project>

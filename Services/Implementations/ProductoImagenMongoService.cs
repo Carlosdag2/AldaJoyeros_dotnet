@@ -1,4 +1,4 @@
-using AutoMapper;
+using AldaJoyeros.Mappings;
 using AldaJoyeros.DTOs;
 using AldaJoyeros.Models.MongoDB;
 using AldaJoyeros.Repositories.Interfaces;
@@ -13,12 +13,12 @@ namespace AldaJoyeros.Services.Implementations
     {
         private static readonly System.Collections.Concurrent.ConcurrentDictionary<long, SemaphoreSlim> OrderLocks = new();
         private readonly IProductoImagenMongoRepository _repository;
-        private readonly IMapper _mapper;
+        private readonly AppMapper _mapper;
         private readonly ILogger<ProductoImagenMongoService> _logger;
 
         public ProductoImagenMongoService(
             IProductoImagenMongoRepository repository,
-            IMapper mapper,
+            AppMapper mapper,
             ILogger<ProductoImagenMongoService> logger)
         {
             _repository = repository;
