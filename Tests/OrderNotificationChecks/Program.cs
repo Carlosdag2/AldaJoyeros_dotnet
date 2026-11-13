@@ -21,9 +21,9 @@ foreach (var scenario in new[] { "normal", "cash", "customer-fails", "pdf-fails"
         : throw new Exception("Unexpected order call"));
     Task<PedidoDto> Create() { created++; return Task.FromResult(order); }
     var cart = Stub.Make<ICarritoService>((_, _) => Task.FromResult<IEnumerable<CarritoItemDto>>(
-        created == 0 ? new[] { new CarritoItemDto() } : Array.Empty<CarritoItemDto>()));
+        created == 0 ? new[] { new CarritoItemDto {Id=1,ProductoId=1,Cantidad=1,Precio=50,Subtotal=50} } : Array.Empty<CarritoItemDto>()));
     var payment = Stub.Make<IPaymentService>((_, _) => Task.FromResult(new PaymentStatusResult
-        { Status = scenario == "payment-fails" ? "requires_payment_method" : "succeeded" }));
+        { Amount=50, Status = scenario == "payment-fails" ? "requires_payment_method" : "succeeded" }));
     var invoice = Stub.Make<IFacturaService>((method, _) => method == "GenerarNumeroFactura" ? "AJ-42"
         : scenario == "pdf-fails" ? Task.FromException<byte[]>(new Exception("PDF failed")) : Task.FromResult(new byte[] { 1 }));
     var email = Stub.Make<IEmailService>((method, args) =>
@@ -48,6 +48,7 @@ foreach (var scenario in new[] { "normal", "cash", "customer-fails", "pdf-fails"
         Direccion = new DireccionDto { Calle = "Prueba", Numero = "1", CodigoPostal = "28001", Ciudad = "Madrid", Provincia = "Madrid" },
         DireccionConfirmada = true, MetodoPago = paymentMethod, PagoConfirmado = scenario != "unconfirmed", PaymentIntentId = "pi_test"
     }));
+    AldaJoyeros.Helpers.CartPaymentQuote.Save(context,7,"pi_test",new[]{new CarritoItemDto{Id=1,ProductoId=1,Cantidad=1,Precio=50,Subtotal=50}});
     var controller = new PedidosController(pedidoService, cart, Stub.Make<IDireccionService>((_, _) => throw new Exception()),
         Stub.Make<IProductoImagenService>((_, _) => throw new Exception()), payment, email, invoice, NullLogger<PedidosController>.Instance)
     { ControllerContext = new ControllerContext { HttpContext = context }, TempData = new TempDataDictionary(context, new MemoryTempData()) };

@@ -83,7 +83,7 @@ namespace AldaJoyeros.Controllers
 
         #endregion
 
-        #region Checkout - Paso 1: Dirección
+        #region Checkout - Paso 1: DirecciÃ³n
 
         [HttpGet]
         [ServiceFilter(typeof(AldaJoyeros.Filters.CartSessionFilter))]
@@ -99,13 +99,13 @@ namespace AldaJoyeros.Controllers
                 }
                 if (guestCart.Notices.Count > 0) TempData["Warning"] = string.Join(" ", guestCart.Notices.Distinct());
             }
-            // Limpiar sesión de checkout anterior
+            // Limpiar sesiÃ³n de checkout anterior
             ClearCheckoutSession();
 
             var carritoItems = await GetCarritoConImagenes();
             if (!carritoItems.Any())
             {
-                TempData["Error"] = "Tu carrito está vacío";
+                TempData["Error"] = "Tu carrito estÃ¡ vacÃ­o";
                 return RedirectToAction("Index", "Carrito");
             }
 
@@ -133,7 +133,7 @@ namespace AldaJoyeros.Controllers
             var carritoItems = await GetCarritoConImagenes();
             if (!carritoItems.Any())
             {
-                TempData["Error"] = "Tu carrito está vacío";
+                TempData["Error"] = "Tu carrito estÃ¡ vacÃ­o";
                 return RedirectToAction("Index", "Carrito");
             }
 
@@ -141,19 +141,19 @@ namespace AldaJoyeros.Controllers
 
             try
             {
-                // Opción 1: Usar dirección guardada seleccionada
+                // OpciÃ³n 1: Usar direcciÃ³n guardada seleccionada
                 if (DireccionSeleccionadaId.HasValue && !UsarNuevaDireccion)
                 {
                     var direccionGuardada = await _direccionService.GetByIdAsync(DireccionSeleccionadaId.Value);
                     if (direccionGuardada == null || direccionGuardada.UsuarioId != CurrentUser!.Id)
                     {
-                        TempData["Error"] = "Dirección no válida";
+                        TempData["Error"] = "DirecciÃ³n no vÃ¡lida";
                         return RedirectToAction("Checkout");
                     }
                     direccionParaPedido = direccionGuardada;
-                    _logger.LogInformation("Usuario {UserId} usa dirección guardada {DireccionId}", CurrentUser.Id, DireccionSeleccionadaId);
+                    _logger.LogInformation("Usuario {UserId} usa direcciÃ³n guardada {DireccionId}", CurrentUser.Id, DireccionSeleccionadaId);
                 }
-                // Opción 2: Usar nueva dirección
+                // OpciÃ³n 2: Usar nueva direcciÃ³n
                 else
                 {
                     // Validar campos obligatorios
@@ -163,27 +163,27 @@ namespace AldaJoyeros.Controllers
                         string.IsNullOrWhiteSpace(viewModel.NuevaDireccion.Ciudad) ||
                         string.IsNullOrWhiteSpace(viewModel.NuevaDireccion.Provincia))
                     {
-                        ModelState.AddModelError("", "Por favor, completa todos los campos obligatorios de la dirección");
+                        ModelState.AddModelError("", "Por favor, completa todos los campos obligatorios de la direcciÃ³n");
                         viewModel.CarritoItems = carritoItems;
                         viewModel.DireccionesGuardadas = await _direccionService.GetByUsuarioIdAsync(CurrentUser!.Id);
                         return View("Checkout_Direccion", viewModel);
                     }
 
-                    // Si quiere guardar la dirección para futuras compras
+                    // Si quiere guardar la direcciÃ³n para futuras compras
                     if (GuardarDireccion)
                     {
                         try
                         {
                             var direccionGuardada = await _direccionService.CreateAsync(CurrentUser!.Id, viewModel.NuevaDireccion);
-                            _logger.LogInformation("Nueva dirección guardada para usuario {UserId}: {DireccionId}", CurrentUser.Id, direccionGuardada.Id);
+                            _logger.LogInformation("Nueva direcciÃ³n guardada para usuario {UserId}: {DireccionId}", CurrentUser.Id, direccionGuardada.Id);
                         }
                         catch (Exception ex)
                         {
-                            _logger.LogWarning(ex, "No se pudo guardar la dirección del usuario, continuando sin guardar");
+                            _logger.LogWarning(ex, "No se pudo guardar la direcciÃ³n del usuario, continuando sin guardar");
                         }
                     }
 
-                    // Crear DTO para el pedido (independiente de si se guardó o no)
+                    // Crear DTO para el pedido (independiente de si se guardÃ³ o no)
                     direccionParaPedido = new DireccionDto
                     {
                         Calle = viewModel.NuevaDireccion.Calle,
@@ -195,7 +195,7 @@ namespace AldaJoyeros.Controllers
                     };
                 }
 
-                // Guardar en sesión para el siguiente paso
+                // Guardar en sesiÃ³n para el siguiente paso
                 var sessionData = new CheckoutSessionData
                 {
                     Direccion = direccionParaPedido,
@@ -207,8 +207,8 @@ namespace AldaJoyeros.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error al procesar dirección");
-                ModelState.AddModelError("", "Error al procesar la dirección. Por favor, inténtalo de nuevo.");
+                _logger.LogError(ex, "Error al procesar direcciÃ³n");
+                ModelState.AddModelError("", "Error al procesar la direcciÃ³n. Por favor, intÃ©ntalo de nuevo.");
                 viewModel.CarritoItems = carritoItems;
                 viewModel.DireccionesGuardadas = await _direccionService.GetByUsuarioIdAsync(CurrentUser!.Id);
                 return View("Checkout_Direccion", viewModel);
@@ -217,7 +217,7 @@ namespace AldaJoyeros.Controllers
 
         #endregion
 
-        #region Checkout - Paso 2: Método de Pago
+        #region Checkout - Paso 2: MÃ©todo de Pago
 
         [HttpGet]
         public async Task<IActionResult> CheckoutPago()
@@ -231,7 +231,7 @@ namespace AldaJoyeros.Controllers
             var carritoItems = await GetCarritoConImagenes();
             if (!carritoItems.Any())
             {
-                TempData["Error"] = "Tu carrito está vacío";
+                TempData["Error"] = "Tu carrito estÃ¡ vacÃ­o";
                 return RedirectToAction("Index", "Carrito");
             }
 
@@ -253,7 +253,7 @@ namespace AldaJoyeros.Controllers
                 var carritoItems = await _carritoService.GetByUsuarioIdAsync(CurrentUser!.Id);
                 if (!carritoItems.Any())
                 {
-                    return Json(new { success = false, error = "Carrito vacío" });
+                    return Json(new { success = false, error = "Carrito vacÃ­o" });
                 }
 
                 var total = (decimal)carritoItems.Sum(i => i.Subtotal);
@@ -270,6 +270,8 @@ namespace AldaJoyeros.Controllers
 
                 if (result.Success)
                 {
+                    if(string.IsNullOrEmpty(result.PaymentIntentId))return Json(new{success=false,error="No se pudo confirmar el identificador del pago."});
+                    AldaJoyeros.Helpers.CartPaymentQuote.Save(HttpContext,CurrentUser.Id,result.PaymentIntentId,carritoItems);
                     return Json(new 
                     { 
                         success = true, 
@@ -300,7 +302,7 @@ namespace AldaJoyeros.Controllers
             var carritoItems = await GetCarritoConImagenes();
             if (!carritoItems.Any())
             {
-                TempData["Error"] = "Tu carrito está vacío";
+                TempData["Error"] = "Tu carrito estÃ¡ vacÃ­o";
                 return RedirectToAction("Index", "Carrito");
             }
 
@@ -309,7 +311,7 @@ namespace AldaJoyeros.Controllers
                 viewModel.CarritoItems = carritoItems;
                 viewModel.Direccion = sessionData.Direccion;
                 viewModel.StripePublishableKey = _paymentService.GetPublishableKey();
-                ModelState.AddModelError("", "Selecciona un método de pago");
+                ModelState.AddModelError("", "Selecciona un mÃ©todo de pago");
                 return View("Checkout_Pago", viewModel);
             }
 
@@ -324,13 +326,18 @@ namespace AldaJoyeros.Controllers
                     return View("Checkout_Pago", viewModel);
                 }
 
+                var quote=AldaJoyeros.Helpers.CartPaymentQuote.Get(HttpContext);
+                if(quote==null||!quote.Matches(CurrentUser!.Id,viewModel.PaymentIntentId,carritoItems)) {
+                    TempData["Error"]="El carrito ha cambiado. Revisa la compra antes de continuar con el pago.";
+                    return RedirectToAction("CheckoutPago");
+                }
                 var paymentStatus = await _paymentService.GetPaymentStatusAsync(viewModel.PaymentIntentId);
-                if (!paymentStatus.IsSucceeded)
+                if (!paymentStatus.IsSucceeded || paymentStatus.Amount != decimal.Round((decimal)carritoItems.Sum(i=>i.Subtotal),2) || !paymentStatus.Currency.Equals("EUR",StringComparison.OrdinalIgnoreCase))
                 {
                     viewModel.CarritoItems = carritoItems;
                     viewModel.Direccion = sessionData.Direccion;
                     viewModel.StripePublishableKey = _paymentService.GetPublishableKey();
-                    ModelState.AddModelError("", "El pago no se completó correctamente");
+                    ModelState.AddModelError("", "El pago no se completÃ³ correctamente");
                     return View("Checkout_Pago", viewModel);
                 }
             }
@@ -345,7 +352,7 @@ namespace AldaJoyeros.Controllers
 
         #endregion
 
-        #region Checkout - Paso 3: Confirmación
+        #region Checkout - Paso 3: ConfirmaciÃ³n
 
         [HttpGet]
         public async Task<IActionResult> CheckoutConfirmacion()
@@ -364,7 +371,7 @@ namespace AldaJoyeros.Controllers
             var carritoItems = await GetCarritoConImagenes();
             if (!carritoItems.Any())
             {
-                TempData["Error"] = "Tu carrito está vacío";
+                TempData["Error"] = "Tu carrito estÃ¡ vacÃ­o";
                 return RedirectToAction("Index", "Carrito");
             }
 
@@ -393,7 +400,7 @@ namespace AldaJoyeros.Controllers
             var carritoItems = await _carritoService.GetByUsuarioIdAsync(CurrentUser!.Id);
             if (!carritoItems.Any())
             {
-                TempData["Error"] = "Tu carrito está vacío";
+                TempData["Error"] = "Tu carrito estÃ¡ vacÃ­o";
                 return RedirectToAction("Index", "Carrito");
             }
 
@@ -401,10 +408,15 @@ namespace AldaJoyeros.Controllers
             {
                 if (sessionData.MetodoPago == "Tarjeta" && !string.IsNullOrEmpty(sessionData.PaymentIntentId))
                 {
+                    var quote=AldaJoyeros.Helpers.CartPaymentQuote.Get(HttpContext);
+                    if(quote==null||!quote.Matches(CurrentUser!.Id,sessionData.PaymentIntentId,carritoItems)) {
+                        TempData["Error"]="El carrito no coincide con el pago iniciado. Si ya has pagado, contacta con la tienda antes de repetir el pago.";
+                        return RedirectToAction("CheckoutPago");
+                    }
                     var paymentStatus = await _paymentService.GetPaymentStatusAsync(sessionData.PaymentIntentId);
-                    if (!paymentStatus.IsSucceeded)
+                    if (!paymentStatus.IsSucceeded || paymentStatus.Amount != decimal.Round((decimal)carritoItems.Sum(i=>i.Subtotal),2) || !paymentStatus.Currency.Equals("EUR",StringComparison.OrdinalIgnoreCase))
                     {
-                        TempData["Error"] = "El pago no se completó correctamente";
+                        TempData["Error"] = "El pago no se completÃ³ correctamente";
                         return RedirectToAction("CheckoutPago");
                     }
                 }
@@ -428,22 +440,22 @@ namespace AldaJoyeros.Controllers
                 ClearCheckoutSession();
 
                 _logger.LogInformation(
-                    "Pedido {PedidoId} creado para usuario {UserId} - Método: {MetodoPago}",
+                    "Pedido {PedidoId} creado para usuario {UserId} - MÃ©todo: {MetodoPago}",
                     pedido.Id, CurrentUser.Id, sessionData.MetodoPago);
 
-                // Enviar email de confirmación con factura adjunta
+                // Enviar email de confirmaciÃ³n con factura adjunta
                 try
                 {
                     var facturaPdf = await _facturaService.GenerarFacturaPdfAsync(pedido, CurrentUser.Email, CurrentUser.Email);
                     var numeroFactura = _facturaService.GenerarNumeroFactura(pedido.Id);
                     
                     await _emailService.SendOrderConfirmationWithInvoiceAsync(CurrentUser.Email, pedido, facturaPdf, numeroFactura);
-                    _logger.LogInformation("Email de confirmación con factura {NumeroFactura} enviado para pedido {PedidoId}", numeroFactura, pedido.Id);
+                    _logger.LogInformation("Email de confirmaciÃ³n con factura {NumeroFactura} enviado para pedido {PedidoId}", numeroFactura, pedido.Id);
                 }
                 catch (Exception emailEx)
                 {
-                    // No fallar el pedido si el email no se envía
-                    _logger.LogWarning(emailEx, "No se pudo enviar email de confirmación con factura para pedido {PedidoId}", pedido.Id);
+                    // No fallar el pedido si el email no se envÃ­a
+                    _logger.LogWarning(emailEx, "No se pudo enviar email de confirmaciÃ³n con factura para pedido {PedidoId}", pedido.Id);
                 }
 
                 // Intentar el aviso aunque falle la factura o el correo del cliente.
@@ -457,8 +469,8 @@ namespace AldaJoyeros.Controllers
                 }
 
                 TempData["Success"] = sessionData.MetodoPago == "Contra Reembolso" 
-                    ? "¡Pedido realizado! Pagarás al recibir tu pedido. Te hemos enviado la confirmación y factura por email." 
-                    : "¡Pedido realizado y pago procesado exitosamente! Te hemos enviado la confirmación y factura por email.";
+                    ? "Â¡Pedido realizado! PagarÃ¡s al recibir tu pedido. Te hemos enviado la confirmaciÃ³n y factura por email."
+                    : "Â¡Pedido realizado y pago procesado exitosamente! Te hemos enviado la confirmaciÃ³n y factura por email.";
                 
                 return RedirectToAction("PedidoCompletado", new { id = pedido.Id });
             }
@@ -528,6 +540,7 @@ namespace AldaJoyeros.Controllers
         private void ClearCheckoutSession()
         {
             HttpContext.Session.Remove(CheckoutSessionKey);
+            HttpContext.Session.Remove(AldaJoyeros.Helpers.CartPaymentQuote.Key);
         }
 
         #endregion

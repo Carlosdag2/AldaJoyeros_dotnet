@@ -24,10 +24,11 @@ namespace AldaJoyeros.Controllers
             _viewEngine = viewEngine;
         }
 
-        public async Task<IActionResult> Index(long? categoriaId, string busqueda = "", int page = 1, string? categoria = null, string? precioMin = null, string? precioMax = null, string? orden = null)
+        public async Task<IActionResult> Index(long? categoriaId, string busqueda = "", int page = 1, string? categoria = null, string? precioMin = null, string? precioMax = null, string? orden = null, string? descuentos = null)
         {
             if (!CatalogPriceRange.TryCreate(precioMin, precioMax, out var range))
                 return BadRequest("Indica precios válidos, sin valores negativos y con el mínimo menor o igual al máximo.");
+            ViewBag.Descuentos = descuentos is "si" or "no" ? descuentos : "";
             ViewBag.Orden = orden is "precio-asc" or "precio-desc" ? orden : "";
             ViewBag.PrecioMin = range.MinText;
             ViewBag.PrecioMax = range.MaxText;
@@ -53,7 +54,7 @@ namespace AldaJoyeros.Controllers
             ViewBag.CategoriaSeleccionada = categoriaId;
             ViewBag.Busqueda = busqueda;
 
-            var productos = await _catalogo.GetAsync(categoriaId, busqueda, priceRange: range, orden: orden);
+            var productos = await _catalogo.GetAsync(categoriaId, busqueda, priceRange: range, orden: orden, descuentos: descuentos);
 
             var pagedResult = PagedResult<DTOs.ProductoDto>.Create(productos, page, PageSize);
             var categorySlug = categorias.FirstOrDefault(c => c.Id == categoriaId)?.UrlSlug;
@@ -78,11 +79,11 @@ namespace AldaJoyeros.Controllers
         /// Endpoint AJAX para filtrar productos con JSON response
         /// </summary>
         [HttpGet]
-        public async Task<IActionResult> Filtrar(long? categoriaId, string busqueda = "", int page = 1, string? precioMin = null, string? precioMax = null, string? orden = null)
+        public async Task<IActionResult> Filtrar(long? categoriaId, string busqueda = "", int page = 1, string? precioMin = null, string? precioMax = null, string? orden = null, string? descuentos = null)
         {
             if (!CatalogPriceRange.TryCreate(precioMin, precioMax, out var range))
                 return BadRequest(new { success = false, message = "Revisa el rango de precios: el mínimo no puede superar al máximo." });
-            var productos = await _catalogo.GetAsync(categoriaId, busqueda, priceRange: range, orden: orden);
+            var productos = await _catalogo.GetAsync(categoriaId, busqueda, priceRange: range, orden: orden, descuentos: descuentos);
 
             var pagedResult = PagedResult<DTOs.ProductoDto>.Create(productos, page, PageSize);
             await _catalogo.LoadImagesAsync(pagedResult.Items);

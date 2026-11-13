@@ -43,6 +43,7 @@
                                     <a asp-controller="Pedidos" asp-action="Index" class="site-account-link"><i class="fas fa-box" aria-hidden="true"></i>Mis pedidos</a>
                                     <a asp-controller="Carrito" asp-action="Index" class="site-account-link"><i class="fas fa-shopping-bag" aria-hidden="true"></i>Mi carrito<span data-carrito-count-menu class="text-xs text-stone-500 @(ViewBag.CarritoCount > 0 ? "" : "hidden")">(<span data-carrito-count-value>@(ViewBag.CarritoCount ?? 0)</span>)</span></a>
                                 }
+                                <a asp-controller="Promociones" asp-action="Preferencias" class="site-account-link"><i class="fas fa-envelope" aria-hidden="true"></i>Preferencias de ofertas</a>
                                 <a asp-controller="Auth" asp-action="Logout" class="site-account-link text-red-700"><i class="fas fa-arrow-right-from-bracket" aria-hidden="true"></i>Cerrar sesión</a>
                             </nav>
                         </div>
@@ -65,7 +66,7 @@
             @if (ViewBag.IsAdmin == true) { <a asp-controller="Admin" asp-action="Index" class="site-mobile-link @(admin ? "site-nav-active" : "")" aria-current="@(admin ? "page" : null)"><span>Panel de administración</span><i class="fas fa-sliders text-xs" aria-hidden="true"></i></a> }
             @if (ecommerce) {
                 <a asp-controller="Carrito" asp-action="Index" class="site-mobile-link"><span>Mi carrito</span><i class="fas fa-shopping-bag text-xs" aria-hidden="true"></i></a>
-                @if (authenticated) { <a asp-controller="Pedidos" asp-action="Index" class="site-mobile-link"><span>Mis pedidos</span><i class="fas fa-box text-xs" aria-hidden="true"></i></a> }
+                @if (authenticated) { <a asp-controller="Promociones" asp-action="Preferencias" class="py-2">Preferencias de ofertas</a><a asp-controller="Pedidos" asp-action="Index" class="site-mobile-link"><span>Mis pedidos</span><i class="fas fa-box text-xs" aria-hidden="true"></i></a> }
             }
             <div class="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-stone-100 px-3 pt-4 text-sm">
                 <a href="tel:+34925541227" class="font-semibold text-emerald-800"><i class="fas fa-phone mr-2" aria-hidden="true"></i>925 54 12 27</a>

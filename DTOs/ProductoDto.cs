@@ -9,7 +9,7 @@ namespace AldaJoyeros.DTOs
         public string Valor { get; set; } = string.Empty;
     }
 
-    public sealed record ProductoTallaDto(long ProductoId, string Referencia, string Talla, double Precio);
+    public sealed record ProductoTallaDto(long ProductoId, string Referencia, string Talla, double Precio) { public double? PrecioAnterior {get;init;} public double? PrecioSinDescuento {get;init;} public decimal DescuentoPorcentaje {get;init;} }
 
     public class ProductoDto
     {
@@ -18,16 +18,20 @@ namespace AldaJoyeros.DTOs
         public string UrlSlug { get; set; } = string.Empty;
         public string? Descripcion { get; set; }
         public double Precio { get; set; }
+        public double? PrecioAnterior {get;set;}
+        public double? PrecioSinDescuento {get;set;}
+        public decimal DescuentoPorcentaje {get;set;}
+        public bool TieneDescuento => DescuentoPorcentaje > 0 && PrecioSinDescuento > Precio || !ProductoSeleccionadoId.HasValue && Tallas.Any(t => t.DescuentoPorcentaje > 0 && t.PrecioSinDescuento > t.Precio);
         public long CategoriaId { get; set; }
         public string CategoriaNombre { get; set; } = string.Empty;
         
         /// <summary>
-        /// Indica si el producto est· eliminado (soft delete)
+        /// Indica si el producto est√° eliminado (soft delete)
         /// </summary>
         public bool Eliminado { get; set; }
         
         /// <summary>
-        /// Fecha en que se eliminÛ el producto
+        /// Fecha en que se elimin√≥ el producto
         /// </summary>
         public DateTime? FechaEliminado { get; set; }
         
@@ -36,7 +40,7 @@ namespace AldaJoyeros.DTOs
         public string? DescripcionCompleta { get; set; }
         public List<CaracteristicaProductoDto> Caracteristicas { get; set; } = new();
 
-        // Im·genes del producto (ahora en Base64)
+        // Im√°genes del producto (ahora en Base64)
         public List<ProductoImagenDto> Imagenes { get; set; } = new List<ProductoImagenDto>();
         
         // Propiedades de conveniencia para la imagen principal
@@ -56,14 +60,14 @@ namespace AldaJoyeros.DTOs
         [StringLength(200, ErrorMessage = "El nombre no puede superar los 200 caracteres")]
         public string Nombre { get; set; } = string.Empty;
 
-        [StringLength(1000, ErrorMessage = "La descripciÛn no puede superar los 1000 caracteres")]
+        [StringLength(1000, ErrorMessage = "La descripci√≥n no puede superar los 1000 caracteres")]
         public string? Descripcion { get; set; }
 
         [Required(ErrorMessage = "El precio es obligatorio")]
         [Range(0.01, double.MaxValue, ErrorMessage = "El precio debe ser mayor a 0")]
         public double Precio { get; set; }
 
-        [Required(ErrorMessage = "La categorÌa es obligatoria")]
+        [Required(ErrorMessage = "La categor√≠a es obligatoria")]
         public long CategoriaId { get; set; }
     }
 
@@ -73,14 +77,14 @@ namespace AldaJoyeros.DTOs
         [StringLength(200, ErrorMessage = "El nombre no puede superar los 200 caracteres")]
         public string Nombre { get; set; } = string.Empty;
 
-        [StringLength(1000, ErrorMessage = "La descripciÛn no puede superar los 1000 caracteres")]
+        [StringLength(1000, ErrorMessage = "La descripci√≥n no puede superar los 1000 caracteres")]
         public string? Descripcion { get; set; }
 
         [Required(ErrorMessage = "El precio es obligatorio")]
         [Range(0.01, double.MaxValue, ErrorMessage = "El precio debe ser mayor a 0")]
         public double Precio { get; set; }
 
-        [Required(ErrorMessage = "La categorÌa es obligatoria")]
+        [Required(ErrorMessage = "La categor√≠a es obligatoria")]
         public long CategoriaId { get; set; }
     }
 }

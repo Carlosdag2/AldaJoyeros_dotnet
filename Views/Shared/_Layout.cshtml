@@ -47,6 +47,7 @@
 
     </style>
     <link href="~/css/site-chrome.css" rel="stylesheet" asp-append-version="true" />
+    <link href="~/css/promotions.css" rel="stylesheet" asp-append-version="true" />
     <link href="~/css/notifications.css" rel="stylesheet" asp-append-version="true" />
     @await RenderSectionAsync("Styles", required: false)
 </head>
@@ -92,6 +93,7 @@
     <script src="~/js/paginacion.js" asp-append-version="true"></script>
     <script src="~/js/product-gallery.js" asp-append-version="true" defer></script>
     @await RenderSectionAsync("Scripts", required: false)
+    @if((ViewContext.RouteData.Values["controller"]?.ToString() == "Home" && ViewContext.RouteData.Values["action"]?.ToString() == "Index") || (ViewContext.RouteData.Values["controller"]?.ToString() == "Productos" && ViewContext.RouteData.Values["action"]?.ToString() is "Index" or "Detalle")) { <partial name="_PromotionPopup" /> }
     <partial name="_CookieNotice" />
     <script src="~/js/cookie-consent.js" asp-append-version="true"></script>
 </body>

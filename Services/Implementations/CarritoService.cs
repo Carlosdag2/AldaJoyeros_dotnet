@@ -11,23 +11,35 @@ namespace AldaJoyeros.Services.Implementations
         private readonly ICarritoRepository _carritoRepository;
         private readonly IProductoRepository _productoRepository;
         private readonly AppMapper _mapper;
+        private readonly IHttpContextAccessor? _http;
         private readonly AldaJoyeros.Services.CatalogoService _catalogo;
 
         public CarritoService(
             ICarritoRepository carritoRepository,
             IProductoRepository productoRepository,
-            AppMapper mapper, AldaJoyeros.Services.CatalogoService catalogo)
+            AppMapper mapper, AldaJoyeros.Services.CatalogoService catalogo, IHttpContextAccessor? http = null)
         {
             _carritoRepository = carritoRepository;
             _productoRepository = productoRepository;
             _mapper = mapper;
             _catalogo = catalogo;
+            _http = http;
         }
 
         public async Task<IEnumerable<CarritoItemDto>> GetByUsuarioIdAsync(long usuarioId)
         {
             var items = await _carritoRepository.GetByUsuarioIdAsync(usuarioId);
-            return _mapper.Map<IEnumerable<CarritoItemDto>>(items);
+            var quote=AldaJoyeros.Helpers.CartPaymentQuote.Get(_http?.HttpContext);
+            var locked=quote?.UserId==usuarioId && quote.Fingerprint==AldaJoyeros.Helpers.CartPaymentQuote.Signature(_mapper.Map<IEnumerable<CarritoItemDto>>(items));
+            var result=new List<CarritoItemDto>();
+            foreach(var item in items) {
+                var price=locked?null:await _catalogo.PriceAsync(item.ProductoId);
+                if(price!=null&&item.Precio!=price.Price){item.Precio=price.Price;await _carritoRepository.UpdateAsync(item);}
+                var dto=_mapper.Map<CarritoItemDto>(item);
+                if(dto.Producto!=null){dto.Producto.Precio=item.Precio;dto.Producto.PrecioAnterior=price?.Previous;dto.Producto.PrecioSinDescuento=price?.BasePrice;dto.Producto.DescuentoPorcentaje=price?.Percent??0;}
+                result.Add(dto);
+            }
+            return result;
         }
 
         public async Task<CarritoItemDto> AddItemAsync(long usuarioId, CarritoItemCreateDto carritoItemCreateDto)
@@ -47,6 +59,7 @@ namespace AldaJoyeros.Services.Implementations
             {
                 if (existingItem.Cantidad > 99 - carritoItemCreateDto.Cantidad) throw new InvalidOperationException("La cantidad máxima por producto es 99.");
                 existingItem.Cantidad += carritoItemCreateDto.Cantidad;
+                if(AldaJoyeros.Helpers.CartPaymentQuote.Get(_http?.HttpContext)==null) existingItem.Precio=(await _catalogo.PriceAsync(producto.Id))?.Price??producto.Precio;
                 var updatedItem = await _carritoRepository.UpdateAsync(existingItem);
                 return _mapper.Map<CarritoItemDto>(updatedItem);
             }
@@ -56,7 +69,7 @@ namespace AldaJoyeros.Services.Implementations
                 UsuarioId = usuarioId,
                 ProductoId = carritoItemCreateDto.ProductoId,
                 Cantidad = carritoItemCreateDto.Cantidad,
-                Precio = producto.Precio
+                Precio = (await _catalogo.PriceAsync(producto.Id))?.Price ?? producto.Precio
             };
 
             var createdItem = await _carritoRepository.CreateAsync(carritoItem);
@@ -96,7 +109,7 @@ namespace AldaJoyeros.Services.Implementations
 
         public async Task<double> GetTotalAsync(long usuarioId)
         {
-            var items = await _carritoRepository.GetByUsuarioIdAsync(usuarioId);
+            var items = await GetByUsuarioIdAsync(usuarioId);
             return items.Sum(i => i.Cantidad * i.Precio);
         }
 

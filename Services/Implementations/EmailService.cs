@@ -38,7 +38,8 @@ namespace AldaJoyeros.Services.Implementations
 
                 var bodyBuilder = new BodyBuilder
                 {
-                    HtmlBody = htmlBody
+                    HtmlBody = htmlBody,
+                    TextBody = AldaJoyeros.Helpers.EmailPlainText.FromHtml(htmlBody)
                 };
 
                 // Añadir adjunto si existe

@@ -26,6 +26,8 @@ public sealed class GuestCartService(ICarritoService accounts, IProductoService 
                 Notices.Add("Se ha retirado un artículo que ya no está disponible. Revisa tu carrito.");
                 continue;
             }
+            var price=await catalog.PriceAsync(item.ProductoId);
+            if(price!=null){product.Precio=price.Price;product.PrecioAnterior=price.Previous;product.PrecioSinDescuento=price.BasePrice;product.DescuentoPorcentaje=price.Percent;}
             result.Add(new CarritoItemDto { Id = item.ProductoId, ProductoId = item.ProductoId,
                 ProductoNombre = product.Nombre, Producto = product, Precio = product.Precio,
                 Cantidad = item.Cantidad, Subtotal = product.Precio * item.Cantidad });

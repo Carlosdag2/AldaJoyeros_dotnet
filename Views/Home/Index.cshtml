@@ -78,6 +78,7 @@
         </section>
     }
 
+    <partial name="_HomeOffers" />
     <section id="productos-destacados" class="scroll-mt-24 bg-white py-14 sm:py-20" aria-labelledby="home-featured-title">
         <div class="container mx-auto px-6">
             <div class="mb-9 flex flex-wrap items-end justify-between gap-5">
@@ -95,7 +96,7 @@
                             <div class="flex flex-1 flex-col pt-4">
                                 <p class="mb-2 break-words text-xs text-stone-500">@producto.CategoriaNombre</p>
                                 <h3 class="break-words text-sm font-semibold text-stone-900"><a href="@link" data-product-id="@producto.Id" class="hover:underline">@producto.Nombre</a></h3>
-                                <p class="mt-2 font-serif text-xl text-emerald-800">@(producto.PrecioDesde ? "Desde " : "")@producto.Precio.ToString("C")</p>
+                                <partial name="_ProductPrice" model="producto" />
                                 <div class="mt-auto pt-4">
                                     @if (ecommerce && !producto.TieneTallas)
                                     {
