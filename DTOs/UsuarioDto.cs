@@ -12,12 +12,13 @@ namespace AldaJoyeros.DTOs
 
     public class UsuarioCreateDto
     {
+        public bool AceptaOfertas {get;set;}
         [Required(ErrorMessage = "El email es obligatorio")]
-        [EmailAddress(ErrorMessage = "El formato del email no es válido")]
+        [EmailAddress(ErrorMessage = "El formato del email no es vÃ¡lido")]
         public string Email { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "La contraseña es obligatoria")]
-        [MinLength(6, ErrorMessage = "La contraseña debe tener al menos 6 caracteres")]
+        [Required(ErrorMessage = "La contraseÃ±a es obligatoria")]
+        [MinLength(6, ErrorMessage = "La contraseÃ±a debe tener al menos 6 caracteres")]
         public string Password { get; set; } = string.Empty;
 
         public string? Rol { get; set; } = "USER";
@@ -26,10 +27,10 @@ namespace AldaJoyeros.DTOs
     public class UsuarioUpdateDto
     {
         [Required(ErrorMessage = "El email es obligatorio")]
-        [EmailAddress(ErrorMessage = "El formato del email no es válido")]
+        [EmailAddress(ErrorMessage = "El formato del email no es vÃ¡lido")]
         public string Email { get; set; } = string.Empty;
 
-        [MinLength(6, ErrorMessage = "La contraseña debe tener al menos 6 caracteres")]
+        [MinLength(6, ErrorMessage = "La contraseÃ±a debe tener al menos 6 caracteres")]
         public string? Password { get; set; }
 
         public string? Rol { get; set; }
@@ -38,10 +39,10 @@ namespace AldaJoyeros.DTOs
     public class LoginDto
     {
         [Required(ErrorMessage = "El email es obligatorio")]
-        [EmailAddress(ErrorMessage = "El formato del email no es válido")]
+        [EmailAddress(ErrorMessage = "El formato del email no es vÃ¡lido")]
         public string Email { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "La contraseña es obligatoria")]
+        [Required(ErrorMessage = "La contraseÃ±a es obligatoria")]
         public string Password { get; set; } = string.Empty;
     }
 }

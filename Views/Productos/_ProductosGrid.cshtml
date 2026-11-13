@@ -17,7 +17,7 @@
                 <div class="flex flex-1 flex-col pt-3 sm:pt-4">
                     <p class="mb-2 break-words text-xs leading-relaxed text-stone-500">@producto.CategoriaNombre</p>
                     <h2 class="break-words text-sm font-semibold text-stone-900"><a href="@link" class="hover:underline">@producto.Nombre</a></h2>
-                    <p class="mt-2 font-serif text-xl text-emerald-800">@(producto.PrecioDesde ? "Desde " : "")@producto.Precio.ToString("C")</p>
+                    <partial name="_ProductPrice" model="producto" />
                     <div class="mt-auto pt-4">
                         @if (ViewBag.EcommerceEnabled == true && !producto.TieneTallas)
                         {
@@ -39,7 +39,7 @@
                 <div class="flex min-w-0 flex-1 flex-col justify-center">
                     <p class="mb-2 break-words text-xs text-stone-500">@producto.CategoriaNombre</p><h2 class="break-words text-sm font-semibold text-stone-900 sm:text-base"><a href="@link" class="hover:underline">@producto.Nombre</a></h2>
                     <div class="hidden sm:block"><p class="mt-2 text-sm leading-relaxed text-stone-600 line-clamp-2">@producto.Descripcion</p></div>
-                    <div class="mt-3 flex flex-wrap items-center justify-between gap-3"><p class="font-serif text-xl text-emerald-800">@(producto.PrecioDesde ? "Desde " : "")@producto.Precio.ToString("C")</p>
+                    <div class="mt-3 flex flex-wrap items-center justify-between gap-3"><partial name="_ProductPrice" model="producto" />
                         <div class="flex flex-wrap items-center gap-3">
                             @if (ViewBag.EcommerceEnabled == true && !producto.TieneTallas)
                             { <button type="button" data-product-name="@producto.Nombre" onclick="window.carritoApp?.agregarAlCarrito(@producto.Id, this.dataset.productName, event)" class="btn-agregar-carrito min-h-11 rounded-lg bg-emerald-800 px-4 py-3 text-xs font-semibold text-white hover:bg-emerald-900"><span class="btn-texto">Añadir al carrito</span><span class="btn-loading hidden">Añadiendo…</span></button> }

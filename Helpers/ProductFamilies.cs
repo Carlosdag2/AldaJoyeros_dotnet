@@ -49,9 +49,10 @@ public static class ProductFamilies
             var representative = parent is { Eliminado: false } ? parent : available[0];
             var dto = map(representative);
             dto.Nombre = Parse(children[0])!.Value.Parent;
-            dto.Tallas = available.Select(p => new ProductoTallaDto(p.Id, p.Nombre, Parse(p)!.Value.Size, p.Precio))
+            dto.Tallas = available.Select(p => { var priced = map(p); return new ProductoTallaDto(p.Id, p.Nombre, Parse(p)!.Value.Size, priced.Precio) { PrecioSinDescuento = priced.PrecioSinDescuento, PrecioAnterior = priced.PrecioAnterior, DescuentoPorcentaje = priced.DescuentoPorcentaje }; })
                 .OrderBy(p => decimal.Parse(p.Talla.Replace(',', '.'), CultureInfo.InvariantCulture)).ThenBy(p => p.ProductoId).ToList();
-            dto.Precio = dto.Tallas.Min(p => p.Precio);
+            var cheapest = dto.Tallas.MinBy(p => p.Precio)!;
+            dto.Precio = cheapest.Precio; dto.PrecioSinDescuento = cheapest.PrecioSinDescuento; dto.PrecioAnterior = cheapest.PrecioAnterior; dto.DescuentoPorcentaje = cheapest.DescuentoPorcentaje;
             result.Add(new(dto, members));
         }
         return result.OrderBy(f => f.Product.Id).ToArray();

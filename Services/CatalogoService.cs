@@ -9,14 +9,16 @@ using Microsoft.EntityFrameworkCore;
 namespace AldaJoyeros.Services;
 
 // Vista pública de las familias. Los registros del proveedor, administración y pedidos se conservan individuales.
-public sealed class CatalogoService(AldaJoyerosContext sql, AppMapper mapper, PublicImageService images, CatalogUrlStore urls) : ICartCatalog
+public sealed class CatalogoService(AldaJoyerosContext sql, AppMapper mapper, PublicImageService images, CatalogUrlStore urls, AldaJoyeros.Services.Promotions.PromotionPricing? promotions = null) : ICartCatalog
 {
     private Task<IReadOnlyList<ProductFamily>>? snapshot;
     public Task<IReadOnlyList<ProductFamily>> FamiliesAsync() => snapshot ??= LoadAsync();
     private async Task<IReadOnlyList<ProductFamily>> LoadAsync()
     {
+        var pricing = promotions == null ? null : await promotions.ConfigAsync();
         var families = ProductFamilies.Build(await sql.Productos.AsNoTracking().Include(p => p.Categoria).Include(p => p.Proveedores)
-            .Where(p => !p.Eliminado || p.Proveedores.Any(s => s.Proveedor == "PerezMora" && s.Estado == "completo")).ToListAsync(), p => mapper.Map<ProductoDto>(p));
+            .Where(p => !p.Eliminado || p.Proveedores.Any(s => s.Proveedor == "PerezMora" && s.Estado == "completo")).ToListAsync(), p => { var dto = mapper.Map<ProductoDto>(p); if(pricing != null) AldaJoyeros.Services.Promotions.PromotionPricing.Apply(dto,p,pricing); return dto; });
+        if(promotions != null) await promotions.ObserveAsync(families.SelectMany(f=>f.Members).Where(p=>!p.Eliminado), pricing!);
         string Key(ProductFamily family) => family.Product.TieneTallas ? "familia-pm:" + family.Product.Nombre.ToUpperInvariant() : "producto:" + family.Product.Id;
         var assigned = await urls.GetAsync(families.Select(f => KeyValuePair.Create(Key(f), PublicUrls.ProductSlug(f.Product))));
         foreach (var family in families) family.Product.UrlSlug = CatalogUrlStore.Lookup(assigned, Key(family));
@@ -42,7 +44,7 @@ public sealed class CatalogoService(AldaJoyerosContext sql, AppMapper mapper, Pu
         return await DetailAsync(family.Product.Id, selected);
     }
 
-    public async Task<IReadOnlyList<ProductoDto>> GetAsync(long? categoriaId = null, string? busqueda = null, int limite = 0, CatalogPriceRange? priceRange = null, string? orden = null)
+    public async Task<IReadOnlyList<ProductoDto>> GetAsync(long? categoriaId = null, string? busqueda = null, int limite = 0, CatalogPriceRange? priceRange = null, string? orden = null, string? descuentos = null)
     {
         var families = await FamiliesAsync();
         IEnumerable<ProductFamily> query = families;
@@ -62,6 +64,8 @@ public sealed class CatalogoService(AldaJoyerosContext sql, AppMapper mapper, Pu
             query = families.Where(f => f.Members.Any(p => !p.Eliminado && (p.CategoriaId == categoriaId ||
                 name != null && !name.Contains(" · ") && p.Categoria != null && p.Categoria.Nombre.StartsWith(name + " · ", StringComparison.Ordinal))));
         }
+        if(descuentos == "si") query = query.Where(f=>f.Product.TieneDescuento);
+        else if(descuentos == "no") query = query.Where(f=>!f.Product.TieneDescuento);
         if (priceRange != null) query = query.Where(f => priceRange.Contains(f.Product.Precio));
         query = orden switch
         {
@@ -91,7 +95,8 @@ public sealed class CatalogoService(AldaJoyerosContext sql, AppMapper mapper, Pu
         dto.UrlSlug = family.Product.UrlSlug;
         dto.Tallas = family.Product.Tallas;
         dto.ProductoSeleccionadoId = selectedId;
-        dto.Precio = selectedId.HasValue ? source.Precio : family.Product.Precio;
+        if(selectedId.HasValue && promotions != null) AldaJoyeros.Services.Promotions.PromotionPricing.Apply(dto,source,await promotions.ConfigAsync());
+        else { dto.Precio = family.Product.Precio; dto.PrecioSinDescuento=family.Product.PrecioSinDescuento; dto.PrecioAnterior=family.Product.PrecioAnterior; dto.DescuentoPorcentaje=family.Product.DescuentoPorcentaje; }
         dto.ReferenciaSeleccionada = selectedId.HasValue ? source.Nombre : null;
         dto.Imagenes = (await images.GetByProductoIdAsync(source.Id)).ToList();
         if (!dto.TieneImagenes) await LoadImagesAsync(new[] { dto });
@@ -126,6 +131,11 @@ public sealed class CatalogoService(AldaJoyerosContext sql, AppMapper mapper, Pu
         return related;
     }
 
+    public async Task<CartCatalogPrice?> PriceAsync(long id) {
+        var family=(await FamiliesAsync()).FirstOrDefault(f=>f.Members.Any(p=>p.Id==id&&!p.Eliminado));
+        if(family==null)return null; var size=family.Product.Tallas.FirstOrDefault(t=>t.ProductoId==id);
+        return size!=null?new(size.Precio,size.PrecioAnterior,size.DescuentoPorcentaje){BasePrice=size.PrecioSinDescuento}:new(family.Product.Precio,family.Product.PrecioAnterior,family.Product.DescuentoPorcentaje){BasePrice=family.Product.PrecioSinDescuento};
+    }
     public async Task<bool> IsPurchasableAsync(long id)
     {
         var product = await sql.Productos.AsNoTracking().Include(p => p.Proveedores).FirstOrDefaultAsync(p => p.Id == id && !p.Eliminado);

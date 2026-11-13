@@ -115,7 +115,8 @@
                     <summary class="flex min-h-14 cursor-pointer list-none items-center justify-between gap-3 p-4 text-sm font-semibold text-stone-900 lg:hidden"><span><i class="fas fa-sliders mr-2 text-emerald-800" aria-hidden="true"></i>Filtros y categorías</span><i class="fas fa-chevron-down text-xs" aria-hidden="true"></i></summary>
                     <div class="space-y-6 p-5 lg:max-h-[calc(100dvh-9rem)] lg:overflow-y-auto">
                         <div class="hidden items-center justify-between gap-2 lg:flex"><h2 class="text-sm font-semibold text-stone-900">Afina tu selección</h2><i class="fas fa-sliders text-emerald-800" aria-hidden="true"></i></div>
-                        <div class="border-b border-stone-200 pb-6">
+                        <div class="border-b border-stone-200 pb-5"><label for="discountCatalog" class="mb-3 block font-serif text-xl text-stone-900">Ofertas</label><select id="discountCatalog" name="descuentos" x-model="descuentosActual" x-on:change="cambiarOrden()" class="w-full rounded-lg border border-stone-300 bg-white px-3 py-3 text-sm text-stone-900"><option value="">Todos los productos</option><option value="si">Con descuento</option><option value="no">Sin descuento</option></select></div>
+<div class="border-b border-stone-200 pb-6">
                             <label for="ordenCatalogo" class="mb-3 block font-serif text-xl text-stone-900">Ordenar por</label>
                             <select id="ordenCatalogo" name="orden" x-model="ordenActual" x-on:change="cambiarOrden()"
                                     class="min-h-11 w-full min-w-0 rounded-lg border border-stone-300 bg-white px-3 py-3 text-sm text-stone-900 focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700">
@@ -359,6 +360,7 @@
                     return this.categorias.find(c => String(c.id) === String(this.categoriaActual))?.nombre || '';
                 },
                 busquedaActual: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(busqueda)),
+                descuentosActual: @Html.Raw(System.Text.Json.JsonSerializer.Serialize((string)(ViewBag.Descuentos ?? ""))),
                 ordenActual: @Html.Raw(System.Text.Json.JsonSerializer.Serialize((string)(ViewBag.Orden ?? ""))),
                 async cambiarOrden() {
                     this.paginaActual = 1;
@@ -528,6 +530,7 @@
                             this.categoriaActual = event.state.categoria;
                             this.busquedaActual = event.state.busqueda || '';
                             this.ordenActual = event.state.orden || '';
+                            this.descuentosActual = event.state.descuentos || '';
                             this.precioMinEntrada = this.precioMinActual = event.state.precioMin ?? '';
                             this.precioMaxEntrada = this.precioMaxActual = event.state.precioMax ?? '';
                             this.ajustarEscalaPrecio(true);
@@ -563,6 +566,8 @@
 
                 // Limpiar filtros
                 async limpiarFiltros() {
+                    this.descuentosActual = '';
+                    this.ordenActual = '';
                     this.precioMinEntrada = this.precioMaxEntrada = this.precioMinActual = this.precioMaxActual = '';
                     this.ajustarEscalaPrecio();
                     this.errorPrecio = '';
@@ -589,6 +594,7 @@
 
                         if (this.precioMinActual !== '') url += `&precioMin=${encodeURIComponent(this.precioMinActual)}`;
                         if (this.precioMaxActual !== '') url += `&precioMax=${encodeURIComponent(this.precioMaxActual)}`;
+                        if (this.descuentosActual) url += `&descuentos=${encodeURIComponent(this.descuentosActual)}`;
                         if (this.ordenActual) url += `&orden=${encodeURIComponent(this.ordenActual)}`;
                         const response = await fetch(url, { signal: controller.signal });
                         const data = await response.json();
@@ -637,6 +643,7 @@
                     if (this.precioMinActual !== '') params.set('precioMin', this.precioMinActual);
                     if (this.precioMaxActual !== '') params.set('precioMax', this.precioMaxActual);
                     if (this.busquedaActual) params.set('busqueda', this.busquedaActual);
+                    if (this.descuentosActual) params.set('descuentos', this.descuentosActual);
                     if (this.ordenActual) params.set('orden', this.ordenActual);
                     if (this.paginaActual > 1) params.set('page', this.paginaActual);
                     
@@ -646,6 +653,7 @@
                         categoria: this.categoriaActual,
                         busqueda: this.busquedaActual,
                         orden: this.ordenActual,
+                        descuentos: this.descuentosActual,
                         pagina: this.paginaActual,
                         precioMin: this.precioMinActual,
                         precioMax: this.precioMaxActual
@@ -657,7 +665,7 @@
                         history.pushState(state, '', url);
                     }
                     const robots = document.querySelector('meta[name="robots"]');
-                    if (robots) robots.content = robots.dataset.publicIndexing === 'true' && !this.busquedaActual.trim() && !this.ordenActual && this.precioMinActual === '' && this.precioMaxActual === '' ? 'index, follow' : 'noindex, nofollow';
+                    if (robots) robots.content = robots.dataset.publicIndexing === 'true' && !this.busquedaActual.trim() && !this.ordenActual && !this.descuentosActual && this.precioMinActual === '' && this.precioMaxActual === '' ? 'index, follow' : 'noindex, nofollow';
                     const canonical = document.querySelector('link[rel="canonical"][data-catalog-base]');
                     if (canonical && canonical.dataset.catalogBase) {
                         const categorySlug = this.categoriaActual && !this.busquedaActual.trim() ? this.categorias.find(c => String(c.id) === String(this.categoriaActual))?.slug : null;

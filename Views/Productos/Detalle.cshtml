@@ -52,6 +52,7 @@
             <button type="button" data-featured-product-toggle disabled class="min-h-11 rounded-lg bg-emerald-800 px-5 py-3 text-sm font-semibold text-white hover:bg-emerald-900 disabled:opacity-50">Comprobando selección…</button>
         </section></div>
         <partial name="_FeaturedReplacement" />
+        <partial name="_ProductPromotionAdmin" model="Model" />
     }
 
     <div class="container mx-auto px-4 md:px-8 pb-20">
@@ -133,9 +134,7 @@
 
                     <div class="flex flex-wrap items-center justify-between gap-3">
                         <div class="flex items-center gap-4">
-                            <span class="font-serif text-3xl text-dark-900">
-                                @(Model.PrecioDesde ? "Desde " : "")@Model.Precio.ToString("C")
-                            </span>
+                            <div class="product-detail-price"><partial name="_ProductPrice" model="Model" /></div>
                         </div>
                         <div class="flex items-center gap-2 text-emerald-700 text-sm font-medium bg-emerald-50 px-3 py-1.5 rounded-full">
                             <span class="relative flex h-2.5 w-2.5">

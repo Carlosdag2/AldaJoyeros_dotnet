@@ -148,6 +148,7 @@ namespace AldaJoyeros.Controllers
             {
                 usuarioCreateDto.Rol = "USER";
                 var usuario = await _usuarioService.CreateAsync(usuarioCreateDto);
+                if(usuarioCreateDto.AceptaOfertas) { try { await HttpContext.RequestServices.GetRequiredService<AldaJoyeros.Services.Promotions.PromotionStore>().SubscribeAsync(usuario.Id,true,"registro-web-v1"); } catch(Exception ex) { _logger.LogWarning(ex,"No se pudo guardar la preferencia de ofertas"); TempData["Warning"]="Tu cuenta está creada, pero no se guardó la suscripción a ofertas. Puedes activarla desde Preferencias de ofertas."; } }
                 
                 var loginDto = new LoginDto
                 {

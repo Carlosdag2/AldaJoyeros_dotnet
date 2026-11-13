@@ -42,6 +42,10 @@ namespace AldaJoyeros
             builder.Services.AddSingleton<PerezMoraStore>();
             builder.Services.AddSingleton<PerezMoraSource>();
             builder.Services.AddSingleton<FeaturedProductsStore>();
+            builder.Services.AddSingleton<AldaJoyeros.Services.Promotions.PromotionStore>();
+            builder.Services.AddScoped<AldaJoyeros.Services.Promotions.PromotionPricing>();
+            builder.Services.AddSingleton<AldaJoyeros.Services.Promotions.PromotionMail>();
+            builder.Services.AddHostedService<AldaJoyeros.Services.Promotions.PromotionWorker>();
             builder.Services.AddSingleton<StoreModeStore>();
             builder.Services.AddHostedService<PerezMoraWorker>();
 
