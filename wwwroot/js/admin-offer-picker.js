@@ -9,10 +9,10 @@
     const error = dialog.querySelector('[data-picker-error]');
     let kind = 'home', choices = new Map(), page = 1, pages = 1, loading = false;
     let controller, generation = 0, timer;
+    const limit = () => kind === 'general' ? 3 : ['popup', 'rule'].includes(kind) ? 1 : 8;
     function showError(text = '') { error.textContent = text; error.hidden = !text; }
     function count() {
-        const limit = ['popup', 'rule'].includes(kind) ? 1 : 8;
-        dialog.querySelector('[data-picker-count]').textContent = choices.size + ' de ' + limit + ' seleccionados';
+        dialog.querySelector('[data-picker-count]').textContent = choices.size + ' de ' + limit() + ' seleccionados';
         dialog.querySelector('[data-picker-apply]').disabled = loading;
         results.querySelectorAll('[data-picker-product]').forEach(button => {
             const selected = choices.has(button.dataset.pickerProduct);
@@ -38,7 +38,7 @@
             const id = String(product.id); showError();
             if (choices.has(id)) choices.delete(id);
             else if (['popup', 'rule'].includes(kind)) { choices.clear(); choices.set(id, product); }
-            else if (choices.size >= 8) { showError('Ya has elegido 8 productos. Quita uno para seleccionar otro.'); return; }
+            else if (choices.size >= limit()) { showError('Ya has elegido ' + limit() + ' productos. Quita uno para seleccionar otro.'); return; }
             else choices.set(id, product);
             count();
         });
@@ -71,8 +71,8 @@
     function open(mode) {
         if (api.busy()) return;
         kind = mode; choices = new Map(api.selected(kind).map(p => [String(p.id), p]));
-        dialog.querySelector('#offer-picker-title').textContent = kind === 'rule' ? 'Elige el producto para el descuento' : kind === 'home' ? 'Elige las ofertas del inicio' : kind === 'mail' ? 'Elige los productos del correo' : 'Elige el producto del aviso';
-        dialog.querySelector('[data-picker-help]').textContent = kind === 'rule' ? 'Busca por nombre o referencia y filtra por categoría. Pulsa una tarjeta para elegirla.' : kind === 'popup' ? 'Selecciona una pieza. Si dejas la selección vacía se usará el anuncio general.' : 'Pulsa las tarjetas para añadir o quitar productos. Puedes elegir hasta 8.';
+        dialog.querySelector('#offer-picker-title').textContent = kind === 'general' ? 'Elige las imágenes del anuncio general' : kind === 'rule' ? 'Elige el producto para el descuento' : kind === 'home' ? 'Elige las ofertas del inicio' : kind === 'mail' ? 'Elige los productos del correo' : 'Elige el producto del aviso';
+        dialog.querySelector('[data-picker-help]').textContent = kind === 'general' ? 'Elige hasta 3 productos con descuento. Se mostrarán en el orden en que los selecciones. Vacía la selección para usar imágenes automáticas.' : kind === 'rule' ? 'Busca por nombre o referencia y filtra por categoría. Pulsa una tarjeta para elegirla.' : kind === 'popup' ? 'Selecciona una pieza. Si dejas la selección vacía se usará el anuncio general.' : 'Pulsa las tarjetas para añadir o quitar productos. Puedes elegir hasta 8.';
         dialog.querySelector('[data-picker-apply]').textContent = kind === 'mail' ? 'Preparar estos productos' : 'Usar esta selección';
         dialog.querySelector('[data-picker-empty] p').textContent = kind === 'rule' ? 'No hay productos para esta búsqueda' : 'No hay ofertas para esta búsqueda';
         dialog.querySelector('[data-picker-create]').hidden = kind === 'rule';
@@ -86,12 +86,15 @@
         if (button.matches('[data-picker-clear]')) { choices.clear(); showError(); count(); }
         if (button.matches('[data-picker-apply]') && !loading) { api.apply(kind, [...choices.values()]); dialog.close(); }
         if (button.matches('[data-picker-create]')) { dialog.close(); root.querySelector('[data-new-rule]').click(); }
+        if (button.matches('[data-general-auto]') && !api.busy()) api.apply('general', []);
+        if (button.matches('[data-general-remove]') && !api.busy()) api.apply('general', api.selected('general').filter(p => String(p.id) !== button.dataset.generalRemove));
         if (button.matches('[data-popup-general]') && !api.busy()) api.apply('popup', []);
         if (button.matches('[data-popup-preview]') && !api.busy()) {
             const preview = root.querySelector('[data-popup-preview-dialog]');
             const iframe = preview.querySelector('iframe');
             const url = new URL(iframe.dataset.url, location.href); const id = root.querySelector('[name="popupProductId"]').value;
             if (id) url.searchParams.set('productId', id);
+            url.searchParams.set('previewProducts', root.querySelector('[name="popupPreviewProducts"]').value);
             iframe.src = url.href; preview.showModal();
         }
         if (button.matches('[data-popup-preview-close]')) root.querySelector('[data-popup-preview-dialog]').close();

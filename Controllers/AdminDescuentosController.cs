@@ -27,18 +27,28 @@ public sealed class AdminDescuentosController(PromotionStore store, CatalogoServ
         var pages = Math.Max(1, (int)Math.Ceiling(filtered.Length / 24d));
         page = Math.Clamp(page, 1, pages);
         var rows = filtered.Skip((page - 1) * 24).Take(24).ToArray();
-        var selected = all.Where(p => config.HomeProducts.Contains(p.Id) || config.PopupProductId == p.Id).ToArray();
+        var selected = all.Where(p => config.HomeProducts.Contains(p.Id) || config.PopupProductId == p.Id || config.PopupPreviewProducts.Contains(p.Id)).ToArray();
         await catalog.LoadImagesAsync(rows.Concat(selected));
         var vm = new PromotionsAdminViewModel(config, rows, selected, cats, search, categoryId, page, pages, filtered.Length, await store.AudienceAsync(), await store.CampaignsAsync());
         return Request.Headers.XRequestedWith == "XMLHttpRequest" ? PartialView("_Panel", vm) : View(vm);
     }
 
     [HttpGet]
-    public async Task<IActionResult> VistaAviso(long? productId = null)
+    public async Task<IActionResult> VistaAviso(long? productId = null, string? previewProducts = null)
     {
         // GetAsync returns an independent configuration; a preview never saves it.
         var state = await store.GetAsync();
         state.PopupProductId = productId;
+        if (previewProducts != null)
+        {
+            try
+            {
+                state.PopupPreviewProducts = Ids(previewProducts);
+                if (state.PopupPreviewProducts.Count > 3)
+                    return BadRequest("Elige hasta 3 imágenes para el anuncio general.");
+            }
+            catch (ArgumentException) { return BadRequest("Selección de imágenes inválida."); }
+        }
         var content = await PromotionPopupContent.CreateAsync(state, catalog, Request);
         if (content == null)
             return Content("No hay una oferta disponible para esta vista previa.", "text/plain");
@@ -192,15 +202,18 @@ public sealed class AdminDescuentosController(PromotionStore store, CatalogoServ
     }
 
     [HttpPost]
-    public async Task<IActionResult> Presentation(long revision, bool homeEnabled, string? homeProducts, bool popupEnabled, long? popupProductId, int popupSeconds = 10)
+    public async Task<IActionResult> Presentation(long revision, bool homeEnabled, string? homeProducts, bool popupEnabled, long? popupProductId, int popupSeconds = 10, string? popupPreviewProducts = null)
     {
         try
         {
             var ids = Ids(homeProducts);
+            var previewIds = Ids(popupPreviewProducts);
+            if (previewIds.Count > 3)
+                throw new ArgumentException("Elige hasta 3 imágenes para el anuncio general.");
             if (ids.Count > 8 || popupSeconds is < 5 or > 60)
                 throw new ArgumentException("Elige hasta 8 productos y un aviso de entre 5 y 60 segundos.");
             var all = await catalog.GetAsync();
-            if (ids.Any(id => !all.Any(p => p.Id == id && p.TieneDescuento)) || popupEnabled && popupProductId.HasValue && !all.Any(p => p.Id == popupProductId && p.TieneDescuento))
+            if (ids.Concat(previewIds).Any(id => !all.Any(p => p.Id == id && p.TieneDescuento)) || popupEnabled && popupProductId.HasValue && !all.Any(p => p.Id == popupProductId && p.TieneDescuento))
                 throw new ArgumentException("Solo puedes promocionar productos disponibles con descuento. Revisa la selección.");
             await store.ChangeAsync(revision, state =>
             {
@@ -208,6 +221,7 @@ public sealed class AdminDescuentosController(PromotionStore store, CatalogoServ
                 state.HomeProducts = ids;
                 state.PopupEnabled = popupEnabled;
                 state.PopupProductId = popupProductId;
+                state.PopupPreviewProducts = previewIds;
                 state.PopupSeconds = popupSeconds;
                 state.PopupVersion = Guid.NewGuid().ToString("N");
             });

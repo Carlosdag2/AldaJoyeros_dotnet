@@ -23,10 +23,13 @@ public static class PromotionPopupContent
 
         if (product != null)
             await catalog.LoadImagesAsync(new[] { product });
-        var previews = product == null
-            ? state.HomeProducts.Select(id => discounted.FirstOrDefault(p => p.Id == id)).OfType<ProductoDto>()
-                .Concat(discounted).DistinctBy(p => p.Id).Take(3).ToArray()
-            : Array.Empty<ProductoDto>();
+        // Manual images are independent of the home selection. Expired offers are ignored;
+        // if none remain, fall back to the automatic selection.
+        var manualPreviews = state.PopupPreviewProducts.Select(id => discounted.FirstOrDefault(p => p.Id == id))
+            .OfType<ProductoDto>().DistinctBy(p => p.Id).Take(3).ToArray();
+        var previews = product != null ? Array.Empty<ProductoDto>() : manualPreviews.Length > 0 ? manualPreviews
+            : state.HomeProducts.Select(id => discounted.FirstOrDefault(p => p.Id == id)).OfType<ProductoDto>()
+                .Concat(discounted).DistinctBy(p => p.Id).Take(3).ToArray();
         if (previews.Length > 0)
             await catalog.LoadImagesAsync(previews);
         var maxPercent = discounted.SelectMany(p => p.Tallas.Select(t => t.DescuentoPorcentaje)
