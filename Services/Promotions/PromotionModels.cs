@@ -24,6 +24,7 @@ public sealed record PromotionConfig
     public List<long> HomeProducts { get; set; } = new();
     public bool PopupEnabled { get; set; }
     public long? PopupProductId { get; set; }
+    public List<long> PopupPreviewProducts { get; set; } = new();
     public int PopupSeconds { get; set; } = 10;
     public string PopupVersion { get; set; } = Guid.NewGuid().ToString("N");
 }

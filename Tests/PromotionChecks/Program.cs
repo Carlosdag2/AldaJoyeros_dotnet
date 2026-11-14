@@ -179,6 +179,12 @@ Check(html.Contains("/Promociones/Baja?token=") && html.Contains("/catalogo?desc
 Check(!html.Contains("pixel") && !html.Contains("cliente@"), "Sin seguimiento ni destinatarios expuestos en el mensaje");
 var clone = JsonSerializer.Deserialize<PromotionConfig>(JsonSerializer.Serialize(config))!;
 Check(clone.Rules[0].Percent == 99, "Configuración persistible sin perder decimales");
+var legacyConfig = JsonSerializer.Deserialize<PromotionConfig>("{\"PopupEnabled\":true}")!;
+Check(legacyConfig.PopupPreviewProducts.Count == 0, "Configuración anterior mantiene imágenes automáticas sin migración");
+config.PopupPreviewProducts = new List<long> { 3, 1, 2 };
+var imageClone = JsonSerializer.Deserialize<PromotionConfig>(JsonSerializer.Serialize(config))!;
+Check(imageClone.PopupPreviewProducts.SequenceEqual(new long[] { 3, 1, 2 }), "Selección de imágenes del aviso persiste su orden independientemente del inicio");
+
 var plain=EmailPlainText.FromHtml("<html><head><style>.x{color:red}</style></head><body><p>Oferta de oro &amp; plata: 15 %</p><a href='https://joyas.example/oferta'>Ver oferta</a></body></html>");
 Check(plain.Contains("oro & plata")&&plain.Contains("https://joyas.example/oferta")&&!plain.Contains("color:red")&&!plain.Contains("<p>"),"Versión de texto conserva contenido y enlaces sin CSS");
 Console.WriteLine($"ALL {count} CHECKS PASSED; sin bases de datos, SMTP ni pagos.");
