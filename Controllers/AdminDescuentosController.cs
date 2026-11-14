@@ -34,6 +34,48 @@ public sealed class AdminDescuentosController(PromotionStore store, CatalogoServ
     }
 
     [HttpGet]
+    public async Task<IActionResult> VistaAviso(long? productId = null)
+    {
+        // GetAsync returns an independent configuration; a preview never saves it.
+        var state = await store.GetAsync();
+        state.PopupProductId = productId;
+        var content = await PromotionPopupContent.CreateAsync(state, catalog, Request);
+        if (content == null)
+            return Content("No hay una oferta disponible para esta vista previa.", "text/plain");
+        ViewBag.PopupPreview = content;
+        return View("VistaAviso");
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Elegir(string search = "", long? categoryId = null, int page = 1, bool onlyDiscounted = true)
+    {
+        var all = await catalog.GetAsync(descuentos: onlyDiscounted ? "si" : null);
+        var category = categoryId.HasValue
+            ? (await categories.GetAllAsync()).FirstOrDefault(c => c.Id == categoryId) : null;
+        if (categoryId.HasValue && category == null)
+            return BadRequest(new { message = "La categoría ya no está disponible." });
+        var term = search.Trim();
+        var filtered = all.Where(p =>
+            (term.Length == 0 || p.Nombre.Contains(term, StringComparison.OrdinalIgnoreCase) || p.CategoriaNombre.Contains(term, StringComparison.OrdinalIgnoreCase)) &&
+            (!categoryId.HasValue || p.CategoriaId == categoryId ||
+                !category!.Nombre.Contains(" · ") && p.CategoriaNombre.StartsWith(category.Nombre + " · ", StringComparison.Ordinal))).ToArray();
+        var pages = Math.Max(1, (int)Math.Ceiling(filtered.Length / 12d));
+        page = Math.Clamp(page, 1, pages);
+        var rows = filtered.Skip((page - 1) * 12).Take(12).ToArray();
+        await catalog.LoadImagesAsync(rows);
+        return Json(new
+        {
+            success = true, total = filtered.Length, page, totalPages = pages,
+            items = rows.Select(p => new
+            {
+                id = p.Id, name = p.Nombre, category = p.CategoriaNombre, image = p.ImagenPrincipal,
+                price = (p.PrecioDesde ? "Desde " : "") + p.Precio.ToString("C"),
+                percent = p.DescuentoPorcentaje.ToString("0.##"), discounted = p.TieneDescuento
+            })
+        });
+    }
+
+    [HttpGet]
     public async Task<IActionResult> Producto(long id) {
         var family=(await catalog.FamiliesAsync()).FirstOrDefault(f=>f.Product.Id==id);
         if(family==null)return NotFound(new{message="El producto ya no está disponible."});
