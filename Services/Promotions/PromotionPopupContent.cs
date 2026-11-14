@@ -36,7 +36,7 @@ public static class PromotionPopupContent
             .Append(p.DescuentoPorcentaje)).DefaultIfEmpty(0).Max();
         return new
         {
-            version = state.PopupVersion, seconds = state.PopupSeconds,
+            version = state.PopupVersion, seconds = state.PopupSeconds, limitedUnits = state.LimitedUnits,
             name = product == null ? null : product.Nombre + (PublicUrls.SelectedSize(product) is { } chosen ? " · Talla " + chosen : ""),
             title = product == null ? "Tu próxima joya, con un precio especial." : "Una pieza especial. Una gran oportunidad.",
             price = product?.Precio.ToString("C"), previous = product?.PrecioSinDescuento?.ToString("C"),

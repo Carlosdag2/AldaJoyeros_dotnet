@@ -95,6 +95,7 @@
             const url = new URL(iframe.dataset.url, location.href); const id = root.querySelector('[name="popupProductId"]').value;
             if (id) url.searchParams.set('productId', id);
             url.searchParams.set('previewProducts', root.querySelector('[name="popupPreviewProducts"]').value);
+            url.searchParams.set('limitedUnits', String(root.querySelector('[name="limitedUnits"]').checked));
             iframe.src = url.href; preview.showModal();
         }
         if (button.matches('[data-popup-preview-close]')) root.querySelector('[data-popup-preview-dialog]').close();
