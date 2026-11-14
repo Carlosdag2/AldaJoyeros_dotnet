@@ -47,21 +47,7 @@ public sealed class PromocionesController(PromotionStore store, PromotionMail ma
         var state = await store.GetAsync();
         if (!state.PopupEnabled)
             return NoContent();
-        var discounted = await catalog.GetAsync(descuentos: "si");
-        if (discounted.Count == 0)
-            return NoContent();
-        var product = state.PopupProductId.HasValue ? discounted.SingleOrDefault(p => p.Id == state.PopupProductId) : null;
-        if (state.PopupProductId.HasValue && product == null)
-            return NoContent();
-        if (product?.TieneTallas == true)
-        {
-            var size = product.Tallas.Where(t => t.DescuentoPorcentaje > 0 && t.PrecioSinDescuento > t.Precio).OrderBy(t => t.Precio).FirstOrDefault();
-            if (size != null)
-                product = await catalog.DetailAsync(product.Id, size.ProductoId);
-        }
-
-        if (product != null)
-            await catalog.LoadImagesAsync(new[] { product });
-        return Json(new { version = state.PopupVersion, seconds = state.PopupSeconds, name = product == null ? null : product.Nombre + (PublicUrls.SelectedSize(product)is { } chosen ? " · Talla " + chosen : ""), title = product == null ? "Una selección con descuento" : "Una pieza especial para ti", price = product?.Precio.ToString("C"), previous = product?.PrecioSinDescuento?.ToString("C"), percent = product?.DescuentoPorcentaje.ToString("0.##"), reference = product?.PrecioAnterior != product?.PrecioSinDescuento ? product?.PrecioAnterior?.ToString("C") : null, image = product?.ImagenPrincipal, url = product == null ? (Request.PathBase + "/catalogo?descuentos=si").ToString() : PublicUrls.ProductLink(Request, product) });
+        var content=await PromotionPopupContent.CreateAsync(state,catalog,Request);
+        return content==null?NoContent():Json(content);
     }
 }

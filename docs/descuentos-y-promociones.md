@@ -4,7 +4,7 @@ Acceso: **Admin → La imagen de tu tienda → Descuentos y promociones**.
 
 ## Crear y modificar ofertas
 
-1. Pulsa «Crear descuento» y elige una categoría, o busca un artículo por nombre/referencia y pulsa «Crear descuento» en su tarjeta.
+1. Pulsa «Crear descuento» y elige una categoría. Para un artículo, selecciona «Un producto y sus tallas» y «Buscar y elegir producto con imagen»: busca por nombre/referencia, filtra por categoría y pulsa su tarjeta. También puedes hacerlo desde la ficha pública del producto siendo administrador.
 2. Indica nombre y porcentaje (0,01–99,99 %). Una categoría principal incluye sus subcategorías; una oferta del padre incluye las tallas de Pérez Mora.
 3. Revisa los precios anteriores y confirma la referencia de los 30 días antes de activar la oferta. La web no puede reconstruir precios anteriores al comienzo del registro: esa comprobación inicial corresponde al administrador.
 4. Puedes modificar, pausar, reactivar o eliminar cada oferta. No se modifican los PVP base, costes, coeficientes ni datos de los proveedores. Las importaciones siguen actualizando esos datos y los descuentos se calculan aparte.
@@ -17,15 +17,17 @@ En familias con tallas, el catálogo muestra «Desde» y el menor precio disponi
 
 ## Mostrar ofertas y configurar el aviso
 
-- En las tarjetas marca «Mostrar en inicio». Activa la sección y pulsa «Guardar presentación». Máximo 8 artículos, sin duplicados. La sección solo aparece si está activada y queda algún producto disponible con descuento.
+- En «Las ofertas de tu escaparate», pulsa «Elegir productos». El selector muestra fotos, precios, búsqueda y categorías; conserva lo elegido al cambiar de página o filtro. Pulsa las tarjetas para seleccionar hasta 8 artículos, sin duplicados, y «Usar esta selección». Cancelar descarta lo que has cambiado en el selector.
+- Arrastra las tarjetas desde el asa para ordenar las ofertas del inicio, con ratón o pantalla táctil. También puedes usar «Subir», «Bajar» y «Quitar». Activa «Mostrar estas ofertas en el inicio» y pulsa «Guardar presentación» para publicar la selección y su orden, sin recargar la página. La sección solo aparece si está activada y queda algún producto disponible con descuento.
 - Para el aviso emergente puedes elegir un producto o el anuncio general con enlace a todas las ofertas. Está desactivado inicialmente, aparece a los 10 segundos por defecto (configurable entre 5 y 60) y se muestra una vez cada 24 horas en el mismo navegador, incluso si se cierra y vuelve a abrir.
+- Elige el producto del aviso con el mismo selector visual o utiliza «Usar anuncio general». «Ver cómo quedará» abre una vista previa de tu selección todavía sin guardar: no publica cambios ni consume las 24 horas. El aviso muestra una imagen grande y el porcentaje; el anuncio general presenta hasta tres ofertas y señala el descuento máximo con «Hasta».
 - El aviso solo aparece en inicio, catálogo y fichas. Espera si hay un aviso de cookies, otro diálogo abierto o se está rellenando un campo; no aparece durante el pago. Se cierra con Escape, el botón de cierre o «Seguir explorando».
 - El catálogo permite «Todos», «Con descuento» y «Sin descuento», junto a los filtros de precio, orden y categorías. La selección se conserva en la URL, la paginación AJAX y los botones Atrás/Adelante.
 
 ## Correos comerciales
 
 1. Los usuarios aceptan las ofertas opcionalmente en el registro o desde **Mi cuenta → Preferencias de ofertas**. Las cuentas existentes no se suscriben automáticamente. Las cookies no equivalen a consentimiento comercial.
-2. El administrador puede elegir hasta 8 productos o una selección automática de hasta 4 ofertas vigentes. Escribe el asunto y pulsa «Preparar vista previa»: todavía no se envía nada.
+2. «Elegir productos del correo» abre el mismo selector con fotos. El administrador puede elegir hasta 8 productos o una selección automática de hasta 4 ofertas vigentes. Escribe el asunto y pulsa «Preparar vista previa»: todavía no se envía nada.
 3. Revisa imágenes, precios, enlaces y número de suscriptores. Solo «Enviar a los suscriptores» crea la campaña.
 4. El proceso en segundo plano realiza envíos individuales con el SMTP existente; no expone direcciones de otros clientes. Comprueba suscripción y precios antes de enviar. Si se retira una oferta, cambia su precio, se elimina el usuario o se da de baja, se omite lo que ya no corresponda.
 5. «Historial de correos» permite consultar enviados, pendientes, omitidos e incidencias. Una confirmación repetida no duplica la campaña. Los fallos y los resultados inciertos no se reintentan automáticamente: SMTP no garantiza entrega exactamente una vez, y así se evita repetir envíos ambiguos.
