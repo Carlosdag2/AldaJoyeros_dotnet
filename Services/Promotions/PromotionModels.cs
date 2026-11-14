@@ -21,6 +21,7 @@ public sealed record PromotionConfig
     public long Revision { get; set; }
     public List<DiscountRule> Rules { get; set; } = new();
     public bool HomeEnabled { get; set; }
+    public bool LimitedUnits { get; set; }
     public List<long> HomeProducts { get; set; } = new();
     public bool PopupEnabled { get; set; }
     public long? PopupProductId { get; set; }

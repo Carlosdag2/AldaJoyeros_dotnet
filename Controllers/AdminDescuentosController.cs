@@ -34,11 +34,12 @@ public sealed class AdminDescuentosController(PromotionStore store, CatalogoServ
     }
 
     [HttpGet]
-    public async Task<IActionResult> VistaAviso(long? productId = null, string? previewProducts = null)
+    public async Task<IActionResult> VistaAviso(long? productId = null, string? previewProducts = null, bool? limitedUnits = null)
     {
         // GetAsync returns an independent configuration; a preview never saves it.
         var state = await store.GetAsync();
         state.PopupProductId = productId;
+        if (limitedUnits.HasValue) state.LimitedUnits = limitedUnits.Value;
         if (previewProducts != null)
         {
             try
@@ -202,7 +203,7 @@ public sealed class AdminDescuentosController(PromotionStore store, CatalogoServ
     }
 
     [HttpPost]
-    public async Task<IActionResult> Presentation(long revision, bool homeEnabled, string? homeProducts, bool popupEnabled, long? popupProductId, int popupSeconds = 10, string? popupPreviewProducts = null)
+    public async Task<IActionResult> Presentation(long revision, bool homeEnabled, string? homeProducts, bool popupEnabled, long? popupProductId, int popupSeconds = 10, string? popupPreviewProducts = null, bool limitedUnits = false)
     {
         try
         {
@@ -218,6 +219,7 @@ public sealed class AdminDescuentosController(PromotionStore store, CatalogoServ
             await store.ChangeAsync(revision, state =>
             {
                 state.HomeEnabled = homeEnabled;
+                state.LimitedUnits = limitedUnits;
                 state.HomeProducts = ids;
                 state.PopupEnabled = popupEnabled;
                 state.PopupProductId = popupProductId;
