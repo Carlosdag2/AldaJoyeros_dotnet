@@ -41,7 +41,6 @@ public static class PromotionPopupContent
             title = product == null ? "Tu próxima joya, con un precio especial." : "Una pieza especial. Una gran oportunidad.",
             price = product?.Precio.ToString("C"), previous = product?.PrecioSinDescuento?.ToString("C"),
             percent = product?.DescuentoPorcentaje.ToString("0.##"), maxPercent = maxPercent.ToString("0.##"),
-            reference = product?.PrecioAnterior != product?.PrecioSinDescuento ? product?.PrecioAnterior?.ToString("C") : null,
             image = product?.ImagenPrincipal, previews = previews.Select(p => new { name = p.Nombre, image = p.ImagenPrincipal }),
             url = product == null ? (request.PathBase + "/catalogo?descuentos=si").ToString() : PublicUrls.ProductLink(request, product)
         };

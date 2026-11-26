@@ -23,7 +23,7 @@ dialog.promotion-spotlight{width:min(850px,calc(100vw - 32px));padding:0;border:
 .spotlight-title{font:normal 37px/1.13 Georgia,'Times New Roman',serif;letter-spacing:-.035em;margin:18px 0 14px;overflow-wrap:anywhere}
 .spotlight-description{font-size:14px;line-height:1.7;color:var(--theme-muted,#62675c);overflow-wrap:anywhere}
 .spotlight-pricing{margin-top:23px}.spotlight-base{font-size:12px;color:var(--theme-muted,#76766a)}.spotlight-price{display:block;font:normal 36px Georgia,serif;color:#08633f;margin-top:6px}
-.spotlight-reference{font-size:10px;line-height:1.5;color:var(--theme-muted,#74776e);margin-top:8px}
+
 .spotlight-cta{display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:54px;background:#08633f;color:#fff!important;border-radius:11px;padding:14px 18px;font-size:14px;font-weight:700;margin-top:26px;transition:background .18s,transform .18s}
 .spotlight-cta:hover{background:#06452e;transform:translateY(-1px)}.spotlight-later{font-size:12px;text-decoration:underline;text-underline-offset:4px;color:var(--theme-muted,#6c7369);padding:14px 6px;min-height:44px;margin-top:3px}
 .spotlight-close:focus-visible,.spotlight-cta:focus-visible,.spotlight-later:focus-visible{outline:3px solid #36be80;outline-offset:4px}
