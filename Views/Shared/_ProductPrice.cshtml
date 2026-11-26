@@ -20,5 +20,4 @@
  }else if(Model.TieneDescuento&&Model.TieneTallas&&!Model.ProductoSeleccionadoId.HasValue){<span class="mb-1 inline-block rounded-full bg-emerald-100 px-2 py-1 text-xs font-semibold text-emerald-900">Tallas con descuento</span>}
  @if(showLimitedUnits){<div class="mb-2"><span data-offer-limited class="limited-units-badge"><i class="fas fa-layer-group" aria-hidden="true"></i>Unidades limitadas</span></div>}
  <span class="font-serif text-xl text-emerald-800">@(Model.PrecioDesde?"Desde ":"")@Model.Precio.ToString("C")</span>
- @if(Model.DescuentoPorcentaje>0 && Model.PrecioAnterior.HasValue && Model.PrecioAnterior!=Model.PrecioSinDescuento){<p data-price-reference class="mt-1 text-xs leading-relaxed text-stone-500">Menor precio previo registrado (30 días): @Model.PrecioAnterior.Value.ToString("C")</p>}
 </div>
