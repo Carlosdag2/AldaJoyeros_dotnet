@@ -28,9 +28,12 @@ namespace AldaJoyeros.Controllers
             // Obtener contador del carrito de forma asíncrona
             var ecommerce = HttpContext.Items[AldaJoyeros.Services.StoreModeStore.ContextKey] is true;
             ViewBag.EcommerceEnabled = ecommerce;
-            ViewBag.CarritoCount = ecommerce ? await GetCarritoCountAsync() : 0;
-
-            await next();
+            var optimized = HttpContext.RequestServices.GetService<Microsoft.Extensions.Options.IOptions<AldaJoyeros.Configuration.StorageOptimizationOptions>>()?.Value.Enabled ?? true;
+            ViewBag.CarritoCount = !optimized && ecommerce ? await GetCarritoCountAsync() : 0;
+            var executed = await next();
+            // JSON, redirects and fragments do not render the navigation bar.
+            if (optimized && ecommerce && executed.Result is ViewResult)
+                ViewBag.CarritoCount = await GetCarritoCountAsync();
         }
 
         private async Task<int> GetCarritoCountAsync()

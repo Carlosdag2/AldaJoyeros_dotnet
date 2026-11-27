@@ -9,15 +9,21 @@ using Microsoft.EntityFrameworkCore;
 namespace AldaJoyeros.Services;
 
 // Vista pública de las familias. Los registros del proveedor, administración y pedidos se conservan individuales.
-public sealed class CatalogoService(AldaJoyerosContext sql, AppMapper mapper, PublicImageService images, CatalogUrlStore urls, AldaJoyeros.Services.Promotions.PromotionPricing? promotions = null) : ICartCatalog
+public sealed class CatalogoService(AldaJoyerosContext sql, AppMapper mapper, PublicImageService images, CatalogUrlStore urls, AldaJoyeros.Services.Promotions.PromotionPricing? promotions = null, Microsoft.Extensions.Options.IOptions<AldaJoyeros.Configuration.StorageOptimizationOptions>? optimization = null, ICategoriaService? categories = null) : ICartCatalog
 {
     private Task<IReadOnlyList<ProductFamily>>? snapshot;
+    private IReadOnlyDictionary<long, ProductFamily>? imageFamilies;
+    private IReadOnlyDictionary<long, AldaJoyeros.Entities.Producto>? sourceById;
+    private HashSet<string>? parentsWithSizes;
     public Task<IReadOnlyList<ProductFamily>> FamiliesAsync() => snapshot ??= LoadAsync();
     private async Task<IReadOnlyList<ProductFamily>> LoadAsync()
     {
         var pricing = promotions == null ? null : await promotions.ConfigAsync();
-        var families = ProductFamilies.Build(await sql.Productos.AsNoTracking().Include(p => p.Categoria).Include(p => p.Proveedores)
-            .Where(p => !p.Eliminado || p.Proveedores.Any(s => s.Proveedor == "PerezMora" && s.Estado == "completo")).ToListAsync(), p => { var dto = mapper.Map<ProductoDto>(p); if(pricing != null) AldaJoyeros.Services.Promotions.PromotionPricing.Apply(dto,p,pricing); return dto; });
+        var source = await sql.Productos.AsNoTracking().Include(p => p.Categoria).Include(p => p.Proveedores)
+            .Where(p => !p.Eliminado || p.Proveedores.Any(s => s.Proveedor == "PerezMora" && s.Estado == "completo")).ToListAsync();
+        sourceById = source.ToDictionary(p=>p.Id);
+        parentsWithSizes = source.Select(ProductFamilies.Parse).Where(p=>p.HasValue).Select(p=>p!.Value.Parent).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var families = ProductFamilies.Build(source, p => { var dto = mapper.Map<ProductoDto>(p); if(pricing != null) AldaJoyeros.Services.Promotions.PromotionPricing.Apply(dto,p,pricing); return dto; });
         if(promotions != null) await promotions.ObserveAsync(families.SelectMany(f=>f.Members).Where(p=>!p.Eliminado), pricing!);
         string Key(ProductFamily family) => family.Product.TieneTallas ? "familia-pm:" + family.Product.Nombre.ToUpperInvariant() : "producto:" + family.Product.Id;
         var assigned = await urls.GetAsync(families.Select(f => KeyValuePair.Create(Key(f), PublicUrls.ProductSlug(f.Product))));
@@ -60,7 +66,9 @@ public sealed class CatalogoService(AldaJoyerosContext sql, AppMapper mapper, Pu
         }
         else if (categoriaId.HasValue)
         {
-            var name = await sql.Categorias.AsNoTracking().Where(c => c.Id == categoriaId).Select(c => c.Nombre).FirstOrDefaultAsync();
+            var name = (optimization?.Value.Enabled ?? true) && categories != null
+                ? (await categories.GetAllAsync()).FirstOrDefault(c => c.Id == categoriaId)?.Nombre
+                : await sql.Categorias.AsNoTracking().Where(c => c.Id == categoriaId).Select(c => c.Nombre).FirstOrDefaultAsync();
             query = families.Where(f => f.Members.Any(p => !p.Eliminado && (p.CategoriaId == categoriaId ||
                 name != null && !name.Contains(" · ") && p.Categoria != null && p.Categoria.Nombre.StartsWith(name + " · ", StringComparison.Ordinal))));
         }
@@ -108,8 +116,30 @@ public sealed class CatalogoService(AldaJoyerosContext sql, AppMapper mapper, Pu
 
     public async Task LoadImagesAsync(IEnumerable<ProductoDto> products)
     {
-        var families = (await FamiliesAsync()).ToDictionary(f => f.Product.Id);
-        foreach (var dto in products)
+        var families = imageFamilies ??= (await FamiliesAsync()).ToDictionary(f => f.Product.Id);
+        var rows = products.ToArray();
+        if (optimization?.Value.Enabled ?? true)
+        {
+            // Try the representative first, then only the variants that need a fallback.
+            // This preserves the previous choice without loading all variant photos up front.
+            var pending = rows.Where(dto => !dto.TieneImagenes).Select(dto => (
+                Product: dto,
+                Ids: families.TryGetValue(dto.Id, out var family)
+                    ? family.Members.Where(p => !p.Eliminado).OrderBy(p => p.Id == dto.Id ? 0 : 1).Select(p => p.Id).ToArray()
+                    : new[] { dto.Id })).ToArray();
+            for (var depth = 0; pending.Length > 0; depth++)
+            {
+                var candidates = pending.Where(p => p.Ids.Length > depth).ToArray();
+                if (candidates.Length == 0) break;
+                var batch = await images.GetByProductoIdsAsync(candidates.Select(p => p.Ids[depth]));
+                foreach (var item in candidates)
+                    if (batch[item.Ids[depth]].Count > 0)
+                        item.Product.Imagenes = batch[item.Ids[depth]].ToList();
+                pending = candidates.Where(p => !p.Product.TieneImagenes && p.Ids.Length > depth + 1).ToArray();
+            }
+            return;
+        }
+        foreach (var dto in rows)
         {
             if (dto.TieneImagenes) continue;
             var ids = families.TryGetValue(dto.Id, out var f)
@@ -138,6 +168,13 @@ public sealed class CatalogoService(AldaJoyerosContext sql, AppMapper mapper, Pu
     }
     public async Task<bool> IsPurchasableAsync(long id)
     {
+        if (optimization?.Value.Enabled ?? true)
+        {
+            await FamiliesAsync();
+            if (sourceById == null || !sourceById.TryGetValue(id,out var row) || row.Eliminado) return false;
+            if (ProductFamilies.Parse(row).HasValue) return true;
+            return !row.Proveedores.Any(s=>s.Proveedor=="PerezMora"&&s.Estado=="completo") || !parentsWithSizes!.Contains(row.Nombre);
+        }
         var product = await sql.Productos.AsNoTracking().Include(p => p.Proveedores).FirstOrDefaultAsync(p => p.Id == id && !p.Eliminado);
         if (product == null) return false;
         if (ProductFamilies.Parse(product).HasValue) return true;

@@ -11,6 +11,11 @@ namespace AldaJoyeros.Repositories.Interfaces
         /// Obtiene todas las imágenes de un producto
         /// </summary>
         Task<IEnumerable<ProductoImagenMongo>> GetByProductoIdAsync(long productoId);
+        async Task<IEnumerable<ProductoImagenMongo>> GetByProductoIdsAsync(IEnumerable<long> ids) {
+            var result = new List<ProductoImagenMongo>();
+            foreach (var id in ids.Distinct()) result.AddRange(await GetByProductoIdAsync(id));
+            return result;
+        }
 
         /// <summary>
         /// Obtiene una imagen por su ID

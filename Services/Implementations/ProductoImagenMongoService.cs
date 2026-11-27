@@ -15,21 +15,33 @@ namespace AldaJoyeros.Services.Implementations
         private readonly IProductoImagenMongoRepository _repository;
         private readonly AppMapper _mapper;
         private readonly ILogger<ProductoImagenMongoService> _logger;
+        private readonly bool _optimized;
 
         public ProductoImagenMongoService(
             IProductoImagenMongoRepository repository,
             AppMapper mapper,
-            ILogger<ProductoImagenMongoService> logger)
+            ILogger<ProductoImagenMongoService> logger, Microsoft.Extensions.Options.IOptions<AldaJoyeros.Configuration.StorageOptimizationOptions>? optimization = null)
         {
             _repository = repository;
             _mapper = mapper;
-            _logger = logger;
+            _logger = logger; _optimized = optimization?.Value.Enabled ?? true;
         }
 
         public async Task<IEnumerable<ProductoImagenDto>> GetByProductoIdAsync(long productoId)
         {
             var imagenes = await _repository.GetByProductoIdAsync(productoId);
             return _mapper.Map<IEnumerable<ProductoImagenDto>>(imagenes);
+        }
+
+        public async Task<IEnumerable<ProductoImagenDto>> GetByProductoIdsAsync(IEnumerable<long> ids)
+        {
+            if (!_optimized) {
+                var legacy = new List<ProductoImagenDto>();
+                foreach (var id in ids.Distinct()) legacy.AddRange(await GetByProductoIdAsync(id));
+                return legacy;
+            }
+            var rows = await _repository.GetByProductoIdsAsync(ids);
+            return _mapper.Map<IEnumerable<ProductoImagenDto>>(rows);
         }
 
         public async Task<ProductoImagenDto?> GetByIdAsync(long id)

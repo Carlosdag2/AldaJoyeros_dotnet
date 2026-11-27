@@ -9,6 +9,7 @@ public static class PublicationExtensions
     public static IServiceCollection AddPublicationFeatures(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<PublicationOptions>(configuration.GetSection("Publication"));
+        services.Configure<StorageOptimizationOptions>(configuration.GetSection("StorageOptimization"));
         services.AddScoped<PublicImageService>();
         services.Configure<Microsoft.AspNetCore.Mvc.MvcOptions>(options => options.Filters.Add<AldaJoyeros.Filters.PublicUrlFilter>());
         services.AddSingleton<PublicImageCache>();

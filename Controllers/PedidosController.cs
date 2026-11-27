@@ -46,17 +46,9 @@ namespace AldaJoyeros.Controllers
         {
             var pedidos = await _pedidoService.GetByUsuarioIdAsync(CurrentUser!.Id);
             
-            foreach (var pedido in pedidos)
-            {
-                foreach (var linea in pedido.LineasPedido)
-                {
-                    if (linea.Producto != null && linea.ProductoId.HasValue)
-                    {
-                        var imagenes = await _imagenService.GetByProductoIdAsync(linea.ProductoId.Value);
-                        linea.Producto.Imagenes = imagenes.ToList();
-                    }
-                }
-            }
+            await AldaJoyeros.Helpers.ProductImageBatch.LoadAsync(_imagenService,
+                pedidos.SelectMany(p => p.LineasPedido).Where(l => l.Producto != null && l.ProductoId.HasValue)
+                    .Select(l => (l.ProductoId.GetValueOrDefault(), l.Producto!)));
             
             return View(pedidos);
         }
@@ -69,14 +61,9 @@ namespace AldaJoyeros.Controllers
                 return NotFound();
             }
 
-            foreach (var linea in pedido.LineasPedido)
-            {
-                if (linea.Producto != null && linea.ProductoId.HasValue)
-                {
-                    var imagenes = await _imagenService.GetByProductoIdAsync(linea.ProductoId.Value);
-                    linea.Producto.Imagenes = imagenes.ToList();
-                }
-            }
+            await AldaJoyeros.Helpers.ProductImageBatch.LoadAsync(_imagenService,
+                pedido.LineasPedido.Where(l => l.Producto != null && l.ProductoId.HasValue)
+                    .Select(l => (l.ProductoId.GetValueOrDefault(), l.Producto!)));
 
             return View(pedido);
         }
@@ -491,14 +478,9 @@ namespace AldaJoyeros.Controllers
                 return RedirectToAction("Index");
             }
 
-            foreach (var linea in pedido.LineasPedido)
-            {
-                if (linea.Producto != null && linea.ProductoId.HasValue)
-                {
-                    var imagenes = await _imagenService.GetByProductoIdAsync(linea.ProductoId.Value);
-                    linea.Producto.Imagenes = imagenes.ToList();
-                }
-            }
+            await AldaJoyeros.Helpers.ProductImageBatch.LoadAsync(_imagenService,
+                pedido.LineasPedido.Where(l => l.Producto != null && l.ProductoId.HasValue)
+                    .Select(l => (l.ProductoId.GetValueOrDefault(), l.Producto!)));
 
             return View(pedido);
         }
@@ -511,14 +493,8 @@ namespace AldaJoyeros.Controllers
         {
             var carritoItems = await _carritoService.GetByUsuarioIdAsync(CurrentUser!.Id);
             
-            foreach (var item in carritoItems)
-            {
-                if (item.Producto != null)
-                {
-                    var imagenes = await _imagenService.GetByProductoIdAsync(item.ProductoId);
-                    item.Producto.Imagenes = imagenes.ToList();
-                }
-            }
+            await AldaJoyeros.Helpers.ProductImageBatch.LoadAsync(_imagenService,
+                carritoItems.Where(i => i.Producto != null).Select(i => (i.ProductoId, i.Producto!)));
 
             return carritoItems;
         }

@@ -176,6 +176,32 @@ foreach (var publicMode in new[] { false, true })
     }
     finally { await app.StopAsync(); }
 }
+var detections=0;
+var versionCache=new MySqlServerVersionCache(()=> { if(++detections==1)throw new InvalidOperationException("Prueba de servidor temporalmente no disponible");return new Microsoft.EntityFrameworkCore.MySqlServerVersion(new Version(8,0,36)); });
+try { versionCache.Get(); } catch(InvalidOperationException) { }
+var detected=versionCache.Get();
+Check(detections==2,"La detección de MySQL vuelve a intentarse si falla");
+Parallel.For(0,20,_=>versionCache.Get());
+Check(detections==2&&ReferenceEquals(detected,versionCache.Get()),"La versión de MySQL se detecta una vez con peticiones concurrentes");
+// Image responses do not need a store-mode query; their controller retains visibility checks.
+var photoHttp = new Microsoft.AspNetCore.Http.DefaultHttpContext();
+var photoAction = new Microsoft.AspNetCore.Mvc.Abstractions.ActionDescriptor { RouteValues = new Dictionary<string,string?> { ["controller"]="CatalogoImagen", ["action"]="Foto" } };
+var photoFilters = new List<Microsoft.AspNetCore.Mvc.Filters.IFilterMetadata>();
+var photoContext = new Microsoft.AspNetCore.Mvc.Filters.ResourceExecutingContext(
+    new Microsoft.AspNetCore.Mvc.ActionContext(photoHttp,new Microsoft.AspNetCore.Routing.RouteData(),photoAction),
+    photoFilters,new List<Microsoft.AspNetCore.Mvc.ModelBinding.IValueProviderFactory>());
+var invalidStoreConfig = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string,string?> { ["ConnectionStrings:DefaultConnection"]="intentionally-invalid" }).Build();
+var photoModeStore = new AldaJoyeros.Services.StoreModeStore(invalidStoreConfig);
+var photoNext = false;
+await new AldaJoyeros.Filters.StoreModeFilter(photoModeStore,Microsoft.Extensions.Options.Options.Create(new StorageOptimizationOptions()))
+    .OnResourceExecutionAsync(photoContext,()=> {photoNext=true;return Task.FromResult(new Microsoft.AspNetCore.Mvc.Filters.ResourceExecutedContext(photoContext,photoFilters));});
+Check(photoNext && !photoHttp.Items.ContainsKey(StoreModeStore.ContextKey),"Las fotos no consultan el modo de tienda cuando está optimizado");
+var legacyPhotoRead = false;
+try {
+    await new AldaJoyeros.Filters.StoreModeFilter(photoModeStore,Microsoft.Extensions.Options.Options.Create(new StorageOptimizationOptions { Enabled=false }))
+        .OnResourceExecutionAsync(photoContext,()=>Task.FromResult(new Microsoft.AspNetCore.Mvc.Filters.ResourceExecutedContext(photoContext,photoFilters)));
+} catch(ArgumentException) { legacyPhotoRead=true; }
+Check(legacyPhotoRead,"Desactivar la optimización recupera el filtro anterior sin conectar una base real");
 Console.WriteLine($"{checks} comprobaciones superadas; sin bases de datos, correo ni pagos.");
 
 public class Stub : DispatchProxy

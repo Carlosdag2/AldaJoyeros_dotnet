@@ -6,14 +6,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AldaJoyeros.Services;
 
-public sealed class AdminDashboardService(AldaJoyerosContext sql)
+public sealed class AdminDashboardService(AldaJoyerosContext sql, Microsoft.Extensions.Options.IOptions<AldaJoyeros.Configuration.StorageOptimizationOptions>? optimization = null)
 {
     public async Task<AdminDashboardViewModel> GetAsync(CancellationToken cancellation = default)
     {
+        var totals = (optimization?.Value.Enabled ?? true) ? await StoreDatabaseTotals.ReadAsync(sql, cancellation) : null;
         var model = new AdminDashboardViewModel {
-            TotalProductos = await sql.Productos.CountAsync(p=>!p.Eliminado, cancellation),
-            TotalCategorias = await sql.Categorias.CountAsync(cancellation),
-            TotalUsuarios = await sql.Usuarios.CountAsync(cancellation),
+            TotalProductos = totals?.Productos ?? await sql.Productos.CountAsync(p=>!p.Eliminado, cancellation),
+            TotalCategorias = totals?.Categorias ?? await sql.Categorias.CountAsync(cancellation),
+            TotalUsuarios = totals?.Usuarios ?? await sql.Usuarios.CountAsync(cancellation),
             ActualizadoEn = MetricsPeriod.MadridNow()
         };
         var states = await sql.Pedidos.AsNoTracking().GroupBy(p=>p.Estado)

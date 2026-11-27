@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using AldaJoyeros.Mappings;
 using AldaJoyeros.DTOs;
 using AldaJoyeros.Entities;
@@ -12,34 +13,47 @@ namespace AldaJoyeros.Services.Implementations
         private readonly ICategoriaRepository _categoriaRepository;
         private readonly AppMapper _mapper;
         private readonly ILogger<CategoriaService> _logger;
+        private readonly AldaJoyeros.Data.AldaJoyerosContext? _sql;
+        private readonly bool _optimized;
+        private Task<List<CategoriaDto>>? _summaries;
 
         public CategoriaService(
             ICategoriaRepository categoriaRepository, 
             AppMapper mapper,
-            ILogger<CategoriaService> logger)
+            ILogger<CategoriaService> logger, AldaJoyeros.Data.AldaJoyerosContext? sql = null, Microsoft.Extensions.Options.IOptions<AldaJoyeros.Configuration.StorageOptimizationOptions>? optimization = null)
         {
             _categoriaRepository = categoriaRepository;
             _mapper = mapper;
-            _logger = logger;
+            _logger = logger; _sql = sql; _optimized = optimization?.Value.Enabled ?? true;
         }
 
         public async Task<IEnumerable<CategoriaDto>> GetAllAsync()
         {
+            if (_optimized && _sql != null)
+            {
+                var rows = await (_summaries ??= _sql.Categorias.AsNoTracking().Select(c => new CategoriaDto {
+                    Id = c.Id, Nombre = c.Nombre, CantidadProductos = c.Productos.Count(p => !p.Eliminado)
+                }).ToListAsync());
+                // Controllers add public slugs and family counts; don't share their mutable DTOs.
+                return rows.Select(c => new CategoriaDto { Id=c.Id, Nombre=c.Nombre, CantidadProductos=c.CantidadProductos }).ToArray();
+            }
             var categorias = await _categoriaRepository.GetAllAsync();
             return _mapper.Map<IEnumerable<CategoriaDto>>(categorias);
         }
 
         public async Task<CategoriaDto?> GetByIdAsync(long id)
         {
+            if (_optimized && _sql != null) return (await GetAllAsync()).FirstOrDefault(c => c.Id == id);
             var categoria = await _categoriaRepository.GetByIdAsync(id);
             return categoria == null ? null : _mapper.Map<CategoriaDto>(categoria);
         }
 
         public async Task<CategoriaDto> CreateAsync(CategoriaCreateDto categoriaCreateDto)
         {
+            _summaries = null;
             if (await _categoriaRepository.NombreExistsAsync(categoriaCreateDto.Nombre))
             {
-                throw new InvalidOperationException("Ya existe una categorÌa con ese nombre");
+                throw new InvalidOperationException("Ya existe una categor√≠a con ese nombre");
             }
 
             var categoria = _mapper.Map<Categoria>(categoriaCreateDto);
@@ -49,16 +63,17 @@ namespace AldaJoyeros.Services.Implementations
 
         public async Task<CategoriaDto> UpdateAsync(long id, CategoriaUpdateDto categoriaUpdateDto)
         {
+            _summaries = null;
             var categoria = await _categoriaRepository.GetByIdAsync(id);
             if (categoria == null)
             {
-                throw new KeyNotFoundException("CategorÌa no encontrada");
+                throw new KeyNotFoundException("Categor√≠a no encontrada");
             }
 
-            // No permitir renombrar a "Sin categorÌa" (reservado)
-            if (categoriaUpdateDto.Nombre == "Sin categorÌa" && categoria.Nombre != "Sin categorÌa")
+            // No permitir renombrar a "Sin categor√≠a" (reservado)
+            if (categoriaUpdateDto.Nombre == "Sin categor√≠a" && categoria.Nombre != "Sin categor√≠a")
             {
-                throw new InvalidOperationException("El nombre 'Sin categorÌa' est· reservado para el sistema");
+                throw new InvalidOperationException("El nombre 'Sin categor√≠a' est√° reservado para el sistema");
             }
 
             _mapper.Map(categoriaUpdateDto, categoria);
@@ -68,25 +83,26 @@ namespace AldaJoyeros.Services.Implementations
 
         public async Task DeleteAsync(long id)
         {
+            _summaries = null;
             var categoria = await _categoriaRepository.GetByIdAsync(id);
             if (categoria == null)
             {
-                throw new KeyNotFoundException("CategorÌa no encontrada");
+                throw new KeyNotFoundException("Categor√≠a no encontrada");
             }
 
-            // No permitir eliminar la categorÌa "Sin categorÌa"
-            if (categoria.Nombre == "Sin categorÌa")
+            // No permitir eliminar la categor√≠a "Sin categor√≠a"
+            if (categoria.Nombre == "Sin categor√≠a")
             {
-                throw new InvalidOperationException("No se puede eliminar la categorÌa 'Sin categorÌa' porque es la categorÌa por defecto del sistema");
+                throw new InvalidOperationException("No se puede eliminar la categor√≠a 'Sin categor√≠a' porque es la categor√≠a por defecto del sistema");
             }
 
-            // Si la categorÌa tiene productos, reasignarlos a "Sin categorÌa"
+            // Si la categor√≠a tiene productos, reasignarlos a "Sin categor√≠a"
             if (categoria.Productos != null && categoria.Productos.Any())
             {
                 var defaultCategory = await _categoriaRepository.GetOrCreateDefaultCategoryAsync();
                 
                 _logger.LogInformation(
-                    "Reasignando {Count} productos de categorÌa '{From}' (ID: {FromId}) a '{To}' (ID: {ToId})",
+                    "Reasignando {Count} productos de categor√≠a '{From}' (ID: {FromId}) a '{To}' (ID: {ToId})",
                     categoria.Productos.Count,
                     categoria.Nombre,
                     categoria.Id,
@@ -100,12 +116,12 @@ namespace AldaJoyeros.Services.Implementations
         }
 
         /// <summary>
-        /// Verifica si una categorÌa es la categorÌa por defecto del sistema
+        /// Verifica si una categor√≠a es la categor√≠a por defecto del sistema
         /// </summary>
         public async Task<bool> IsDefaultCategoryAsync(long id)
         {
             var categoria = await _categoriaRepository.GetByIdAsync(id);
-            return categoria?.Nombre == "Sin categorÌa";
+            return categoria?.Nombre == "Sin categor√≠a";
         }
     }
 }

@@ -67,6 +67,7 @@ public class Catalog : ICartCatalog {
 }
 public class Products : DispatchProxy {
  protected override object? Invoke(MethodInfo? method,object?[]? args) {
+  if(method!.Name=="GetByIdsAsync")return Task.FromResult<IReadOnlyDictionary<long,ProductoDto>>(((IEnumerable<long>)args![0]!).Distinct().ToDictionary(id=>id,id=>new ProductoDto {Id=id,Nombre="Referencia",Precio=50}));
   if(method!.Name=="GetByIdAsync")return Task.FromResult<ProductoDto?>(new(){Id=(long)args![0]!,Nombre="Referencia",Precio=50});
   throw new Exception("Servicio inesperado: "+method.Name);
  }

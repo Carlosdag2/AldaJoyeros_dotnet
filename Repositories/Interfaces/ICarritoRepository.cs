@@ -5,6 +5,7 @@ namespace AldaJoyeros.Repositories.Interfaces
     public interface ICarritoRepository
     {
         Task<IEnumerable<CarritoItem>> GetByUsuarioIdAsync(long usuarioId);
+        async Task<int> GetTotalItemsAsync(long usuarioId) => (await GetByUsuarioIdAsync(usuarioId)).Sum(i => i.Cantidad);
         Task<CarritoItem?> GetByIdAsync(long id);
         Task<CarritoItem?> GetByUsuarioAndProductoAsync(long usuarioId, long productoId);
         Task<CarritoItem> CreateAsync(CarritoItem carritoItem);

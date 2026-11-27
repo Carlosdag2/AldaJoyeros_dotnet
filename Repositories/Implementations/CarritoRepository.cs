@@ -23,6 +23,9 @@ namespace AldaJoyeros.Repositories.Implementations
                 .ToListAsync();
         }
 
+        public async Task<int> GetTotalItemsAsync(long usuarioId) =>
+            await _context.CarritoItems.Where(i => i.UsuarioId == usuarioId).SumAsync(i => (int?)i.Cantidad) ?? 0;
+
         public async Task<CarritoItem?> GetByIdAsync(long id)
         {
             return await _context.CarritoItems
