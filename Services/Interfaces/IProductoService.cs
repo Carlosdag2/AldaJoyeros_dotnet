@@ -18,6 +18,11 @@ namespace AldaJoyeros.Services.Interfaces
         /// Obtiene un producto por ID (incluyendo eliminados)
         /// </summary>
         Task<ProductoDto?> GetByIdAsync(long id);
+        async Task<IReadOnlyDictionary<long, ProductoDto>> GetByIdsAsync(IEnumerable<long> ids) {
+            var result = new Dictionary<long, ProductoDto>();
+            foreach (var id in ids.Distinct()) { var product=await GetByIdAsync(id);if(product!=null)result[id]=product; }
+            return result;
+        }
         
         /// <summary>
         /// Obtiene un producto por ID solo si está activo

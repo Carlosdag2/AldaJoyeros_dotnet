@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using AldaJoyeros.Mappings;
 using AldaJoyeros.DTOs;
 using AldaJoyeros.Entities;
@@ -10,15 +11,20 @@ namespace AldaJoyeros.Services.Implementations
     {
         private readonly IUsuarioRepository _usuarioRepository;
         private readonly AppMapper _mapper;
+        private readonly AldaJoyeros.Data.AldaJoyerosContext? _sql;
+        private readonly bool _optimized;
 
-        public UsuarioService(IUsuarioRepository usuarioRepository, AppMapper mapper)
+        public UsuarioService(IUsuarioRepository usuarioRepository, AppMapper mapper, AldaJoyeros.Data.AldaJoyerosContext? sql = null, Microsoft.Extensions.Options.IOptions<AldaJoyeros.Configuration.StorageOptimizationOptions>? optimization = null)
         {
             _usuarioRepository = usuarioRepository;
-            _mapper = mapper;
+            _mapper = mapper; _sql = sql; _optimized = optimization?.Value.Enabled ?? true;
         }
 
         public async Task<IEnumerable<UsuarioDto>> GetAllAsync()
         {
+            if (_optimized && _sql != null) return await _sql.Usuarios.AsNoTracking().Select(u => new UsuarioDto {
+                Id = u.Id, Email = u.Email, Rol = u.Rol, CantidadPedidos = u.Pedidos.Count
+            }).ToListAsync();
             var usuarios = await _usuarioRepository.GetAllAsync();
             return _mapper.Map<IEnumerable<UsuarioDto>>(usuarios);
         }

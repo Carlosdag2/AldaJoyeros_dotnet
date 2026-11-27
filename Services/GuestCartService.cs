@@ -19,8 +19,10 @@ public sealed class GuestCartService(ICarritoService accounts, IProductoService 
             return (await accounts.GetByUsuarioIdAsync(userId.Value)).ToArray();
         }
         var result = new List<CarritoItemDto>();
-        foreach (var item in TempCarritoHelper.GetItems(Context)) {
-            var product = await products.GetByIdAsync(item.ProductoId);
+        var pending=TempCarritoHelper.GetItems(Context).ToArray();
+        var batch=await products.GetByIdsAsync(pending.Select(i=>i.ProductoId));
+        foreach (var item in pending) {
+            var product = batch.GetValueOrDefault(item.ProductoId);
             if (product == null || product.Eliminado || !await catalog.IsPurchasableAsync(item.ProductoId)) {
                 TempCarritoHelper.RemoveItem(Context, item.ProductoId);
                 Notices.Add("Se ha retirado un artículo que ya no está disponible. Revisa tu carrito.");

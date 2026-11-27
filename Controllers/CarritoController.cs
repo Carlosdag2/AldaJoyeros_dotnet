@@ -11,9 +11,8 @@ public class CarritoController(GuestCartService cart, IProductoImagenService ima
     public async Task<IActionResult> Index()
     {
         var items = await cart.GetAsync(CurrentUserId);
-        foreach (var item in items)
-            if (item.Producto != null && !item.Producto.TieneImagenes)
-                item.Producto.Imagenes = (await images.GetByProductoIdAsync(item.ProductoId)).ToList();
+        await AldaJoyeros.Helpers.ProductImageBatch.LoadAsync(images,
+            items.Where(i => i.Producto != null && !i.Producto.TieneImagenes).Select(i => (i.ProductoId, i.Producto!)));
         ViewBag.Total = items.Sum(i => i.Subtotal);
         ViewBag.PendingCart = CurrentUserId.HasValue && cart.PendingMerge;
         if (cart.Notices.Count > 0) TempData["Warning"] = string.Join(" ", cart.Notices.Distinct());

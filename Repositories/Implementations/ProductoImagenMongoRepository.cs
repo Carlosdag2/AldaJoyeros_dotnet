@@ -29,6 +29,16 @@ namespace AldaJoyeros.Repositories.Implementations
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<ProductoImagenMongo>> GetByProductoIdsAsync(IEnumerable<long> ids)
+        {
+            var result = new List<ProductoImagenMongo>();
+            // Administration still receives original bytes, including images of deleted products.
+            foreach (var batch in ids.Distinct().Chunk(50))
+                result.AddRange(await _imagenes.Find(Builders<ProductoImagenMongo>.Filter.In(i => i.ProductoId, batch))
+                    .SortBy(i => i.ProductoId).ThenBy(i => i.Orden).ToListAsync());
+            return result;
+        }
+
         public async Task<ProductoImagenMongo?> GetByIdAsync(string id)
         {
             var filter = Builders<ProductoImagenMongo>.Filter.Eq(img => img.Id, id);

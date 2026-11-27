@@ -19,6 +19,11 @@ namespace AldaJoyeros.Repositories.Interfaces
         /// Obtiene un producto por ID (incluyendo eliminados)
         /// </summary>
         Task<Producto?> GetByIdAsync(long id);
+        async Task<IEnumerable<Producto>> GetByIdsAsync(IEnumerable<long> ids) {
+            var result=new List<Producto>();
+            foreach(var id in ids.Distinct()){var row=await GetByIdAsync(id);if(row!=null)result.Add(row);}
+            return result;
+        }
         
         /// <summary>
         /// Obtiene un producto por ID solo si está activo

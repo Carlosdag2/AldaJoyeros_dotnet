@@ -1,4 +1,4 @@
-﻿using AldaJoyeros.Mappings;
+using AldaJoyeros.Mappings;
 using AldaJoyeros.DTOs;
 using AldaJoyeros.Repositories.Interfaces;
 using AldaJoyeros.Services.Interfaces;
@@ -10,15 +10,16 @@ namespace AldaJoyeros.Services.Implementations
         private readonly IProductoRepository _productoRepository;
         private readonly IProductoImagenService _imagenService;
         private readonly AppMapper _mapper;
+        private readonly bool _optimized;
 
         public ProductoService(
             IProductoRepository productoRepository,
             IProductoImagenService imagenService,
-            AppMapper mapper)
+            AppMapper mapper, Microsoft.Extensions.Options.IOptions<AldaJoyeros.Configuration.StorageOptimizationOptions>? optimization = null)
         {
             _productoRepository = productoRepository;
             _imagenService = imagenService;
-            _mapper = mapper;
+            _mapper = mapper; _optimized = optimization?.Value.Enabled ?? true;
         }
 
         /// <summary>
@@ -45,6 +46,19 @@ namespace AldaJoyeros.Services.Implementations
             if (cargarImagenes) await CargarImagenesAsync(productosDto);
             
             return productosDto;
+        }
+
+        public async Task<IReadOnlyDictionary<long,ProductoDto>> GetByIdsAsync(IEnumerable<long> ids)
+        {
+            if (!_optimized) {
+                var legacy=new Dictionary<long,ProductoDto>();
+                foreach(var id in ids.Distinct()){var row=await GetByIdAsync(id);if(row!=null)legacy[id]=row;}
+                return legacy;
+            }
+            var entities=(await _productoRepository.GetByIdsAsync(ids)).ToArray();
+            var rows=entities.Select(p=> {var dto=_mapper.Map<ProductoDto>(p);CompletarDatosProveedor(p,dto);return dto;}).ToArray();
+            await CargarImagenesAsync(rows);
+            return rows.ToDictionary(p=>p.Id);
         }
 
         public async Task<ProductoDto?> GetByIdAsync(long id)
@@ -250,7 +264,13 @@ namespace AldaJoyeros.Services.Implementations
 
         public async Task CargarImagenesAsync(IEnumerable<ProductoDto> productos)
         {
-            foreach (var producto in productos)
+            var rows = productos.ToArray();
+            if (_optimized) {
+                var images = (await _imagenService.GetByProductoIdsAsync(rows.Select(p => p.Id))).ToLookup(i => i.ProductoId);
+                foreach (var producto in rows) producto.Imagenes = images[producto.Id].ToList();
+                return;
+            }
+            foreach (var producto in rows)
             {
                 producto.Imagenes = (await _imagenService.GetByProductoIdAsync(producto.Id)).ToList();
             }

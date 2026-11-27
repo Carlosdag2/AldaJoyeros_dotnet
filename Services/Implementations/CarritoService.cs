@@ -12,18 +12,19 @@ namespace AldaJoyeros.Services.Implementations
         private readonly IProductoRepository _productoRepository;
         private readonly AppMapper _mapper;
         private readonly IHttpContextAccessor? _http;
+        private readonly bool _optimized;
         private readonly AldaJoyeros.Services.CatalogoService _catalogo;
 
         public CarritoService(
             ICarritoRepository carritoRepository,
             IProductoRepository productoRepository,
-            AppMapper mapper, AldaJoyeros.Services.CatalogoService catalogo, IHttpContextAccessor? http = null)
+            AppMapper mapper, AldaJoyeros.Services.CatalogoService catalogo, IHttpContextAccessor? http = null, Microsoft.Extensions.Options.IOptions<AldaJoyeros.Configuration.StorageOptimizationOptions>? optimization = null)
         {
             _carritoRepository = carritoRepository;
             _productoRepository = productoRepository;
             _mapper = mapper;
             _catalogo = catalogo;
-            _http = http;
+            _http = http; _optimized = optimization?.Value.Enabled ?? true;
         }
 
         public async Task<IEnumerable<CarritoItemDto>> GetByUsuarioIdAsync(long usuarioId)
@@ -115,6 +116,7 @@ namespace AldaJoyeros.Services.Implementations
 
         public async Task<int> GetTotalItemsAsync(long usuarioId)
         {
+            if (_optimized) return await _carritoRepository.GetTotalItemsAsync(usuarioId);
             var items = await _carritoRepository.GetByUsuarioIdAsync(usuarioId);
             return items.Sum(i => i.Cantidad);
         }

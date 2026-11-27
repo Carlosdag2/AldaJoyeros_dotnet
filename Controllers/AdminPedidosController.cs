@@ -77,14 +77,9 @@ namespace AldaJoyeros.Controllers
                 return RedirectToAction("Index");
             }
 
-            foreach (var linea in pedido.LineasPedido)
-            {
-                if (linea.Producto != null && linea.ProductoId.HasValue)
-                {
-                    var imagenes = await _imagenService.GetByProductoIdAsync(linea.ProductoId.Value);
-                    linea.Producto.Imagenes = imagenes.ToList();
-                }
-            }
+            await AldaJoyeros.Helpers.ProductImageBatch.LoadAsync(_imagenService,
+                pedido.LineasPedido.Where(l => l.Producto != null && l.ProductoId.HasValue)
+                    .Select(l => (l.ProductoId.GetValueOrDefault(), l.Producto!)));
 
             return View(pedido);
         }

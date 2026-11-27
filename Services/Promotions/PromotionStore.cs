@@ -3,7 +3,7 @@ using MySqlConnector;
 
 namespace AldaJoyeros.Services.Promotions;
 // The same MySQL database as the catalog; no local-only configuration files.
-public sealed class PromotionStore(IConfiguration configuration)
+public sealed class PromotionStore(IConfiguration configuration, Microsoft.Extensions.Options.IOptions<AldaJoyeros.Configuration.StorageOptimizationOptions>? optimization = null)
 {
     readonly SemaphoreSlim schema = new(1, 1), history = new(1, 1);
     bool ready;
@@ -97,6 +97,12 @@ public sealed class PromotionStore(IConfiguration configuration)
         await history.WaitAsync();
         try
         {
+            var incoming = prices.ToArray();
+            // The previous implementation opened a connection even when no INSERT was needed.
+            // Keep the same lock and comparison; do not cache products, discounts or availability.
+            if ((optimization?.Value.Enabled ?? true) && lastPrices != null &&
+                incoming.All(p => lastPrices.TryGetValue(p.Id, out var previous) && previous == p.Price))
+                return;
             await using var c = Connection();
             await c.OpenAsync();
             if (lastPrices == null)
@@ -108,7 +114,7 @@ public sealed class PromotionStore(IConfiguration configuration)
                     lastPrices[rd.GetInt64(0)] = rd.GetDecimal(1);
             }
 
-            var changes = prices.Where(p => !lastPrices.TryGetValue(p.Id, out var previous) || previous != p.Price).DistinctBy(p => p.Id).ToArray();
+            var changes = incoming.Where(p => !lastPrices.TryGetValue(p.Id, out var previous) || previous != p.Price).DistinctBy(p => p.Id).ToArray();
             foreach (var chunk in changes.Chunk(500))
             {
                 await using var q = new MySqlCommand

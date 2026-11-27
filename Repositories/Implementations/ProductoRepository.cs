@@ -46,6 +46,19 @@ namespace AldaJoyeros.Repositories.Implementations
         /// <summary>
         /// Obtiene un producto por ID (incluyendo eliminados para mostrar en pedidos)
         /// </summary>
+        public async Task<IEnumerable<Producto>> GetByIdsAsync(IEnumerable<long> ids)
+        {
+            var rows=new List<Producto>();
+            foreach(var batch in ids.Distinct().Chunk(200))
+            {
+                // List.Contains avoids the .NET 10 span overload, which EF Core 9 cannot translate.
+                var selected = batch.ToList();
+                rows.AddRange(await _context.Productos.AsNoTracking().Include(p=>p.Categoria).Include(p=>p.Proveedores)
+                    .Where(p=>selected.Contains(p.Id)).ToListAsync());
+            }
+            return rows;
+        }
+
         public async Task<Producto?> GetByIdAsync(long id)
         {
             return await _context.Productos

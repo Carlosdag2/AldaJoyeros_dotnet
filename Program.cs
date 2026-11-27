@@ -26,7 +26,7 @@ namespace AldaJoyeros
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            builder.Configuration.AddJsonFile("appsettings.Local.json",optional:true,reloadOnChange:false).AddEnvironmentVariables().AddCommandLine(args);
+            builder.Configuration.AddJsonFile("appsettings.Optimization.json",optional:true,reloadOnChange:false).AddJsonFile("appsettings.Local.json",optional:true,reloadOnChange:false).AddEnvironmentVariables().AddCommandLine(args);
             builder.Services.AddDataProtection().PersistKeysToFileSystem(new DirectoryInfo(
                 builder.Configuration["DataProtection:KeysPath"] ?? Path.Combine(builder.Environment.ContentRootPath,"App_Data","DataProtectionKeys")));
             builder.Services.Configure<MunrecoOptions>(builder.Configuration.GetSection("Munreco"));
@@ -63,8 +63,11 @@ namespace AldaJoyeros
 
             // Configurar DbContext con MySQL (para productos, usuarios, etc.)
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+            // Detect once per process, instead of opening another connection for every DbContext.
+            var detectedVersion = new MySqlServerVersionCache(() => ServerVersion.AutoDetect(connectionString));
+            var optimizedQueries = builder.Configuration.GetValue("StorageOptimization:Enabled", true);
             builder.Services.AddDbContext<AldaJoyerosContext>(options =>
-                options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+                options.UseMySql(connectionString, optimizedQueries ? detectedVersion.Get() : ServerVersion.AutoDetect(connectionString)));
 
             // Configurar MongoDB (para imágenes)
             builder.Services.Configure<MongoDbSettings>(
